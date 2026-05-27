@@ -96,12 +96,6 @@ export async function getAllUsers(
 }
 
 
-export async function getUserById(userId: string): Promise<User> {
-  const response = await api.get(`/v1/user/${userId}`);
-  const raw: UserApiRaw = response.data?.data || response.data;
-  return normalizeUser(raw);
-}
-
 export async function updateUserVerified(userId: string, isVerified: boolean): Promise<User> {
   const response = await api.patch(`/v1/user/${userId}/verified`, { isVerified });
   const raw: UserApiRaw = response.data?.data || response.data;

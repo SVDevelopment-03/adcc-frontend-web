@@ -3,7 +3,7 @@ import { ArrowLeft, Image as ImageIcon, Save, Shield } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { compressImage } from '../../utils/imageUtils';
-import { getUserById, updateUser, User } from '../../services/usersApi';
+import { getAllUsers, updateUser, User } from '../../services/usersApi';
 import { assignUserRole, getRbacRoles, type RbacRole } from '../../services/rbacService';
 
 const ACCEPTED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
@@ -39,7 +39,9 @@ export function AdminEdit() {
     if (!id) return;
     const load = async () => {
       try {
-        const found = await getUserById(id);
+        const { users } = await getAllUsers(1, 100);
+        const found = users.find((u) => u.id === id);
+        if (!found) { toast.error('Admin user not found'); navigate('/admins'); return; }
         setAdmin(found);
         setFullName(found.fullName);
         setPhone(found.phone || '');
