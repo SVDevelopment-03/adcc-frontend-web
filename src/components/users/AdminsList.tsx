@@ -5,6 +5,7 @@ import {
   MoreVertical, Plus, Pencil, Trash2, UserX, UserCheck,
 } from 'lucide-react';
 import { getAllUsers, updateUserVerified, deleteUser, User } from '../../services/usersApi';
+import { getRbacRoles, type RbacRole } from '../../services/rbacService';
 
 const PAGE_SIZE = 15;
 const FETCH_LIMIT = 100;
@@ -19,9 +20,10 @@ const ROLE_STYLE: Record<string, { bg: string; color: string }> = {
   Vendor: { bg: '#EFF6FF', color: '#3B82F6' },
   Member: { bg: '#F9FAFB', color: '#6B7280' },
 };
+const RBAC_FALLBACK_STYLE = { bg: '#F3F0FF', color: '#7C3AED' };
 
 function RoleBadge({ role }: { role: string }) {
-  const style = ROLE_STYLE[role] || ROLE_STYLE.Member;
+  const style = ROLE_STYLE[role] || RBAC_FALLBACK_STYLE;
   return (
     <span className="px-3 py-1.5 rounded-lg text-xs font-medium inline-block" style={{ backgroundColor: style.bg, color: style.color }}>
       {role}
@@ -152,6 +154,7 @@ function ActionMenu({ user, onEdit, onToggleStatus, onDelete, isOpen, onOpen, on
 export function AdminsList() {
   const navigate = useNavigate();
   const [allAdmins, setAllAdmins] = useState<User[]>([]);
+  const [rbacRoleMap, setRbacRoleMap] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
@@ -171,8 +174,17 @@ export function AdminsList() {
     try {
       setLoading(true);
       setError(null);
-      const { users } = await getAllUsers(1, FETCH_LIMIT, 'Admin');
-      setAllAdmins(users);
+      const [{ users }, rbacRoles] = await Promise.all([
+        getAllUsers(1, FETCH_LIMIT),
+        getRbacRoles().catch(() => [] as RbacRole[]),
+      ]);
+      const roleMap: Record<string, string> = {};
+      rbacRoles.forEach((r) => {
+        const rid = r._id || r.id || '';
+        if (rid) roleMap[rid] = r.name;
+      });
+      setRbacRoleMap(roleMap);
+      setAllAdmins(users.filter((u) => u.role !== 'Member'));
     } catch (err: any) {
       setError(err?.message || 'Failed to load admins');
     } finally {
@@ -249,7 +261,7 @@ export function AdminsList() {
     total: allAdmins.length,
     active: allAdmins.filter((u) => u.isVerified).length,
     inactive: allAdmins.filter((u) => !u.isVerified).length,
-    roles: [...new Set(allAdmins.map((u) => u.role))].length,
+    roles: [...new Set(allAdmins.map((u) => (u.roleId && rbacRoleMap[u.roleId]) || u.role))].length,
   };
 
   return (
@@ -339,7 +351,9 @@ export function AdminsList() {
                       </div>
                     </div>
                   </td>
-                  <td className="py-4 px-4"><RoleBadge role={admin.role} /></td>
+                  <td className="py-4 px-4">
+                    <RoleBadge role={admin.roleId && rbacRoleMap[admin.roleId] ? rbacRoleMap[admin.roleId] : admin.role} />
+                  </td>
                   <td className="py-4 px-4">
                     <div className="space-y-1">
                       {admin.email && (

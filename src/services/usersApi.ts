@@ -11,6 +11,7 @@ export interface User {
   dob: string | null;
   country: string;
   role: 'Admin' | 'Vendor' | 'Member';
+  roleId: string | null;
   isVerified: boolean;
   stats: {
     totalDistanceKm: number;
@@ -34,6 +35,7 @@ interface UserApiRaw {
   dob?: string;
   country?: string;
   role?: string;
+  roleId?: string | null;
   isVerified?: boolean;
   stats?: {
     totalDistanceKm?: number;
@@ -59,6 +61,7 @@ function normalizeUser(raw: UserApiRaw): User {
     dob: raw.dob || null,
     country: raw.country || '',
     role: (raw.role as User['role']) || 'Member',
+    roleId: raw.roleId ?? null,
     isVerified: raw.isVerified ?? false,
     stats: {
       totalDistanceKm: raw.stats?.totalDistanceKm ?? 0,
@@ -92,6 +95,12 @@ export async function getAllUsers(
   return { users: rawUsers.map(normalizeUser), pagination };
 }
 
+
+export async function getUserById(userId: string): Promise<User> {
+  const response = await api.get(`/v1/user/${userId}`);
+  const raw: UserApiRaw = response.data?.data || response.data;
+  return normalizeUser(raw);
+}
 
 export async function updateUserVerified(userId: string, isVerified: boolean): Promise<User> {
   const response = await api.patch(`/v1/user/${userId}/verified`, { isVerified });
