@@ -19,6 +19,8 @@ import CommunitiesMarchDistanceChallenge from './components/communities-march-di
 import UserAdccStore from './components/user-adcc-store/UserAdccStore';
 import StoreDetailPage from './components/user-store-detail/userStoreDetail';
 import ContactUs from './components/contact-us/contactUs.jsx';
+import { Home } from './components/home/Home';
+
 
 export type UserRole = 'Admin' | 'content-manager' | 'community-manager' | 'moderator';
 
@@ -30,6 +32,7 @@ function AppContent() {
 
   // Redirect to login when user becomes unauthenticated
   useEffect(() => {
+    const publicRoutes = ['/home', '/login', '/register'];
     if (!loading && !isAuthenticated && !publicRoutes.includes(location.pathname)) {
       navigate('/login', { replace: true });
     }
@@ -101,6 +104,8 @@ function AppContent() {
 
       <Route path="/contact-us" element={<ContactUs />} />
 
+      <Route path="/home" element={<Home />} />
+      
       {/* Protected Routes - All routes are handled in Layout component */}
       <Route 
         path="/*" 
@@ -114,7 +119,7 @@ function AppContent() {
       {/* Root redirect */}
       <Route 
         path="/" 
-        element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} 
+        element={<Navigate to="/home" replace />} 
       />
     </Routes>
   );
