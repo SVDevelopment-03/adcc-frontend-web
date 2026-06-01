@@ -7,7 +7,18 @@ import { Login } from './components/auth/Login';
 import { Register } from './components/auth/Register';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Layout } from './components/Layout';
-
+import AboutUs from './components/about/AboutUs';
+import UserEvent from './components/user-event/UserEvent';
+import UserTracks from './components/user-tracks/UserTracks';
+import UserChallenges from './components/user-challenges/UserChallenges';
+import UserCommunities from './components/user-communities/UserCommunities';
+import CommunitiesAbuDhabiGrandPrixRide from './components/communities-abu-dhabi-grand-prix-ride/CommunitiesAbuDhabiGrandPrixRide';
+import CommunitiesAbuDhabiCyclingCommunity from './components/communities-abu-dhabi-cycling-community/CommunitiesAbuDhabiCyclingCommunity';
+import CommunitiesAlQuadraCyclePath from './components/communities-al-quadra-cycle-path/CommunitiesAlQuadraCyclePath';
+import CommunitiesMarchDistanceChallenge from './components/communities-march-distance-challenge/CommunitiesMarchDistanceChallenge';
+import UserAdccStore from './components/user-adcc-store/UserAdccStore';
+import StoreDetailPage from './components/user-store-detail/userStoreDetail';
+import ContactUs from './components/contact-us/contactUs.jsx';
 
 export type UserRole = 'Admin' | 'content-manager' | 'community-manager' | 'moderator';
 
@@ -15,10 +26,11 @@ function AppContent() {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, loading } = useAuth();
+  const publicRoutes = ['/login', '/register', '/aboutus'];
 
   // Redirect to login when user becomes unauthenticated
   useEffect(() => {
-    if (!loading && !isAuthenticated && location.pathname !== '/login' && location.pathname !== '/register') {
+    if (!loading && !isAuthenticated && !publicRoutes.includes(location.pathname)) {
       navigate('/login', { replace: true });
     }
   }, [isAuthenticated, loading, location.pathname, navigate]);
@@ -63,7 +75,32 @@ function AppContent() {
           )
         } 
       />
-      
+      <Route path="/aboutus" element={<AboutUs />} />
+      <Route path="/user-event" element={<UserEvent />} />
+      <Route path="/user-tracks" element={<UserTracks />} />
+      <Route path="/user-challenges" element={<UserChallenges />} />
+      <Route path="/user-communities" element={<UserCommunities />} />
+      <Route
+        path="/communities-abu-dhabi-grand-prix-ride"
+        element={<CommunitiesAbuDhabiGrandPrixRide />}
+      />
+      <Route
+        path="/communities-abu-dhabi-cycling-community"
+        element={<CommunitiesAbuDhabiCyclingCommunity />}
+      />
+      <Route
+        path="/communities-al-quadra-cycle-path"
+        element={<CommunitiesAlQuadraCyclePath />}
+      />
+      <Route
+        path="/communities-march-distance-challenge"
+        element={<CommunitiesMarchDistanceChallenge />}
+      />
+      <Route path="/user-adcc-store" element={<UserAdccStore />} />
+      <Route path="/user-store-detail" element={<StoreDetailPage/>} />
+
+      <Route path="/contact-us" element={<ContactUs />} />
+
       {/* Protected Routes - All routes are handled in Layout component */}
       <Route 
         path="/*" 
