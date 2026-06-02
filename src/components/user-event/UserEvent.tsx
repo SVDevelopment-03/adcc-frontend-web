@@ -5,7 +5,7 @@ const FontLoader = () => (
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700&family=Bebas+Neue&display=swap');
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #EAF4FF; font-family: 'Outfit', sans-serif; color: #000; }
-    .bebas { font-family: 'Bebas Neue', sans-serif; font-weight: 400; letter-spacing: 0.02em; }
+    .bebas { font-family: 'Bebas Kai','Bebas Neue', sans-serif; font-weight: 400; letter-spacing: 0.02em; }
     a { text-decoration: none; color: inherit; }
     select { appearance: none; -webkit-appearance: none; background: transparent; border: none; outline: none; cursor: pointer; font-family: 'Outfit', sans-serif; font-size: 18px; color: #000; width: 100%; padding-right: 28px; }
   `}</style>
@@ -53,7 +53,7 @@ function Hero() {
     <section style={{ position: "relative", width: "100%", height: 640, overflow: "hidden" }}>
       <div style={{
         position: "absolute", inset: 0,
-        backgroundImage: "linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1590060571250-0adce0dc3c3c?w=1440&q=80')",
+        backgroundImage: "linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url('/img/pexels-jonathanborba-19431221 1.png')",
         backgroundSize: "cover", backgroundPosition: "center"
       }} />
       <div style={{ position: "absolute", bottom: 90, left: 82 }}>
@@ -93,7 +93,8 @@ function FilterBar({ filters, setFilters, onSearch }) {
   );
 
   return (
-    <div style={{ padding: "0 82px 24px", display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
+    // <div style={{ padding: "0 82px 24px", display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
+    <div style={{ padding: "0 82px 24px", display: "flex", gap: 18, alignItems: "center", flexWrap: "nowrap" }}>
       {[
         { key: "city", label: "All Cities", options: ["All Cities", "Abu Dhabi", "Dubai", "Sharjah", "Al Ain"] },
         { key: "category", label: "All Categories", options: ["All Categories", "Race", "Leisure", "Challenge", "Community"] },
@@ -110,7 +111,7 @@ function FilterBar({ filters, setFilters, onSearch }) {
       <button onClick={onSearch} style={{
         width: 156, height: 66, background: "#019839", color: "#fff",
         border: "none", borderRadius: 40, fontSize: 20, fontWeight: 700,
-        cursor: "pointer", fontFamily: "'Outfit',sans-serif", transition: "opacity .2s"
+        cursor: "pointer", fontFamily: "'Satoshi',sans-serif", transition: "opacity .2s"
       }}>Search</button>
     </div>
   );
@@ -134,7 +135,7 @@ function EventCard({ event }) {
           position: "absolute", top: 16, right: 16,
           background: "rgba(0,0,0,0.4)", backdropFilter: "blur(15px)",
           borderRadius: 30, padding: "9px 18px",
-          color: "#fff", fontSize: 15, fontWeight: 500
+          color: "#fff", fontFamily: "'Satoshi',sans-serif", fontSize: 15, fontWeight: 500
         }}>{event.tag}</span>
       </div>
 
@@ -151,7 +152,7 @@ function EventCard({ event }) {
           width: 157, height: 50, border: "1.5px solid #019839",
           borderRadius: 30, background: "transparent",
           color: "#019839", fontSize: 16, fontWeight: 700,
-          cursor: "pointer", fontFamily: "'Outfit',sans-serif",
+          cursor: "pointer", fontFamily: "'Satoshi',sans-serif",
           transition: "all .2s"
         }}
           onMouseEnter={e => { e.target.style.background = "#019839"; e.target.style.color = "#fff"; }}
@@ -206,7 +207,15 @@ function EventsGrid() {
       <FilterBar filters={filters} setFilters={setFilters} onSearch={() => { setActiveFilters(filters); setPage(1); }} />
       <div style={{ padding: "0 82px" }}>
         <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 20 }}>Showing {filtered.length} results</p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "48px 28px" }}>
+        {/* <div style={{ display: "flex", flexWrap: "wrap", gap: "48px 28px" }}> */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 403px)",
+            justifyContent: "space-between",
+            rowGap: 48,
+          }}
+        >
           {visible.map(e => <EventCard key={e.id + e.title} event={e} />)}
         </div>
         <Pagination page={page} total={totalPages} setPage={setPage} />
@@ -231,7 +240,7 @@ function Pagination({ page, total, setPage }) {
             background: isActive ? "#019839" : "transparent",
             color: isActive ? "#fff" : "#019839",
             fontSize: 18, fontWeight: 500, cursor: isDots ? "default" : "pointer",
-            fontFamily: "'Outfit',sans-serif",
+            fontFamily: "'Satoshi',sans-serif",
             letterSpacing: isDots ? "0.2em" : 0,
             display: "flex", alignItems: "center", justifyContent: "center"
           }}>{p}</button>
@@ -272,7 +281,7 @@ function CTABanner() {
             <button key={s} style={{
               background: "#fff", border: "none", borderRadius: 100,
               padding: "14px 32px", fontWeight: 600, fontSize: 16, cursor: "pointer",
-              fontFamily: "'Outfit',sans-serif", display: "flex", alignItems: "center", gap: 10
+              fontFamily: "'Satoshi',sans-serif", display: "flex", alignItems: "center", gap: 10
             }}>{s}</button>
           ))}
         </div>
@@ -296,7 +305,7 @@ function Footer() {
           <div style={{ display: "flex", background: "#8DDF93", borderRadius: 8, overflow: "hidden", width: 340, height: 56 }}>
             <input placeholder="Enter your email" style={{
               flex: 1, border: "none", background: "transparent",
-              padding: "0 18px", fontSize: 15, fontFamily: "'Outfit',sans-serif", outline: "none"
+              padding: "0 18px", fontSize: 15, fontFamily: "'Satoshi',sans-serif", outline: "none"
             }} />
             <button style={{
               background: "#019839", color: "#fff", border: "none",

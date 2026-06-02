@@ -8,8 +8,145 @@ const FontLoader = () => (
     .bebas { font-family: 'Bebas Neue', sans-serif; font-weight: 400; letter-spacing: 0.02em; }
     a { text-decoration: none; color: inherit; }
     select { appearance: none; -webkit-appearance: none; background: transparent; border: none; outline: none; cursor: pointer; font-family: 'Outfit', sans-serif; font-size: 20px; color: #000; width: 100%; }
+
+    .tracks-journey-card {
+      width: 482px;
+      height: 214px;
+      max-width: 100%;
+      border-radius: 12px;
+      background: #019839;
+      position: relative;
+      overflow: visible;
+    }
+
+    .tracks-journey-card__image {
+      position: absolute;
+      width: 347px;
+      height: 401px;
+      left: 211px;
+      top: -187px;
+      object-fit: contain;
+      transform: matrix(1, 0, 0, 1, 0, 0);
+      transform-origin: center;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .tracks-journey-card__eyebrow {
+      position: absolute;
+      left: 20px;
+      top: 22px;
+      width: 113px;
+      min-height: 23px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 145%;
+      display: flex;
+      align-items: center;
+      z-index: 2;
+    }
+
+    .tracks-journey-card__title {
+      position: absolute;
+      left: 20px;
+      top: 50px;
+      width: 211px;
+      color: #fff;
+      font-size: 26px;
+      line-height: 31px;
+      text-transform: capitalize;
+      z-index: 2;
+    }
+
+    .tracks-journey-card__community {
+      position: absolute;
+      left: 20px;
+      top: 142px;
+      width: 244.52px;
+      height: 41.33px;
+      z-index: 3;
+    }
+
+    .tracks-journey-card__avatar {
+      position: absolute;
+      top: 0;
+      width: 41.33px;
+      height: 41.33px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      background-image: var(--avatar-bg);
+      background-size: cover;
+      background-position: center;
+    }
+
+    .tracks-journey-card__avatar:nth-child(1) { left: 0; }
+    .tracks-journey-card__avatar:nth-child(2) { left: 20.67px; }
+    .tracks-journey-card__avatar:nth-child(3) { left: 41.33px; }
+    .tracks-journey-card__avatar:nth-child(4) { left: 62px; }
+    .tracks-journey-card__avatar:nth-child(5) {
+      left: 82.67px;
+      background: #FFEFD7;
+    }
+
+    .tracks-journey-card__community-text {
+      position: absolute;
+      left: 94.52px;
+      top: 10.5px;
+      width: 151px;
+      color: #000;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 19px;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 620px) {
+      .tracks-journey-card {
+        height: 214px;
+      }
+
+      .tracks-journey-card__image {
+        left: 42%;
+        top: -150px;
+        width: 310px;
+        height: 360px;
+      }
+    }
   `}</style>
 );
+
+function TracksJourneyCard() {
+  const avatarBackgrounds = [
+    "linear-gradient(135deg, #f7c59f 0%, #7aa7ff 100%)",
+    "linear-gradient(135deg, #f58b8b 0%, #ffe08a 100%)",
+    "linear-gradient(135deg, #78d0b2 0%, #3567b7 100%)",
+    "linear-gradient(135deg, #323232 0%, #b8d7ff 100%)",
+  ];
+
+  return (
+    <div className="tracks-journey-card">
+      <img
+        src="/img/image 2991.png"
+        alt="ADCC cyclist"
+        className="tracks-journey-card__image"
+      />
+      <p className="tracks-journey-card__eyebrow">New to Cycling?</p>
+      <h3 className="bebas tracks-journey-card__title">Start Your Journey with ADCC</h3>
+      <div className="tracks-journey-card__community" aria-label="+5k in the Community">
+        {avatarBackgrounds.map((background, index) => (
+          <span
+            key={index}
+            className="tracks-journey-card__avatar"
+            style={{ "--avatar-bg": background } as React.CSSProperties}
+          />
+        ))}
+        <span className="tracks-journey-card__avatar" />
+        <span className="tracks-journey-card__community-text">+5k in the Community</span>
+      </div>
+    </div>
+  );
+}
 
 // ── Navbar ────────────────────────────────────────────────────────────────────
 function Navbar() {
@@ -54,7 +191,7 @@ function Hero() {
     <section style={{ position: "relative", width: "100%", height: 640, overflow: "hidden" }}>
       <div style={{
         position: "absolute", inset: 0,
-        backgroundImage: "linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=1440&q=80')",
+        backgroundImage: "linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url('/img/pexels-krizz59-12838 1.png')",
         backgroundSize: "cover", backgroundPosition: "center"
       }} />
       <div style={{ position: "absolute", bottom: 90, left: 82 }}>
@@ -69,41 +206,14 @@ function Hero() {
 function ExploreIntro() {
   return (
     <section style={{ background: "#EAF4FF", padding: "80px 82px" }}>
-      <div style={{ display: "flex", gap: 48, alignItems: "flex-start" }}>
+      {/* <div style={{ display: "flex", gap: 48, alignItems: "flex-start" }}> */}
+      <div style={{ display: "flex", gap: 48, alignItems: "flex-start", overflow: "visible" }}>
         {/* Left: heading + green card */}
         <div style={{ flex: "0 0 480px" }}>
-          <h2 className="bebas" style={{ fontSize: 60, lineHeight: 1.1, textTransform: "capitalize", marginBottom: 32 }}>
+          <h2 className="bebas" style={{ fontSize: 60, lineHeight: 1.1, textTransform: "capitalize", marginBottom: 64 }}>
             Explore Abu Dhabi's Premier Cycling Tracks
           </h2>
-          {/* Green journey card */}
-          <div style={{
-            background: "#019839", borderRadius: 12, padding: "22px 20px 24px",
-            position: "relative", overflow: "hidden", maxWidth: 400, minHeight: 200
-          }}>
-            <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", fontWeight: 500, marginBottom: 6 }}>New to Cycling?</p>
-            <h3 className="bebas" style={{ fontSize: 28, color: "#fff", lineHeight: 1.2, maxWidth: 200, marginBottom: 20 }}>
-              Start Your Journey with ADCC
-            </h3>
-            {/* avatar row */}
-            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              {[1,2,3,4].map(n => (
-                <div key={n} style={{
-                  width: 36, height: 36, borderRadius: "50%",
-                  background: `hsl(${n*50},60%,68%)`,
-                  border: "2px solid #fff", marginLeft: n === 1 ? 0 : -10, flexShrink: 0
-                }} />
-              ))}
-              <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#FFEFD7", border: "2px solid #fff", marginLeft: -10, flexShrink: 0 }} />
-              <span style={{ color: "#000", fontSize: 13, fontWeight: 500, marginLeft: 10, background: "rgba(255,255,255,0.9)", borderRadius: 8, padding: "3px 8px" }}>+5k in the Community</span>
-            </div>
-            {/* decorative cyclist silhouette */}
-            <div style={{
-              position: "absolute", right: -10, top: -20,
-              width: 160, height: 180, opacity: 0.25,
-              backgroundImage: "url('https://images.unsplash.com/photo-1622163642998-1ea32b0bbc67?w=300&q=80')",
-              backgroundSize: "cover", borderRadius: 8
-            }} />
-          </div>
+          <TracksJourneyCard />
         </div>
 
         {/* Right: video thumbnail + description */}

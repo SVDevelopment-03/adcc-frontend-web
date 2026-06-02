@@ -4,6 +4,7 @@ import { useState } from "react";
 const FontLoader = () => (
   <style>{`
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700&display=swap');
+    @import url('https://fonts.cdnfonts.com/css/satoshi');
 
     /* Bebas Kai fallback via Bebas Neue */
     @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
@@ -33,6 +34,152 @@ const FontLoader = () => (
     }
     .btn-green:hover { opacity: .88; }
     .btn-green svg { transform: rotate(180deg); }
+
+    .journey-card {
+      flex: 0 0 480px;
+      width: 480px;
+      height: 352px;
+      border-radius: 12px;
+      overflow: visible;
+      background: rgba(0, 0, 0, 0.15);
+      position: relative;
+    }
+
+    .journey-card__image {
+      position: absolute;
+      width: 418px;
+      height: 484px;
+      left: 208px;
+      top: -107px;
+      object-fit: contain;
+      transform: none;
+      transform-origin: center;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .journey-card__eyebrow {
+      position: absolute;
+      left: 20px;
+      top: 22px;
+      width: 113px;
+      min-height: 23px;
+      color: rgba(255, 255, 255, 0.6);
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 145%;
+      display: flex;
+      align-items: center;
+      z-index: 2;
+    }
+
+    .journey-card__title {
+      position: absolute;
+      left: 20px;
+      top: 50px;
+      width: 167px;
+      color: #fff;
+      font-size: 40px;
+      line-height: 48px;
+      text-transform: capitalize;
+      z-index: 2;
+    }
+
+    .journey-card__community {
+      position: absolute;
+      left: 20px;
+      top: 214px;
+      width: 238.52px;
+      height: 41.33px;
+      z-index: 3;
+    }
+
+    .journey-card__avatar {
+      position: absolute;
+      top: 0;
+      width: 41.33px;
+      height: 41.33px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      background-image: var(--avatar-bg);
+      background-size: cover;
+      background-position: center;
+    }
+
+    .journey-card__avatar:nth-child(1) { left: 0; }
+    .journey-card__avatar:nth-child(2) { left: 20.67px; }
+    .journey-card__avatar:nth-child(3) { left: 41.33px; }
+    .journey-card__avatar:nth-child(4) { left: 62px; }
+    .journey-card__avatar:nth-child(5) {
+      left: 82.67px;
+      background: #FFF9EF;
+    }
+
+    .journey-card__community-text {
+      position: absolute;
+      left: 94.52px;
+      top: 10.5px;
+      width: 145px;
+      color: #000;
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 19px;
+      white-space: nowrap;
+    }
+
+    .journey-card__button {
+      position: absolute;
+      left: 20px;
+      top: 275px;
+      width: 223px;
+      height: 49px;
+      border: 0;
+      border-radius: 30px;
+      background: #019839;
+      color: #FFF9EF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 23px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 125%;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    .journey-card__button svg { transform: rotate(180deg); }
+
+    @media (max-width: 1220px) {
+      .mission-content {
+        flex-wrap: wrap;
+      }
+
+      .journey-card {
+        flex-basis: min(480px, 100%);
+      }
+    }
+
+    @media (max-width: 620px) {
+      .journey-card {
+        width: 100%;
+        flex-basis: 100%;
+        height: 320px;
+      }
+
+      .journey-card__image {
+        left: 45%;
+        top: -78px;
+        width: 360px;
+        height: 420px;
+      }
+
+      .journey-card__community { top: 196px; }
+      .journey-card__button { top: 261px; }
+    }
   `}</style>
 );
 
@@ -42,6 +189,44 @@ const Arrow = ({ color = "#fff" }) => (
     <path d="M4 10H16M16 10L10 4M16 10L10 16" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
+
+function JourneyCard() {
+  const avatarBackgrounds = [
+    "linear-gradient(135deg, #f7c59f 0%, #7aa7ff 100%)",
+    "linear-gradient(135deg, #f58b8b 0%, #ffe08a 100%)",
+    "linear-gradient(135deg, #78d0b2 0%, #3567b7 100%)",
+    "linear-gradient(135deg, #323232 0%, #b8d7ff 100%)",
+  ];
+
+  return (
+    <div className="journey-card">
+      <img
+        src="/img/image 2991.png"
+        alt="ADCC cyclist"
+        className="journey-card__image"
+      />
+
+      <p className="journey-card__eyebrow">New to Cycling?</p>
+      <h3 className="bebas journey-card__title">Start Your Journey with ADCC</h3>
+
+      <div className="journey-card__community" aria-label="+5k in the Community">
+        {avatarBackgrounds.map((background, index) => (
+          <span
+            key={index}
+            className="journey-card__avatar"
+            style={{ "--avatar-bg": background } as React.CSSProperties}
+          />
+        ))}
+        <span className="journey-card__avatar" />
+        <span className="journey-card__community-text">+5k in the Community</span>
+      </div>
+
+      <button className="journey-card__button">
+        Get In Touch <Arrow />
+      </button>
+    </div>
+  );
+}
 
 // ─── NAVBAR ──────────────────────────────────────────────────────────────────
 function Navbar() {
@@ -93,12 +278,13 @@ function Hero() {
       <div style={{
         position: "absolute", inset: 0,
         background: "linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,0.45) 100%)",
-        backgroundImage: "linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,0.45) 100%), url('https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?w=1440&q=80')",
+        // backgroundImage: "linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,0.45) 100%), url('https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?w=1440&q=80')",
+        backgroundImage: "linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,0.45) 100%), url('/img/Frame 2147226602.png')",
         backgroundSize: "cover", backgroundPosition: "center top"
       }} />
       <div style={{ position: "absolute", bottom: 90, left: 82 }}>
-        <p style={{ color: "rgba(255,255,255,0.8)", fontSize: 22, fontFamily: "'Outfit',sans-serif" }}>Home / About us</p>
         <h1 className="bebas" style={{ fontSize: 70, color: "#fff", lineHeight: 1, marginTop: 8, textTransform: "uppercase" }}>About Us</h1>
+        <p style={{ color: "rgba(255,255,255,0.8)", fontSize: 22, fontFamily: "'Satoshi',sans-serif" }}>Home / About us</p>
       </div>
     </section>
   );
@@ -125,7 +311,7 @@ function StatsSection() {
             marginTop: 32, borderRadius: 12, overflow: "hidden",
             width: "100%", maxWidth: 460, height: 220,
             background: "#ddd",
-            backgroundImage: "url('https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=700&q=80')",
+            backgroundImage: "url('/img/DSC04620.jpg 1.png')",
             backgroundSize: "cover", backgroundPosition: "center"
           }} />
         </div>
@@ -138,7 +324,7 @@ function StatsSection() {
                 borderLeft: "2px solid #1F509A", paddingLeft: 20, paddingBottom: 36
               }}>
                 <div className="bebas" style={{ fontSize: 50, lineHeight: 1 }}>{s.val}</div>
-                <div style={{ fontSize: 17, color: "#444", marginTop: 6, whiteSpace: "pre-line", lineHeight: 1.4 }}>{s.label}</div>
+                <div style={{ fontFamily: "'Satoshi',sans-serif", fontSize: 18, color: "#444", marginTop: 6, whiteSpace: "pre-line", lineHeight: 1.4 }}>{s.label}</div>
               </div>
             ))}
           </div>
@@ -155,7 +341,17 @@ function StatsSection() {
 // ─── MISSION / VISION + JOURNEY CARD ─────────────────────────────────────────
 function MissionSection() {
   return (
-    <section style={{ background: "#EAF4FF", padding: "0 82px 80px" }}>
+    // <section style={{ background: "#EAF4FF", padding: "0 82px 80px" }}>
+    <section
+      style={{
+        backgroundImage: "url('/img/image 3517.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        padding: "80px 82px",
+      }}
+    >
+    
       {/* Headline row */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 40 }}>
         <div>
@@ -168,7 +364,7 @@ function MissionSection() {
         </p>
       </div>
 
-      <div style={{ display: "flex", gap: 28, alignItems: "stretch" }}>
+      <div className="mission-content" style={{ display: "flex", gap: 28, alignItems: "stretch" }}>
         {/* Mission + Vision cards */}
         <div style={{ flex: "0 0 600px", display: "flex", flexDirection: "column", gap: 20 }}>
           {/* 01. Mission */}
@@ -187,70 +383,34 @@ function MissionSection() {
           </div>
         </div>
 
-        {/* ADCC Journey card */}
-        <div style={{
-          flex: 1, borderRadius: 12, overflow: "hidden",
-          background: "linear-gradient(135deg,#013282 0%,#025AE8 100%)",
-          position: "relative", padding: "28px 28px 24px", minHeight: 340
-        }}>
-          {/* cyclist image */}
-          <img
-            src="https://images.unsplash.com/photo-1622163642998-1ea32b0bbc67?w=400&q=80"
-            alt="cyclist"
-            style={{
-              position: "absolute", right: 0, bottom: 0,
-              height: "110%", width: "auto", objectFit: "cover",
-              opacity: 0.5, borderRadius: "0 12px 12px 0"
-            }}
-          />
-          <div style={{ position: "relative", zIndex: 2 }}>
-            <p style={{ color: "rgba(255,255,255,0.65)", fontSize: 15, fontWeight: 500, marginBottom: 10 }}>New to Cycling?</p>
-            <h3 className="bebas" style={{ fontSize: 40, color: "#fff", lineHeight: 1.2, marginBottom: 20, maxWidth: 180 }}>
-              Start Your Journey with ADCC
-            </h3>
-            {/* avatar row */}
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
-              {[1,2,3,4].map(n => (
-                <div key={n} style={{
-                  width: 38, height: 38, borderRadius: "50%",
-                  background: `hsl(${n*40},60%,70%)`,
-                  border: "2px solid white",
-                  marginLeft: n === 1 ? 0 : -10
-                }} />
-              ))}
-              <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#FFF9EF", border: "2px solid white", marginLeft: -10 }} />
-              <span style={{ color: "#fff", fontSize: 14, fontWeight: 500, marginLeft: 8 }}>+5k in the Community</span>
-            </div>
-            <button className="btn-green">Get In Touch <Arrow /></button>
-          </div>
-        </div>
+        <JourneyCard />
       </div>
     </section>
   );
 }
 
 // ─── BLUE BANNER ─────────────────────────────────────────────────────────────
-function BlueBanner() {
-  return (
-    <section style={{
-      background: "linear-gradient(180deg,#025AE8 0%,#013282 100%)",
-      padding: "80px 82px",
-      position: "relative", overflow: "hidden"
-    }}>
-      <div style={{
-        position: "absolute", inset: 0,
-        backgroundImage: "url('https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=1440&q=80')",
-        backgroundSize: "cover", backgroundPosition: "center",
-        opacity: 0.15
-      }} />
-      {/* content placeholder — in reality this section shows a tiled image layout */}
-      <div style={{ position: "relative", zIndex: 2, color: "#fff", textAlign: "center" }}>
-        <p style={{ fontSize: 16, opacity: .7, marginBottom: 8 }}>Our community in action</p>
-        <h2 className="bebas" style={{ fontSize: 48, lineHeight: 1.1 }}>United by the Ride,<br/>Driven by Passion</h2>
-      </div>
-    </section>
-  );
-}
+// function BlueBanner() {
+//   return (
+//     <section style={{
+//       background: "linear-gradient(180deg,#025AE8 0%,#013282 100%)",
+//       padding: "80px 82px",
+//       position: "relative", overflow: "hidden"
+//     }}>
+//       <div style={{
+//         position: "absolute", inset: 0,
+//         backgroundImage: "url('https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=1440&q=80')",
+//         backgroundSize: "cover", backgroundPosition: "center",
+//         opacity: 0.15
+//       }} />
+//       {/* content placeholder — in reality this section shows a tiled image layout */}
+//       <div style={{ position: "relative", zIndex: 2, color: "#fff", textAlign: "center" }}>
+//         <p style={{ fontSize: 16, opacity: .7, marginBottom: 8 }}>Our community in action</p>
+//         <h2 className="bebas" style={{ fontSize: 48, lineHeight: 1.1 }}>United by the Ride,<br/>Driven by Passion</h2>
+//       </div>
+//     </section>
+//   );
+// }
 
 // ─── VALUES ───────────────────────────────────────────────────────────────────
 function ValuesSection() {
@@ -264,7 +424,7 @@ function ValuesSection() {
     <section style={{ background: "#EAF4FF", padding: "80px 82px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 40 }}>
         <div>
-          <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 8, color: "#000" }}>Our values</p>
+          <p style={{fontFamily: "'Satoshi',sans-serif", fontSize: 15, fontWeight: 500, marginBottom: 8, color: "#000" }}>Our values</p>
           <h2 className="bebas" style={{ fontSize: 50, lineHeight: 1.2, maxWidth: 480, textTransform: "capitalize" }}>
             The Principles That Drive Our Cycling Community
           </h2>
@@ -280,7 +440,7 @@ function ValuesSection() {
           }}>
             <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 17, fontWeight: 500, color: "#fff", marginBottom: 56 }}>{v.num}</div>
             <div className="bebas" style={{ fontSize: 28, color: "#fff", marginBottom: 10 }}>{v.title}</div>
-            <p style={{ fontSize: 16, color: "#fff", lineHeight: 1.55, opacity: .9 }}>{v.text}</p>
+            <p style={{fontFamily: "'Satoshi',sans-serif", fontSize: 16, color: "#fff", lineHeight: 1.55, opacity: .9 }}>{v.text}</p>
           </div>
         ))}
       </div>
@@ -291,9 +451,9 @@ function ValuesSection() {
 // ─── COACHES ─────────────────────────────────────────────────────────────────
 function CoachesSection() {
   const cards = [
-    { label: "Club Players",   img: "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=500&q=80" },
-    { label: "Club Coaches",   img: "https://images.unsplash.com/photo-1568430462989-44163eb1752f?w=500&q=80" },
-    { label: "Club Mechanics", img: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=500&q=80" },
+    { label: "Club Players",   img: "/img/image 2998.png" },
+    { label: "Club Coaches",   img: "/img/image 2999.png" },
+    { label: "Club Mechanics", img: "/img/image 2997.png" },
   ];
   return (
     <section style={{ background: "#EAF4FF", padding: "0 82px 80px" }}>
@@ -316,7 +476,7 @@ function CoachesSection() {
             }} />
             <span className="bebas" style={{
               position: "absolute", bottom: 24, left: 20,
-              color: "#fff", fontSize: 24, letterSpacing: 1
+              color: "#fff", fontSize: 26, letterSpacing: 1, fontFamily: "'Bebas Neue','Bebas Kai',sans-serif",
             }}>{c.label}</span>
           </div>
         ))}
@@ -334,7 +494,7 @@ function CTABanner() {
     <section style={{ position: "relative", overflow: "hidden", height: 502 }}>
       <div style={{
         position: "absolute", inset: 0,
-        backgroundImage: "linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.25)), url('https://images.unsplash.com/photo-1570489460099-2a6e43e4c3f0?w=1440&q=80')",
+        backgroundImage: "linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.25)), url('/img/Rectangle 34625231.png')",
         backgroundSize: "cover", backgroundPosition: "center"
       }} />
       <div style={{
@@ -346,7 +506,8 @@ function CTABanner() {
         <h2 className="bebas" style={{ fontSize: 94, color: "#fff", lineHeight: 1, textTransform: "uppercase" }}>
           Start Your Ride Today
         </h2>
-        <p style={{ fontSize: 24, color: "#fff", marginTop: 16, marginBottom: 36, opacity: .95 }}>
+        {/* <p style={{ fontSize: 24, color: "#fff", marginTop: 16, marginBottom: 36, opacity: .95 }}> */}
+        <p style={{ fontFamily: "'Satoshi',sans-serif", fontSize: 26, color: "#fff", marginTop: 16, marginBottom: 36, opacity: .95 }}>
           Download the ADCC app and join the cycling community.
         </p>
         <div style={{ display: "flex", gap: 20 }}>
@@ -449,7 +610,7 @@ export default function AboutUs() {
         <Hero />
         <StatsSection />
         <MissionSection />
-        <BlueBanner />
+        {/* <BlueBanner /> */}
         <ValuesSection />
         <CoachesSection />
         <CTABanner />
