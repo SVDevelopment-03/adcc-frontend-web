@@ -23,6 +23,237 @@ const CSS = `
   .app-feature:hover .feature-icon { transform: scale(1.1); }
   .feature-icon { transition: transform 0.2s; }
   .fade-in { animation: fadeUp 0.6s ease both; }
+
+  .journey-section {
+    background: #D9E7F9;
+    display: grid;
+    grid-template-columns: 350px minmax(0, 1fr);
+    gap: 24px;
+    overflow: hidden;
+    padding: 54px 0 50px 47px;
+    min-height: 430px;
+  }
+  .journey-copy {
+    min-height: 376px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .journey-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    line-height: 1.01;
+    text-transform: uppercase;
+    color: #000;
+    margin: 0;
+    max-width: 250px;
+  }
+  .journey-rider {
+    width: 270px;
+    height: 170px;
+    margin-top: auto;
+    margin-left: -47px;
+    overflow: hidden;
+  }
+  .journey-rider img {
+    width: 430px;
+    height: 100%;
+    object-fit: cover;
+    object-position: left bottom;
+    display: block;
+  }
+  .journey-content {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-top: 18px;
+  }
+  .journey-text {
+    font-family: 'Outfit', sans-serif;
+    font-size: 16px;
+    line-height: 1.45;
+    color: #000;
+    margin: 0 0 12px;
+    max-width: 520px;
+  }
+  .journey-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #019839;
+    border: 0;
+    border-radius: 30px;
+    padding: 12px 22px;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: #FFF9EF;
+    white-space: nowrap;
+  }
+  .journey-button-icon {
+    width: 28px;
+    height: 28px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .journey-cards {
+    min-width: 0;
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-right: 47px;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+  }
+  .journey-card {
+    flex: 0 0 220px;
+    height: 340px;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s, background 0.25s;
+  }
+  .journey-card:hover {
+    background: #323232 !important;
+  }
+  .journey-card-label {
+    position: absolute;
+    top: 24px;
+    left: 18px;
+    right: 56px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    line-height: 1.05;
+    text-transform: uppercase;
+    color: #FFF9EF;
+    white-space: pre-line;
+  }
+  .journey-card-arrow {
+    position: absolute;
+    top: 20px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    background: #FFF9EF;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .journey-card-image {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 188px;
+    height: 220px;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .journey-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  @media (max-width: 980px) {
+    .journey-section {
+      grid-template-columns: 220px minmax(0, 1fr);
+      gap: 28px;
+      padding: 52px 0 52px 52px;
+    }
+    .journey-copy {
+      min-height: 340px;
+    }
+    .journey-title {
+      font-size: 34px;
+    }
+    .journey-rider {
+      width: 240px;
+      height: 150px;
+      margin-left: -52px;
+    }
+    .journey-cards {
+      padding-right: 52px;
+    }
+    .journey-card {
+      flex-basis: 180px;
+      height: 288px;
+      border-radius: 12px;
+    }
+    .journey-card-label {
+      top: 18px;
+      left: 14px;
+      right: 48px;
+      font-size: 18px;
+    }
+    .journey-card-arrow {
+      top: 16px;
+      right: 14px;
+      width: 32px;
+      height: 32px;
+    }
+    .journey-card-image {
+      width: calc(100% - 28px);
+      height: 180px;
+      bottom: 14px;
+      border-radius: 10px;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .journey-section {
+      grid-template-columns: 1fr;
+      gap: 28px;
+      padding: 44px 0 44px 24px;
+    }
+    .journey-copy {
+      min-height: auto;
+      padding-right: 24px;
+    }
+    .journey-title {
+      font-size: 48px;
+      margin-bottom: 18px;
+    }
+    .journey-rider {
+      width: min(100%, 360px);
+      height: 170px;
+      margin: 4px 0 0 -24px;
+    }
+    .journey-rider img {
+      width: 430px;
+    }
+    .journey-content {
+      gap: 18px;
+      padding-top: 0;
+    }
+    .journey-text {
+      max-width: 520px;
+      margin: 0 0 18px;
+      padding-right: 24px;
+    }
+    .journey-cards {
+      padding-right: 24px;
+    }
+    .journey-card {
+      flex-basis: 168px;
+      height: 270px;
+    }
+    .journey-button {
+      font-size: 14px;
+      padding: 10px 16px;
+    }
+  }
 `;
 
 function useHomePageStyles() {
@@ -101,7 +332,7 @@ function CyclingIcon() {
   );
 }
 
-function ArrowRight({ color = '#fff', size = 16 }) {
+function ArrowRight({ color = '#019839', size = 16 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
       <path d="M3 8h10M9 4l4 4-4 4" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -176,15 +407,15 @@ function Header() {
 function HeroSection() {
   return (
     <section style={{ position: 'relative', width: '100%', height: 806, overflow: 'hidden', flexShrink: 0 }}>
-      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1440&q=80)', backgroundSize: 'cover', backgroundPosition: 'center top' }} />
-      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 45%, transparent 70%)' }} />
-      <div style={{ position: 'absolute', left: 60, bottom: 180, maxWidth: 520 }}>
-        <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontWeight: 900, fontSize: 52, lineHeight: 1.1, color: '#fff', textTransform: 'uppercase', letterSpacing: '-0.5px', marginBottom: 28, textShadow: '0 2px 12px rgba(0,0,0,0.3)' }}>RIDE ABU DHABI START<br />YOUR CYCLING JOURNEY</h1>
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(../../../../../public/images/hero.png)', backgroundSize: 'cover', backgroundPosition: 'center top' }} />
+      <div style={{ position: 'absolute', inset: 0, }} />
+      <div style={{ position: 'absolute', left: 60, bottom: 360, maxWidth: 520 }}>
+        <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontWeight: 900, fontSize: 52, lineHeight: 1.1, color: '#000000', textTransform: 'uppercase', letterSpacing: '-0.5px', marginBottom: 28, textShadow: '0 2px 12px rgba(0,0,0,0.3)' }}>RIDE ABU DHABI START<br />YOUR CYCLING JOURNEY</h1>
         <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
           <button className="btn-green" style={{ display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 22px', background: '#019839', border: 'none', borderRadius: 30, cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 600, fontSize: 15, color: '#fff' }}>
             Download App <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /><path d="M3 13h10" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" /></svg>
           </button>
-          <button style={{ display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 22px', background: 'transparent', border: '2px solid #fff', borderRadius: 30, cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 600, fontSize: 15, color: '#fff' }}>
+          <button style={{ display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 22px', background: 'transparent', border: '2px solid #019839', borderRadius: 30, cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 600, fontSize: 15, color: '#019839' }}>
             Explore Tracks <ArrowRight />
           </button>
         </div>
@@ -227,27 +458,34 @@ function CyclingJourneySection() {
     { label: "Connect With\nRiders", bg: "#777777", img: "https://images.unsplash.com/photo-1508784411316-06c06401e69b?w=400&q=80" },
   ];
   return (
-    <section style={{ background: "#D9E7F9", padding: "60px 0 60px 86px", display: "flex", alignItems: "flex-start", gap: 40, overflow: "hidden" }}>
-      <div style={{ flexShrink: 0, width: 280, display: "flex", flexDirection: "column", minHeight: 389 }}>
-        <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 68, lineHeight: 1.01, textTransform: "uppercase", color: "#000", margin: "0 0 auto" }}>Begin Your<br />Cycling<br />Journey</h2>
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 16, lineHeight: 1.55, color: "#000", margin: "24px 0 20px" }}>Choose how you want to ride with ADCC. Discover routes, join challenges, and be part of a growing cycling community.</p>
-        <button className="btn-green" style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "#019839", border: "none", borderRadius: 30, padding: "12px 22px", cursor: "pointer", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 16, color: "#FFF9EF", width: "fit-content" }}>
-          Explore all Routes
-          <span style={{ width: 28, height: 28, background: "rgba(255,255,255,0.25)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>→</span>
-        </button>
+    <section className="journey-section">
+      <div className="journey-copy">
+        <h2 className="journey-title">Begin Your<br />Cycling<br />Journey</h2>
+        <div className="journey-rider">
+          <img src="/images/journey.png" alt="ADCC cyclist" />
+        </div>
       </div>
-      <div style={{ display: "flex", gap: 20, overflowX: "auto", paddingRight: 86, paddingBottom: 4, scrollbarWidth: "none" }}>
-        {cards.map((card, i) => (
-          <div key={i} className="card-hover" style={{ flexShrink: 0, width: 220, height: 340, borderRadius: 20, background: card.bg, position: "relative", overflow: "hidden", cursor: 'pointer' }}>
-            <span style={{ position: "absolute", top: 24, left: 18, right: 56, fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, lineHeight: 1.05, textTransform: "uppercase", color: "#FFF9EF", whiteSpace: "pre-line" }}>{card.label}</span>
-            <div style={{ position: "absolute", top: 20, right: 16, width: 40, height: 40, background: "#FFF9EF", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#C12D32" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      <div className="journey-content">
+        <div className="journey-cards">
+          {cards.map((card, i) => (
+            <div key={i} className="card-hover journey-card" style={{ background: card.bg }}>
+              <span className="journey-card-label">{card.label}</span>
+              <div className="journey-card-arrow">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#C12D32" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </div>
+              <div className="journey-card-image">
+                <img src={card.img} alt={card.label.replace('\n', ' ')} />
+              </div>
             </div>
-            <div style={{ position: "absolute", bottom: 16, left: "50%", transform: "translateX(-50%)", width: 188, height: 220, borderRadius: 14, overflow: "hidden" }}>
-              <img src={card.img} alt={card.label} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        <div>
+          <p className="journey-text">Choose how you want to ride with ADCC. Discover routes, join challenges, and be part of a growing cycling community.</p>
+          <button className="btn-green journey-button">
+            Explore all Routes
+            <span className="journey-button-icon">→</span>
+          </button>
+        </div>
       </div>
     </section>
   );

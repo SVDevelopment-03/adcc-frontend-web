@@ -7,6 +7,7 @@ import { Login } from './components/auth/Login';
 import { Register } from './components/auth/Register';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Layout } from './components/Layout';
+import { PublicLayout } from './components/public/PublicLayout';
 import AboutUs from './components/about/AboutUs';
 import UserEvent from './components/user-event/UserEvent';
 import UserTracks from './components/user-tracks/UserTracks';
@@ -64,6 +65,12 @@ function AppContent() {
     );
   }
 
+  const publicPage = (element: React.ReactNode) => (
+    <PublicLayout>
+      {element}
+    </PublicLayout>
+  );
+
   return (
     <Routes>
       {/* Public Routes */}
@@ -73,9 +80,9 @@ function AppContent() {
           isAuthenticated ? (
             <Navigate to="/dashboard" replace />
           ) : (
-            <Login 
-              onSwitchToRegister={() => navigate('/register')} 
-              onLoginSuccess={() => navigate('/dashboard')} 
+            <Login
+              onSwitchToRegister={() => navigate('/register')}
+              onLoginSuccess={() => navigate('/dashboard')}
             />
           )
         } 
@@ -86,40 +93,42 @@ function AppContent() {
           isAuthenticated ? (
             <Navigate to="/dashboard" replace />
           ) : (
-            <Register 
-              onSwitchToLogin={() => navigate('/login')} 
-              onRegisterSuccess={() => navigate('/dashboard')} 
-            />
+            publicPage(
+              <Register
+                onSwitchToLogin={() => navigate('/login')}
+                onRegisterSuccess={() => navigate('/dashboard')}
+              />,
+            )
           )
         } 
       />
-      <Route path="/aboutus" element={<AboutUs />} />
-      <Route path="/user-event" element={<UserEvent />} />
-      <Route path="/user-tracks" element={<UserTracks />} />
-      <Route path="/user-challenges" element={<UserChallenges />} />
-      <Route path="/user-communities" element={<UserCommunities />} />
+      <Route path="/aboutus" element={publicPage(<AboutUs />)} />
+      <Route path="/user-event" element={publicPage(<UserEvent />)} />
+      <Route path="/user-tracks" element={publicPage(<UserTracks />)} />
+      <Route path="/user-challenges" element={publicPage(<UserChallenges />)} />
+      <Route path="/user-communities" element={publicPage(<UserCommunities />)} />
       <Route
         path="/communities-abu-dhabi-grand-prix-ride"
-        element={<CommunitiesAbuDhabiGrandPrixRide />}
+        element={publicPage(<CommunitiesAbuDhabiGrandPrixRide />)}
       />
       <Route
         path="/communities-abu-dhabi-cycling-community"
-        element={<CommunitiesAbuDhabiCyclingCommunity />}
+        element={publicPage(<CommunitiesAbuDhabiCyclingCommunity />)}
       />
       <Route
         path="/communities-al-quadra-cycle-path"
-        element={<CommunitiesAlQuadraCyclePath />}
+        element={publicPage(<CommunitiesAlQuadraCyclePath />)}
       />
       <Route
         path="/communities-march-distance-challenge"
-        element={<CommunitiesMarchDistanceChallenge />}
+        element={publicPage(<CommunitiesMarchDistanceChallenge />)}
       />
-      <Route path="/user-adcc-store" element={<UserAdccStore />} />
-      <Route path="/user-store-detail" element={<StoreDetailPage/>} />
+      <Route path="/user-adcc-store" element={publicPage(<UserAdccStore />)} />
+      <Route path="/user-store-detail" element={publicPage(<StoreDetailPage />)} />
 
-      <Route path="/contact-us" element={<ContactUs />} />
+      <Route path="/contact-us" element={publicPage(<ContactUs />)} />
 
-      <Route path="/home" element={<Home />} />
+      <Route path="/home" element={publicPage(<Home />)} />
       
       {/* Protected Routes - All routes are handled in Layout component */}
       <Route 
