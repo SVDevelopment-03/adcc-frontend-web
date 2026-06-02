@@ -1,11 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-/* ─── Google Fonts ──────────────────────────────────────────────────────────── */
-const fontLink = document.createElement('link');
-fontLink.rel = 'stylesheet';
-fontLink.href = 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Bebas+Neue&display=swap';
-document.head.appendChild(fontLink);
-
 const CSS = `
   @keyframes scroll-left {
     0%   { transform: translateX(0); }
@@ -31,9 +25,26 @@ const CSS = `
   .fade-in { animation: fadeUp 0.6s ease both; }
 `;
 
-const styleEl = document.createElement('style');
-styleEl.textContent = CSS;
-document.head.appendChild(styleEl);
+function useHomePageStyles() {
+  useEffect(() => {
+    const fontLink = document.createElement('link');
+    fontLink.rel = 'stylesheet';
+    fontLink.href = 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Bebas+Neue&display=swap';
+    fontLink.dataset.pageStyle = 'home';
+
+    const styleEl = document.createElement('style');
+    styleEl.textContent = CSS;
+    styleEl.dataset.pageStyle = 'home';
+
+    document.head.appendChild(fontLink);
+    document.head.appendChild(styleEl);
+
+    return () => {
+      fontLink.remove();
+      styleEl.remove();
+    };
+  }, []);
+}
 
 /* ─── SVG Assets ─────────────────────────────────────────────────────────────*/
 
@@ -642,6 +653,8 @@ function Footer() {
 
 /* ─── HOME PAGE ──────────────────────────────────────────────────────────────*/
 export function Home() {
+  useHomePageStyles();
+
   return (
     <div style={{ minHeight: '100vh', background: '#EAF4FF', display: 'flex', flexDirection: 'column' }}>
       <Header />

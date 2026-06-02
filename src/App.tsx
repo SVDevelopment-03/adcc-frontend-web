@@ -28,11 +28,26 @@ function AppContent() {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, loading } = useAuth();
-  const publicRoutes = ['/login', '/register', '/aboutus'];
+  const publicRoutes = [
+    '/home',
+    '/login',
+    '/register',
+    '/aboutus',
+    '/user-event',
+    '/user-tracks',
+    '/user-challenges',
+    '/user-communities',
+    '/communities-abu-dhabi-grand-prix-ride',
+    '/communities-abu-dhabi-cycling-community',
+    '/communities-al-quadra-cycle-path',
+    '/communities-march-distance-challenge',
+    '/user-adcc-store',
+    '/user-store-detail',
+    '/contact-us',
+  ];
 
   // Redirect to login when user becomes unauthenticated
   useEffect(() => {
-    const publicRoutes = ['/home', '/login', '/register'];
     if (!loading && !isAuthenticated && !publicRoutes.includes(location.pathname)) {
       navigate('/login', { replace: true });
     }
@@ -119,7 +134,7 @@ function AppContent() {
       {/* Root redirect */}
       <Route 
         path="/" 
-        element={<Navigate to="/home" replace />} 
+        element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} 
       />
     </Routes>
   );
