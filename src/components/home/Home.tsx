@@ -20,101 +20,229 @@ const CSS = `
   .card-hover:hover { transform: translateY(-6px); box-shadow: 0 12px 32px rgba(0,0,0,0.15) !important; }
   .store-card { transition: transform 0.2s; }
   .store-card:hover { transform: translateY(-4px); }
+  .store-rail {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+  }
+  .store-featured-card {
+    flex: 0 0 624px;
+    width: 624px;
+    height: 583px;
+    border-radius: 20px;
+    background: #D8E5FB;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  }
+  .store-featured-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 72% 50%, rgba(255,255,255,0.56) 0 18%, rgba(255,255,255,0) 39%),
+      linear-gradient(90deg, rgba(255,255,255,0.34), rgba(255,255,255,0) 45%);
+    pointer-events: none;
+  }
+  .store-featured-icon {
+    position: absolute;
+    left: 53px;
+    top: 51px;
+    width: 40px;
+    height: 40px;
+    background: #435974;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+  .store-featured-icon img {
+    width: 17.42px;
+    height: 15.68px;
+    object-fit: contain;
+  }
+  .store-featured-type {
+    position: absolute;
+    left: 105px;
+    top: 64px;
+    width: 162px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14.02px;
+    line-height: 100.7%;
+    text-transform: uppercase;
+    color: #000;
+    z-index: 2;
+  }
+  .store-featured-action {
+    position: absolute;
+    right: 40px;
+    top: 57px;
+    width: 106px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 22px;
+    line-height: 28px;
+    color: #000;
+    border-bottom: 5px solid #019839;
+    text-align: right;
+    z-index: 2;
+  }
+  .store-featured-title {
+    position: absolute;
+    left: 62px;
+    top: 211px;
+    width: 197px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 31.1053px;
+    line-height: 39px;
+    color: #000;
+    z-index: 2;
+  }
+  .store-featured-sub {
+    position: absolute;
+    left: 62px;
+    top: 344px;
+    width: 222px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14.5177px;
+    line-height: 18px;
+    color: #000;
+    z-index: 2;
+  }
+  .store-featured-price {
+    position: absolute;
+    left: 62px;
+    top: 502px;
+    font-family: 'Bebas Neue', 'Bebas Kai', sans-serif;
+    font-size: 42px;
+    line-height: 100.7%;
+    text-transform: uppercase;
+    color: #435974;
+    z-index: 2;
+  }
+  .store-featured-product {
+    position: absolute;
+    right: 38px;
+    top: 96px;
+    width: 338px;
+    height: 390px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 18px;
+    z-index: 1;
+  }
+  .store-compact-card {
+    flex: 0 0 320px;
+    width: 320px;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  }
   .app-feature:hover .feature-icon { transform: scale(1.1); }
   .feature-icon { transition: transform 0.2s; }
   .fade-in { animation: fadeUp 0.6s ease both; }
 
   .journey-section {
-    background: #D9E7F9;
-    display: grid;
-    grid-template-columns: 350px minmax(0, 1fr);
-    gap: 24px;
+    background: #EAF4FF;
+    display: flex;
+    gap: 43px;
     overflow: hidden;
-    padding: 54px 0 50px 47px;
-    min-height: 430px;
+    padding: 150px 0 0px 86px;
+    // min-height: 430px;
   }
   .journey-copy {
-    min-height: 376px;
+    // min-height: 376px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     flex-shrink: 0;
     position: relative;
+    min-width:411px;
+    // padding-right:40px
   }
   .journey-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 36px;
+    font-size: 72px;
     line-height: 1.01;
     text-transform: uppercase;
     color: #000;
     margin: 0;
-    max-width: 250px;
+    
+   
   }
   .journey-rider {
-    width: 270px;
-    height: 170px;
-    margin-top: auto;
-    margin-left: -47px;
     overflow: hidden;
-  }
-  .journey-rider img {
-    width: 430px;
-    height: 100%;
-    object-fit: cover;
-    object-position: left bottom;
-    display: block;
-  }
+    position: absolute;
+    bottom: -116px;
+    left: -86px;
+}
+
+  // .journey-rider img {
+  //   width: 430px;
+  //   height: 100%;
+  //   object-fit: cover;
+  //   object-position: left bottom;
+  //   display: block;
+  // }
   .journey-content {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    padding-top: 18px;
+    gap: 46px;
+    margin-bottom:128px;
   }
   .journey-text {
     font-family: 'Outfit', sans-serif;
-    font-size: 16px;
-    line-height: 1.45;
+    font-size: 24px;
+    line-height: 30px;
     color: #000;
-    margin: 0 0 12px;
-    max-width: 520px;
-  }
-  .journey-button {
+    margin: 0 0 23px;
+    max-width: 700px;
+}
+.journey-button {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 25px;
     background: #019839;
     border: 0;
     border-radius: 30px;
-    padding: 12px 22px;
+    padding: 13px 26px;
     cursor: pointer;
     font-family: 'Outfit', sans-serif;
     font-weight: 700;
-    font-size: 16px;
+    font-size: 18px;
     color: #FFF9EF;
     white-space: nowrap;
-  }
-  .journey-button-icon {
-    width: 28px;
-    height: 28px;
-    background: rgba(255,255,255,0.25);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
+    min-width: 247px;
     justify-content: center;
-    flex-shrink: 0;
-  }
+}
+  // .journey-button-icon {
+  //   width: 28px;
+  //   height: 28px;
+  //   background: rgba(255,255,255,0.25);
+  //   border-radius: 50%;
+  //   display: flex;
+  //   align-items: center;
+  //   justify-content: center;
+  //   flex-shrink: 0;
+  // }
   .journey-cards {
     min-width: 0;
     display: flex;
     gap: 20px;
     overflow-x: auto;
-    padding-right: 47px;
     padding-bottom: 8px;
     scrollbar-width: none;
   }
   .journey-card {
-    flex: 0 0 220px;
+    flex: 0 0 267px;
+    padding:30px 25px 25px;
     height: 340px;
     border-radius: 20px;
     position: relative;
@@ -127,22 +255,22 @@ const CSS = `
   }
   .journey-card-label {
     position: absolute;
-    top: 24px;
-    left: 18px;
+    top: 30px;
+    left: 25px;
     right: 56px;
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    line-height: 1.05;
+    font-size: 26px;
+    line-height: 29px;
     text-transform: uppercase;
     color: #FFF9EF;
     white-space: pre-line;
   }
   .journey-card-arrow {
     position: absolute;
-    top: 20px;
-    right: 16px;
-    width: 40px;
-    height: 40px;
+    top: 30px;
+    right: 25px;
+    width: 47px;
+    height: 47px;
     background: #FFF9EF;
     border-radius: 50%;
     display: flex;
@@ -154,7 +282,7 @@ const CSS = `
     bottom: 16px;
     left: 50%;
     transform: translateX(-50%);
-    width: 188px;
+    width: 220px;
     height: 220px;
     border-radius: 14px;
     overflow: hidden;
@@ -253,6 +381,50 @@ const CSS = `
       font-size: 14px;
       padding: 10px 16px;
     }
+    .store-featured-card {
+      flex-basis: min(624px, calc(100vw - 48px));
+      width: min(624px, calc(100vw - 48px));
+      height: 520px;
+    }
+    .store-featured-icon {
+      left: 28px;
+      top: 30px;
+    }
+    .store-featured-type {
+      left: 80px;
+      top: 43px;
+      font-size: 12px;
+    }
+    .store-featured-action {
+      right: 28px;
+      top: 36px;
+      font-size: 18px;
+      line-height: 24px;
+      border-bottom-width: 4px;
+    }
+    .store-featured-title {
+      left: 30px;
+      top: 160px;
+      width: 190px;
+      font-size: 28px;
+      line-height: 35px;
+    }
+    .store-featured-sub {
+      left: 30px;
+      top: 280px;
+      width: 220px;
+    }
+    .store-featured-price {
+      left: 30px;
+      top: 440px;
+      font-size: 38px;
+    }
+    .store-featured-product {
+      right: -16px;
+      top: 120px;
+      width: 52%;
+      height: 300px;
+    }
   }
 `;
 
@@ -343,37 +515,7 @@ function ArrowRight({ color = '#019839', size = 16 }) {
 /* ─── QR Code placeholder ───────────────────────────────────────────────────*/
 function QRCodePlaceholder() {
   return (
-    <svg width="204" height="204" viewBox="0 0 204 204" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="204" height="204" fill="white" />
-      {/* Top-left finder */}
-      <rect x="14" y="14" width="56" height="56" fill="#000" rx="4" />
-      <rect x="22" y="22" width="40" height="40" fill="white" rx="2" />
-      <rect x="30" y="30" width="24" height="24" fill="#000" rx="2" />
-      {/* Top-right finder */}
-      <rect x="134" y="14" width="56" height="56" fill="#000" rx="4" />
-      <rect x="142" y="22" width="40" height="40" fill="white" rx="2" />
-      <rect x="150" y="30" width="24" height="24" fill="#000" rx="2" />
-      {/* Bottom-left finder */}
-      <rect x="14" y="134" width="56" height="56" fill="#000" rx="4" />
-      <rect x="22" y="142" width="40" height="40" fill="white" rx="2" />
-      <rect x="30" y="150" width="24" height="24" fill="#000" rx="2" />
-      {/* Data modules */}
-      {[80,86,92,98,104,110,116,122,128].map((x, i) => (
-        [14, 20, 26, 32, 38, 44, 50, 56, 62, 68].map((y, j) => (
-          (i + j) % 3 !== 0 && <rect key={`${i}-${j}`} x={x} y={y} width="4" height="4" fill="#000" />
-        ))
-      ))}
-      {[14, 20, 26, 32, 38, 44, 50, 56, 62, 68].map((x, i) => (
-        [80, 86, 92, 98, 104, 110, 116, 122, 128, 134, 140, 146, 152, 158, 164, 170, 176, 182, 188].map((y, j) => (
-          (i * 3 + j * 2) % 5 !== 0 && <rect key={`d-${i}-${j}`} x={x} y={y} width="4" height="4" fill="#000" />
-        ))
-      ))}
-      {[80, 86, 92, 98, 104, 110, 116, 122, 128, 134, 140, 146, 152, 158, 164, 170, 176, 182, 188].map((x, i) => (
-        [80, 86, 92, 98, 104, 110, 116, 122, 128, 134, 140, 146, 152, 158, 164, 170, 176, 182, 188].map((y, j) => (
-          (i + j * 2) % 4 !== 0 && <rect key={`c-${i}-${j}`} x={x} y={y} width="4" height="4" fill="#000" />
-        ))
-      ))}
-    </svg>
+   <img src="../../../public/images/barcode.png" className=""/>
   );
 }
 
@@ -382,7 +524,7 @@ function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const navLinks = [
     { label: 'About Us', href: '#about' },
-    { label: 'Events', href: '#platform' },
+    { label: 'Events', href: '/user-event' },
     { label: 'Community', href: '#community', active: true },
     { label: 'Tracks', href: '#platform' },
   ];
@@ -409,13 +551,13 @@ function HeroSection() {
     <section style={{ position: 'relative', width: '100%', height: 806, overflow: 'hidden', flexShrink: 0 }}>
       <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(../../../../../public/images/hero.png)', backgroundSize: 'cover', backgroundPosition: 'center top' }} />
       <div style={{ position: 'absolute', inset: 0, }} />
-      <div style={{ position: 'absolute', left: 60, bottom: 360, maxWidth: 520 }}>
-        <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontWeight: 900, fontSize: 52, lineHeight: 1.1, color: '#000000', textTransform: 'uppercase', letterSpacing: '-0.5px', marginBottom: 28, textShadow: '0 2px 12px rgba(0,0,0,0.3)' }}>RIDE ABU DHABI START<br />YOUR CYCLING JOURNEY</h1>
+      <div style={{ position: 'absolute', left: 86, bottom: 360, maxWidth: 520 }}>
+        <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontWeight: 900, fontSize: 72, lineHeight: 1.1, color: '#000000', textTransform: 'uppercase', letterSpacing: '-0.5px', marginBottom: 28, }}>RIDE ABU DHABI START<br />YOUR CYCLING JOURNEY</h1>
         <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-          <button className="btn-green" style={{ display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 22px', background: '#019839', border: 'none', borderRadius: 30, cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 600, fontSize: 15, color: '#fff' }}>
+          <button className="btn-green" style={{ display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 22px', background: '#019839', border: 'none', borderRadius: 30, cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 600, fontSize: 18, color: '#fff' }}>
             Download App <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /><path d="M3 13h10" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" /></svg>
           </button>
-          <button style={{ display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 22px', background: 'transparent', border: '2px solid #019839', borderRadius: 30, cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 600, fontSize: 15, color: '#019839' }}>
+          <button style={{ display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 22px', background: 'transparent', border: '2px solid #019839', borderRadius: 30, cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 18, color: '#019839' }}>
             Explore Tracks <ArrowRight />
           </button>
         </div>
@@ -441,7 +583,7 @@ function StatsTicker() {
       <div style={{ display: 'flex', alignItems: 'stretch', animation: 'scroll-left 18s linear infinite', whiteSpace: 'nowrap' }}>
         {items.map((s, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '0 36px', height: 100, flexShrink: 0, background: s.bg }}>
-            <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 27, textTransform: 'uppercase', color: s.dark ? '#fff' : '#000' }}>{s.label}</span>
+            <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 29, textTransform: 'uppercase', color: s.dark ? '#fff' : '#000' }}>{s.label}</span>
           </div>
         ))}
       </div>
@@ -457,10 +599,11 @@ function CyclingJourneySection() {
     { label: "Join Active\nChallenges", bg: "#777777", img: "https://images.unsplash.com/photo-1534787238916-9ba6764efd4f?w=400&q=80" },
     { label: "Connect With\nRiders", bg: "#777777", img: "https://images.unsplash.com/photo-1508784411316-06c06401e69b?w=400&q=80" },
   ];
+  
   return (
     <section className="journey-section">
       <div className="journey-copy">
-        <h2 className="journey-title">Begin Your<br />Cycling<br />Journey</h2>
+        <h2 className="journey-title">Begin Your <br/> Cycling Journey</h2>
         <div className="journey-rider">
           <img src="/images/journey.png" alt="ADCC cyclist" />
         </div>
@@ -494,21 +637,21 @@ function CyclingJourneySection() {
 /* ─── APP SECTION ────────────────────────────────────────────────────────────*/
 function AppSection() {
   const features = [
-    { icon: '📊', label: 'Track Performance\nand Rides' },
-    { icon: '🏆', label: 'Join Official\nChallenges' },
-    { icon: '👥', label: 'Connect With\nRiders' },
-    { icon: '🗺️', label: 'Discover Cycling\nRoutes' },
+    { icon: '/images/icon-1.png', label: 'Track Performance\nand Rides' },
+    { icon: '/images/icon-2.png', label: 'Join Official\nChallenges' },
+    { icon: '/images/icon-3.png', label: 'Connect With\nRiders' },
+    { icon: '/images/icon-4.png', label: 'Discover Cycling\nRoutes' },
   ];
   return (
-    <section id="app" style={{ background: '#435974', width: '100%', padding: '80px 86px', display: 'flex', alignItems: 'center', gap: 60, position: 'relative', overflow: 'hidden' }}>
+    <section id="app" style={{ background: '#435974', width: '100%', padding: '80px 86px', display: 'flex', alignItems: 'flex-start', gap: 60, position: 'relative', overflow: 'hidden' }}>
       {/* Left text */}
-      <div style={{ flexShrink: 0, maxWidth: 340 }}>
+      <div style={{ flexShrink: 0 }}>
         <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 80, lineHeight: 1.007, textTransform: 'uppercase', color: '#fff', marginBottom: 32 }}>Everything You Need.<br />In One App.</h2>
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 16, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, marginBottom: 32 }}>Track your rides, discover routes, join challenges, and stay connected with the cycling community — all from one powerful app.</p>
+        {/* <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 16, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, marginBottom: 32 }}>Track your rides, discover routes, join challenges, and stay connected with the cycling community — all from one powerful app.</p> */}
         <div style={{ marginBottom: 24 }}>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 18, color: '#fff', textTransform: 'uppercase', marginBottom: 16 }}>Download ADCC APP</p>
+          <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 30, color: '#fff', textTransform: 'uppercase', marginBottom: 23, lineHeight: '30px', }}>Download <br/> ADCC APP</p>
           {/* QR */}
-          <div style={{ width: 160, height: 160, background: '#fff', borderRadius: 12, padding: 12, marginBottom: 20 }}>
+          <div style={{ width: 256, height: 256, background: '#fff', borderRadius: 16, padding: 12, marginBottom: 40 }}>
             <QRCodePlaceholder />
           </div>
         </div>
@@ -523,72 +666,25 @@ function AppSection() {
             <div><div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 9, color: '#555' }}>Download on the</div><div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 14, color: '#000' }}>App Store</div></div>
           </div>
         </div>
+        
       </div>
 
       {/* Phone mockup center */}
       <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative', minHeight: 500 }}>
         {/* Back phone */}
-        <div style={{ position: 'absolute', left: '50%', top: 40, transform: 'translateX(-60%) rotate(-8deg)', width: 220, height: 440, background: '#1a1a2e', borderRadius: 32, border: '6px solid #2a2a4e', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
-          <img src="https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=400&q=80" alt="App" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} />
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(1,152,57,0.3) 0%, rgba(0,0,0,0.6) 100%)' }} />
-        </div>
+        <div >
+          <img src="../../../public/images/mobile.png" alt="App" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} />
+          </div>
         {/* Front phone */}
-        <div style={{ position: 'relative', zIndex: 2, width: 240, height: 480, background: '#0d1117', borderRadius: 36, border: '6px solid #333', overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.6)', transform: 'translateX(20px)' }}>
-          {/* Status bar */}
-          <div style={{ height: 28, background: '#1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px' }}>
-            <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, color: '#fff' }}>9:41</span>
-            <div style={{ width: 60, height: 16, background: '#222', borderRadius: 8 }} />
-            <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, color: '#fff' }}>●●●</span>
-          </div>
-          {/* App header */}
-          <div style={{ padding: '12px 16px 8px', background: '#019839' }}>
-            <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 14, color: '#fff' }}>Cycling Community</div>
-            <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, color: 'rgba(255,255,255,0.8)' }}>Ride. Connect. Inspire.</div>
-          </div>
-          {/* Map area */}
-          <div style={{ height: 130, background: '#1e3a2f', position: 'relative', overflow: 'hidden' }}>
-            <img src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&q=80" alt="Map" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.4 }} />
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <div style={{ background: 'rgba(1,152,57,0.9)', borderRadius: 20, padding: '6px 14px' }}>
-                <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 11, color: '#fff' }}>Al Maqtaa Track</span>
-              </div>
-            </div>
-          </div>
-          {/* Content */}
-          <div style={{ padding: '8px 14px', background: '#111' }}>
-            <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 11, color: '#fff', marginBottom: 6 }}>Upcoming Events</div>
-            {['Al Qudra Night Ride', 'Yas Marina Circuit'].map((e, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5, background: '#1a1a1a', borderRadius: 8, padding: '5px 8px' }}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: i === 0 ? '#019839' : '#435974', flexShrink: 0 }} />
-                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, color: '#ccc' }}>{e}</span>
-              </div>
-            ))}
-            <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 11, color: '#fff', marginTop: 8, marginBottom: 6 }}>Popular Tracks</div>
-            <div style={{ display: 'flex', gap: 6 }}>
-              {['Al Wathba', 'Yas Island'].map((t, i) => (
-                <div key={i} style={{ flex: 1, background: '#1a1a1a', borderRadius: 6, padding: '5px 6px', textAlign: 'center' }}>
-                  <div style={{ width: '100%', height: 40, background: '#2a2a2a', borderRadius: 4, marginBottom: 4, overflow: 'hidden' }}>
-                    <img src={`https://images.unsplash.com/photo-${i === 0 ? '1502904550040-7534597429ae' : '1508784411316-06c06401e69b'}?w=100&q=60`} alt={t} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.6 }} />
-                  </div>
-                  <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 8, color: '#aaa' }}>{t}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          {/* Nav bar */}
-          <div style={{ display: 'flex', justifyContent: 'space-around', padding: '8px 0', background: '#1a1a1a', borderTop: '1px solid #333' }}>
-            {['🏠', '🗺️', '🏆', '👤'].map((ic, i) => (
-              <div key={i} style={{ fontSize: 16, opacity: i === 0 ? 1 : 0.4, cursor: 'pointer' }}>{ic}</div>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* Right features */}
       <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 36 }}>
         {features.map((f, i) => (
           <div key={i} className="app-feature" style={{ display: 'flex', alignItems: 'center', gap: 16, cursor: 'default' }}>
-            <div className="feature-icon" style={{ width: 44, height: 44, background: '#fff', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>{f.icon}</div>
+            <div className="feature-icon" style={{ width: 44, height: 44, background: '#fff', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <img src={f.icon} alt={f.label.replace('\n', ' ')} style={{ width: 26, height: 26, objectFit: 'contain' }} />
+            </div>
             <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 16, color: '#fff', textTransform: 'uppercase', lineHeight: 1.2, whiteSpace: 'pre-line' }}>{f.label}</span>
           </div>
         ))}
@@ -600,24 +696,24 @@ function AppSection() {
 /* ─── COMMUNITY / EAT SLEEP BIKE ────────────────────────────────────────────*/
 function CommunitySection() {
   const icons = [
-    { emoji: '🥗', label: 'Eat' },
-    { emoji: '🌙', label: 'Sleep' },
-    { emoji: '🚴', label: 'Bike' },
-    { emoji: '🔄', label: 'Repeat' },
+    { icon: '/images/vegetable.png', label: 'Eat' },
+    { icon: '/images/moon-night.png', label: 'Sleep' },
+    { icon: '/images/cycling.png', label: 'Bike' },
+    { icon: '/images/sync.png', label: 'Repeat' },
   ];
   return (
-    <section id="community" style={{ background: '#EAF4FF', padding: '80px 86px', textAlign: 'center' }}>
-      <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 18, color: '#000', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 16 }}>For the Cycling Community</p>
+    <section id="community" style={{ background: '#EAF4FF', padding: '125px 86px', textAlign: 'center' }}>
+      <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 28, color: '#000', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 16 }}>For the Cycling Community</p>
       <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 74, color: '#000', textTransform: 'uppercase', letterSpacing: '-0.5px', marginBottom: 48 }}>Eat • Sleep • Bike • Repeat</h2>
       {/* Icon row */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: 56 }}>
         {icons.map((ic, i) => (
           <React.Fragment key={i}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-              <div style={{ fontSize: 64, lineHeight: 1 }}>{ic.emoji}</div>
+              <img src={ic.icon} alt={ic.label} style={{ width: 64, height: 64, objectFit: 'contain', display: 'block' }} />
             </div>
             {i < icons.length - 1 && (
-              <div style={{ display: 'flex', alignItems: 'center', padding: '0 24px', marginBottom: 24 }}>
+              <div style={{ display: 'flex', alignItems: 'center', padding: '0 24px',}}>
                 <div style={{ width: 50, height: 2, background: '#000' }} />
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#000', margin: '0 4px' }} />
                 <div style={{ width: 50, height: 2, background: '#000' }} />
@@ -626,7 +722,7 @@ function CommunitySection() {
           </React.Fragment>
         ))}
       </div>
-      <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 22, color: '#000', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 28 }}>Everything you need to ride, track, and stay connected.</p>
+      <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 28, color: '#000', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 28 }}>Everything you need to ride, track, and stay connected.</p>
       <button className="btn-green" style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: '#019839', border: 'none', borderRadius: 30, padding: '14px 28px', cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 18, color: '#FFF9EF' }}>
         Start Riding
         <span style={{ width: 28, height: 28, background: 'rgba(255,255,255,0.25)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ArrowRight /></span>
@@ -659,21 +755,21 @@ function ExplorePlatformSection() {
   ];
   return (
     <section id="platform" style={{ background: '#EAF4FF', padding: '0 86px 80px' }}>
-      <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 72, color: '#000', textTransform: 'uppercase', textAlign: 'center', paddingTop: 60, marginBottom: 40 }}>Explore the Platform</h2>
+      <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 72, color: '#000', textTransform: 'uppercase', textAlign: 'center', paddingTop: 35, marginBottom: 40, lineHeight: '72px' }}>Explore the Platform</h2>
       <div style={{ display: 'flex', gap: 0, borderRadius: 20, overflow: 'hidden', height: 480 }}>
         {cards.map((card, i) => (
           <div key={i} className="card-hover" style={{ flex: 1, position: 'relative', overflow: 'hidden', cursor: 'pointer', borderLeft: i > 0 ? '2px solid rgba(255,255,255,0.3)' : 'none' }}>
             <img src={card.img} alt={card.title} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s' }} />
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.75) 100%)' }} />
             {/* Tag */}
-            <div style={{ position: 'absolute', top: 20, left: 20, background: '#435974', borderRadius: 20, padding: '5px 14px' }}>
-              <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 12, color: '#fff', textTransform: 'uppercase', letterSpacing: '1px' }}>{card.tag}</span>
+            <div style={{ position: 'absolute', top: 43, left: 32, background: '#435974', borderRadius: 20, padding: '5px 14px' }}>
+              <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400, fontSize: 18, color: '#fff', textTransform: 'uppercase', letterSpacing: '1px' }}>{card.tag}</span>
             </div>
             {/* Bottom content */}
-            <div style={{ position: 'absolute', bottom: 24, left: 24, right: 24 }}>
-              <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 26, color: '#F6EFE7', lineHeight: 1.1, textTransform: 'uppercase', marginBottom: 12 }}>{card.title}</p>
+            <div style={{ position: 'absolute', bottom: 24, left: 32, right: 32 }}>
+              <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 32, color: '#F6EFE7', lineHeight: 1.1, textTransform: 'uppercase', marginBottom: 12 }}>{card.title}</p>
               <div style={{ display: 'inline-flex', flexDirection: 'column' }}>
-                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 18, color: '#F6EFE7', cursor: 'pointer' }}>{card.action}</span>
+                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 22, color: '#F6EFE7', cursor: 'pointer' }}>{card.action}</span>
                 <div style={{ height: 3, background: '#435974', borderRadius: 2, marginTop: 2 }} />
               </div>
             </div>
@@ -687,7 +783,7 @@ function ExplorePlatformSection() {
 /* ─── ADCC STORE ─────────────────────────────────────────────────────────────*/
 function StoreSection() {
   const products = [
-    { type: 'Official Merchandise', action: 'View Store', title: 'ADCC Performance Jersey', sub: 'Lightweight • Breathable • Race Fit', price: 'AED 220', bg: '#D8E5FB', img: 'https://images.unsplash.com/photo-1622397017135-09e4c4e1ffad?w=400&q=80' },
+    // { type: 'Official Merchandise', action: 'View Store', title: 'ADCC Performance Jersey', sub: 'Lightweight • Breathable • Race Fit', price: 'AED 220', bg: '#D8E5FB', img: '/img/image 2998.png' },
     { type: 'Official Merchandise', action: 'View Store', title: 'ADCC Performance Sipper', sub: 'BPA-Free • Leak-Proof • Easy Grip', price: 'AED 85', bg: '#D8E5FB', img: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&q=80' },
     { type: 'Official Merchandise', action: 'View Store', title: 'Cycling Accessories', sub: 'Helmets • Gloves • Essentials', price: 'AED 220', bg: '#D8E5FB', img: 'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&q=80' },
     { type: 'Community Marketplace', action: 'Explore Marketplace', title: 'Pre-Owned Road Bike', sub: 'Verified listings from ADCC riders', price: 'AED 1,500', bg: '#D8E5FB', img: 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&q=80' },
@@ -696,14 +792,27 @@ function StoreSection() {
   return (
     <section id="store" style={{ background: '#EAF4FF', padding: '0 86px 80px' }}>
       <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 72, color: '#000', textTransform: 'uppercase', textAlign: 'center', marginBottom: 40 }}>ADCC Store</h2>
-      <div style={{ display: 'flex', gap: 20, overflowX: 'auto', paddingBottom: 8, scrollbarWidth: 'none' }}>
+      <div className="store-rail">
         {products.map((p, i) => (
-          <div key={i} className="store-card" style={{ flexShrink: 0, width: 320, borderRadius: 20, background: p.bg, position: 'relative', overflow: 'hidden', cursor: 'pointer', boxShadow: '0 2px 16px rgba(0,0,0,0.08)' }}>
+          i === 0 ? (
+            <div key={i} className="store-card store-featured-card">
+              <div className="store-featured-icon">
+                <img src="/images/users.png" alt="" />
+              </div>
+              <span className="store-featured-type">{p.type}</span>
+              <span className="store-featured-action">{p.action}</span>
+              <h3 className="store-featured-title">{p.title}</h3>
+              <p className="store-featured-sub">{p.sub}</p>
+              <img className="store-featured-product" src={p.img} alt={p.title} />
+              <span className="store-featured-price">{p.price}</span>
+            </div>
+          ) : (
+          <div key={i} className="store-card store-compact-card" style={{ background: p.bg }}>
             {/* Header row */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 20px 0' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ width: 32, height: 32, background: '#435974', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontSize: 14 }}>🏪</span>
+                  <img src="/images/users.png" alt="" />
                 </div>
                 <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: '#000', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{p.type}</span>
               </div>
@@ -730,6 +839,7 @@ function StoreSection() {
               </div>
             </div>
           </div>
+          )
         ))}
       </div>
     </section>

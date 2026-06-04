@@ -8,7 +8,7 @@ interface PublicLayoutProps {
 
 const navItems = [
   { label: 'About Us', to: '/aboutus', match: ['/aboutus'] },
-  { label: 'Events', to: '/user-events', match: ['/user-event', '/user-events', '/communities-abu-dhabi-grand-prix-ride'] },
+  { label: 'Events', to: '/user-event', match: ['/user-event', '/user-events', '/communities-abu-dhabi-grand-prix-ride'] },
   {
     label: 'Community',
     to: '/user-communities',
