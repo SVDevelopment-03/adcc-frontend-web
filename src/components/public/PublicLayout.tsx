@@ -1,25 +1,26 @@
 import React, { useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
-import { Apple, Bike, CloudSun, Mail, MapPin, Menu, MessageCircle, Phone, Play } from 'lucide-react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Apple, Bike, CloudSun, LogIn, LogOut, Mail, MapPin, Menu, MessageCircle, Phone, Play } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface PublicLayoutProps {
   children: React.ReactNode;
 }
 
 const navItems = [
+  { label: 'Home', to: '/home', match: ['/home'] },
   { label: 'About Us', to: '/aboutus', match: ['/aboutus'] },
   { label: 'Events', to: '/user-event', match: ['/user-event', '/user-events', '/communities-abu-dhabi-grand-prix-ride'] },
   {
     label: 'Community',
     to: '/user-communities',
     match: [
-      '/home',
-      '/user-challenges',
       '/user-communities',
       '/communities-abu-dhabi-cycling-community',
       '/communities-march-distance-challenge',
     ],
   },
+  { label: 'Challenges', to: '/user-challenges', match: ['/user-challenges'] },
   { label: 'Tracks', to: '/user-tracks', match: ['/user-tracks', '/communities-al-quadra-cycle-path'] },
 ];
 
@@ -32,6 +33,18 @@ function Logo({ compact = false }: { compact?: boolean }) {
 function PublicHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated, logout } = useAuth();
+
+  const handleAuthAction = async () => {
+    if (isAuthenticated) {
+      await logout();
+      navigate('/home');
+      return;
+    }
+
+    navigate('/login');
+  };
 
   return (
     <header className="sticky top-0 z-[100] flex h-28 w-full items-center justify-between bg-white px-8 shadow-sm md:px-16! lg:px-22!">
@@ -58,12 +71,33 @@ function PublicHeader() {
         <span className="hidden text-[16px] font-medium text-black sm:inline">English</span>
         <button
           type="button"
+          aria-label="Toggle navigation menu"
           onClick={() => setMenuOpen((value) => !value)}
-          className="flex h-12 justify-center items-center gap-2 rounded-full bg-[#019839] px-7 text-[18px] font-bold text-white transition-colors hover:bg-[#017a2e] w-[101px]"
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-[#019839] text-white transition-colors hover:bg-black lg:hidden"
         >
-          <Menu className="h-5 w-5 lg:hidden" />
-          <span>Menu</span>
+          <Menu className="h-5 w-5" />
         </button>
+        <div className="group relative">
+          <button
+            type="button"
+            className="flex h-12 w-[101px] items-center justify-center rounded-full bg-[#019839] px-7 text-[18px] font-bold text-white shadow-sm transition-colors hover:bg-black group-focus-within:bg-black"
+          >
+            Menu
+          </button>
+          <div className="invisible absolute right-0 top-full z-[120] min-w-[190px] translate-y-2 pt-3 opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
+            <div className="absolute right-8 top-[7px] h-3 w-3 rotate-45 border-l border-t border-black/10 bg-white" />
+            <div className="min-h-[180px] overflow-hidden rounded-lg border border-black/10 bg-white px-4 py-5 shadow-[0_18px_45px_rgba(0,0,0,0.16)]">
+              <button
+                type="button"
+                onClick={handleAuthAction}
+                className="flex w-full items-center gap-3 rounded-md px-4 py-3 text-left text-[16px] font-semibold text-black transition-colors hover:bg-black hover:text-white focus:bg-black focus:text-white focus:outline-none"
+              >
+                {isAuthenticated ? <LogOut className="h-5 w-5" /> : <LogIn className="h-5 w-5" />}
+                <span>{isAuthenticated ? 'Logout' : 'Login'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {menuOpen && (

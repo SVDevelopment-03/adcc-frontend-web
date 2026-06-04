@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getStoreItems, StoreItem } from '../../services/storeApi';
+import { subscribeToNewsletter } from '../../services/newsletterApi';
 
 const CSS = `
   @keyframes scroll-left {
@@ -526,6 +529,7 @@ function Header() {
     { label: 'About Us', href: '#about' },
     { label: 'Events', href: '/user-event' },
     { label: 'Community', href: '#community', active: true },
+    { label: 'Challenges', href: '/user-challenges' },
     { label: 'Tracks', href: '#platform' },
   ];
   return (
@@ -547,6 +551,8 @@ function Header() {
 
 /* ─── HERO ───────────────────────────────────────────────────────────────────*/
 function HeroSection() {
+  const navigate = useNavigate();
+
   return (
     <section style={{ position: 'relative', width: '100%', height: 806, overflow: 'hidden', flexShrink: 0 }}>
       <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(../../../../../public/images/hero.png)', backgroundSize: 'cover', backgroundPosition: 'center top' }} />
@@ -557,7 +563,7 @@ function HeroSection() {
           <button className="btn-green" style={{ display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 22px', background: '#019839', border: 'none', borderRadius: 30, cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 600, fontSize: 18, color: '#fff' }}>
             Download App <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /><path d="M3 13h10" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" /></svg>
           </button>
-          <button style={{ display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 22px', background: 'transparent', border: '2px solid #019839', borderRadius: 30, cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 18, color: '#019839' }}>
+          <button onClick={() => navigate('/user-tracks')} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 22px', background: 'transparent', border: '2px solid #019839', borderRadius: 30, cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 18, color: '#019839' }}>
             Explore Tracks <ArrowRight />
           </button>
         </div>
@@ -593,11 +599,12 @@ function StatsTicker() {
 
 /* ─── CYCLING JOURNEY ────────────────────────────────────────────────────────*/
 function CyclingJourneySection() {
+  const navigate = useNavigate();
   const cards = [
-    { label: "Find Cycling\nTracks", bg: "#323232", img: "https://images.unsplash.com/photo-1502904550040-7534597429ae?w=400&q=80" },
-    { label: "Discover\nEvents", bg: "#777777", img: "https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=400&q=80" },
-    { label: "Join Active\nChallenges", bg: "#777777", img: "https://images.unsplash.com/photo-1534787238916-9ba6764efd4f?w=400&q=80" },
-    { label: "Connect With\nRiders", bg: "#777777", img: "https://images.unsplash.com/photo-1508784411316-06c06401e69b?w=400&q=80" },
+    { label: "Find Cycling\nTracks", bg: "#777777", img: "../../../public/images/journey-1.png", to:"/user-tracks" },
+    { label: "Discover\nEvents", bg: "#777777", img: "../../../public/images/journey-2.png", to:"/user-event" },
+    { label: "Join Active\nChallenges", bg: "#777777", img: "../../../public/images/journey-3.png" , to:"//user-challenges"},
+    { label: "Connect With\nRiders", bg: "#777777",img: "https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=400&q=80" , to:"/login"},
   ];
   
   return (
@@ -611,7 +618,8 @@ function CyclingJourneySection() {
       <div className="journey-content">
         <div className="journey-cards">
           {cards.map((card, i) => (
-            <div key={i} className="card-hover journey-card" style={{ background: card.bg }}>
+            <div key={i} className="card-hover journey-card" style={{ background: card.bg }}
+            onClick={()=>navigate(card?.to)}>
               <span className="journey-card-label">{card.label}</span>
               <div className="journey-card-arrow">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#C12D32" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -624,7 +632,7 @@ function CyclingJourneySection() {
         </div>
         <div>
           <p className="journey-text">Choose how you want to ride with ADCC. Discover routes, join challenges, and be part of a growing cycling community.</p>
-          <button className="btn-green journey-button">
+          <button onClick={() => navigate('/user-tracks')} className="btn-green journey-button">
             Explore all Routes
             <span className="journey-button-icon">→</span>
           </button>
@@ -682,7 +690,7 @@ function AppSection() {
       <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 36 }}>
         {features.map((f, i) => (
           <div key={i} className="app-feature" style={{ display: 'flex', alignItems: 'center', gap: 16, cursor: 'default' }}>
-            <div className="feature-icon" style={{ width: 44, height: 44, background: '#fff', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div className="feature-icon" style={{ width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <img src={f.icon} alt={f.label.replace('\n', ' ')} style={{ width: 26, height: 26, objectFit: 'contain' }} />
             </div>
             <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 16, color: '#fff', textTransform: 'uppercase', lineHeight: 1.2, whiteSpace: 'pre-line' }}>{f.label}</span>
@@ -695,6 +703,8 @@ function AppSection() {
 
 /* ─── COMMUNITY / EAT SLEEP BIKE ────────────────────────────────────────────*/
 function CommunitySection() {
+    const navigate = useNavigate();
+
   const icons = [
     { icon: '/images/vegetable.png', label: 'Eat' },
     { icon: '/images/moon-night.png', label: 'Sleep' },
@@ -723,7 +733,9 @@ function CommunitySection() {
         ))}
       </div>
       <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 28, color: '#000', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 28 }}>Everything you need to ride, track, and stay connected.</p>
-      <button className="btn-green" style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: '#019839', border: 'none', borderRadius: 30, padding: '14px 28px', cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 18, color: '#FFF9EF' }}>
+      <button 
+      onClick={()=>navigate("/login")}
+      className="btn-green" style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: '#019839', border: 'none', borderRadius: 30, padding: '14px 28px', cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 18, color: '#FFF9EF' }}>
         Start Riding
         <span style={{ width: 28, height: 28, background: 'rgba(255,255,255,0.25)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ArrowRight /></span>
       </button>
@@ -733,24 +745,28 @@ function CommunitySection() {
 
 /* ─── EXPLORE THE PLATFORM ───────────────────────────────────────────────────*/
 function ExplorePlatformSection() {
+  const navigate = useNavigate();
   const cards = [
     {
       tag: 'EVENTS',
-      img: 'https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=700&q=80',
+      img: '../../../public/images/explore-1.png',
       title: 'Join upcoming rides and cycling events across the city',
       action: 'View Events',
+      to: '/user-events',
     },
     {
       tag: 'TRACK',
-      img: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=700&q=80',
+      img: '../../../public/images/explore-2.png',
       title: 'Discover official cycling routes across Abu Dhabi',
       action: 'View Tracks',
+      to: '/user-tracks',
     },
     {
       tag: 'CHALLENGE',
-      img: 'https://images.unsplash.com/photo-1534787238916-9ba6764efd4f?w=700&q=80',
+            img: '../../../public/images/explore-3.png',
       title: 'Track progress and take on community challenges',
       action: 'View Challenges',
+      to: '/user-tracks',
     },
   ];
   return (
@@ -758,7 +774,7 @@ function ExplorePlatformSection() {
       <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 72, color: '#000', textTransform: 'uppercase', textAlign: 'center', paddingTop: 35, marginBottom: 40, lineHeight: '72px' }}>Explore the Platform</h2>
       <div style={{ display: 'flex', gap: 0, borderRadius: 20, overflow: 'hidden', height: 480 }}>
         {cards.map((card, i) => (
-          <div key={i} className="card-hover" style={{ flex: 1, position: 'relative', overflow: 'hidden', cursor: 'pointer', borderLeft: i > 0 ? '2px solid rgba(255,255,255,0.3)' : 'none' }}>
+          <div key={i} onClick={() => navigate(card.to)} className="card-hover" style={{ flex: 1, position: 'relative', overflow: 'hidden', cursor: 'pointer', borderLeft: i > 0 ? '2px solid rgba(255,255,255,0.3)' : 'none' }}>
             <img src={card.img} alt={card.title} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s' }} />
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.75) 100%)' }} />
             {/* Tag */}
@@ -781,21 +797,94 @@ function ExplorePlatformSection() {
 }
 
 /* ─── ADCC STORE ─────────────────────────────────────────────────────────────*/
+type StoreCardProduct = {
+  id: string;
+  type: string;
+  action: string;
+  title: string;
+  sub: string;
+  price: string;
+  bg: string;
+  img: string;
+};
+
+const STORE_FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&q=80';
+
+function formatStorePrice(item: StoreItem) {
+  const currency = item.currency || 'AED';
+  const price = Number.isFinite(Number(item.price)) ? Number(item.price).toLocaleString() : item.price;
+  return `${currency} ${price}`;
+}
+
+function getStoreImage(item: StoreItem) {
+  return item.coverImage || item.photos?.[0] || STORE_FALLBACK_IMAGE;
+}
+
+function getStoreSubText(item: StoreItem) {
+  const details = [item.condition, item.city].filter(Boolean);
+  if (details.length) return details.join(' • ');
+  return item.description || 'Available from ADCC store';
+}
+
 function StoreSection() {
-  const products = [
-    // { type: 'Official Merchandise', action: 'View Store', title: 'ADCC Performance Jersey', sub: 'Lightweight • Breathable • Race Fit', price: 'AED 220', bg: '#D8E5FB', img: '/img/image 2998.png' },
-    { type: 'Official Merchandise', action: 'View Store', title: 'ADCC Performance Sipper', sub: 'BPA-Free • Leak-Proof • Easy Grip', price: 'AED 85', bg: '#D8E5FB', img: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&q=80' },
-    { type: 'Official Merchandise', action: 'View Store', title: 'Cycling Accessories', sub: 'Helmets • Gloves • Essentials', price: 'AED 220', bg: '#D8E5FB', img: 'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&q=80' },
-    { type: 'Community Marketplace', action: 'Explore Marketplace', title: 'Pre-Owned Road Bike', sub: 'Verified listings from ADCC riders', price: 'AED 1,500', bg: '#D8E5FB', img: 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&q=80' },
-  ];
+  const navigate = useNavigate();
+  const [products, setProducts] = useState<StoreCardProduct[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadStoreProducts() {
+      try {
+        setIsLoading(true);
+        setLoadError('');
+        const items = await getStoreItems({ status: 'Approved', limit: 3 });
+        if (!isMounted) return;
+
+        setProducts(
+          items.map((item) => ({
+            id: item.id || item._id || item.title,
+            type: item.category || 'Community Marketplace',
+            action: 'View Store',
+            title: item.title,
+            sub: getStoreSubText(item),
+            price: formatStorePrice(item),
+            bg: '#D8E5FB',
+            img: getStoreImage(item),
+          }))
+        );
+      } catch (error) {
+        if (!isMounted) return;
+        setLoadError(error instanceof Error ? error.message : 'Failed to load store products');
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    }
+
+    loadStoreProducts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <section id="store" style={{ background: '#EAF4FF', padding: '0 86px 80px' }}>
       <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 72, color: '#000', textTransform: 'uppercase', textAlign: 'center', marginBottom: 40 }}>ADCC Store</h2>
       <div className="store-rail">
+        {isLoading && (
+          <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, color: '#435974', padding: '36px 0' }}>Loading store products...</div>
+        )}
+        {!isLoading && loadError && (
+          <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, color: '#C12D32', padding: '36px 0' }}>{loadError}</div>
+        )}
+        {!isLoading && !loadError && products.length === 0 && (
+          <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, color: '#435974', padding: '36px 0' }}>No store products available.</div>
+        )}
         {products.map((p, i) => (
           i === 0 ? (
-            <div key={i} className="store-card store-featured-card">
+            <div key={p.id} onClick={() => navigate('/user-adcc-store')} className="store-card store-featured-card">
               <div className="store-featured-icon">
                 <img src="/images/users.png" alt="" />
               </div>
@@ -807,7 +896,7 @@ function StoreSection() {
               <span className="store-featured-price">{p.price}</span>
             </div>
           ) : (
-          <div key={i} className="store-card store-compact-card" style={{ background: p.bg }}>
+          <div key={p.id} onClick={() => navigate('/user-adcc-store')} className="store-card store-compact-card" style={{ background: p.bg }}>
             {/* Header row */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 20px 0' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -848,6 +937,7 @@ function StoreSection() {
 
 /* ─── ABOUT SECTION ──────────────────────────────────────────────────────────*/
 function AboutSection() {
+  const navigate = useNavigate();
   const stats = [
     { num: '15K+', label: 'Riders' },
     { num: '100+', label: 'Events' },
@@ -874,14 +964,14 @@ function AboutSection() {
             </div>
           ))}
         </div>
-        <button className="btn-green" style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: '#019839', border: 'none', borderRadius: 30, padding: '14px 28px', cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 18, color: '#FFF9EF' }}>
+        <button onClick={() => navigate('/communities-abu-dhabi-cycling-community')} className="btn-green" style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: '#019839', border: 'none', borderRadius: 30, padding: '14px 28px', cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 18, color: '#FFF9EF' }}>
           Read More
           <span style={{ width: 28, height: 28, background: 'rgba(255,255,255,0.25)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ArrowRight /></span>
         </button>
       </div>
       {/* Decorative rider image */}
-      <div style={{ flexShrink: 0, width: 280, height: 340, overflow: 'hidden', borderRadius: 20, boxShadow: '0 4px 24px rgba(0,0,0,0.1)' }}>
-        <img src="https://images.unsplash.com/photo-1534787238916-9ba6764efd4f?w=400&q=80" alt="Rider" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      <div style={{ flexShrink: 0, width: 280, height: 340, overflow: 'hidden'}}>
+        <img src="../../../public/images/right-cycle.png" alt="Rider" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </div>
     </section>
   );
@@ -920,8 +1010,13 @@ function CTABanner() {
 }
 
 /* ─── FOOTER ─────────────────────────────────────────────────────────────────*/
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 function Footer() {
   const [email, setEmail] = useState('');
+  const [emailMessage, setEmailMessage] = useState('');
+  const [emailMessageType, setEmailMessageType] = useState<'success' | 'error'>('success');
+  const [isSubmittingEmail, setIsSubmittingEmail] = useState(false);
   const quickLinks = ['About Us', 'Rides', 'Events', "Cyclist's Corner", 'Contact Us'];
   const contactItems = [
     { icon: '📞', text: '+971 2 654 5645' },
@@ -929,6 +1024,37 @@ function Footer() {
     { icon: '✉️', text: 'info@adcyclingclub.ae' },
     { icon: '📍', text: 'Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18.' },
   ];
+
+  const handleEmailSubmit = async () => {
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!normalizedEmail) {
+      setEmailMessageType('error');
+      setEmailMessage('Please enter your email address.');
+      return;
+    }
+
+    if (!EMAIL_PATTERN.test(normalizedEmail)) {
+      setEmailMessageType('error');
+      setEmailMessage('Please enter a valid email address.');
+      return;
+    }
+
+    try {
+      setIsSubmittingEmail(true);
+      setEmailMessage('');
+      await subscribeToNewsletter(normalizedEmail);
+      setEmail('');
+      setEmailMessageType('success');
+      setEmailMessage('Thanks for subscribing.');
+    } catch (error) {
+      setEmailMessageType('error');
+      setEmailMessage(error instanceof Error ? error.message : 'Failed to subscribe.');
+    } finally {
+      setIsSubmittingEmail(false);
+    }
+  };
+
   return (
     <footer style={{ background: '#ffffff', borderTop: '1px solid #e5e5e5' }}>
       <div style={{ padding: '60px 86px 30px', display: 'flex', gap: 60 }}>
@@ -943,12 +1069,23 @@ function Footer() {
             <input
               type="email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={e => {
+                setEmail(e.target.value);
+                if (emailMessage) setEmailMessage('');
+              }}
+              onKeyDown={e => {
+                if (e.key === 'Enter') handleEmailSubmit();
+              }}
               placeholder="Enter your email"
               style={{ flex: 1, border: 'none', background: 'transparent', padding: '0 16px', fontFamily: "'Outfit', sans-serif", fontSize: 15, color: '#333', outline: 'none' }}
             />
-            <button className="btn-green" onClick={() => setEmail('')} style={{ background: '#019839', border: 'none', padding: '0 20px', cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 600, color: '#fff', borderRadius: '0 10px 10px 0' }}>Submit</button>
+            <button disabled={isSubmittingEmail} className="btn-green" onClick={handleEmailSubmit} style={{ background: '#019839', border: 'none', padding: '0 20px', cursor: isSubmittingEmail ? 'not-allowed' : 'pointer', fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 600, color: '#fff', borderRadius: '0 10px 10px 0', opacity: isSubmittingEmail ? 0.72 : 1 }}>{isSubmittingEmail ? 'Saving...' : 'Submit'}</button>
           </div>
+          {emailMessage && (
+            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, color: emailMessageType === 'success' ? '#019839' : '#C12D32', marginTop: 8 }}>
+              {emailMessage}
+            </p>
+          )}
         </div>
 
         <div style={{ flex: 1, display: 'flex', gap: 60 }}>

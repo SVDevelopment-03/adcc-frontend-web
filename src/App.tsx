@@ -35,6 +35,7 @@ function AppContent() {
     '/register',
     '/aboutus',
     '/user-event',
+    '/user-events',
     '/user-tracks',
     '/user-challenges',
     '/user-communities',
@@ -104,6 +105,7 @@ function AppContent() {
       />
       <Route path="/aboutus" element={publicPage(<AboutUs />)} />
       <Route path="/user-event" element={publicPage(<UserEvent />)} />
+      <Route path="/user-events" element={publicPage(<UserEvent />)} />
       <Route path="/user-tracks" element={publicPage(<UserTracks />)} />
       <Route path="/user-challenges" element={publicPage(<UserChallenges />)} />
       <Route path="/user-communities" element={publicPage(<UserCommunities />)} />
