@@ -109,7 +109,7 @@ const FontLoader = () => (
     }
 
     .grand-prix-shell {
-      width: min(1272px, calc(100vw - 32px));
+      width: min(1268px, calc(100vw - 32px));
       margin: 0 auto;
     }
 
@@ -246,14 +246,14 @@ function StatsStrip() {
 function FacilitiesSection() {
   return (
     <section
-      // className="mt-[130px] h-[401px] overflow-hidden bg-cover bg-center bg-no-repeat px-4 text-white max-lg:h-auto max-lg:py-16"
-      className="grand-prix-section mt-[130px] min-h-[401px] bg-cover bg-center bg-no-repeat px-4 pb-10 text-white max-lg:py-16"
+        className="grand-prix-section mt-[130px] bg-cover bg-center bg-no-repeat py-16 text-white"
       style={{ backgroundImage: "url('/img/image 3518.png')" }}
     >
       {/* <div className="grand-prix-shell relative h-full"> */}
-      <div className="grand-prix-shell relative">
+      {/* <div className="grand-prix-shell relative "> */}
+      <div className="grand-prix-shell relative px-4">
         <div className="flex items-start justify-between pt-16 max-lg:flex-col max-lg:gap-8 max-lg:pt-0">
-          <h2 className="grand-prix-bebas max-w-[579px] text-[50px] uppercase leading-[60px] max-md:text-[38px] max-md:leading-[46px]">
+          <h2 className="grand-prix-bebas max-w-[579px] text-[50px] uppercase leading-[60px] text-[#000000] max-md:text-[38px] max-md:leading-[46px]">
             Everything You Need for a Seamless Ride Experience
           </h2>
           <button
@@ -302,38 +302,66 @@ function ScheduleSection() {
     >
       <h2 className="grand-prix-bebas mx-auto max-w-[621px] text-center text-[50px] uppercase leading-[60px] max-md:text-[38px] max-md:leading-[46px]">
         Abu Dhabi Grand Prix Ride Schedule
-      </h2> 
+      </h2>
+
       <p className="mx-auto mt-[22px] max-w-[795px] text-center text-[24px] leading-[30px] text-white/70 max-md:text-[18px] max-md:leading-[28px]">
         Join a world-class cycling event at Yas Marina Circuit. From
         registration to the final sprint, every moment promises an unforgettable
         ride.
       </p>
 
-      <div className="grand-prix-shell mt-11 grid grid-cols-[460px_1fr] gap-[53px] max-lg:grid-cols-1">
+      {/* <div className="grand-prix-shell mt-11 grid grid-cols-[460px_1fr] gap-[53px] max-lg:grid-cols-1"> */}
+      <div className="grand-prix-shell mt-[45px] grid grid-cols-[460px_736px] gap-[53px] max-lg:grid-cols-1">
         <div className="relative h-[478px] w-full max-w-[460px] max-lg:mx-auto">
           <div className="absolute bottom-0 left-0 h-[254px] w-full rounded-tl-xl rounded-br-xl rounded-tr-[60px] rounded-bl-[60px] bg-[#435974]" />
+
           <img
             src="/img/505801846.png"
             alt="Abu Dhabi Grand Prix Ride participant"
-            className="absolute left-0 top-0 h-[478px] w-full rounded-xl object-cover"
+            className="absolute bottom-0 left-[41px] h-[478px] w-[377px] object-contain"
           />
+
+          <div className=" left-[60px] top-[265px] z-20 flex items-center">
+          {/* <div className="left-[60px]  z-20 flex h-[58.33px] items-center"> */}
+            {[
+              "/img/avatar-1.png",
+              "/img/avatar-2.png",
+              "/img/avatar-3.png",
+              "/img/avatar-4.png",
+            ].map((src) => (
+              <img
+                key={src}
+                src={src}
+                alt="Rider"
+                className="-ml-[29.16px] h-[58.33px] w-[58.33px] rounded-full border-2 border-white object-cover first:ml-0"
+              />
+            ))}
+
+            <div className="-ml-[29.16px] flex h-[58.33px] w-[58.33px] items-center justify-center rounded-full bg-white font-['Abel'] text-[20.83px] font-normal uppercase leading-[27px] text-black">
+              +12k
+            </div>
+          </div>
         </div>
 
-        <div className="space-y-[16px]">
+        {/* <div className="space-y-[16px]"> */}
+        <div className="w-[736px] space-y-[16px] max-lg:w-full">
           {schedule.map((item, index) => (
             <article
               key={`${item.time}-${item.title}-${index}`}
-              className={`grid min-h-[98px] grid-cols-[149px_1fr] items-center rounded-xl px-[19px] text-white max-sm:grid-cols-1 max-sm:gap-2 max-sm:py-5 ${
+              className={`grid h-[98px] w-[736px] grid-cols-[168px_1fr] items-center rounded-[11.91px] px-[19px] text-white max-lg:w-full max-sm:h-auto max-sm:grid-cols-1 max-sm:gap-2 max-sm:py-5 ${
+              // className={`grid min-h-[98px] grid-cols-[149px_1fr] items-center rounded-[12px] px-[19px] text-white max-sm:grid-cols-1 max-sm:gap-2 max-sm:py-5 ${
                 index === 0 ? "bg-[#435974]" : "bg-[#7891AF]"
               }`}
             >
-              <time className="text-[18px] font-medium leading-[23px]">
+              <time className="text-[18px] font-normal leading-[23px]">
                 {item.time}
               </time>
+
               <div>
-                <h3 className="text-[24px] font-bold leading-[30px]">
+                <h3 className="text-[24px] font-medium leading-[30px]">
                   {item.title}
                 </h3>
+
                 <p className="mt-1 text-[18px] leading-[23px] text-white/70">
                   {item.description}
                 </p>

@@ -4,12 +4,12 @@ import {
 } from "lucide-react";
 
 const products = [
-  ["Ivan Njuki", "25000 AED", true, "https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?q=80&w=900&auto=format&fit=crop"],
-  ["Colnago Be", "15000 AED", false, "https://images.unsplash.com/photo-1485965120184-e220f721d03e?q=80&w=900&auto=format&fit=crop"],
-  ["Tacx Galaxia Rollers Bike", "800 AED", false, "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?q=80&w=900&auto=format&fit=crop"],
-  ["Trek Domane SL 6 - Like New", "12,000 AED", false, "https://images.unsplash.com/photo-1505705694340-019e1e335916?q=80&w=900&auto=format&fit=crop"],
-  ["Shimano Ultegra Groupset", "3,500 AED", false, "https://images.unsplash.com/photo-1544191696-15693072e5dc?q=80&w=900&auto=format&fit=crop"],
-  ["Shimano Ultegra Groupset", "3,500 AED", false, "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?q=80&w=900&auto=format&fit=crop"],
+  ["Ivan Njuki", "25000 AED", true, "/img/image 2970.png"],
+  ["Colnago Be", "15000 AED", false, "/img/image 3069.png"],
+  ["Tacx Galaxia Rollers Bike", "800 AED", false, "/img/image 2973.png"],
+  ["Trek Domane SL 6 - Like New", "12,000 AED", false, "/img/image 2970 (1).png"],
+  ["Shimano Ultegra Groupset", "3,500 AED", false, "/img/image 2972.png"],
+  ["Shimano Ultegra Groupset", "3,500 AED", false, "/img/image 2973.png"],
 ];
 
 export default function AdccStorePage() {
@@ -38,7 +38,7 @@ export default function AdccStorePage() {
         className="relative h-[640px] bg-cover bg-center"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url('https://images.unsplash.com/photo-1541625602330-2277a4c46182?q=80&w=1600&auto=format&fit=crop')",
+            "linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url('/img/pexels-zakhar-36955801 1.png')",
         }}
       >
         <div className="absolute bottom-20 left-10 md:left-20 text-white">
@@ -52,7 +52,7 @@ export default function AdccStorePage() {
           Browse Our Cycling Collection
         </h2>
 
-        <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-[483px_292px_292px_156px]">
+        <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_292px_292px_156px]">
           <div className="flex h-[66px] items-center rounded-full border border-[#CBCBCB] bg-white px-8">
             <input
               placeholder="Search Communities"
@@ -78,9 +78,10 @@ export default function AdccStorePage() {
           {products.map(([name, price, active, image]) => (
             <div
               key={`${name}-${price}`}
-              className={`min-h-[381px] rounded-[10px] border p-8 shadow-inner ${
-                active ? "bg-[#435974] text-white border-[#727272]" : "border-black/5"
-              }`}
+              // className={`min-h-[381px] rounded-[10px] border p-8 shadow-inner ${
+              //   active ? "bg-[#435974] text-white border-[#727272]" : "border-black/5"
+              // }`}
+              className="min-h-[381px] rounded-[10px] border border-black/5 p-8 shadow-inner transition-all duration-300 hover:border-[#727272] hover:bg-[#435974] hover:text-white"
             >
               <h3 className="text-[24px] font-black uppercase">{name}</h3>
               <p className="mt-1 text-[18px] font-bold">{price}</p>
@@ -109,10 +110,12 @@ export default function AdccStorePage() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-[1268px] grid-cols-1 items-center gap-16 px-10 pb-28 lg:grid-cols-2">
+      <section className="mx-auto grid max-w-[1268px] grid-cols-1 items-end gap-16 px-10 pb-28 lg:grid-cols-2">
         <div>
-          <h2 className="max-w-[516px] text-[50px] font-black uppercase leading-tight">
-            Gear Up with Official Cycling Essentials from ADCC
+          <h2 className="max-w-[516px] text-[50px] font-black uppercase leading-[60px]">
+            Gear Up with Official&nbsp;Cycling
+            <br />
+            Essentials from ADCC
           </h2>
 
           <p className="mt-12 max-w-[615px] text-[24px] leading-[30px]">
@@ -126,11 +129,13 @@ export default function AdccStorePage() {
           </button>
         </div>
 
-        <img
-          src="https://images.unsplash.com/photo-1571068316344-75bc76f77890?q=80&w=1000&auto=format&fit=crop"
-          alt="Cycling essentials"
-          className="h-[520px] w-full object-contain"
-        />
+        {/* <div className="relative flex h-[568px] mt-[10px] items-end justify-end"> */}
+          <img
+            src="/img/image 30691.png"
+            alt="Cycling essentials"
+            className="h-[568px] w-[686px] object-contain"
+          />
+        {/* </div> */}
       </section>
 
       <section

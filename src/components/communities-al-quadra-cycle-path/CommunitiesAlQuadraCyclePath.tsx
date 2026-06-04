@@ -50,7 +50,7 @@ export default function TrackDetailPage() {
           className="relative h-[500px] overflow-hidden bg-cover bg-center"
           style={{
             backgroundImage:
-              "linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url('https://images.unsplash.com/photo-1534787238916-9ba6764efd4f?q=80&w=1600&auto=format&fit=crop')",
+              "linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url('/img/pexels-ander-garcia-1317358711-25016478 1.png')",
           }}
         >
           <div className="absolute bottom-20 left-10 text-white">
@@ -106,7 +106,14 @@ export default function TrackDetailPage() {
         ))}
       </section>
 
-      <section className="bg-gradient-to-b from-[#d8ebff] to-[#adc7df] px-10 py-20">
+      {/* <section className="bg-gradient-to-b from-[#d8ebff] to-[#adc7df] px-10 py-20"> */}
+      <section
+        className="bg-cover bg-center bg-no-repeat px-10 py-20"
+        style={{
+          backgroundImage:
+            "url('/img/image 3518.png')",
+        }}
+      >
         <div className="mx-auto max-w-[1268px]">
           <div className="flex justify-between gap-8">
             <h2 className="max-w-[580px] text-[50px] font-black uppercase leading-tight">
@@ -138,7 +145,11 @@ export default function TrackDetailPage() {
         </div>
       </section>
 
-      <section className="h-[620px] bg-[#2f2f2f] bg-[radial-gradient(circle_at_center,rgba(255,255,255,.08),transparent_60%)]" />
+      <section className="h-[620px] bg-[#2f2f2f] bg-[radial-gradient(circle_at_center,rgba(255,255,255,.08),transparent_60%)]"
+        style={{
+          backgroundImage:
+            "url('/img/image 2977.png')",
+        }} />
 
       <section className="mx-auto max-w-[1269px] px-10 py-32">
         <h2 className="mb-16 text-center text-[50px] font-black uppercase">
@@ -146,26 +157,68 @@ export default function TrackDetailPage() {
         </h2>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          {events.map(([title, tag, date, riders, distance, city]) => (
-            <div key={title}>
+          {[
+            {
+              title: events[0][0],
+              tag: events[0][1],
+              date: events[0][2],
+              riders: events[0][3],
+              distance: events[0][4],
+              city: events[0][5],
+              image: "/img/501345306_3950860245127637_1209497623770704531_n. 1.png",
+            },
+            {
+              title: events[1][0],
+              tag: events[1][1],
+              date: events[1][2],
+              riders: events[1][3],
+              distance: events[1][4],
+              city: events[1][5],
+              image: "/img/490796704_1417267435941639_5633845168834004037_n. 1.png",
+            },
+            {
+              title: events[2][0],
+              tag: events[2][1],
+              date: events[2][2],
+              riders: events[2][3],
+              distance: events[2][4],
+              city: events[2][5],
+              image: "/img/503933859_18364437631178203_8919788300453479084_n. 1 (1).png",
+            },
+          ].map((event) => (
+            <div key={event.title}>
               <div className="relative h-[397px] overflow-hidden rounded-[14px] bg-white">
                 <img
-                  src="https://images.unsplash.com/photo-1541625602330-2277a4c46182?q=80&w=1200&auto=format&fit=crop"
-                  alt={title}
+                  src={event.image}
+                  alt={event.title}
                   className="h-full w-full object-cover"
                 />
+
                 <span className="absolute right-6 top-6 rounded-full bg-black/40 px-6 py-2 text-white">
-                  {tag}
+                  {event.tag}
                 </span>
               </div>
 
-              <h3 className="mt-6 text-[26px] font-black uppercase">{title}</h3>
+              <h3 className="mt-6 text-[26px] font-black uppercase">
+                {event.title}
+              </h3>
 
               <div className="mt-5 grid grid-cols-2 gap-y-4 text-[18px] text-black/70">
-                <p className="flex gap-2"><CalendarDays size={20} /> {date}</p>
-                <p className="flex gap-2"><Gauge size={20} /> {distance}</p>
-                <p className="flex gap-2"><Users size={20} /> {riders}</p>
-                <p className="flex gap-2"><MapPin size={20} /> {city}</p>
+                <p className="flex gap-2">
+                  <CalendarDays size={20} /> {event.date}
+                </p>
+
+                <p className="flex gap-2">
+                  <Gauge size={20} /> {event.distance}
+                </p>
+
+                <p className="flex gap-2">
+                  <Users size={20} /> {event.riders}
+                </p>
+
+                <p className="flex gap-2">
+                  <MapPin size={20} /> {event.city}
+                </p>
               </div>
 
               <button className="mt-8 rounded-full border border-[#019839] px-8 py-4 font-bold text-[#019839]">

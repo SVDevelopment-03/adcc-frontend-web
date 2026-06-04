@@ -185,7 +185,7 @@ function PublicFooter() {
 
 export function PublicLayout({ children }: PublicLayoutProps) {
   return (
-    <div className="public-layout min-h-screen bg-[#EAF4FF] text-black px-22">
+    <div className="public-layout min-h-screen bg-[#EAF4FF] text-black">
       <PublicHeader />
       <main className="public-layout-content">{children}</main>
       <PublicFooter />

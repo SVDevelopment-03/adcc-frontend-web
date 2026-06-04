@@ -9,10 +9,28 @@ import {
   Mail,
 } from "lucide-react";
 
+// const similarProducts = [
+//   ["Trek Domane SL 6 - Like New", "12,000 AED"],
+//   ["Shimano Ultegra Groupset", "3,500 AED"],
+//   ["Shimano Ultegra Groupset", "3,500 AED"],
+// ];
+
 const similarProducts = [
-  ["Trek Domane SL 6 - Like New", "12,000 AED"],
-  ["Shimano Ultegra Groupset", "3,500 AED"],
-  ["Shimano Ultegra Groupset", "3,500 AED"],
+  [
+    "Trek Domane SL 6 - Like New",
+    "12,000 AED",
+    "/img/image 297012.png",
+  ],
+  [
+    "Shimano Ultegra Groupset",
+    "3,500 AED",
+    "/img/image 2972123.png",
+  ],
+  [
+    "Shimano Ultegra Groupset",
+    "3,500 AED",
+    "/img/image 2973.png",
+  ],
 ];
 
 export default function StoreDetailPage() {
@@ -38,21 +56,29 @@ export default function StoreDetailPage() {
       </header>
 
       <main className="mx-auto max-w-[1268px] px-10 py-20">
-        <section className="grid grid-cols-1 gap-16 lg:grid-cols-[574px_1fr]">
+        {/* <section className="grid grid-cols-1 gap-16 lg:grid-cols-[574px_1fr]"> */}
+        <section className="grid grid-cols-1 items-start gap-16 lg:grid-cols-[574px_1fr]">
           <div>
             <div className="flex h-[538px] items-center justify-center rounded-2xl bg-[#435974]">
               <img
-                src="https://images.unsplash.com/photo-1485965120184-e220f721d03e?q=80&w=1000&auto=format&fit=crop"
+                src="/img/image 306912.png"
                 alt="Colnago BE"
                 className="h-[390px] w-[510px] object-contain mix-blend-multiply"
               />
             </div>
 
             <div className="mt-8 grid grid-cols-3 gap-6">
-              {[1, 2, 3].map((item) => (
-                <div key={item} className="h-[178px] overflow-hidden rounded-xl bg-[#f4f4f4]">
+              {[
+                "/img/Frame 531768.png",
+                "/img/Frame 531769.png",
+                "/img/Frame 531770.png",
+              ].map((image, index) => (
+                <div
+                  key={index}
+                  className="h-[178px] overflow-hidden rounded-xl bg-[#f4f4f4]"
+                >
                   <img
-                    src="https://images.unsplash.com/photo-1485965120184-e220f721d03e?q=80&w=500&auto=format&fit=crop"
+                    src={image}
                     alt="Product preview"
                     className="h-full w-full object-cover"
                   />
@@ -61,7 +87,10 @@ export default function StoreDetailPage() {
             </div>
           </div>
 
-          <div className="pt-8">
+          {/* <div className="pt-8"> */}
+          {/* <div className="flex h-full flex-col justify-between"> */}
+          {/* <div className="-mt-2 flex h-full flex-col"> */}
+          <div className="flex h-[748px] flex-col">
             <div className="flex items-center gap-1 text-[#F58700]">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star key={star} size={26} fill="currentColor" />
@@ -83,7 +112,7 @@ export default function StoreDetailPage() {
             <div className="mt-10 rounded-xl bg-[#323232] p-8 text-white">
               <div className="flex items-center gap-6">
                 <img
-                  src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop"
+                  src="/img/ImageWithFallback.png"
                   alt="Seller"
                   className="h-[90px] w-[90px] rounded-full object-cover"
                 />
@@ -113,7 +142,8 @@ export default function StoreDetailPage() {
               </div>
             </div>
 
-            <div className="mt-10 flex gap-8">
+            {/* <div className="mt-10 flex gap-8"> */}
+            <div className="mt-[42px] flex gap-8">
               <button className="flex h-[60px] items-center gap-4 rounded-full bg-[#019839] px-10 text-[22px] font-bold text-white">
                 <Phone size={24} /> Contact seller
               </button>
@@ -154,7 +184,7 @@ export default function StoreDetailPage() {
             </div>
 
             <img
-              src="https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?q=80&w=900&auto=format&fit=crop"
+              src="/img/image 3073.png"
               alt="Product detail"
               className="h-[414px] w-full rounded-md object-cover"
             />
@@ -167,7 +197,7 @@ export default function StoreDetailPage() {
           </h2>
 
           <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-3">
-            {similarProducts.map(([name, price]) => (
+            {similarProducts.map(([name, price, image]) => (
               <div
                 key={name}
                 className="min-h-[381px] rounded-[10px] border border-black/5 p-8 shadow-inner"
@@ -175,7 +205,7 @@ export default function StoreDetailPage() {
                 <h3 className="text-[24px] font-black uppercase">{name}</h3>
                 <p className="mt-1 text-[18px] font-bold">{price}</p>
                 <img
-                  src="https://images.unsplash.com/photo-1485965120184-e220f721d03e?q=80&w=800&auto=format&fit=crop"
+                  src={image}
                   alt={name}
                   className="mt-8 h-[240px] w-full object-contain mix-blend-multiply"
                 />

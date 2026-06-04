@@ -28,7 +28,7 @@ export default function ContactUsPage() {
         className="relative h-[640px] bg-cover bg-center"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)),url('https://images.unsplash.com/photo-1541625602330-2277a4c46182?q=80&w=1600&auto=format&fit=crop')",
+            "linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)),url('/img/paolo-candelo-8tXukRrs7yk-unsplash 1.png')",
         }}
       >
         <div className="absolute bottom-20 left-10 md:left-20 text-white">
@@ -50,7 +50,7 @@ export default function ContactUsPage() {
         <div className="mt-20 grid grid-cols-1 gap-8 lg:grid-cols-2">
           <div>
             <img
-              src="https://images.unsplash.com/photo-1511994298241-608e28f14fde?q=80&w=1200&auto=format&fit=crop"
+              src="/img/490796704_1417267435941639_5633845168834004037_n. 1 (1).png"
               alt="Cycling group"
               className="h-[562px] w-full rounded-[15px] object-cover"
             />

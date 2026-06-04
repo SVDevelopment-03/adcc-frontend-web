@@ -20,7 +20,7 @@ const upcomingEvents = [
     riders: "156 participants",
     distance: "42 km",
     city: "Abu Dhabi",
-    image: "https://images.unsplash.com/photo-1541625602330-2277a4c46182?q=80&w=1200&auto=format&fit=crop",
+    image: "/img/Frame 2147226042.png",
   },
   {
     title: "Dubai Marina Sunrise Ride",
@@ -29,7 +29,7 @@ const upcomingEvents = [
     riders: "89 participants",
     distance: "25 km",
     city: "Dubai",
-    image: "https://images.unsplash.com/photo-1511994298241-608e28f14fde?q=80&w=1200&auto=format&fit=crop",
+    image: "/img/490796704_1417267435941639_5633845168834004037_n. 1.png",
   },
   {
     title: "Al Ain Mountain Challenge",
@@ -38,7 +38,7 @@ const upcomingEvents = [
     riders: "156 participants",
     distance: "65 km",
     city: "Abu Dhabi",
-    image: "https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?q=80&w=1200&auto=format&fit=crop",
+    image: "/img/503933859_18364437631178203_8919788300453479084_n. 1.png",
   },
 ];
 
@@ -50,7 +50,7 @@ const trackCards = [
     elevation: "50 m",
     level: "Easy",
     active: true,
-    image: "https://images.unsplash.com/photo-1534787238916-9ba6764efd4f?q=80&w=1200&auto=format&fit=crop",
+    image: "/img/pexels-stephen-noulton-421904730-17272198 1 (1).png",
   },
   {
     title: "Yas Island Circuit",
@@ -58,7 +58,7 @@ const trackCards = [
     distance: "45 km",
     elevation: "120 m",
     level: "Intermediate",
-    image: "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=1200&auto=format&fit=crop",
+    image: "/img/image 3049.png",
   },
   {
     title: "Sharjah Corniche",
@@ -66,7 +66,7 @@ const trackCards = [
     distance: "18 km",
     elevation: "30 m",
     level: "Easy",
-    image: "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=1200&auto=format&fit=crop",
+    image: "/img/image 3049.png",
   },
 ];
 
@@ -97,7 +97,7 @@ export default function CommunityDetailPage() {
           className="relative h-[500px] overflow-hidden bg-cover bg-center"
           style={{
             backgroundImage:
-              "linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url('https://images.unsplash.com/photo-1534787238916-9ba6764efd4f?q=80&w=1600&auto=format&fit=crop')",
+              "linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url('/img/pexels-ander-garcia-1317358711-25016478 1.png')",
           }}
         >
           <div className="absolute bottom-20 left-10 text-white">
