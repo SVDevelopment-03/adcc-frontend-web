@@ -213,23 +213,25 @@ function ExploreIntro() {
           <h2 className="bebas" style={{ fontSize: 60, lineHeight: 1.1, textTransform: "capitalize", marginBottom: 64 }}>
             Explore Abu Dhabi's Premier Cycling Tracks
           </h2>
-          <TracksJourneyCard />
+          <div style={{ paddingTop: 90 }}>
+            <TracksJourneyCard />
+          </div>
         </div>
 
         {/* Right: video thumbnail + description */}
         <div style={{ flex: 1 }}>
           <div style={{
             borderRadius: 12, overflow: "hidden", height: 340, marginBottom: 28,
-            backgroundImage: "url('https://images.unsplash.com/photo-1517649763962-0c623066013b?w=700&q=80')",
+            backgroundImage: "url('/img/SSYouTube.online_Falcon_daman.png')",
             backgroundSize: "cover", backgroundPosition: "center",
             position: "relative", display: "flex", alignItems: "center", justifyContent: "center"
           }}>
-            <div style={{
+            {/* <div style={{
               width: 60, height: 60, borderRadius: "50%", background: "rgba(255,255,255,0.9)",
               display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer"
             }}>
               <span style={{ fontSize: 22, marginLeft: 4 }}>▶</span>
-            </div>
+            </div> */}
           </div>
           <p style={{ fontSize: 22, lineHeight: 1.55, color: "#000" }}>
             From scenic coastal rides to high-performance cycling circuits, Abu Dhabi offers world-class tracks designed for every rider. Whether you're training for endurance, improving speed, or enjoying a casual ride, discover routes that match your level and ambition.
@@ -250,15 +252,19 @@ function WhySection() {
   ];
   return (
     <section style={{
-      background: "linear-gradient(180deg,#025AE8 0%,#013282 100%)",
+      backgroundImage: "url('/img/image 3517.png')",
+      // backgroundSize: "cover",
+      backgroundSize: "100% 100%",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
       padding: "80px 82px", position: "relative", overflow: "hidden"
     }}>
       {/* bg texture */}
-      <div style={{
+      {/* <div style={{
         position: "absolute", inset: 0,
         backgroundImage: "url('https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=1440&q=80')",
         backgroundSize: "cover", opacity: 0.08
-      }} />
+      }} /> */}
       <div style={{ position: "relative", zIndex: 2 }}>
         {/* header row */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 48 }}>
@@ -276,7 +282,7 @@ function WhySection() {
           {/* cycling photo */}
           <div style={{
             flex: "0 0 480px", borderRadius: 12, overflow: "hidden",
-            backgroundImage: "url('https://images.unsplash.com/photo-1471897488648-5eae4ac6d485?w=700&q=80')",
+            backgroundImage: "url('/img/paolo-candelo-8tXukRrs7yk-unsplash 1.png')",
             backgroundSize: "cover", backgroundPosition: "center", minHeight: 420
           }} />
 
@@ -301,17 +307,29 @@ function WhySection() {
 
 // ── Track card ────────────────────────────────────────────────────────────────
 function TrackCard({ track }) {
-  const isFeatured = track.featured;
+  // const isFeatured = track.featured;
+  const isFeatured = false;
   const cardBg = isFeatured ? "#435974" : "#fff";
   const textColor = isFeatured ? "#fff" : "#000";
   const statBg = isFeatured ? "#435974" : "#323232";
   const borderStyle = isFeatured ? "none" : "1px solid rgba(0,0,0,0.3)";
 
   return (
-    <div style={{
-      width: 400, borderRadius: 12, overflow: "hidden",
+    <div
+    onMouseEnter={(e) => {
+      e.currentTarget.style.background = "#435974";
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.background = "#fff";
+    }}
+    
+    style={{
+      width: "calc(33.33% - 19px)", minWidth: 0,
+      borderRadius: 12, overflow: "hidden",
       background: cardBg, border: borderStyle,
-      display: "flex", flexDirection: "column"
+      display: "flex", flexDirection: "column",
+      transition: "all .3s",
+      cursor: "pointer",
     }}>
       {/* image */}
       <div style={{

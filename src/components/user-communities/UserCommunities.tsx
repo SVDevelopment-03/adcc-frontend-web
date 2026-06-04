@@ -15,6 +15,15 @@ import {
 
 const navLinks = ["About Us", "Events", "Community", "Tracks"];
 
+const FontLoader = () => (
+  <style>{`
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Bebas+Neue&display=swap');
+
+    body { background: #EAF4FF; font-family: 'Outfit', sans-serif; color: #000; }
+    .bebas { font-family: 'Bebas Kai', 'Bebas Neue', sans-serif; font-weight: 400; letter-spacing: 0; }
+  `}</style>
+);
+
 const communities = [
   {
     title: "Dubai Riders",
@@ -58,6 +67,8 @@ const faqs = [
 export default function CommunitiesPage() {
   return (
     <div className="min-h-screen bg-[#eaf4ff] text-black">
+      <FontLoader />
+
       <header className="h-[134px] bg-[#eaf4ff] flex items-center justify-between px-10 md:px-20">
         <img
           src="/ADCC-Logo.png"
@@ -90,7 +101,7 @@ export default function CommunitiesPage() {
         className="relative h-[640px] bg-cover bg-center"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)), url('https://images.unsplash.com/photo-1534787238916-9ba6764efd4f?q=80&w=1600&auto=format&fit=crop')",
+            "linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)), url('/img/pexels-jonathanborba-19431223 1.png')",
         }}
       >
         <div className="absolute bottom-20 left-10 md:left-20 text-white">
@@ -101,23 +112,30 @@ export default function CommunitiesPage() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-[1268px] grid-cols-1 items-center gap-16 px-10 py-28 lg:grid-cols-2">
-        <div>
-          <h2 className="max-w-[640px] text-[60px] font-black uppercase leading-tight">
+      {/* <section className="mx-auto grid max-w-[1268px] grid-cols-1 gap-10 px-10 py-20 lg:relative lg:block lg:h-[565px] lg:py-0"> */}
+      {/* <section className="mx-auto grid max-w-[1268px] grid-cols-1 items-center gap-[42px] px-10 py-20 lg:grid-cols-[634px_592px]"> */}
+      <section className="mx-auto grid max-w-[1268px] grid-cols-1 items-center gap-[42px] px-10 py-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,592px)]">
+        {/* <div className="max-w-[634px] lg:absolute lg:left-0 lg:top-[206px] lg:w-[634px]"> */}
+        <div className="max-w-[634px]">
+          <h2 className="bebas max-w-[634px] text-[42px] leading-[50px] capitalize md:text-[52px] md:leading-[62px] lg:text-[60px] lg:leading-[72px]">
             Connect with Cycling Communities Across Abu Dhabi
           </h2>
-          <p className="mt-8 max-w-[610px] text-[24px] leading-[30px]">
+          <p className="mt-6 max-w-[610px] text-[18px] leading-[24px] md:text-[22px] md:leading-[28px] lg:mt-[44px] lg:text-[24px] lg:leading-[30px]">
             Abu Dhabi Cycling Club unites riders through communities focused on
             cycling. Whether for fitness, competition, or fun, find a group that
             suits you.
           </p>
         </div>
 
-        <img
-          src="https://images.unsplash.com/photo-1511994298241-608e28f14fde?q=80&w=1200&auto=format&fit=crop"
-          alt="Cycling community"
-          className="h-[440px] w-full rounded-[10px] object-cover"
-        />
+        {/* <div className="h-auto w-full max-w-[592px] overflow-hidden rounded-[10px] lg:absolute lg:right-0 lg:top-[125px] lg:h-[440px] lg:w-[592px]"> */}
+        {/* <div className="h-[440px] w-full max-w-[592px] overflow-hidden rounded-[10px]"> */}
+        <div className="h-[440px] w-full overflow-hidden rounded-[10px]">
+          <img
+            src="/img/Frame 2147226625.png"
+            alt="Cycling community"
+            className="h-auto w-full object-cover lg:h-full"
+          />
+        </div>
       </section>
 
       <section className="mx-auto max-w-[1268px] px-10 pb-28">

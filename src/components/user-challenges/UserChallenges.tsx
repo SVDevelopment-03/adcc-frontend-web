@@ -29,7 +29,7 @@ const challenges = [
     participants: "500 participants",
     image:
       "https://images.unsplash.com/photo-1541625602330-2277a4c46182?q=80&w=1200&auto=format&fit=crop",
-    active: true,
+    // active: true,
   },
   {
     title: "Spring Sprint Series",
@@ -105,7 +105,7 @@ export default function ChallengesPage() {
         className="relative h-[635px] bg-cover bg-center"
         style={{
           backgroundImage:
-            "linear-gradient(90deg, rgba(0,0,0,.55), rgba(0,0,0,.1)), url('https://images.unsplash.com/photo-1541625602330-2277a4c46182?q=80&w=1600&auto=format&fit=crop')",
+            "linear-gradient(90deg, rgba(0,0,0,.55), rgba(0,0,0,.1)), url('/img/paolo-candelo-8tXukRrs7yk-unsplash 1.png')",
         }}
       >
         <div className="absolute bottom-20 left-10 md:left-20 text-white">
@@ -150,7 +150,7 @@ export default function ChallengesPage() {
       {/* Flag Image */}
       <section className="mx-auto max-w-[1260px] px-10 pb-28">
         <img
-          src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600&auto=format&fit=crop"
+          src="/img/SSYouTube.online_Falcon_daman.png"
           alt="ADCC Flag"
           className="h-[465px] w-full rounded-xl object-cover"
         />
@@ -178,9 +178,10 @@ export default function ChallengesPage() {
           {challenges.map((item) => (
             <div
               key={item.title}
-              className={`overflow-hidden rounded-xl border border-[#cad8e6] ${
-                item.active ? "bg-[#49637f] text-white" : "bg-[#eef7ff]"
-              }`}
+              // className={`overflow-hidden rounded-xl border border-[#cad8e6] ${
+              //   item.active ? "bg-[#49637f] text-white" : "bg-[#eef7ff]"
+              // }`}
+              className="group overflow-hidden rounded-xl border border-[#cad8e6] bg-[#eef7ff] transition-all duration-300 hover:bg-[#49637f] hover:text-white"
             >
               <img
                 src={item.image}
@@ -195,9 +196,10 @@ export default function ChallengesPage() {
                 <p className="mt-2 text-[15px]">{item.desc}</p>
 
                 <div
-                  className={`mt-8 flex items-center justify-between rounded-md px-6 py-5 ${
-                    item.active ? "bg-[#89a2bf]" : "bg-[#89a2bf]"
-                  } text-white`}
+                  // className={`mt-8 flex items-center justify-between rounded-md px-6 py-5 ${
+                  //   item.active ? "bg-[#89a2bf]" : "bg-[#89a2bf]"
+                  // } text-white`}
+                  className="mt-8 flex items-center justify-between rounded-md bg-[#89a2bf] px-6 py-5 text-white transition-all duration-300 group-hover:bg-[#6f89a7]"
                 >
                   <div className="space-y-2 text-[15px]">
                     <p className="flex items-center gap-2">

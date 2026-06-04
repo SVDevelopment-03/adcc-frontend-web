@@ -42,9 +42,20 @@ const schedule = [
   ["11:00 AM", "Awards Ceremony", "Celebration and prizes"],
 ];
 
+const FontLoader = () => (
+  <style>{`
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Bebas+Neue&display=swap');
+
+    body { background: #EAF4FF; font-family: 'Outfit', sans-serif; color: #000; }
+    .bebas { font-family: 'Bebas Kai', 'Bebas Neue', sans-serif; font-weight: 400; letter-spacing: 0; }
+  `}</style>
+);
+
 export default function EventDetailPage() {
   return (
     <div className="min-h-screen bg-[#eaf4ff] text-black">
+      <FontLoader />
+
       <header className="h-[134px] flex items-center justify-between px-10 md:px-20">
         <img src="/ADCC-Logo.png" className="h-[57px] w-[135px] object-contain" />
 
@@ -69,7 +80,7 @@ export default function EventDetailPage() {
           className="relative h-[500px] overflow-hidden bg-cover bg-center"
           style={{
             backgroundImage:
-              "linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url('https://images.unsplash.com/photo-1534787238916-9ba6764efd4f?q=80&w=1600&auto=format&fit=crop')",
+              "linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url('/img/pexels-ander-garcia-1317358711-25016478 1.png')",
           }}
         >
           <div className="absolute bottom-20 left-10 text-white">
@@ -98,25 +109,38 @@ export default function EventDetailPage() {
         </button>
       </section>
 
-      <section className="mx-auto mb-32 grid max-w-[1192px] grid-cols-1 gap-4 rounded-2xl bg-[#323232] p-4 lg:grid-cols-[426px_repeat(4,1fr)]">
-        <div className="relative rounded-2xl bg-[#435974] p-8 text-white">
-          <p className="font-medium">• Register Now</p>
-          <h3 className="mt-8 text-[50px] font-black uppercase">Free</h3>
-          <p className="text-white/60">Limited spots available</p>
-          <div className="mt-10 flex items-center justify-between border-t border-white/10 pt-5">
-            <span>• Organized by</span>
-            <div className="flex items-center gap-3">
-              <span className="rounded-full bg-[#019839] p-3 text-white">
+      <section className="mx-auto mb-32 flex h-[270px] max-w-[1192px] gap-3 overflow-x-auto rounded-2xl bg-[#323232] p-[17px] lg:overflow-visible">
+        <div className="relative h-[236px] w-[426px] shrink-0 rounded-2xl bg-[#435974] text-white">
+          <p className="absolute left-6 top-[19px] flex items-center gap-[7px] text-[18px] font-medium leading-[23px]">
+            <span className="h-[9px] w-[9px] rounded-full bg-white" />
+            Register Now
+          </p>
+
+          <h3 className="bebas absolute left-6 top-[66px] text-[50px] uppercase leading-[36px]">
+            Free
+          </h3>
+          <p className="absolute left-6 top-[110px] text-[14px] leading-5 text-white/60">
+            Limited spots available
+          </p>
+
+          <div className="absolute left-6 top-[151px] h-[71px] w-[378px] border-t border-white/10">
+            <span className="absolute left-[13px] top-[31px] flex items-center gap-[7px] text-[16px] font-medium leading-5">
+              <span className="h-[9px] w-[9px] rounded-full bg-white" />
+              Organized by
+            </span>
+            <div className="absolute left-[251px] top-[17px] flex items-center gap-3">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#019839] text-white">
                 <Bike size={20} />
               </span>
-              <b className="text-[36px]">ADCC</b>
+              <b className="bebas text-[40px] leading-[48px]">ADCC</b>
             </div>
           </div>
-          <button className="absolute right-6 top-6 rounded-full bg-white p-3 text-red-600">
-            <Heart size={22} />
+
+          <button className="absolute left-[352px] top-4 flex h-[50px] w-[50px] items-center justify-center rounded-full bg-white text-[#C12D32]">
+            <Heart size={24} />
           </button>
-          <button className="absolute right-6 top-20 rounded-full bg-white p-3 text-[#019839]">
-            <Share2 size={22} />
+          <button className="absolute left-[352px] top-[75px] flex h-[50px] w-[50px] items-center justify-center rounded-full bg-white text-[#019839]">
+            <Share2 size={24} />
           </button>
         </div>
 
@@ -126,17 +150,28 @@ export default function EventDetailPage() {
           [Users, "156 riders", "Participants"],
           [Trophy, "Advanced", "Level"],
         ].map(([Icon, title, label]) => (
-          <div key={title} className="rounded-xl bg-[#435974] p-8 text-white">
-            <span className="inline-flex rounded-full bg-white p-4 text-[#019839]">
+          <div key={title} className="relative h-[236px] w-[171px] shrink-0 overflow-hidden rounded-[10px] bg-[#435974] text-white">
+            <span className="absolute left-5 top-5 flex h-[50px] w-[50px] items-center justify-center rounded-full bg-white text-[#019839]">
               <Icon size={25} />
             </span>
-            <h3 className="mt-20 text-[30px] font-black uppercase">{title}</h3>
-            <p className="text-[20px] text-white/60">{label}</p>
+
+            <h3 className="bebas absolute left-5 top-[155px] text-[30px] uppercase leading-[36px]">
+              {title}
+            </h3>
+            <p className="absolute left-5 top-[191px] text-[20px] leading-[25px] text-white/60">
+              {label}
+            </p>
           </div>
         ))}
       </section>
 
-      <section className="bg-gradient-to-b from-[#025AE8] to-[#013282] px-10 py-20">
+      {/* <section className="bg-gradient-to-b from-[#025AE8] to-[#013282] px-10 py-20"> */}
+      <section
+        className="bg-cover bg-center bg-no-repeat px-10 py-20"
+        style={{
+          backgroundImage: "url('/img/image 3518.png')",
+        }}
+      >
         <div className="mx-auto max-w-[1268px]">
           <div className="flex flex-col justify-between gap-8 md:flex-row md:items-start">
             <h2 className="max-w-[580px] text-[50px] font-black uppercase leading-tight">
@@ -186,7 +221,7 @@ export default function EventDetailPage() {
           <div className="relative">
             <div className="absolute bottom-0 h-[254px] w-full rounded-tl-xl rounded-br-[60px] bg-[#435974]" />
             <img
-              src="https://images.unsplash.com/photo-1541625602330-2277a4c46182?q=80&w=900&auto=format&fit=crop"
+              src="/img/505801846.png"
               className="relative z-10 h-[478px] w-full rounded-xl object-cover"
             />
           </div>
