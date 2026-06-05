@@ -110,15 +110,15 @@ export default function AdccStorePage() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-[1268px] grid-cols-1 items-end gap-16 px-10 pb-28 lg:grid-cols-2">
+      <section className="mx-auto relative grid max-w-[1268px] grid-cols-1 items-end gap-16 px-10 pb-28 lg:grid-cols-2">
         <div>
-          <h2 className="max-w-[516px] text-[50px] font-black uppercase leading-[60px]">
+          <h2 className="max-w-[516px] text-[50px] font-normal font-[#000000] uppercase leading-[60px]">
             Gear Up with Official&nbsp;Cycling
             <br />
             Essentials from ADCC
           </h2>
 
-          <p className="mt-12 max-w-[615px] text-[24px] leading-[30px]">
+          <p className="mt-12 max-w-[615px] text-[24px] font-normal leading-[30px]">
             Explore a curated collection of cycling gear, apparel, and accessories
             designed for performance and comfort. Whether you’re training, racing, or
             riding for leisure, find everything you need to elevate your cycling experience.
@@ -133,7 +133,7 @@ export default function AdccStorePage() {
           <img
             src="/img/image 30691.png"
             alt="Cycling essentials"
-            className="h-[568px] w-[686px] object-contain"
+            className="h-[568px] w-[686px] object-contain absolute bottom-[-27px] right-[-223px]"
           />
         {/* </div> */}
       </section>

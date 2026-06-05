@@ -304,14 +304,14 @@ function ScheduleSection() {
         Abu Dhabi Grand Prix Ride Schedule
       </h2>
 
-      <p className="mx-auto mt-[22px] max-w-[795px] text-center text-[24px] leading-[30px] text-white/70 max-md:text-[18px] max-md:leading-[28px]">
+      <p className="mx-auto mb-[45px] mt-[22px] max-w-[795px] text-center text-[24px] leading-[30px] text-white/70 max-md:text-[18px] max-md:leading-[28px]">
         Join a world-class cycling event at Yas Marina Circuit. From
         registration to the final sprint, every moment promises an unforgettable
         ride.
       </p>
 
       {/* <div className="grand-prix-shell mt-11 grid grid-cols-[460px_1fr] gap-[53px] max-lg:grid-cols-1"> */}
-      <div className="grand-prix-shell mt-[45px] grid grid-cols-[460px_736px] gap-[53px] max-lg:grid-cols-1">
+      <div className="grand-prix-shell mt-[45px] flex items-end gap-[53px] max-lg:grid-cols-1">
         <div className="relative h-[478px] w-full max-w-[460px] max-lg:mx-auto">
           <div className="absolute bottom-0 left-0 h-[254px] w-full rounded-tl-xl rounded-br-xl rounded-tr-[60px] rounded-bl-[60px] bg-[#435974]" />
 
@@ -348,7 +348,7 @@ function ScheduleSection() {
           {schedule.map((item, index) => (
             <article
               key={`${item.time}-${item.title}-${index}`}
-              className={`grid h-[98px] w-[736px] grid-cols-[168px_1fr] items-center rounded-[11.91px] px-[19px] text-white max-lg:w-full max-sm:h-auto max-sm:grid-cols-1 max-sm:gap-2 max-sm:py-5 ${
+              className={`grid p-[20px] w-[736px] grid-cols-[168px_1fr] items-start rounded-[11.91px] px-[19px] text-white max-lg:w-full max-sm:h-auto max-sm:grid-cols-1 max-sm:gap-2 max-sm:py-5 ${
               // className={`grid min-h-[98px] grid-cols-[149px_1fr] items-center rounded-[12px] px-[19px] text-white max-sm:grid-cols-1 max-sm:gap-2 max-sm:py-5 ${
                 index === 0 ? "bg-[#435974]" : "bg-[#7891AF]"
               }`}
