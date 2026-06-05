@@ -4,13 +4,51 @@ import { getStoreItems, StoreItem } from '../../services/storeApi';
 import { subscribeToNewsletter } from '../../services/newsletterApi';
 
 const CSS = `
-  @keyframes scroll-left {
+  @keyframes ticker-group-left {
     0%   { transform: translateX(0); }
     100% { transform: translateX(-50%); }
   }
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(24px); }
     to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes cardRiseUp {
+    from { opacity: 0; transform: translateY(64px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes appImageBloom {
+    from {
+      opacity: 0;
+      transform: scale(0.78);
+      filter: blur(10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+      filter: blur(0);
+    }
+  }
+  @keyframes aboutLeftFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+      filter: blur(8px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+      filter: blur(0);
+    }
+  }
+  @keyframes aboutRightSlideIn {
+    from {
+      opacity: 0;
+      transform: translateX(120px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: #EAF4FF; }
@@ -150,6 +188,15 @@ const CSS = `
   .app-feature:hover .feature-icon { transform: scale(1.1); }
   .feature-icon { transition: transform 0.2s; }
   .fade-in { animation: fadeUp 0.6s ease both; }
+  .app-phone-mockup {
+    opacity: 0;
+    transform: scale(0.78);
+    transform-origin: center;
+    will-change: transform, opacity, filter;
+  }
+  .app-phone-stage.is-visible .app-phone-mockup {
+    animation: appImageBloom 1.25s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
 
   .journey-section {
     background: #EAF4FF;
@@ -251,10 +298,59 @@ const CSS = `
     position: relative;
     overflow: hidden;
     cursor: pointer;
+    opacity: 0;
+    transform: translateY(64px);
+    will-change: transform, opacity;
     transition: transform 0.25s, box-shadow 0.25s, background 0.25s;
   }
-  .journey-card:hover {
+  .journey-cards.is-visible .journey-card {
+    animation: cardRiseUp 1.15s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .journey-cards.is-visible .journey-card:nth-child(1) { animation-delay: 0.08s; }
+  .journey-cards.is-visible .journey-card:nth-child(2) { animation-delay: 0.24s; }
+  .journey-cards.is-visible .journey-card:nth-child(3) { animation-delay: 0.40s; }
+  .journey-cards.is-visible .journey-card:nth-child(4) { animation-delay: 0.56s; }
+  .journey-cards.is-visible .journey-card:hover {
     background: #323232 !important;
+    transform: translateY(-8px);
+  }
+  .platform-card {
+    opacity: 0;
+    transform: translateY(64px);
+    will-change: transform, opacity;
+  }
+  .platform-cards.is-visible .platform-card {
+    animation: cardRiseUp 1.15s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .platform-cards.is-visible .platform-card:nth-child(1) { animation-delay: 0.08s; }
+  .platform-cards.is-visible .platform-card:nth-child(2) { animation-delay: 0.24s; }
+  .platform-cards.is-visible .platform-card:nth-child(3) { animation-delay: 0.40s; }
+  .store-animated-card {
+    opacity: 0;
+    transform: translateY(64px);
+    will-change: transform, opacity;
+  }
+  .store-rail.is-visible .store-animated-card {
+    animation: cardRiseUp 1.15s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .store-rail.is-visible .store-animated-card:nth-child(1) { animation-delay: 0.08s; }
+  .store-rail.is-visible .store-animated-card:nth-child(2) { animation-delay: 0.24s; }
+  .store-rail.is-visible .store-animated-card:nth-child(3) { animation-delay: 0.40s; }
+  .about-left-image {
+    opacity: 0;
+    transform: scale(0.9);
+    will-change: transform, opacity, filter;
+  }
+  .about-right-image {
+    opacity: 0;
+    transform: translateX(120px);
+    will-change: transform, opacity;
+  }
+  .about-section.is-visible .about-left-image {
+    animation: aboutLeftFadeIn 1.15s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .about-section.is-visible .about-right-image {
+    animation: aboutRightSlideIn 1.15s cubic-bezier(0.2, 0.8, 0.2, 1) 0.18s both;
   }
   .journey-card-label {
     position: absolute;
@@ -583,13 +679,16 @@ function StatsTicker() {
     { label: "250+ Events Hosted Annually", bg: "#D9E7F9", dark: false },
     { label: "1.5 Million+ KM Cycled", bg: "#435974", dark: true },
   ];
-  const items = [...stats, ...stats];
   return (
     <div style={{ width: '100%', height: 100, overflow: 'hidden', display: 'flex' }}>
-      <div style={{ display: 'flex', alignItems: 'stretch', animation: 'scroll-left 18s linear infinite', whiteSpace: 'nowrap' }}>
-        {items.map((s, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '0 36px', height: 100, flexShrink: 0, background: s.bg }}>
-            <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 29, textTransform: 'uppercase', color: s.dark ? '#fff' : '#000' }}>{s.label}</span>
+      <div style={{ display: 'flex', alignItems: 'stretch', animation: 'ticker-group-left 18s linear infinite', whiteSpace: 'nowrap' }}>
+        {[0, 1].map((groupIndex) => (
+          <div key={groupIndex} style={{ minWidth: '100vw', display: 'flex', alignItems: 'stretch', flexShrink: 0 }}>
+            {stats.map((s, i) => (
+              <div key={`${groupIndex}-${i}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, padding: '0 36px', height: 100, flex: '1 0 auto', background: s.bg }}>
+                <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 29, textTransform: 'uppercase', color: s.dark ? '#fff' : '#000' }}>{s.label}</span>
+              </div>
+            ))}
           </div>
         ))}
       </div>
@@ -600,12 +699,28 @@ function StatsTicker() {
 /* ─── CYCLING JOURNEY ────────────────────────────────────────────────────────*/
 function CyclingJourneySection() {
   const navigate = useNavigate();
+  const cardsRef = useRef<HTMLDivElement | null>(null);
+  const [cardsVisible, setCardsVisible] = useState(false);
   const cards = [
     { label: "Find Cycling\nTracks", bg: "#777777", img: "../../../public/images/journey-1.png", to:"/user-tracks" },
     { label: "Discover\nEvents", bg: "#777777", img: "../../../public/images/journey-2.png", to:"/user-event" },
     { label: "Join Active\nChallenges", bg: "#777777", img: "../../../public/images/journey-3.png" , to:"//user-challenges"},
     { label: "Connect With\nRiders", bg: "#777777",img: "https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=400&q=80" , to:"/login"},
   ];
+
+  useEffect(() => {
+    const cardsEl = cardsRef.current;
+    if (!cardsEl) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setCardsVisible(entry.isIntersecting),
+      { threshold: 0.35 }
+    );
+
+    observer.observe(cardsEl);
+
+    return () => observer.disconnect();
+  }, []);
   
   return (
     <section className="journey-section">
@@ -616,7 +731,7 @@ function CyclingJourneySection() {
         </div>
       </div>
       <div className="journey-content">
-        <div className="journey-cards">
+        <div ref={cardsRef} className={`journey-cards${cardsVisible ? ' is-visible' : ''}`}>
           {cards.map((card, i) => (
             <div key={i} className="card-hover journey-card" style={{ background: card.bg }}
             onClick={()=>navigate(card?.to)}>
@@ -644,12 +759,29 @@ function CyclingJourneySection() {
 
 /* ─── APP SECTION ────────────────────────────────────────────────────────────*/
 function AppSection() {
+  const phoneRef = useRef<HTMLDivElement | null>(null);
+  const [phoneVisible, setPhoneVisible] = useState(false);
   const features = [
     { icon: '/images/icon-1.png', label: 'Track Performance\nand Rides' },
     { icon: '/images/icon-2.png', label: 'Join Official\nChallenges' },
     { icon: '/images/icon-3.png', label: 'Connect With\nRiders' },
     { icon: '/images/icon-4.png', label: 'Discover Cycling\nRoutes' },
   ];
+
+  useEffect(() => {
+    const phoneEl = phoneRef.current;
+    if (!phoneEl) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setPhoneVisible(entry.isIntersecting),
+      { threshold: 0.35 }
+    );
+
+    observer.observe(phoneEl);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section id="app" style={{ background: '#435974', width: '100%', padding: '80px 86px', display: 'flex', alignItems: 'flex-start', gap: 60, position: 'relative', overflow: 'hidden' }}>
       {/* Left text */}
@@ -678,9 +810,9 @@ function AppSection() {
       </div>
 
       {/* Phone mockup center */}
-      <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative', minHeight: 500 }}>
+      <div ref={phoneRef} className={`app-phone-stage${phoneVisible ? ' is-visible' : ''}`} style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative', minHeight: 500 }}>
         {/* Back phone */}
-        <div >
+        <div className="app-phone-mockup">
           <img src="../../../public/images/mobile.png" alt="App" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} />
           </div>
         {/* Front phone */}
@@ -702,15 +834,17 @@ function AppSection() {
 }
 
 /* ─── COMMUNITY / EAT SLEEP BIKE ────────────────────────────────────────────*/
+
 function CommunitySection() {
     const navigate = useNavigate();
 
   const icons = [
-    { icon: '/images/vegetable.png', label: 'Eat' },
-    { icon: '/images/moon-night.png', label: 'Sleep' },
-    { icon: '/images/cycling.png', label: 'Bike' },
-    { icon: '/images/sync.png', label: 'Repeat' },
+    { icon: '/images/vegetabl.gif', label: 'Eat' },
+    { icon: '/images/moon-night.gif', label: 'Sleep' },
+    { icon: '/images/cycling.gif', label: 'Bike' },
+    { icon: '/images/sync.gif', label: 'Repeat' },
   ];
+  
   return (
     <section id="community" style={{ background: '#EAF4FF', padding: '125px 86px', textAlign: 'center' }}>
       <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 28, color: '#000', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 16 }}>For the Cycling Community</p>
@@ -746,6 +880,8 @@ function CommunitySection() {
 /* ─── EXPLORE THE PLATFORM ───────────────────────────────────────────────────*/
 function ExplorePlatformSection() {
   const navigate = useNavigate();
+  const cardsRef = useRef<HTMLDivElement | null>(null);
+  const [cardsVisible, setCardsVisible] = useState(false);
   const cards = [
     {
       tag: 'EVENTS',
@@ -769,12 +905,27 @@ function ExplorePlatformSection() {
       to: '/user-tracks',
     },
   ];
+
+  useEffect(() => {
+    const cardsEl = cardsRef.current;
+    if (!cardsEl) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setCardsVisible(entry.isIntersecting),
+      { threshold: 0.35 }
+    );
+
+    observer.observe(cardsEl);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section id="platform" style={{ background: '#EAF4FF', padding: '0 86px 80px' }}>
       <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 72, color: '#000', textTransform: 'uppercase', textAlign: 'center', paddingTop: 35, marginBottom: 40, lineHeight: '72px' }}>Explore the Platform</h2>
-      <div style={{ display: 'flex', gap: 0, borderRadius: 20, overflow: 'hidden', height: 480 }}>
+      <div ref={cardsRef} className={`platform-cards${cardsVisible ? ' is-visible' : ''}`} style={{ display: 'flex', gap: 0, borderRadius: 20, overflow: 'hidden', height: 480 }}>
         {cards.map((card, i) => (
-          <div key={i} onClick={() => navigate(card.to)} className="card-hover" style={{ flex: 1, position: 'relative', overflow: 'hidden', cursor: 'pointer', borderLeft: i > 0 ? '2px solid rgba(255,255,255,0.3)' : 'none' }}>
+          <div key={i} onClick={() => navigate(card.to)} className="card-hover platform-card" style={{ flex: 1, position: 'relative', overflow: 'hidden', cursor: 'pointer', borderLeft: i > 0 ? '2px solid rgba(255,255,255,0.3)' : 'none' }}>
             <img src={card.img} alt={card.title} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s' }} />
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.75) 100%)' }} />
             {/* Tag */}
@@ -809,6 +960,7 @@ type StoreCardProduct = {
 };
 
 const STORE_FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&q=80';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
 
 function formatStorePrice(item: StoreItem) {
   const currency = item.currency || 'AED';
@@ -817,7 +969,13 @@ function formatStorePrice(item: StoreItem) {
 }
 
 function getStoreImage(item: StoreItem) {
-  return item.coverImage || item.photos?.[0] || STORE_FALLBACK_IMAGE;
+  const image = item.coverImage || item.photos?.[0] || '';
+  const trimmedImage = image.trim();
+
+  if (!trimmedImage) return STORE_FALLBACK_IMAGE;
+  if (/^(https?:|data:|blob:)/i.test(trimmedImage)) return trimmedImage;
+
+  return new URL(trimmedImage.replace(/^\/+/, ''), `${API_BASE_URL}/`).toString();
 }
 
 function getStoreSubText(item: StoreItem) {
@@ -828,6 +986,8 @@ function getStoreSubText(item: StoreItem) {
 
 function StoreSection() {
   const navigate = useNavigate();
+  const storeRailRef = useRef<HTMLDivElement | null>(null);
+  const [storeCardsVisible, setStoreCardsVisible] = useState(false);
   const [products, setProducts] = useState<StoreCardProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
@@ -869,10 +1029,24 @@ function StoreSection() {
     };
   }, []);
 
+  useEffect(() => {
+    const railEl = storeRailRef.current;
+    if (!railEl) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setStoreCardsVisible(entry.isIntersecting),
+      { threshold: 0.35 }
+    );
+
+    observer.observe(railEl);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section id="store" style={{ background: '#EAF4FF', padding: '0 86px 80px' }}>
       <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 72, color: '#000', textTransform: 'uppercase', textAlign: 'center', marginBottom: 40 }}>ADCC Store</h2>
-      <div className="store-rail">
+      <div ref={storeRailRef} className={`store-rail${storeCardsVisible ? ' is-visible' : ''}`}>
         {isLoading && (
           <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, color: '#435974', padding: '36px 0' }}>Loading store products...</div>
         )}
@@ -884,7 +1058,7 @@ function StoreSection() {
         )}
         {products.map((p, i) => (
           i === 0 ? (
-            <div key={p.id} onClick={() => navigate('/user-adcc-store')} className="store-card store-featured-card">
+            <div key={p.id} onClick={() => navigate('/user-adcc-store')} className="store-card store-featured-card store-animated-card">
               <div className="store-featured-icon">
                 <img src="/images/users.png" alt="" />
               </div>
@@ -892,11 +1066,19 @@ function StoreSection() {
               <span className="store-featured-action">{p.action}</span>
               <h3 className="store-featured-title">{p.title}</h3>
               <p className="store-featured-sub">{p.sub}</p>
-              <img className="store-featured-product" src={p.img} alt={p.title} />
+              <img
+                className="store-featured-product"
+                src={p.img}
+                alt={p.title}
+                onError={(event) => {
+                  event.currentTarget.onerror = null;
+                  event.currentTarget.src = STORE_FALLBACK_IMAGE;
+                }}
+              />
               <span className="store-featured-price">{p.price}</span>
             </div>
           ) : (
-          <div key={p.id} onClick={() => navigate('/user-adcc-store')} className="store-card store-compact-card" style={{ background: p.bg }}>
+          <div key={p.id} onClick={() => navigate('/user-adcc-store')} className="store-card store-compact-card store-animated-card" style={{ background: p.bg }}>
             {/* Header row */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 20px 0' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -916,7 +1098,15 @@ function StoreSection() {
             </div>
             {/* Product image */}
             <div style={{ margin: '12px 20px', height: 200, borderRadius: 12, overflow: 'hidden', background: '#c5d5ee' }}>
-              <img src={p.img} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img
+                src={p.img}
+                alt={p.title}
+                onError={(event) => {
+                  event.currentTarget.onerror = null;
+                  event.currentTarget.src = STORE_FALLBACK_IMAGE;
+                }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
             </div>
             {/* Price + nav arrows */}
             <div style={{ padding: '0 20px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -938,15 +1128,32 @@ function StoreSection() {
 /* ─── ABOUT SECTION ──────────────────────────────────────────────────────────*/
 function AboutSection() {
   const navigate = useNavigate();
+  const aboutRef = useRef<HTMLElement | null>(null);
+  const [aboutVisible, setAboutVisible] = useState(false);
   const stats = [
     { num: '15K+', label: 'Riders' },
     { num: '100+', label: 'Events' },
     { num: '10+', label: 'Years' },
   ];
+
+  useEffect(() => {
+    const aboutEl = aboutRef.current;
+    if (!aboutEl) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setAboutVisible(entry.isIntersecting),
+      { threshold: 0.35 }
+    );
+
+    observer.observe(aboutEl);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section id="about" style={{ background: '#EAF4FF', padding: '60px 86px 80px', display: 'flex', gap: 60, alignItems: 'center' }}>
+    <section ref={aboutRef} id="about" className={`about-section${aboutVisible ? ' is-visible' : ''}`} style={{ background: '#EAF4FF', padding: '60px 86px 80px', display: 'flex', gap: 60, alignItems: 'center' }}>
       {/* Left image */}
-      <div style={{ flexShrink: 0, width: 380, height: 560, borderRadius: 20, overflow: 'hidden', boxShadow: '0 8px 40px rgba(0,0,0,0.12)' }}>
+      <div className="about-left-image" style={{ flexShrink: 0, width: 380, height: 560, borderRadius: 20, overflow: 'hidden', boxShadow: '0 8px 40px rgba(0,0,0,0.12)' }}>
         <img src="https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=600&q=80" alt="ADCC Cyclists" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </div>
       {/* Right content */}
@@ -970,7 +1177,7 @@ function AboutSection() {
         </button>
       </div>
       {/* Decorative rider image */}
-      <div style={{ flexShrink: 0, width: 280, height: 340, overflow: 'hidden'}}>
+      <div className="about-right-image" style={{ flexShrink: 0, width: 280, height: 340, overflow: 'hidden'}}>
         <img src="../../../public/images/right-cycle.png" alt="Rider" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </div>
     </section>
