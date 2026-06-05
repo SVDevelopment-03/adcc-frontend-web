@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Cloud,
   Search,
@@ -11,7 +12,13 @@ import {
   Bike,
   Apple,
   ChevronRight,
+  ChevronLeft,
 } from "lucide-react";
+import {
+  CommunityApiResponse,
+  getAvailableCities,
+  getCommunities,
+} from "../../services/communitiesApi";
 
 const navLinks = ["About Us", "Events", "Community", "Tracks"];
 
@@ -24,36 +31,79 @@ const FontLoader = () => (
   `}</style>
 );
 
-const communities = [
-  {
-    title: "Dubai Riders",
-    members: "2,456 members",
-    events: "45 events",
-    image:
-      "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=1200&auto=format&fit=crop",
-  },
-  {
-    title: "Family Cyclists UAE",
-    members: "1,234 members",
-    events: "28 events",
-    image:
-      "https://images.unsplash.com/photo-1541625602330-2277a4c46182?q=80&w=1200&auto=format&fit=crop",
-  },
-  {
-    title: "Youth Cycling Academy",
-    members: "542 members",
-    events: "18 events",
-    image:
-      "https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?q=80&w=1200&auto=format&fit=crop",
-  },
-  {
-    title: "Abu Dhabi Cyclists",
-    members: "1,890 members",
-    events: "38 events",
-    image:
-      "https://images.unsplash.com/photo-1525109582930-30d7c7d1444e?q=80&w=1200&auto=format&fit=crop",
-  },
-];
+const COMMUNITIES_PER_PAGE = 4;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+const FALLBACK_COMMUNITY_IMAGE =
+  "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=1200&auto=format&fit=crop";
+
+const COMMUNITY_TYPE_OPTIONS = [
+  "Family Rides",
+  "Racing & Performance",
+  "Women (SheRides)",
+  "Youth Cycling",
+  "Weekend Social",
+  "Night Riders",
+  "MTB/Trail",
+  "Training & Clinics",
+] as const;
+
+function resolveCommunityImage(image?: string) {
+  const trimmed = image?.trim() ?? "";
+  if (!trimmed) return FALLBACK_COMMUNITY_IMAGE;
+  if (/^(https?:|data:|blob:)/i.test(trimmed)) return trimmed;
+  return new URL(trimmed.replace(/^\/+/, ""), `${API_BASE_URL}/`).toString();
+}
+
+function formatCount(value: number | string | undefined, label: string) {
+  const count = Number(value ?? 0);
+  const formatted = Number.isFinite(count) ? count.toLocaleString() : "0";
+  return `${formatted} ${label}`;
+}
+
+function mapCommunityCard(community: CommunityApiResponse) {
+  return {
+    id: community._id || community.id || community.title,
+    title: community.title || community.name || "Community",
+    members: formatCount(community.memberCount, "members"),
+    events: formatCount(
+      community.upcomingEventCount ?? community.eventsCount,
+      "events"
+    ),
+    image: resolveCommunityImage(community.image),
+  };
+}
+
+function buildPageNumbers(currentPage: number, totalPages: number) {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1);
+  }
+
+  const pages = new Set<number>([1, totalPages, currentPage]);
+  if (currentPage > 1) pages.add(currentPage - 1);
+  if (currentPage < totalPages) pages.add(currentPage + 1);
+  if (currentPage <= 3) {
+    pages.add(2);
+    pages.add(3);
+    pages.add(4);
+  }
+  if (currentPage >= totalPages - 2) {
+    pages.add(totalPages - 1);
+    pages.add(totalPages - 2);
+    pages.add(totalPages - 3);
+  }
+
+  const sorted = Array.from(pages).sort((a, b) => a - b);
+  const result: Array<number | "ellipsis"> = [];
+
+  sorted.forEach((page, index) => {
+    if (index > 0 && page - sorted[index - 1] > 1) {
+      result.push("ellipsis");
+    }
+    result.push(page);
+  });
+
+  return result;
+}
 
 const faqs = [
   "Do I need to be an experienced cyclist to join ADCC rides?",
@@ -65,6 +115,88 @@ const faqs = [
 ];
 
 export default function CommunitiesPage() {
+  const [searchInput, setSearchInput] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [cityFilter, setCityFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [communities, setCommunities] = useState<ReturnType<typeof mapCommunityCard>[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [cities, setCities] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadCities() {
+      try {
+        const available = await getAvailableCities();
+        if (isMounted && available.length > 0) {
+          setCities(available);
+        }
+      } catch {
+        if (isMounted) {
+          setCities(["Abu Dhabi", "Al Ain", "Dubai", "Al Dhafra", "Sharjah"]);
+        }
+      }
+    }
+
+    loadCities();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const fetchCommunities = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await getCommunities({
+        page: currentPage,
+        limit: COMMUNITIES_PER_PAGE,
+        search: searchQuery || undefined,
+        location: cityFilter !== "all" ? cityFilter : undefined,
+        type: typeFilter !== "all" ? typeFilter : undefined,
+        isActive: true,
+      });
+
+      setCommunities(response.communities.map(mapCommunityCard));
+      setTotalPages(Math.max(1, response.pagination.pages || 1));
+    } catch (err) {
+      setCommunities([]);
+      setTotalPages(1);
+      setError(err instanceof Error ? err.message : "Failed to load communities");
+    } finally {
+      setLoading(false);
+    }
+  }, [cityFilter, currentPage, searchQuery, typeFilter]);
+
+  useEffect(() => {
+    fetchCommunities();
+  }, [fetchCommunities]);
+
+  const pageNumbers = useMemo(
+    () => buildPageNumbers(currentPage, totalPages),
+    [currentPage, totalPages]
+  );
+
+  const handleSearch = () => {
+    setCurrentPage(1);
+    setSearchQuery(searchInput.trim());
+  };
+
+  const handleCityChange = (value: string) => {
+    setCurrentPage(1);
+    setCityFilter(value);
+  };
+
+  const handleTypeChange = (value: string) => {
+    setCurrentPage(1);
+    setTypeFilter(value);
+  };
+
   return (
     <div className="min-h-screen bg-[#eaf4ff] text-black">
       <FontLoader />
@@ -73,7 +205,7 @@ export default function CommunitiesPage() {
         <img
           src="/ADCC-Logo.png"
           alt="ADCC Logo"
-          className="h-[57px] w-[135px] object-contain"
+          className="h-auto w-[135px]  object-contain"
         />
 
         <nav className="hidden lg:flex items-center gap-12 text-[20px] font-medium">
@@ -98,7 +230,7 @@ export default function CommunitiesPage() {
       </header>
 
       <section
-        className="relative h-[640px] bg-cover bg-center"
+  className="relative h-[940px] w-screen left-1/2 right-1/2 -ml-[50vw] +mr-[50vw] bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage:
             "linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)), url('/img/pexels-jonathanborba-19431223 1.png')",
@@ -146,69 +278,151 @@ export default function CommunitiesPage() {
         <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_260px_260px_156px]">
           <div className="flex h-[66px] items-center rounded-full bg-white px-8">
             <input
+              value={searchInput}
+              onChange={(event) => setSearchInput(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") handleSearch();
+              }}
               placeholder="Search Communities"
               className="flex-1 bg-transparent text-[22px] outline-none"
             />
             <Search size={24} />
           </div>
 
-          <button className="flex h-[66px] items-center justify-between rounded-full bg-white px-8 text-[22px]">
-            All Cities <ChevronDown size={24} />
-          </button>
+          <label className="relative flex h-[66px] items-center rounded-full bg-white px-8 text-[22px]">
+            <select
+              value={cityFilter}
+              onChange={(event) => handleCityChange(event.target.value)}
+              className="w-full appearance-none bg-transparent pr-8 text-[22px] outline-none"
+            >
+              <option value="all">All Cities</option>
+              {cities.map((city) => (
+                <option key={city} value={city}>
+                  {city}
+                </option>
+              ))}
+            </select>
+            <ChevronDown size={24} className="pointer-events-none absolute right-8" />
+          </label>
 
-          <button className="flex h-[66px] items-center justify-between rounded-full bg-white px-8 text-[22px]">
-            All Types <ChevronDown size={24} />
-          </button>
+          <label className="relative flex h-[66px] items-center rounded-full bg-white px-8 text-[22px]">
+            <select
+              value={typeFilter}
+              onChange={(event) => handleTypeChange(event.target.value)}
+              className="w-full appearance-none bg-transparent pr-8 text-[22px] outline-none"
+            >
+              <option value="all">All Types</option>
+              {COMMUNITY_TYPE_OPTIONS.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+            <ChevronDown size={24} className="pointer-events-none absolute right-8" />
+          </label>
 
-          <button className="h-[66px] rounded-full bg-[#019839] text-[22px] font-bold text-white">
+          <button
+            type="button"
+            onClick={handleSearch}
+            className="h-[66px] rounded-full bg-[#019839] text-[22px] font-bold text-white"
+          >
             Search
           </button>
         </div>
 
+        {error && (
+          <p className="mt-10 text-center text-[18px] text-red-600">{error}</p>
+        )}
+
         <div className="mt-20 grid grid-cols-1 gap-8 lg:grid-cols-2">
-          {communities.map((item) => (
-            <div
-              key={item.title}
-              className="relative h-[467px] overflow-hidden rounded-[10px] bg-black"
-            >
-              <img
-                src={item.image}
-                alt={item.title}
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+          {loading
+            ? Array.from({ length: COMMUNITIES_PER_PAGE }).map((_, index) => (
+                <div
+                  key={`skeleton-${index}`}
+                  className="relative h-[467px] animate-pulse overflow-hidden rounded-[10px] bg-black/10"
+                />
+              ))
+            : communities.map((item) => (
+                <div
+                  key={item.id}
+                  className="relative h-[467px] overflow-hidden rounded-[10px] bg-black"
+                >
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="h-full w-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
 
-              <div className="absolute bottom-10 left-8 text-white">
-                <h3 className="text-[30px] font-black uppercase">
-                  {item.title}
-                </h3>
+                  <div className="absolute bottom-10 left-8 text-white">
+                    <h3 className="text-[30px] font-black uppercase">
+                      {item.title}
+                    </h3>
 
-                <div className="mt-5 flex gap-4">
-                  <span className="flex h-10 items-center gap-2 rounded-full bg-white/20 px-5 backdrop-blur-md">
-                    <Users size={18} /> {item.members}
-                  </span>
-                  <span className="flex h-10 items-center gap-2 rounded-full bg-white/20 px-5 backdrop-blur-md">
-                    <CalendarDays size={18} /> {item.events}
-                  </span>
+                    <div className="mt-5 flex gap-4">
+                      <span className="flex h-10 items-center gap-2 rounded-full bg-white/20 px-5 backdrop-blur-md">
+                        <Users size={18} /> {item.members}
+                      </span>
+                      <span className="flex h-10 items-center gap-2 rounded-full bg-white/20 px-5 backdrop-blur-md">
+                        <CalendarDays size={18} /> {item.events}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              ))}
         </div>
 
-        <div className="mt-20 flex items-center justify-center gap-8 text-[#019839] text-[20px] font-medium">
-          <button className="flex h-12 w-12 items-center justify-center rounded-full bg-[#019839] text-white">
-            1
-          </button>
-          <button>2</button>
-          <button>3</button>
-          <button>4</button>
-          <span className="tracking-[0.25em]">..........</span>
-          <button>10</button>
-          <button className="flex h-12 w-12 items-center justify-center rounded-full bg-[#019839] text-white">
-            <ChevronRight size={22} />
-          </button>
-        </div>
+        {!loading && !error && communities.length === 0 && (
+          <p className="mt-10 text-center text-[20px] text-black/60">
+            No communities found. Try adjusting your search or filters.
+          </p>
+        )}
+
+        {totalPages > 1 && (
+          <div className="mt-20 flex items-center justify-center gap-4 text-[#019839] text-[20px] font-medium md:gap-8">
+            <button
+              type="button"
+              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              disabled={currentPage === 1 || loading}
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-[#019839] text-white disabled:cursor-not-allowed disabled:opacity-40"
+              aria-label="Previous page"
+            >
+              <ChevronLeft size={22} />
+            </button>
+
+            {pageNumbers.map((page, index) =>
+              page === "ellipsis" ? (
+                <span key={`ellipsis-${index}`} className="tracking-[0.25em]">
+                  ...
+                </span>
+              ) : (
+                <button
+                  key={page}
+                  type="button"
+                  onClick={() => setCurrentPage(page)}
+                  disabled={loading}
+                  className={`flex h-12 min-w-12 items-center justify-center rounded-full px-3 ${
+                    currentPage === page
+                      ? "bg-[#019839] text-white"
+                      : "text-[#019839] hover:bg-[#019839]/10"
+                  }`}
+                >
+                  {page}
+                </button>
+              )
+            )}
+
+            <button
+              type="button"
+              onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+              disabled={currentPage === totalPages || loading}
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-[#019839] text-white disabled:cursor-not-allowed disabled:opacity-40"
+              aria-label="Next page"
+            >
+              <ChevronRight size={22} />
+            </button>
+          </div>
+        )}
       </section>
 
       <section className="mx-auto max-w-[1100px] px-10 pb-28 text-center">

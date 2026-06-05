@@ -1,8 +1,32 @@
 import api from './api';
 import { getCached, setCache, invalidateCache } from '../utils/apiCache';
 
-export interface CommunityApiResponse {
+export interface CommunitiesPagination {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+}
 
+export interface GetCommunitiesParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  location?: string;
+  type?: string;
+  category?: string;
+  isActive?: boolean;
+  isPublic?: boolean;
+  isFeatured?: boolean;
+}
+
+export interface CommunitiesListResponse {
+  communities: CommunityApiResponse[];
+  pagination: CommunitiesPagination;
+}
+
+export interface CommunityApiResponse {
+  _id?: string;
   id?: string;
   title: string;
   name?: string;
@@ -194,6 +218,46 @@ export const updateCommunity = async (
     return response.data;
   } catch (error) {
     console.error('Error updating community:', error);
+    throw error;
+  }
+};
+
+// Get communities with server-side pagination and filters (for public listing)
+export const getCommunities = async (
+  params?: GetCommunitiesParams
+): Promise<CommunitiesListResponse> => {
+  try {
+    const queryParams: Record<string, string | number> = {};
+
+    if (params?.page) queryParams.page = params.page;
+    if (params?.limit) queryParams.limit = params.limit;
+    if (params?.search?.trim()) queryParams.search = params.search.trim();
+    if (params?.location) queryParams.location = params.location;
+    if (params?.type) queryParams.type = params.type;
+    if (params?.category) queryParams.category = params.category;
+    if (params?.isActive !== undefined) queryParams.isActive = String(params.isActive);
+    if (params?.isPublic !== undefined) queryParams.isPublic = String(params.isPublic);
+    if (params?.isFeatured !== undefined) queryParams.isFeatured = String(params.isFeatured);
+
+    const response = await api.get<any>('/v1/communities', { params: queryParams });
+    const inner = (response.data as any)?.data ?? response.data;
+
+    const communities: CommunityApiResponse[] = Array.isArray(inner?.communities)
+      ? inner.communities
+      : Array.isArray(inner)
+        ? inner
+        : [];
+
+    const pagination: CommunitiesPagination = inner?.pagination ?? {
+      page: params?.page ?? 1,
+      limit: params?.limit ?? 10,
+      total: communities.length,
+      pages: 1,
+    };
+
+    return { communities, pagination };
+  } catch (error) {
+    console.error('Error fetching communities:', error);
     throw error;
   }
 };

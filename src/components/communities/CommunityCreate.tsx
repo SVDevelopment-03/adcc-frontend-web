@@ -139,7 +139,7 @@ console.log('errorss',errors);
         ? { ...(imageFile ? { image: imageFile } : {}), ...(logoFile ? { logo: logoFile } : {}) }
         : undefined;
 
-      let result: CommunityApiResponse;
+      let result: any;
 
       if (isEditMode && stateCommunityId) {
         result = await updateCommunity(stateCommunityId, communityData, imageFiles);
@@ -148,7 +148,7 @@ console.log('errorss',errors);
       } else {
         result = await createCommunity(communityData, imageFiles);
         toast.success(t('communities.create.toasts.createSuccess'));
-        const id = result._id || result.id;
+        const id = result?._id || result.id;
         navigate(id ? `/communities/${id}` : '/communities');
       }
     } catch (error: any) {
