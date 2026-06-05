@@ -26,7 +26,7 @@ const navItems = [
 
 function Logo({ compact = false }: { compact?: boolean }) {
   return (
-   <img src="../../../public/images/adcc-logo.png" className="h-19 w-45"/>
+   <img src="/images/adcc-logo.png" className="h-19 w-45"/>
   );
 }
 
@@ -148,7 +148,7 @@ function PublicFooter() {
         className="relative flex min-h-[502px] items-center justify-center overflow-hidden bg-cover bg-center px-6 py-16 text-center text-white"
         style={{
           backgroundImage:
-            " url('../../../public/images/footer-image.png')",
+            " url('/images/footer-image.png')",
             
         }}
       >

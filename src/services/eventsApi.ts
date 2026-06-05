@@ -47,10 +47,15 @@ export interface EventApiResponse {
   isFeatured?: boolean;
   allowCancellation?: boolean;
   galleryImages: string[];
+  currentParticipants?: number;
 }
 
 export interface GetEventsParams {
-  status?: 'draft' | 'open' | 'full' | 'completed' | 'archived';
+  status?: 'Draft' | 'Open' | 'Full' | 'Closed' | 'Disabled' | 'Completed' | 'Archived' | 'Upcoming' | 'Ongoing' | string;
+  city?: string;
+  category?: string;
+  level?: string;
+  search?: string;
   page?: number;
   limit?: number;
 }
@@ -79,41 +84,43 @@ export const availableCategories = [
   'National Events',
 ];
 
-// Get all events with optional filtering and pagination
-export const getAllEvents = async (params?: GetEventsParams): Promise<EventApiResponse[]> => {
-  const cacheKey = `events:${params?.status || 'all'}:${params?.page || 1}:${params?.limit || 10}`;
-  const cached = getCached<EventApiResponse[]>(cacheKey);
+export const getEventsPage = async (params?: GetEventsParams): Promise<GetEventsResponse['data']> => {
+  const cacheKey = `events-page:${JSON.stringify(params || {})}`;
+  const cached = getCached<GetEventsResponse['data']>(cacheKey);
   if (cached) return cached;
 
   try {
     const requestParams = {
       status: params?.status,
+      city: params?.city,
+      category: params?.category,
+      level: params?.level,
+      search: params?.search,
       page: params?.page || 1,
       limit: params?.limit || 10,
     };
 
-    const response = await api.get<GetEventsResponse | EventApiResponse[]>('/v1/events', {
+    const response = await api.get<GetEventsResponse>('/v1/events', {
       params: requestParams,
     });
 
-    // Handle different response formats
-    let events: EventApiResponse[] = [];
+    const payload = response.data?.data || {
+      events: [],
+      pagination: { page: params?.page || 1, limit: params?.limit || 10, total: 0, pages: 0 },
+    };
 
-    if (Array.isArray(response.data)) {
-      events = response.data;
-    } else if ((response.data as any).data?.events) {
-      const apiResponse = response.data as GetEventsResponse;
-      events = apiResponse.data.events || [];
-    } else if ((response.data as any).events) {
-      events = (response.data as any).events || [];
-    }
-
-    setCache(cacheKey, events);
-    return events;
+    setCache(cacheKey, payload);
+    return payload;
   } catch (error) {
-    console.error('Error in getAllEvents:', error);
+    console.error('Error in getEventsPage:', error);
     throw error;
   }
+};
+
+// Get all events with optional filtering and pagination
+export const getAllEvents = async (params?: GetEventsParams): Promise<EventApiResponse[]> => {
+  const response = await getEventsPage(params);
+  return response.events;
 };
 
 // Get event by ID
@@ -520,5 +527,4 @@ export const exportEventResultsCsv = async (eventId: string): Promise<Blob> => {
     throw error;
   }
 };
-
 

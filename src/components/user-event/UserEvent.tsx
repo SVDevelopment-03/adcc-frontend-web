@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { EventApiResponse, GetEventsParams, getEventsPage } from "../../services/eventsApi";
 
 const FontLoader = () => (
   <style>{`
@@ -79,7 +80,31 @@ function SectionHeader() {
 }
 
 // ── Filter bar ────────────────────────────────────────────────────────────────
-function FilterBar({ filters, setFilters, onSearch }) {
+interface EventFilters {
+  city: string;
+  category: string;
+  level: string;
+  status: string;
+}
+
+const DEFAULT_FILTERS: EventFilters = {
+  city: "All Cities",
+  category: "All Categories",
+  level: "All Levels",
+  status: "Status",
+};
+
+function FilterBar({
+  filters,
+  setFilters,
+  onSearch,
+  loading,
+}: {
+  filters: EventFilters;
+  setFilters: Dispatch<SetStateAction<EventFilters>>;
+  onSearch: () => void;
+  loading: boolean;
+}) {
   const dropdownStyle = {
     boxSizing: "border-box", width: 260, height: 66,
     background: "#fff", border: "1px solid rgba(0,0,0,0.05)",
@@ -94,15 +119,15 @@ function FilterBar({ filters, setFilters, onSearch }) {
 
   return (
     // <div style={{ padding: "0 82px 24px", display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
-    <div style={{ padding: "0 82px 24px", display: "flex", gap: 18, alignItems: "center", flexWrap: "nowrap" }}>
+    <div style={{ padding: "0 82px 24px", display: "flex", gap: 18, alignItems: "center", gridTemplateColumns: "repeat(3, 403px)" }}>
       {[
         { key: "city", label: "All Cities", options: ["All Cities", "Abu Dhabi", "Dubai", "Sharjah", "Al Ain"] },
-        { key: "category", label: "All Categories", options: ["All Categories", "Race", "Leisure", "Challenge", "Community"] },
-        { key: "level", label: "All Levels", options: ["All Levels", "Beginner", "Intermediate", "Advanced", "Elite"] },
+        { key: "category", label: "All Categories", options: ["All Categories", "Race", "Community Ride", "Training & Clinics", "Awareness Rides", "Family & Kids", "Corporate Events", "National Events"] },
+        { key: "level", label: "All Levels", options: ["All Levels", "beginner", "intermediate", "advanced", "all"] },
         { key: "status", label: "Status", options: ["Status", "Upcoming", "Ongoing", "Completed"] },
       ].map(f => (
         <div key={f.key} style={dropdownStyle}>
-          <select value={filters[f.key]} onChange={e => setFilters(p => ({ ...p, [f.key]: e.target.value }))}>
+          <select value={filters[f.key as keyof EventFilters]} onChange={e => setFilters(p => ({ ...p, [f.key]: e.target.value }))}>
             {f.options.map(o => <option key={o}>{o}</option>)}
           </select>
           <ChevronDown />
@@ -112,41 +137,45 @@ function FilterBar({ filters, setFilters, onSearch }) {
         width: 156, height: 66, background: "#019839", color: "#fff",
         border: "none", borderRadius: 40, fontSize: 20, fontWeight: 700,
         cursor: "pointer", fontFamily: "'Satoshi',sans-serif", transition: "opacity .2s"
-      }}>Search</button>
+      }}>{loading ? "Loading..." : "Search"}</button>
     </div>
   );
 }
 
 // ── Event card ────────────────────────────────────────────────────────────────
-function EventCard({ event }) {
+function EventCard({ event }: { event: EventApiResponse }) {
+  const tag = event.category || "Event";
+  const image = event.eventImage || event.mainImage || event.galleryImages?.[0] || "https://images.unsplash.com/photo-1471897488648-5eae4ac6d485?w=600&q=80";
+  const participants = event.currentParticipants ?? event.registrations ?? 0;
   const tagColors = {
     Race: "#1a6dff", Leisure: "#9b59b6", Challenge: "#e67e22", Community: "#019839"
   };
   return (
-    <div style={{ width: 403, display: "flex", flexDirection: "column", gap: 0 }}>
+    // <div style={{ width: 403, display: "flex", flexDirection: "column", gap: 0 }}>
+    <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 0 }}>
       {/* image box */}
       <div style={{
-        width: 403, height: 260, borderRadius: 14, overflow: "hidden",
+        width: "100%", height: 260, borderRadius: 14, overflow: "hidden",
         position: "relative", background: "#ddd"
       }}>
-        <img src={event.img} alt={event.title}
+        <img src={image} alt={event.title}
           style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         <span style={{
           position: "absolute", top: 16, right: 16,
           background: "rgba(0,0,0,0.4)", backdropFilter: "blur(15px)",
           borderRadius: 30, padding: "9px 18px",
           color: "#fff", fontFamily: "'Satoshi',sans-serif", fontSize: 15, fontWeight: 500
-        }}>{event.tag}</span>
+        }}>{tag}</span>
       </div>
 
       {/* info */}
       <div style={{ paddingTop: 20 }}>
         <h3 className="bebas" style={{ fontSize: 24, marginBottom: 14, letterSpacing: 0.5 }}>{event.title}</h3>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 12px", marginBottom: 20 }}>
-          <Meta icon="📅" text={event.date} />
-          <Meta icon="⚡" text={event.distance} />
-          <Meta icon="👥" text={event.participants} />
-          <Meta icon="📍" text={event.location} />
+          <Meta icon="📅" text={formatEventDate(event.eventDate)} />
+          <Meta icon="⚡" text={typeof event.distance === "number" ? `${event.distance} km` : "Distance TBA"} />
+          <Meta icon="👥" text={`${participants} participants`} />
+          <Meta icon="📍" text={event.city || event.address || "Location TBA"} />
         </div>
         <button style={{
           width: 157, height: 50, border: "1.5px solid #019839",
@@ -163,7 +192,7 @@ function EventCard({ event }) {
   );
 }
 
-function Meta({ icon, text }) {
+function Meta({ icon, text }: { icon: string; text: string }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
       <span style={{ fontSize: 16 }}>{icon}</span>
@@ -173,50 +202,74 @@ function Meta({ icon, text }) {
 }
 
 // ── Events grid ───────────────────────────────────────────────────────────────
-const ALL_EVENTS = [
-  { id: 1, title: "Abu Dhabi Grand Prix Ride",  tag: "Race",      date: "March 15, 2026",  distance: "42 km", participants: "156 participants", location: "Abu Dhabi", city: "Abu Dhabi", img: "https://images.unsplash.com/photo-1471897488648-5eae4ac6d485?w=600&q=80" },
-  { id: 2, title: "Dubai Marina Sunrise Ride",  tag: "Race",      date: "March 20, 2026",  distance: "25 km", participants: "89 participants",  location: "Dubai",     city: "Dubai",     img: "https://images.unsplash.com/photo-1600965962361-9035dbfd1c50?w=600&q=80" },
-  { id: 3, title: "Al Ain Mountain Challenge",  tag: "Challenge", date: "March 28, 2026",  distance: "65 km", participants: "156 participants", location: "Abu Dhabi", city: "Abu Dhabi", img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" },
-  { id: 4, title: "Sharjah Heritage Trail",     tag: "Leisure",   date: "April 5, 2026",   distance: "30 km", participants: "124 participants", location: "Sharjah",   city: "Sharjah",   img: "https://images.unsplash.com/photo-1534787238916-9ba6764efd4f?w=600&q=80" },
-  { id: 5, title: "Abu Dhabi Grand Prix Ride",  tag: "Race",      date: "March 15, 2026",  distance: "42 km", participants: "156 participants", location: "Abu Dhabi", city: "Abu Dhabi", img: "https://images.unsplash.com/photo-1502904550040-7534597429ae?w=600&q=80" },
-  { id: 6, title: "Dubai Marina Sunrise Ride",  tag: "Community", date: "March 20, 2026",  distance: "25 km", participants: "89 participants",  location: "Dubai",     city: "Dubai",     img: "https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=600&q=80" },
-  { id: 7, title: "Yas Island Circuit Ride",    tag: "Race",      date: "April 12, 2026",  distance: "50 km", participants: "200 participants", location: "Abu Dhabi", city: "Abu Dhabi", img: "https://images.unsplash.com/photo-1570489460099-2a6e43e4c3f0?w=600&q=80" },
-  { id: 8, title: "Desert Dunes Challenge",     tag: "Challenge", date: "April 20, 2026",  distance: "80 km", participants: "75 participants",  location: "Al Ain",    city: "Al Ain",    img: "https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?w=600&q=80" },
-  { id: 9, title: "Community Sunrise Ride",     tag: "Community", date: "May 1, 2026",     distance: "20 km", participants: "300 participants", location: "Abu Dhabi", city: "Abu Dhabi", img: "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=600&q=80" },
-  { id: 10, title: "Corniche Classic Leisure",  tag: "Leisure",   date: "May 10, 2026",    distance: "15 km", participants: "180 participants", location: "Abu Dhabi", city: "Abu Dhabi", img: "https://images.unsplash.com/photo-1568430462989-44163eb1752f?w=600&q=80" },
-];
-
 const PAGE_SIZE = 6;
 
 function EventsGrid() {
-  const [filters, setFilters] = useState({ city: "All Cities", category: "All Categories", level: "All Levels", status: "Status" });
+  const [filters, setFilters] = useState<EventFilters>(DEFAULT_FILTERS);
   const [page, setPage] = useState(1);
-  const [activeFilters, setActiveFilters] = useState(filters);
+  const [activeFilters, setActiveFilters] = useState<EventFilters>(DEFAULT_FILTERS);
+  const [events, setEvents] = useState<EventApiResponse[]>([]);
+  const [totalResults, setTotalResults] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const filtered = ALL_EVENTS.filter(e => {
-    if (activeFilters.city !== "All Cities" && e.city !== activeFilters.city) return false;
-    if (activeFilters.category !== "All Categories" && e.tag !== activeFilters.category) return false;
-    return true;
-  });
+  const queryParams = useMemo<GetEventsParams>(() => {
+    const params: GetEventsParams = { page, limit: PAGE_SIZE };
+    if (activeFilters.city !== "All Cities") params.city = activeFilters.city;
+    if (activeFilters.category !== "All Categories") params.category = activeFilters.category;
+    if (activeFilters.level !== "All Levels") params.level = activeFilters.level;
+    if (activeFilters.status !== "Status") params.status = activeFilters.status;
+    return params;
+  }, [activeFilters, page]);
 
-  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
-  const visible = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  useEffect(() => {
+    let cancelled = false;
+
+    setLoading(true);
+    setError("");
+    getEventsPage(queryParams)
+      .then((data) => {
+        if (cancelled) return;
+        setEvents(data.events || []);
+        setTotalResults(data.pagination.total || 0);
+        setTotalPages(Math.max(1, data.pagination.pages || 1));
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("Failed to load events:", err);
+        setEvents([]);
+        setTotalResults(0);
+        setTotalPages(1);
+        setError("Events could not be loaded right now.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [queryParams]);
 
   return (
     <>
-      <FilterBar filters={filters} setFilters={setFilters} onSearch={() => { setActiveFilters(filters); setPage(1); }} />
+      <FilterBar filters={filters} setFilters={setFilters} loading={loading} onSearch={() => { setActiveFilters(filters); setPage(1); }} />
       <div style={{ padding: "0 82px" }}>
-        <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 20 }}>Showing {filtered.length} results</p>
+        <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 20 }}>
+          {loading ? "Loading events..." : `Showing ${events.length} of ${totalResults} results`}
+        </p>
+        {error && <p style={{ fontSize: 16, color: "#C12D32", marginBottom: 20 }}>{error}</p>}
         {/* <div style={{ display: "flex", flexWrap: "wrap", gap: "48px 28px" }}> */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 403px)",
-            justifyContent: "space-between",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gap: "48px 28px",
             rowGap: 48,
           }}
         >
-          {visible.map(e => <EventCard key={e.id + e.title} event={e} />)}
+          {events.map(e => <EventCard key={e._id || e.id || e.slug || e.title} event={e} />)}
         </div>
         <Pagination page={page} total={totalPages} setPage={setPage} />
       </div>
@@ -225,8 +278,8 @@ function EventsGrid() {
 }
 
 // ── Pagination ────────────────────────────────────────────────────────────────
-function Pagination({ page, total, setPage }) {
-  const pages = [1, 2, 3, 4, "...........", 10];
+function Pagination({ page, total, setPage }: { page: number; total: number; setPage: Dispatch<SetStateAction<number>> }) {
+  const pages = buildPagination(page, total);
   return (
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 16, padding: "48px 0 64px" }}>
       {pages.map((p, i) => {
@@ -254,6 +307,31 @@ function Pagination({ page, total, setPage }) {
       }}>›</button>
     </div>
   );
+}
+
+function buildPagination(page: number, total: number): Array<number | string> {
+  if (total <= 5) return Array.from({ length: total }, (_, index) => index + 1);
+  const pages = new Set([1, total, page, page - 1, page + 1].filter(p => p >= 1 && p <= total));
+  const sorted = Array.from(pages).sort((a, b) => a - b);
+  const result: Array<number | string> = [];
+
+  sorted.forEach((p, index) => {
+    if (index > 0 && p - sorted[index - 1] > 1) result.push("...");
+    result.push(p);
+  });
+
+  return result;
+}
+
+function formatEventDate(value?: string) {
+  if (!value) return "Date TBA";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Date TBA";
+  return date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 // ── CTA Banner ────────────────────────────────────────────────────────────────
@@ -353,7 +431,7 @@ export default function Events() {
   return (
     <>
       <FontLoader />
-      <div style={{ minWidth: 320 }}>
+      <div style={{ minWidth: 320, overflowX: "hidden" }}>
         <Navbar />
         <Hero />
         <SectionHeader />

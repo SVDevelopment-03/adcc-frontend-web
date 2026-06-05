@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   Cloud,
   Menu,
@@ -11,51 +12,17 @@ import {
   Bike,
   Apple,
 } from "lucide-react";
+import {
+  getChallengesPage,
+  type Challenge,
+} from "../../services/challengesApi";
 
 const navLinks = ["About Us", "Events", "Community", "Tracks"];
 
-const stats = [
-  { value: "1,234", label: "Active Riders", active: true },
-  { value: "20+", label: "Active Challenges" },
-  { value: "1,234", label: "Active Riders" },
-  { value: "1,234", label: "Active Riders" },
-];
-
-const challenges = [
-  {
-    title: "December Distance Champion",
-    desc: "Ride 1000km this month",
-    days: "14 days left",
-    participants: "500 participants",
-    image:
-      "https://images.unsplash.com/photo-1541625602330-2277a4c46182?q=80&w=1200&auto=format&fit=crop",
-    // active: true,
-  },
-  {
-    title: "Spring Sprint Series",
-    desc: "Complete 10 events in 30 days",
-    days: "21 days left",
-    participants: "320 participants",
-    image:
-      "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=1200&auto=format&fit=crop",
-  },
-  {
-    title: "Elevation Master",
-    desc: "Climb 5000m elevation gain",
-    days: "28 days left",
-    participants: "180 participants",
-    image:
-      "https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?q=80&w=1200&auto=format&fit=crop",
-  },
-  {
-    title: "March Distance Challenge",
-    desc: "Ride 500km this month to earn the champion badge",
-    days: "12 days left",
-    participants: "234 participants",
-    image:
-      "https://images.unsplash.com/photo-1525109582930-30d7c7d1444e?q=80&w=1200&auto=format&fit=crop",
-  },
-];
+const PAGE_SIZE = 4;
+const CHALLENGE_FALLBACK_IMAGE =
+  "https://images.unsplash.com/photo-1541625602330-2277a4c46182?q=80&w=1200&auto=format&fit=crop";
+const statusTabs: Array<Challenge["status"]> = ["Active", "Upcoming", "Completed"];
 
 const faqs = [
   "Do I need to be an experienced cyclist to join ADCC rides?",
@@ -66,7 +33,117 @@ const faqs = [
   "Are there any women-only rides or training sessions?",
 ];
 
+const formatNumber = (value: number) =>
+  new Intl.NumberFormat("en", { notation: value >= 10000 ? "compact" : "standard" }).format(value);
+
+const getDaysText = (challenge: Challenge) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const endDate = new Date(challenge.endDate);
+  endDate.setHours(0, 0, 0, 0);
+  const diffDays = Math.ceil((endDate.getTime() - today.getTime()) / 86400000);
+
+  if (challenge.status === "Completed") return "Completed";
+  if (!Number.isFinite(diffDays)) return "Date TBA";
+  if (diffDays < 0) return "Ended";
+  if (diffDays === 0) return "Ends today";
+  return `${diffDays} day${diffDays === 1 ? "" : "s"} left`;
+};
+
+const getChallengeDescription = (challenge: Challenge) => {
+  if (challenge.description) return challenge.description;
+  return `${challenge.type} challenge: complete ${challenge.target} ${challenge.unit}`;
+};
+
 export default function ChallengesPage() {
+  const [status, setStatus] = useState<Challenge["status"]>("Active");
+  const [page, setPage] = useState(1);
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [totalResults, setTotalResults] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [stats, setStats] = useState([
+    { value: "0", label: "Challenge Riders", active: true },
+    { value: "0", label: "Active Challenges" },
+    { value: "0", label: "Upcoming Challenges" },
+    { value: "0", label: "Completed Challenges" },
+  ]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadChallenges = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const response = await getChallengesPage({
+          status,
+          page,
+          limit: PAGE_SIZE,
+        });
+
+        if (mounted) {
+          setChallenges(response.challenges);
+          setTotalResults(response.pagination.total);
+          setTotalPages(Math.max(1, response.pagination.pages || 1));
+        }
+      } catch (err) {
+        console.error("Failed to load public challenges:", err);
+        if (mounted) {
+          setChallenges([]);
+          setTotalResults(0);
+          setTotalPages(1);
+          setError("Unable to load challenges right now.");
+        }
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    loadChallenges();
+
+    return () => {
+      mounted = false;
+    };
+  }, [status, page]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadStats = async () => {
+      try {
+        const [active, upcoming, completed, publicChallenges] = await Promise.all([
+          getChallengesPage({ status: "Active", page: 1, limit: 1 }),
+          getChallengesPage({ status: "Upcoming", page: 1, limit: 1 }),
+          getChallengesPage({ status: "Completed", page: 1, limit: 1 }),
+          getChallengesPage({ page: 1, limit: 100 }),
+        ]);
+        const riders = publicChallenges.challenges.reduce(
+          (sum, challenge) => sum + (challenge.participants || 0),
+          0,
+        );
+
+        if (mounted) {
+          setStats([
+            { value: formatNumber(riders), label: "Challenge Riders", active: true },
+            { value: formatNumber(active.pagination.total), label: "Active Challenges" },
+            { value: formatNumber(upcoming.pagination.total), label: "Upcoming Challenges" },
+            { value: formatNumber(completed.pagination.total), label: "Completed Challenges" },
+          ]);
+        }
+      } catch (err) {
+        console.error("Failed to load challenge stats:", err);
+      }
+    };
+
+    loadStats();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#eaf4ff] text-black">
       {/* Header */}
@@ -162,29 +239,43 @@ export default function ChallengesPage() {
           <h2 className="text-[36px] font-black uppercase">Cycling Challenges</h2>
 
           <div className="flex gap-5">
-            <button className="rounded-full bg-[#00a84f] px-14 py-4 text-[16px] font-bold text-white">
-              Active
-            </button>
-            <button className="rounded-full border border-[#cad8e6] px-14 py-4 text-[16px] text-[#a6b2be]">
-              Upcoming
-            </button>
-            <button className="rounded-full border border-[#cad8e6] px-14 py-4 text-[16px] text-[#a6b2be]">
-              Completed
-            </button>
+            {statusTabs.map((tab) => {
+              const selected = status === tab;
+              return (
+                <button
+                  key={tab}
+                  onClick={() => {
+                    setStatus(tab);
+                    setPage(1);
+                  }}
+                  className={`rounded-full px-14 py-4 text-[16px] ${
+                    selected
+                      ? "bg-[#00a84f] font-bold text-white"
+                      : "border border-[#cad8e6] text-[#6f7f8f]"
+                  }`}
+                >
+                  {tab}
+                </button>
+              );
+            })}
           </div>
         </div>
+
+        <p className="mb-6 text-[15px] font-medium">
+          {loading ? "Loading challenges..." : `Showing ${totalResults} ${status.toLowerCase()} challenges`}
+        </p>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {challenges.map((item) => (
             <div
-              key={item.title}
+              key={item.id}
               // className={`overflow-hidden rounded-xl border border-[#cad8e6] ${
               //   item.active ? "bg-[#49637f] text-white" : "bg-[#eef7ff]"
               // }`}
               className="group overflow-hidden rounded-xl border border-[#cad8e6] bg-[#eef7ff] transition-all duration-300 hover:bg-[#49637f] hover:text-white"
             >
               <img
-                src={item.image}
+                src={item.image || CHALLENGE_FALLBACK_IMAGE}
                 alt={item.title}
                 className="h-[330px] w-full object-cover"
               />
@@ -193,7 +284,7 @@ export default function ChallengesPage() {
                 <h3 className="text-[24px] font-black uppercase">
                   {item.title}
                 </h3>
-                <p className="mt-2 text-[15px]">{item.desc}</p>
+                <p className="mt-2 text-[15px]">{getChallengeDescription(item)}</p>
 
                 <div
                   // className={`mt-8 flex items-center justify-between rounded-md px-6 py-5 ${
@@ -203,10 +294,13 @@ export default function ChallengesPage() {
                 >
                   <div className="space-y-2 text-[15px]">
                     <p className="flex items-center gap-2">
-                      <Clock size={16} /> {item.days}
+                      <Clock size={16} /> {getDaysText(item)}
                     </p>
                     <p className="flex items-center gap-2">
-                      <Users size={16} /> {item.participants}
+                      <Users size={16} /> {formatNumber(item.participants)} participants
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <Trophy size={16} /> {item.target} {item.unit}
                     </p>
                   </div>
 
@@ -218,6 +312,54 @@ export default function ChallengesPage() {
             </div>
           ))}
         </div>
+
+        {!loading && error && (
+          <p className="pt-8 text-[16px] font-medium text-red-700">{error}</p>
+        )}
+
+        {!loading && !error && challenges.length === 0 && (
+          <p className="pt-8 text-[16px] text-black/70">
+            No {status.toLowerCase()} challenges found.
+          </p>
+        )}
+
+        {!loading && totalPages > 1 && (
+          <div className="mt-12 flex items-center justify-center gap-3">
+            <button
+              onClick={() => setPage((current) => Math.max(1, current - 1))}
+              disabled={page === 1}
+              className="rounded-full border border-[#cad8e6] px-5 py-3 text-[14px] font-semibold disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Prev
+            </button>
+            {Array.from({ length: totalPages }, (_, index) => index + 1)
+              .filter((item) => item === 1 || item === totalPages || Math.abs(item - page) <= 1)
+              .map((item, index, visiblePages) => (
+                <span key={item} className="flex items-center gap-3">
+                  {index > 0 && item - visiblePages[index - 1] > 1 && (
+                    <span className="text-[#00a84f]">...</span>
+                  )}
+                  <button
+                    onClick={() => setPage(item)}
+                    className={`h-11 w-11 rounded-full text-[15px] font-semibold ${
+                      page === item
+                        ? "bg-[#00a84f] text-white"
+                        : "text-[#00a84f]"
+                    }`}
+                  >
+                    {item}
+                  </button>
+                </span>
+              ))}
+            <button
+              onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+              disabled={page === totalPages}
+              className="rounded-full border border-[#cad8e6] px-5 py-3 text-[14px] font-semibold disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </section>
 
       {/* FAQ */}

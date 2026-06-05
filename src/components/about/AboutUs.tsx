@@ -1,5 +1,6 @@
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { getPublicStats } from "../../services/publicStatsApi";
 // ─── Google Fonts ────────────────────────────────────────────────────────────
 const FontLoader = () => (
   <style>{`
@@ -58,6 +59,15 @@ const FontLoader = () => (
       pointer-events: none;
     }
 
+    .value-card {
+      background: #777777;
+      transition: background 0.25s ease;
+    }
+
+    .value-card:hover {
+      background: #323232;
+    }
+      
     .journey-card__eyebrow {
       position: absolute;
       left: 20px;
@@ -191,6 +201,8 @@ const Arrow = ({ color = "#fff" }) => (
 );
 
 function JourneyCard() {
+  const navigate = useNavigate();
+
   const avatarBackgrounds = [
     "linear-gradient(135deg, #f7c59f 0%, #7aa7ff 100%)",
     "linear-gradient(135deg, #f58b8b 0%, #ffe08a 100%)",
@@ -221,9 +233,13 @@ function JourneyCard() {
         <span className="journey-card__community-text">+5k in the Community</span>
       </div>
 
-      <button className="journey-card__button">
+      <button
+        className="journey-card__button"
+        onClick={() => navigate("/contact-us")}
+      >
         Get In Touch <Arrow />
       </button>
+
     </div>
   );
 }
@@ -292,9 +308,31 @@ function Hero() {
 
 // ─── STATS + INTRO ────────────────────────────────────────────────────────────
 function StatsSection() {
+  const navigate = useNavigate();
+  const [activeMembers, setActiveMembers] = useState<number | null>(null);
+  const [organizedEvents, setOrganizedEvents] = useState<number | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getPublicStats()
+      .then((stats) => {
+        if (cancelled) return;
+        setActiveMembers(stats.members.active);
+        setOrganizedEvents(stats.events.completed);
+      })
+      .catch((error) => {
+        console.error("Failed to load public stats:", error);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const stats = [
-    { val: "5K+",  label: "Active Riders &\nMembers" },
-    { val: "100+", label: "Cycling Events\nOrganized" },
+    { val: formatPublicStat(activeMembers, "5K+"),  label: "Active Riders &\nMembers" },
+    { val: formatPublicStat(organizedEvents, "100+"), label: "Cycling Events\nOrganized" },
     { val: "20+",  label: "Community Rides\nMonthly" },
     { val: "2017", label: "Established in\nAbu Dhabi" },
   ];
@@ -331,11 +369,20 @@ function StatsSection() {
           <p style={{ fontSize: 22, lineHeight: 1.5, maxWidth: 480, marginBottom: 28, color: "rgba(0,0,0,0.8)" }}>
             Abu Dhabi Cycling Club unites riders of all levels with community rides and training programs.
           </p>
-          <button className="btn-green">Get In Touch <Arrow /></button>
+          <button className="btn-green" onClick={() => navigate("/contact-us")}>Get In Touch <Arrow /></button>
         </div>
       </div>
     </section>
   );
+}
+
+function formatPublicStat(value: number | null, fallback: string) {
+  if (value === null) return fallback;
+  if (value >= 1000) {
+    const formatted = value >= 10000 ? Math.round(value / 1000) : Number((value / 1000).toFixed(1));
+    return `${formatted}K+`;
+  }
+  return `${value}+`;
 }
 
 // ─── MISSION / VISION + JOURNEY CARD ─────────────────────────────────────────
@@ -414,6 +461,7 @@ function MissionSection() {
 
 // ─── VALUES ───────────────────────────────────────────────────────────────────
 function ValuesSection() {
+  const navigate = useNavigate();
   const values = [
     { num: "//001", title: "Community",  bg: "#323232", text: "Cycling unites people. Our rides and events welcome riders of all levels." },
     { num: "//001", title: "Excellence", bg: "#777777", text: "We help cyclists enhance endurance, speed, and performance." },
@@ -429,12 +477,13 @@ function ValuesSection() {
             The Principles That Drive Our Cycling Community
           </h2>
         </div>
-        <button className="btn-green">Discover the Community <Arrow /></button>
+        <button className="btn-green" onClick={() => navigate("/user-communities")}>Discover the Community <Arrow /></button>
       </div>
       <div style={{ display: "flex", gap: 24 }}>
         {values.map((v, i) => (
-          <div key={i} style={{
-            flex: 1, background: v.bg, borderRadius: 12,
+          <div key={i} className="value-card"
+            style={{
+            flex: 1, borderRadius: 12,
             padding: "24px 20px 28px", minHeight: 240,
             backdropFilter: "blur(15px)"
           }}>
@@ -605,7 +654,7 @@ export default function AboutUs() {
   return (
     <>
       <FontLoader />
-      <div style={{ minWidth: 320 }}>
+      <div style={{ minWidth: 320, overflowX: "hidden" }}>
         <Navbar />
         <Hero />
         <StatsSection />

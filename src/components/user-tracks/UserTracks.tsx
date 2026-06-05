@@ -1,4 +1,83 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { CSSProperties } from "react";
+import { getTracksPageEn, UAE_CITIES, type Track } from "../../services/trackService";
+
+type PublicTrackCard = {
+  id: string;
+  name: string;
+  city: string;
+  difficulty: string;
+  location: string;
+  distance: string;
+  elevation: string;
+  level: string;
+  featured: boolean;
+  img: string;
+};
+
+type TrackFilters = {
+  city: string;
+  level: string;
+};
+
+type FilterOption = {
+  value: string;
+  label: string;
+};
+
+const TRACK_FALLBACK_IMAGE = "/img/paolo-candelo-8tXukRrs7yk-unsplash 1.png";
+const PAGE_SIZE = 6;
+const ALL_FILTER_VALUE = "all";
+const CITY_FILTER_OPTIONS: FilterOption[] = [
+  { value: ALL_FILTER_VALUE, label: "All Cities" },
+  ...UAE_CITIES.map((city) => ({ value: city, label: city })),
+];
+const LEVEL_FILTER_OPTIONS: FilterOption[] = [
+  { value: ALL_FILTER_VALUE, label: "All Levels" },
+  { value: "easy", label: "Easy" },
+  { value: "medium", label: "Medium" },
+  { value: "hard", label: "Hard" },
+];
+
+const titleCase = (value?: string | null) =>
+  (value || "")
+    .replace(/[_-]+/g, " ")
+    .trim()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+
+const getTrackId = (track: Track) => String(track.id || (track as any)._id || track.slug || track.title);
+
+const getTrackImage = (track: Track) =>
+  track.image || track.coverImage || track.galleryImages?.[0] || TRACK_FALLBACK_IMAGE;
+
+const formatDistance = (distance?: number | string) => {
+  if (distance === undefined || distance === null || distance === "") return "N/A";
+  const numeric = Number(distance);
+  return Number.isFinite(numeric) ? `${numeric} km` : String(distance);
+};
+
+const normalizeTrack = (track: Track): PublicTrackCard => ({
+  id: getTrackId(track),
+  name: track.title || (track as any).name || "Untitled Track",
+  city: track.city || "UAE",
+  difficulty: track.difficulty || "all",
+  location: [track.area, track.city].filter(Boolean).join(", ") || track.city || "UAE",
+  distance: formatDistance(track.distance),
+  elevation: track.elevation ? String(track.elevation) : "N/A",
+  level: titleCase(track.difficulty) || "All Levels",
+  featured: Boolean((track as any).featured || (track as any).isFeatured),
+  img: getTrackImage(track),
+});
+
+const getPaginationItems = (page: number, totalPages: number): Array<number | string> => {
+  if (totalPages <= 5) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1);
+  }
+
+  if (page <= 3) return [1, 2, 3, 4, "...", totalPages];
+  if (page >= totalPages - 2) return [1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+  return [1, "...", page - 1, page, page + 1, "...", totalPages];
+};
 
 const FontLoader = () => (
   <style>{`
@@ -138,7 +217,7 @@ function TracksJourneyCard() {
           <span
             key={index}
             className="tracks-journey-card__avatar"
-            style={{ "--avatar-bg": background } as React.CSSProperties}
+            style={{ "--avatar-bg": background } as CSSProperties}
           />
         ))}
         <span className="tracks-journey-card__avatar" />
@@ -306,23 +385,19 @@ function WhySection() {
 }
 
 // ── Track card ────────────────────────────────────────────────────────────────
-function TrackCard({ track }) {
-  // const isFeatured = track.featured;
-  const isFeatured = false;
+function TrackCard({ track }: { track: PublicTrackCard }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const isFeatured = track.featured || isHovered;
   const cardBg = isFeatured ? "#435974" : "#fff";
   const textColor = isFeatured ? "#fff" : "#000";
   const statBg = isFeatured ? "#435974" : "#323232";
   const borderStyle = isFeatured ? "none" : "1px solid rgba(0,0,0,0.3)";
+  const mutedText = isFeatured ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.8)";
 
   return (
     <div
-    onMouseEnter={(e) => {
-      e.currentTarget.style.background = "#435974";
-    }}
-    onMouseLeave={(e) => {
-      e.currentTarget.style.background = "#fff";
-    }}
-    
+    onMouseEnter={() => setIsHovered(true)}
+    onMouseLeave={() => setIsHovered(false)}
     style={{
       width: "calc(33.33% - 19px)", minWidth: 0,
       borderRadius: 12, overflow: "hidden",
@@ -345,7 +420,7 @@ function TrackCard({ track }) {
         {/* location */}
         <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
           <span style={{ fontSize: 14 }}>📍</span>
-          <span style={{ fontSize: 13, fontWeight: 500, color: isFeatured ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.8)" }}>{track.location}</span>
+          <span style={{ fontSize: 13, fontWeight: 500, color: mutedText }}>{track.location}</span>
         </div>
         {/* name */}
         <h3 className="bebas" style={{ fontSize: 24, color: textColor, marginBottom: 16, letterSpacing: 0.5 }}>{track.name}</h3>
@@ -384,25 +459,55 @@ function TrackCard({ track }) {
 }
 
 // ── Tracks grid ───────────────────────────────────────────────────────────────
-const ALL_TRACKS = [
-  { id: 1,  name: "Dubai Marina Loop",    location: "Abu Dhabi", distance: "25 km", elevation: "50 m",  level: "Easy",         featured: true,  img: "https://images.unsplash.com/photo-1534787238916-9ba6764efd4f?w=600&q=80" },
-  { id: 2,  name: "Yas Island Circuit",   location: "Abu Dhabi", distance: "45 km", elevation: "120 m", level: "Intermediate", featured: false, img: "https://images.unsplash.com/photo-1502904550040-7534597429ae?w=600&q=80" },
-  { id: 3,  name: "Sharjah Corniche",     location: "Abu Dhabi", distance: "18 km", elevation: "30 m",  level: "Easy",         featured: false, img: "https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?w=600&q=80" },
-  { id: 4,  name: "Hatta Mountain Route", location: "Abu Dhabi", distance: "60 km", elevation: "850 m", level: "Intermediate", featured: false, img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" },
-  { id: 5,  name: "Saadiyat Island Loop", location: "Abu Dhabi", distance: "32 km", elevation: "40 m",  level: "Easy",         featured: false, img: "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=600&q=80" },
-  { id: 6,  name: "Al Qudra Desert Track",location: "Abu Dhabi", distance: "45 km", elevation: "120 m", level: "Intermediate", featured: false, img: "https://images.unsplash.com/photo-1471897488648-5eae4ac6d485?w=600&q=80" },
-  { id: 7,  name: "Corniche Seafront",    location: "Abu Dhabi", distance: "12 km", elevation: "10 m",  level: "Easy",         featured: false, img: "https://images.unsplash.com/photo-1570489460099-2a6e43e4c3f0?w=600&q=80" },
-  { id: 8,  name: "Al Ain Desert Loop",   location: "Al Ain",    distance: "70 km", elevation: "400 m", level: "Advanced",     featured: false, img: "https://images.unsplash.com/photo-1600965962361-9035dbfd1c50?w=600&q=80" },
-  { id: 9,  name: "Khalifa City Route",   location: "Abu Dhabi", distance: "28 km", elevation: "20 m",  level: "Easy",         featured: false, img: "https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=600&q=80" },
-  { id: 10, name: "Reem Island Sprint",   location: "Abu Dhabi", distance: "15 km", elevation: "5 m",   level: "Easy",         featured: false, img: "https://images.unsplash.com/photo-1568430462989-44163eb1752f?w=600&q=80" },
-];
-
-const PAGE_SIZE = 6;
-
 function TracksGrid() {
-  const [filters, setFilters] = useState({ city: "All Cities", level: "All Levels" });
+  const [filters, setFilters] = useState<TrackFilters>({ city: ALL_FILTER_VALUE, level: ALL_FILTER_VALUE });
   const [active, setActive] = useState(filters);
   const [page, setPage] = useState(1);
+  const [tracks, setTracks] = useState<PublicTrackCard[]>([]);
+  const [totalResults, setTotalResults] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadTracks = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const response = await getTracksPageEn({
+          page,
+          limit: PAGE_SIZE,
+          city: active.city === ALL_FILTER_VALUE ? undefined : active.city,
+          difficulty: active.level === ALL_FILTER_VALUE ? undefined : active.level,
+          publicOnly: true,
+        });
+
+        if (mounted) {
+          setTracks(response.tracks.map(normalizeTrack));
+          setTotalResults(response.pagination.total);
+          setTotalPages(Math.max(1, response.pagination.pages || 1));
+        }
+      } catch (err) {
+        console.error("Failed to load public tracks:", err);
+        if (mounted) {
+          setTracks([]);
+          setTotalResults(0);
+          setTotalPages(1);
+          setError("Unable to load tracks right now.");
+        }
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    loadTracks();
+
+    return () => {
+      mounted = false;
+    };
+  }, [active, page]);
 
   const ChevronDown = () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
@@ -410,14 +515,11 @@ function TracksGrid() {
     </svg>
   );
 
-  const filtered = ALL_TRACKS.filter(t => {
-    if (active.city !== "All Cities" && t.location !== active.city) return false;
-    if (active.level !== "All Levels" && t.level !== active.level) return false;
-    return true;
-  });
-
-  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
-  const visible = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const filterControls: Array<{ key: keyof TrackFilters; options: FilterOption[] }> = [
+    { key: "city", options: CITY_FILTER_OPTIONS },
+    { key: "level", options: LEVEL_FILTER_OPTIONS },
+  ];
+  const paginationItems = getPaginationItems(page, totalPages);
 
   return (
     <section style={{ background: "#EAF4FF", padding: "60px 82px 0" }}>
@@ -427,17 +529,14 @@ function TracksGrid() {
           Explore Certified Routes Across the UAE
         </h2>
         <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-          {[
-            { key: "city",  label: "All Cities", options: ["All Cities","Abu Dhabi","Dubai","Sharjah","Al Ain"] },
-            { key: "level", label: "All Levels",  options: ["All Levels","Easy","Intermediate","Advanced","Elite"] },
-          ].map(f => (
+          {filterControls.map(f => (
             <div key={f.key} style={{
               width: 220, height: 60, background: "#fff",
               border: "1px solid rgba(0,0,0,0.06)", borderRadius: 40,
               display: "flex", alignItems: "center", padding: "0 16px 0 22px", gap: 8
             }}>
               <select value={filters[f.key]} onChange={e => setFilters(p => ({ ...p, [f.key]: e.target.value }))}>
-                {f.options.map(o => <option key={o}>{o}</option>)}
+                {f.options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
               <ChevronDown />
             </div>
@@ -450,15 +549,27 @@ function TracksGrid() {
         </div>
       </div>
 
-      <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 24 }}>Showing {filtered.length} results</p>
+      <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 24 }}>
+        {loading ? "Loading tracks..." : `Showing ${totalResults} results`}
+      </p>
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: "48px 28px" }}>
-        {visible.map(t => <TrackCard key={t.id} track={t} />)}
+        {tracks.map(t => <TrackCard key={t.id} track={t} />)}
       </div>
+
+      {!loading && error && (
+        <p style={{ fontSize: 17, color: "#B42318", padding: "32px 0 8px" }}>{error}</p>
+      )}
+
+      {!loading && !error && tracks.length === 0 && (
+        <p style={{ fontSize: 17, color: "rgba(0,0,0,0.7)", padding: "32px 0 8px" }}>
+          No tracks found for the selected filters.
+        </p>
+      )}
 
       {/* Pagination */}
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 16, padding: "48px 0 64px" }}>
-        {[1, 2, 3, 4, "...........", 10].map((p, i) => {
+        {paginationItems.map((p, i) => {
           const isDots = typeof p === "string";
           const isActive = p === page;
           return (

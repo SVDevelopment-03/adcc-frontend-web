@@ -174,6 +174,93 @@ export interface TrackValidationRules {
   };
 }
 
+export interface GetTracksPageParams {
+  page?: number;
+  limit?: number;
+  city?: string;
+  difficulty?: string;
+  status?: string;
+  type?: string;
+  visibility?: string;
+  publicOnly?: boolean;
+}
+
+export interface TracksPage {
+  tracks: Track[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
+const normalizeTracksPage = (
+  body: any,
+  fallback: { page: number; limit: number },
+): TracksPage => {
+  const data = body?.data ?? body;
+  const tracks =
+    data && Array.isArray(data.tracks)
+      ? data.tracks
+      : Array.isArray(data)
+        ? data
+        : Array.isArray(body?.tracks)
+          ? body.tracks
+          : [];
+  const pagination = data?.pagination ?? body?.pagination;
+  const total = Number(pagination?.total ?? data?.total ?? body?.total ?? tracks.length);
+  const page = Number(pagination?.page ?? data?.page ?? body?.page ?? fallback.page);
+  const limit = Number(pagination?.limit ?? data?.limit ?? body?.limit ?? fallback.limit);
+  const pagesValue =
+    pagination?.pages ??
+    pagination?.totalPages ??
+    data?.pages ??
+    data?.totalPages ??
+    Math.ceil(total / Math.max(1, limit));
+  const pages = Number(pagesValue || 1);
+
+  return {
+    tracks,
+    pagination: {
+      page,
+      limit,
+      total,
+      pages: Math.max(1, pages),
+    },
+  };
+};
+
+export const getTracksPageEn = async (params?: GetTracksPageParams): Promise<TracksPage> => {
+  const page = params?.page ?? 1;
+  const limit = params?.limit ?? 10;
+  const requestParams = {
+    page,
+    limit,
+    city: params?.city,
+    difficulty: params?.difficulty,
+    status: params?.status,
+    type: params?.type,
+    visibility: params?.visibility,
+    publicOnly: params?.publicOnly,
+  };
+  const cacheKey = `tracks_en_page:${JSON.stringify(requestParams)}`;
+  const cached = getCached<TracksPage>(cacheKey);
+  if (cached) return cached;
+
+  try {
+    const response = await api.get("/v1/en/tracks", {
+      params: requestParams,
+    });
+    const result = normalizeTracksPage(response.data, { page, limit });
+    setCache(cacheKey, result);
+    return result;
+  } catch (error) {
+    console.error("Error fetching tracks page:", error);
+    throw error;
+  }
+};
+
 // Get all tracks (optionally with pagination; default limit 500 for dropdowns)
 export const getAllTracks = async (params?: {
   page?: number;

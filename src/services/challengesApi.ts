@@ -121,27 +121,65 @@ export interface GetChallengesParams {
   limit?: number;
 }
 
-/** Get all challenges with optional filters and pagination */
-export const getAllChallenges = async (params?: GetChallengesParams): Promise<Challenge[]> => {
-  const cacheKey = `challenges:${params?.status ?? 'all'}:${params?.type ?? 'all'}:${params?.page ?? 1}:${params?.limit ?? 100}`;
-  const cached = getCached<Challenge[]>(cacheKey);
+export interface ChallengesPage {
+  challenges: Challenge[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
+function normalizeChallengesPage(
+  body: GetChallengesResponse & { challenges?: ChallengeApiRaw[] },
+  fallback: { page: number; limit: number },
+): ChallengesPage {
+  const data = body.data ?? body;
+  const list = data?.challenges ?? (Array.isArray(body.challenges) ? body.challenges : []);
+  const pagination = data?.pagination ?? {
+    page: fallback.page,
+    limit: fallback.limit,
+    total: list.length,
+    pages: Math.ceil(list.length / Math.max(1, fallback.limit)) || 1,
+  };
+
+  return {
+    challenges: list.map((c) => normalizeChallenge(c)),
+    pagination: {
+      page: Number(pagination.page ?? fallback.page),
+      limit: Number(pagination.limit ?? fallback.limit),
+      total: Number(pagination.total ?? list.length),
+      pages: Math.max(1, Number(pagination.pages ?? 1)),
+    },
+  };
+}
+
+export const getChallengesPage = async (params?: GetChallengesParams): Promise<ChallengesPage> => {
+  const page = params?.page ?? 1;
+  const limit = params?.limit ?? 10;
+  const cacheKey = `challenges-page:${params?.status ?? 'all'}:${params?.type ?? 'all'}:${page}:${limit}`;
+  const cached = getCached<ChallengesPage>(cacheKey);
   if (cached) return cached;
 
   const response = await api.get<GetChallengesResponse>('/v1/challenges', {
     params: {
       status: params?.status,
       type: params?.type,
-      page: params?.page ?? 1,
-      limit: params?.limit ?? 100,
+      page,
+      limit,
     },
   });
 
-  const body = response.data as GetChallengesResponse & { challenges?: ChallengeApiRaw[] };
-  const data = body.data ?? body;
-  const list = data?.challenges ?? (Array.isArray(body.challenges) ? body.challenges : []);
-  const normalized = list.map((c) => normalizeChallenge(c));
+  const normalized = normalizeChallengesPage(response.data as GetChallengesResponse & { challenges?: ChallengeApiRaw[] }, { page, limit });
   setCache(cacheKey, normalized);
   return normalized;
+};
+
+/** Get all challenges with optional filters and pagination */
+export const getAllChallenges = async (params?: GetChallengesParams): Promise<Challenge[]> => {
+  const response = await getChallengesPage(params);
+  return response.challenges;
 };
 
 /** Get a single challenge by ID */

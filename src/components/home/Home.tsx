@@ -614,7 +614,7 @@ function ArrowRight({ color = '#019839', size = 16 }) {
 /* ─── QR Code placeholder ───────────────────────────────────────────────────*/
 function QRCodePlaceholder() {
   return (
-   <img src="../../../public/images/barcode.png" className=""/>
+   <img src="/images/barcode.png" className=""/>
   );
 }
 
@@ -812,8 +812,13 @@ function AppSection() {
       {/* Phone mockup center */}
       <div ref={phoneRef} className={`app-phone-stage${phoneVisible ? ' is-visible' : ''}`} style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative', minHeight: 500 }}>
         {/* Back phone */}
+<<<<<<< Updated upstream
         <div className="app-phone-mockup">
           <img src="../../../public/images/mobile.png" alt="App" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} />
+=======
+        <div >
+          <img src="/images/mobile.png" alt="App" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} />
+>>>>>>> Stashed changes
           </div>
         {/* Front phone */}
       </div>
@@ -885,21 +890,21 @@ function ExplorePlatformSection() {
   const cards = [
     {
       tag: 'EVENTS',
-      img: '../../../public/images/explore-1.png',
+      img: '/images/explore-1.png',
       title: 'Join upcoming rides and cycling events across the city',
       action: 'View Events',
       to: '/user-events',
     },
     {
       tag: 'TRACK',
-      img: '../../../public/images/explore-2.png',
+      img: '/images/explore-2.png',
       title: 'Discover official cycling routes across Abu Dhabi',
       action: 'View Tracks',
       to: '/user-tracks',
     },
     {
       tag: 'CHALLENGE',
-            img: '../../../public/images/explore-3.png',
+            img: '/images/explore-3.png',
       title: 'Track progress and take on community challenges',
       action: 'View Challenges',
       to: '/user-tracks',
@@ -1177,8 +1182,13 @@ function AboutSection() {
         </button>
       </div>
       {/* Decorative rider image */}
+<<<<<<< Updated upstream
       <div className="about-right-image" style={{ flexShrink: 0, width: 280, height: 340, overflow: 'hidden'}}>
         <img src="../../../public/images/right-cycle.png" alt="Rider" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+=======
+      <div style={{ flexShrink: 0, width: 280, height: 340, overflow: 'hidden'}}>
+        <img src="/images/right-cycle.png" alt="Rider" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+>>>>>>> Stashed changes
       </div>
     </section>
   );
