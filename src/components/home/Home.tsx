@@ -651,7 +651,7 @@ function HeroSection() {
 
   return (
     <section style={{ position: 'relative', width: '100%', height: 806, overflow: 'hidden', flexShrink: 0 }}>
-      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(../../../../../public/images/hero.png)', backgroundSize: 'cover', backgroundPosition: 'center top' }} />
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(/images/hero.png)', backgroundSize: 'cover', backgroundPosition: 'center top' }} />
       <div style={{ position: 'absolute', inset: 0, }} />
       <div style={{ position: 'absolute', left: 86, bottom: 360, maxWidth: 520 }}>
         <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontWeight: 900, fontSize: 72, lineHeight: 1.1, color: '#000000', textTransform: 'uppercase', letterSpacing: '-0.5px', marginBottom: 28, }}>RIDE ABU DHABI START<br />YOUR CYCLING JOURNEY</h1>
