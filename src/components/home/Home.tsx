@@ -702,9 +702,9 @@ function CyclingJourneySection() {
   const cardsRef = useRef<HTMLDivElement | null>(null);
   const [cardsVisible, setCardsVisible] = useState(false);
   const cards = [
-    { label: "Find Cycling\nTracks", bg: "#777777", img: "../../../public/images/journey-1.png", to:"/user-tracks" },
-    { label: "Discover\nEvents", bg: "#777777", img: "../../../public/images/journey-2.png", to:"/user-event" },
-    { label: "Join Active\nChallenges", bg: "#777777", img: "../../../public/images/journey-3.png" , to:"//user-challenges"},
+    { label: "Find Cycling\nTracks", bg: "#777777", img: "/images/journey-1.png", to:"/user-tracks" },
+    { label: "Discover\nEvents", bg: "#777777", img: "/images/journey-2.png", to:"/user-event" },
+    { label: "Join Active\nChallenges", bg: "#777777", img: "/images/journey-3.png" , to:"//user-challenges"},
     { label: "Connect With\nRiders", bg: "#777777",img: "https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=400&q=80" , to:"/login"},
   ];
 
@@ -812,13 +812,8 @@ function AppSection() {
       {/* Phone mockup center */}
       <div ref={phoneRef} className={`app-phone-stage${phoneVisible ? ' is-visible' : ''}`} style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative', minHeight: 500 }}>
         {/* Back phone */}
-<<<<<<< Updated upstream
-        <div className="app-phone-mockup">
-          <img src="../../../public/images/mobile.png" alt="App" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} />
-=======
         <div >
           <img src="/images/mobile.png" alt="App" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} />
->>>>>>> Stashed changes
           </div>
         {/* Front phone */}
       </div>
@@ -1182,13 +1177,8 @@ function AboutSection() {
         </button>
       </div>
       {/* Decorative rider image */}
-<<<<<<< Updated upstream
-      <div className="about-right-image" style={{ flexShrink: 0, width: 280, height: 340, overflow: 'hidden'}}>
-        <img src="../../../public/images/right-cycle.png" alt="Rider" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-=======
       <div style={{ flexShrink: 0, width: 280, height: 340, overflow: 'hidden'}}>
         <img src="/images/right-cycle.png" alt="Rider" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
->>>>>>> Stashed changes
       </div>
     </section>
   );
