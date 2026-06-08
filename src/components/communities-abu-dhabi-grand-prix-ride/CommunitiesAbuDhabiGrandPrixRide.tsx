@@ -88,9 +88,7 @@ const FontLoader = () => (
       --green: #019839;
       --blue-gray: #435974;
       --dark: #323232;
-      width: calc(100% + 11rem);
-      margin-left: -5.5rem;
-      margin-right: -5.5rem;
+      width: 100%;
       overflow-x: hidden;
       overflow-y: visible;
       background: #EAF4FF;
@@ -310,8 +308,8 @@ function ScheduleSection() {
         ride.
       </p>
 
-      {/* <div className="grand-prix-shell mt-11 grid grid-cols-[460px_1fr] gap-[53px] max-lg:grid-cols-1"> */}
-      <div className="grand-prix-shell mt-[45px] flex items-end gap-[53px] max-lg:grid-cols-1">
+      {/* <div className="grand-prix-shell mt-[45px] grid grid-cols-[460px_736px] gap-[53px] max-lg:grid-cols-1"> */}
+      <div className="grand-prix-shell mt-[45px] grid grid-cols-1 gap-[53px] lg:grid-cols-[460px_minmax(0,1fr)]">
         <div className="relative h-[478px] w-full max-w-[460px] max-lg:mx-auto">
           <div className="absolute bottom-0 left-0 h-[254px] w-full rounded-tl-xl rounded-br-xl rounded-tr-[60px] rounded-bl-[60px] bg-[#435974]" />
 
@@ -344,11 +342,12 @@ function ScheduleSection() {
         </div>
 
         {/* <div className="space-y-[16px]"> */}
-        <div className="w-[736px] space-y-[16px] max-lg:w-full">
+        {/* <div className="w-[736px] space-y-[16px] max-lg:w-full"> */}
+        <div className="w-full min-w-0 space-y-[16px]">
           {schedule.map((item, index) => (
             <article
               key={`${item.time}-${item.title}-${index}`}
-              className={`grid p-[20px] w-[736px] grid-cols-[168px_1fr] items-start rounded-[11.91px] px-[19px] text-white max-lg:w-full max-sm:h-auto max-sm:grid-cols-1 max-sm:gap-2 max-sm:py-5 ${
+              className={`grid min-h-[98px] w-full grid-cols-[168px_1fr] items-center rounded-[11.91px] px-[19px] text-white max-lg:w-full max-sm:h-auto max-sm:grid-cols-1 max-sm:gap-2 max-sm:py-5 ${
               // className={`grid min-h-[98px] grid-cols-[149px_1fr] items-center rounded-[12px] px-[19px] text-white max-sm:grid-cols-1 max-sm:gap-2 max-sm:py-5 ${
                 index === 0 ? "bg-[#435974]" : "bg-[#7891AF]"
               }`}
