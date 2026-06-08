@@ -147,12 +147,12 @@ export default function ChallengesPage() {
   return (
     <div className="min-h-screen bg-[#eaf4ff] text-black">
       {/* Header */}
-      <header className="h-[134px] bg-[#eaf4ff] flex items-center justify-between px-10 md:px-20">
+      <header className="flex h-[78px] items-center justify-between bg-[#eaf4ff] px-4 sm:h-[96px] sm:px-6 md:px-10 lg:h-[134px] lg:px-20">
         <div className="flex items-center gap-2">
           <img
             src="/ADCC-Logo.png"
             alt="ADCC Logo"
-            className="h-[57px] w-[135px] object-contain"
+            className="h-auto w-[112px] object-contain sm:w-[125px] lg:h-[57px] lg:w-[135px]"
           />
         </div>
 
@@ -168,10 +168,10 @@ export default function ChallengesPage() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-6">
-          <Cloud size={24} className="text-[#34495e]" />
-          <span className="hidden sm:block text-[17px] font-medium">English</span>
-          <button className="rounded-full bg-black px-8 py-4 text-[18px] font-bold text-white">
+        <div className="flex items-center gap-3 sm:gap-5 lg:gap-6">
+          <Cloud size={22} className="text-[#34495e]" />
+          <span className="hidden sm:block text-[15px] font-medium lg:text-[17px]">English</span>
+          <button className="rounded-full bg-black px-5 py-3 text-[14px] font-bold text-white sm:px-6 lg:px-8 lg:py-4 lg:text-[18px]">
             Menu
           </button>
         </div>
@@ -179,66 +179,66 @@ export default function ChallengesPage() {
 
       {/* Hero */}
       <section
-        className="relative h-[635px] bg-cover bg-center"
+        className="relative h-[320px] bg-cover bg-center sm:h-[440px] md:h-[540px] lg:h-[635px]"
         style={{
           backgroundImage:
             "linear-gradient(90deg, rgba(0,0,0,.55), rgba(0,0,0,.1)), url('/img/paolo-candelo-8tXukRrs7yk-unsplash 1.png')",
         }}
       >
-        <div className="absolute bottom-20 left-10 md:left-20 text-white">
-          <h1 className="text-[42px] font-black uppercase leading-none tracking-tight">
+        <div className="absolute bottom-10 left-4 right-4 text-white sm:bottom-14 sm:left-6 md:bottom-20 md:left-10 lg:left-20">
+          <h1 className="text-[38px] font-black uppercase leading-none tracking-tight sm:text-[42px]">
             Challenges
           </h1>
-          <p className="mt-4 text-[18px]">Home / Challenges</p>
+          <p className="mt-3 text-[16px] sm:mt-4 sm:text-[18px]">Home / Challenges</p>
         </div>
       </section>
 
       {/* Intro */}
-      <section className="mx-auto grid max-w-[1260px] grid-cols-1 gap-12 px-10 py-28 lg:grid-cols-2">
+      <section className="mx-auto grid max-w-[1260px] grid-cols-1 gap-8 px-4 py-12 sm:px-6 sm:py-16 md:px-10 lg:grid-cols-2 lg:gap-12 lg:py-28">
         <div>
-          <h2 className="max-w-[620px] text-[44px] font-black uppercase leading-tight">
+          <h2 className="max-w-[620px] text-[32px] font-black uppercase leading-tight sm:text-[38px] lg:text-[44px]">
             Push your limits with cycling challenges in Abu Dhabi
           </h2>
-          <p className="mt-8 max-w-[560px] text-[17px] leading-relaxed">
+          <p className="mt-5 max-w-[560px] text-[15px] leading-relaxed sm:mt-8 sm:text-[17px]">
             Abu Dhabi Cycling Club provides exciting opportunities for endurance
             rides and competitive challenges. Whether chasing distance, speed, or
             competing, our challenges keep you motivated.
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {stats.map((item, index) => (
             <div
               key={index}
-              className={`rounded-xl border p-8 ${
+              className={`rounded-xl border p-5 sm:p-6 lg:p-8 ${
                 item.active
                   ? "bg-[#49637f] text-white"
                   : "border-[#d7e3ef] bg-[#edf6ff]"
               }`}
             >
               <Users size={32} />
-              <h3 className="mt-4 text-[28px] font-black">{item.value}</h3>
-              <p className="mt-1 text-[16px]">{item.label}</p>
+              <h3 className="mt-4 text-[24px] font-black sm:text-[28px]">{item.value}</h3>
+              <p className="mt-1 text-[14px] sm:text-[16px]">{item.label}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* Flag Image */}
-      <section className="mx-auto max-w-[1260px] px-10 pb-28">
+      <section className="mx-auto max-w-[1260px] px-4 pb-16 sm:px-6 md:px-10 lg:pb-28">
         <img
           src="/img/SSYouTube.online_Falcon_daman.png"
           alt="ADCC Flag"
-          className="h-[465px] w-full rounded-xl object-cover"
+          className="h-[220px] w-full rounded-xl object-cover sm:h-[320px] lg:h-[465px]"
         />
       </section>
 
       {/* Challenges */}
-      <section className="mx-auto max-w-[1260px] px-10 pb-28">
-        <div className="mb-14 flex flex-col justify-between gap-6 md:flex-row md:items-center">
-          <h2 className="text-[36px] font-black uppercase">Cycling Challenges</h2>
+      <section className="mx-auto max-w-[1260px] px-4 pb-16 sm:px-6 md:px-10 lg:pb-28">
+        <div className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-center lg:mb-14">
+          <h2 className="text-[30px] font-black uppercase sm:text-[36px]">Cycling Challenges</h2>
 
-          <div className="flex gap-5">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 md:flex md:gap-5">
             {statusTabs.map((tab) => {
               const selected = status === tab;
               return (
@@ -248,7 +248,7 @@ export default function ChallengesPage() {
                     setStatus(tab);
                     setPage(1);
                   }}
-                  className={`rounded-full px-14 py-4 text-[16px] ${
+                  className={`rounded-full px-5 py-3 text-[15px] sm:px-6 md:px-8 lg:px-14 lg:py-4 lg:text-[16px] ${
                     selected
                       ? "bg-[#00a84f] font-bold text-white"
                       : "border border-[#cad8e6] text-[#6f7f8f]"
@@ -265,7 +265,7 @@ export default function ChallengesPage() {
           {loading ? "Loading challenges..." : `Showing ${totalResults} ${status.toLowerCase()} challenges`}
         </p>
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
           {challenges.map((item) => (
             <div
               key={item.id}
@@ -277,11 +277,11 @@ export default function ChallengesPage() {
               <img
                 src={item.image || CHALLENGE_FALLBACK_IMAGE}
                 alt={item.title}
-                className="h-[330px] w-full object-cover"
+                className="h-[220px] w-full object-cover sm:h-[280px] lg:h-[330px]"
               />
 
-              <div className="p-8">
-                <h3 className="text-[24px] font-black uppercase">
+              <div className="p-5 sm:p-6 lg:p-8">
+                <h3 className="text-[21px] font-black uppercase sm:text-[24px]">
                   {item.title}
                 </h3>
                 <p className="mt-2 text-[15px]">{getChallengeDescription(item)}</p>
@@ -290,7 +290,7 @@ export default function ChallengesPage() {
                   // className={`mt-8 flex items-center justify-between rounded-md px-6 py-5 ${
                   //   item.active ? "bg-[#89a2bf]" : "bg-[#89a2bf]"
                   // } text-white`}
-                  className="mt-8 flex items-center justify-between rounded-md bg-[#89a2bf] px-6 py-5 text-white transition-all duration-300 group-hover:bg-[#6f89a7]"
+                  className="mt-6 flex flex-col gap-5 rounded-md bg-[#89a2bf] px-4 py-5 text-white transition-all duration-300 group-hover:bg-[#6f89a7] sm:mt-8 sm:flex-row sm:items-center sm:justify-between sm:px-6"
                 >
                   <div className="space-y-2 text-[15px]">
                     <p className="flex items-center gap-2">
@@ -304,7 +304,7 @@ export default function ChallengesPage() {
                     </p>
                   </div>
 
-                  <button className="rounded-full border border-white px-6 py-3 text-[13px] font-semibold">
+                  <button className="rounded-full border border-white px-5 py-3 text-[13px] font-semibold sm:px-6">
                     Join The Challenge
                   </button>
                 </div>
@@ -324,24 +324,24 @@ export default function ChallengesPage() {
         )}
 
         {!loading && totalPages > 1 && (
-          <div className="mt-12 flex items-center justify-center gap-3">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-2 sm:mt-12 sm:gap-3">
             <button
               onClick={() => setPage((current) => Math.max(1, current - 1))}
               disabled={page === 1}
-              className="rounded-full border border-[#cad8e6] px-5 py-3 text-[14px] font-semibold disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-full border border-[#cad8e6] px-4 py-2 text-[13px] font-semibold disabled:cursor-not-allowed disabled:opacity-40 sm:px-5 sm:py-3 sm:text-[14px]"
             >
               Prev
             </button>
             {Array.from({ length: totalPages }, (_, index) => index + 1)
               .filter((item) => item === 1 || item === totalPages || Math.abs(item - page) <= 1)
               .map((item, index, visiblePages) => (
-                <span key={item} className="flex items-center gap-3">
+                <span key={item} className="flex items-center gap-2 sm:gap-3">
                   {index > 0 && item - visiblePages[index - 1] > 1 && (
                     <span className="text-[#00a84f]">...</span>
                   )}
                   <button
                     onClick={() => setPage(item)}
-                    className={`h-11 w-11 rounded-full text-[15px] font-semibold ${
+                    className={`h-10 w-10 rounded-full text-[14px] font-semibold sm:h-11 sm:w-11 sm:text-[15px] ${
                       page === item
                         ? "bg-[#00a84f] text-white"
                         : "text-[#00a84f]"
@@ -354,7 +354,7 @@ export default function ChallengesPage() {
             <button
               onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
               disabled={page === totalPages}
-              className="rounded-full border border-[#cad8e6] px-5 py-3 text-[14px] font-semibold disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-full border border-[#cad8e6] px-4 py-2 text-[13px] font-semibold disabled:cursor-not-allowed disabled:opacity-40 sm:px-5 sm:py-3 sm:text-[14px]"
             >
               Next
             </button>
@@ -363,19 +363,19 @@ export default function ChallengesPage() {
       </section>
 
       {/* FAQ */}
-      <section className="mx-auto max-w-[1100px] px-10 pb-28 text-center">
-        <h2 className="text-[34px] font-black uppercase">
+      <section className="mx-auto max-w-[1100px] px-4 pb-16 text-center sm:px-6 md:px-10 lg:pb-28">
+        <h2 className="text-[30px] font-black uppercase sm:text-[34px]">
           Frequently Asked Questions
         </h2>
         <p className="mt-4 text-[15px]">
           Got questions before hitting the road? We’ve got you covered.
         </p>
 
-        <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2">
+        <div className="mt-8 grid grid-cols-1 gap-4 md:mt-12 md:grid-cols-2 md:gap-5">
           {faqs.map((faq, index) => (
             <button
               key={faq}
-              className="flex items-center justify-between rounded-lg border border-[#cad8e6] bg-[#eef7ff] px-7 py-6 text-left text-[16px] font-medium"
+              className="flex items-center justify-between gap-4 rounded-lg border border-[#cad8e6] bg-[#eef7ff] px-4 py-5 text-left text-[15px] font-medium sm:px-7 sm:py-6 sm:text-[16px]"
             >
               <span>
                 {String(index + 1).padStart(2, "0")}. {faq}
@@ -388,26 +388,26 @@ export default function ChallengesPage() {
 
       {/* CTA */}
       <section
-        className="relative flex h-[500px] items-center justify-center bg-cover bg-center text-center text-white"
+        className="relative flex h-auto min-h-[360px] items-center justify-center bg-cover bg-center px-4 py-12 text-center text-white sm:min-h-[420px] lg:h-[500px] lg:py-0"
         style={{
           backgroundImage:
             "linear-gradient(rgba(0,0,0,.62), rgba(0,0,0,.62)), url('https://images.unsplash.com/photo-1511994298241-608e28f14fde?q=80&w=1600&auto=format&fit=crop')",
         }}
       >
         <div>
-          <h2 className="text-[56px] font-black uppercase leading-tight">
+          <h2 className="text-[40px] font-black uppercase leading-tight sm:text-[48px] lg:text-[56px]">
             Start Your Ride Today
           </h2>
-          <p className="mt-6 text-[19px]">
+          <p className="mt-5 text-[16px] leading-6 sm:mt-6 sm:text-[19px]">
             Download the ADCC app and join the cycling community
           </p>
 
-          <div className="mt-8 flex justify-center gap-5">
-            <button className="flex items-center gap-3 rounded-full bg-white px-7 py-3 text-black">
+          <div className="mx-auto mt-8 flex w-full max-w-[280px] flex-col justify-center gap-3 sm:max-w-none sm:flex-row sm:gap-5">
+            <button className="flex items-center justify-center gap-3 rounded-full bg-white px-7 py-3 text-black">
               <span className="text-xs">GET IT ON</span>
               <b>Google Play</b>
             </button>
-            <button className="flex items-center gap-3 rounded-full bg-white px-7 py-3 text-black">
+            <button className="flex items-center justify-center gap-3 rounded-full bg-white px-7 py-3 text-black">
               <Apple size={20} />
               <b>App Store</b>
             </button>
@@ -416,7 +416,7 @@ export default function ChallengesPage() {
       </section>
 
       {/* Footer */}
-      <footer className="mx-auto max-w-[1260px] px-10 py-24">
+      <footer className="mx-auto max-w-[1260px] px-4 py-14 sm:px-6 md:px-10 lg:py-24">
         <div className="grid grid-cols-1 gap-14 md:grid-cols-3">
           <div>
             <img
@@ -430,12 +430,12 @@ export default function ChallengesPage() {
               thrives...
             </p>
 
-            <div className="mt-7 flex max-w-[360px] rounded-md bg-white p-2">
+            <div className="mt-7 flex max-w-[360px] flex-col rounded-md bg-white p-2 sm:flex-row">
               <input
                 placeholder="Enter your email"
-                className="flex-1 bg-transparent px-4 text-sm outline-none"
+                className="min-h-11 min-w-0 flex-1 bg-transparent px-4 text-sm outline-none"
               />
-              <button className="rounded bg-[#00a84f] px-8 py-3 text-sm font-bold text-white">
+              <button className="min-h-11 rounded bg-[#00a84f] px-8 py-3 text-sm font-bold text-white">
                 Submit
               </button>
             </div>
@@ -476,7 +476,7 @@ export default function ChallengesPage() {
           Copyright 2026. Abu Dhabi Cycling Club
         </div>
 
-        <button className="fixed bottom-10 right-10 rounded-full bg-[#00a84f] p-4 text-white shadow-lg">
+        <button className="fixed bottom-5 right-5 rounded-full bg-[#00a84f] p-3 text-white shadow-lg sm:bottom-10 sm:right-10 sm:p-4">
           <Bike size={28} />
         </button>
       </footer>

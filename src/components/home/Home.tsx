@@ -185,6 +185,12 @@ const CSS = `
     cursor: pointer;
     box-shadow: 0 2px 16px rgba(0,0,0,0.08);
   }
+  .home-qr-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
   .app-feature:hover .feature-icon { transform: scale(1.1); }
   .feature-icon { transition: transform 0.2s; }
   .fade-in { animation: fadeUp 0.6s ease both; }
@@ -525,6 +531,602 @@ const CSS = `
       height: 300px;
     }
   }
+
+  @media (max-width: 1024px) {
+    .home-header {
+      height: 92px !important;
+      padding: 0 24px !important;
+    }
+    .home-logo-wrap {
+      width: 132px !important;
+      height: 56px !important;
+    }
+    .home-logo-wrap svg {
+      width: 132px !important;
+      height: auto !important;
+    }
+    .home-main-nav {
+      display: none !important;
+    }
+    .home-header-actions {
+      gap: 10px !important;
+    }
+    .home-language {
+      display: none !important;
+    }
+    .home-menu-button {
+      width: 86px !important;
+      height: 42px !important;
+      font-size: 15px !important;
+    }
+    .home-hero {
+      height: 640px !important;
+    }
+    .home-hero-bg {
+      background-position: 62% top !important;
+    }
+    .home-hero-content {
+      left: 32px !important;
+      right: 24px !important;
+      bottom: 260px !important;
+      max-width: 430px !important;
+    }
+    .home-hero-title {
+      font-size: 56px !important;
+      line-height: 1.02 !important;
+      margin-bottom: 20px !important;
+    }
+    .home-floating-bike {
+      right: 24px !important;
+      bottom: 34px !important;
+      width: 52px !important;
+      height: 52px !important;
+    }
+    .home-ticker {
+      height: 78px !important;
+    }
+    .home-ticker-item {
+      height: 78px !important;
+      padding: 0 24px !important;
+    }
+    .home-ticker-text {
+      font-size: 23px !important;
+    }
+    .journey-section {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 32px !important;
+      overflow: visible !important;
+      padding: 58px 32px !important;
+    }
+    .journey-copy {
+      min-width: 0 !important;
+      width: 100% !important;
+      min-height: auto !important;
+      padding-right: 0 !important;
+    }
+    .journey-title {
+      font-size: 56px !important;
+      line-height: 1 !important;
+    }
+    .journey-rider {
+      display: none !important;
+    }
+    .journey-content {
+      width: 100% !important;
+      margin-bottom: 0 !important;
+      gap: 24px !important;
+    }
+    .journey-cards {
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow-x: auto !important;
+      padding: 0 0 12px !important;
+      -webkit-overflow-scrolling: touch;
+    }
+    .journey-card {
+      flex: 0 0 240px !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .journey-text {
+      max-width: 640px !important;
+      margin-bottom: 20px !important;
+      padding-right: 0 !important;
+      font-size: 20px !important;
+      line-height: 28px !important;
+    }
+    .home-app-section {
+      padding: 56px 32px !important;
+      flex-wrap: wrap !important;
+      gap: 34px !important;
+    }
+    .home-app-copy {
+      flex: 1 1 280px !important;
+    }
+    .home-app-title {
+      font-size: 58px !important;
+    }
+    .home-qr-box {
+      width: 190px !important;
+      height: 190px !important;
+    }
+    .home-phone-stage {
+      order: 3 !important;
+      flex: 1 1 100% !important;
+      min-height: 360px !important;
+      width: 100% !important;
+    }
+    .home-phone-stage img {
+      max-width: 100% !important;
+      height: auto !important;
+    }
+    .home-feature-list {
+      flex: 1 1 260px !important;
+      gap: 22px !important;
+      min-width: 0 !important;
+    }
+    .home-community-section {
+      padding: 82px 32px !important;
+    }
+    .home-community-eyebrow,
+    .home-community-subtitle {
+      font-size: 22px !important;
+    }
+    .home-community-title {
+      font-size: 56px !important;
+      margin-bottom: 36px !important;
+    }
+    .home-icon-row {
+      flex-wrap: wrap !important;
+      gap: 18px !important;
+    }
+    .home-icon-divider {
+      display: none !important;
+    }
+    .home-platform-section,
+    .home-store-section {
+      padding-left: 32px !important;
+      padding-right: 32px !important;
+    }
+    .home-section-title {
+      font-size: 56px !important;
+      line-height: 1 !important;
+    }
+    .home-platform-cards {
+      height: auto !important;
+      flex-direction: column !important;
+    }
+    .home-platform-card {
+      flex: none !important;
+      height: 360px !important;
+      border-left: none !important;
+      border-top: 2px solid rgba(255,255,255,0.3) !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .home-platform-card:first-child {
+      border-top: none !important;
+    }
+    .home-about-section {
+      padding: 56px 32px 70px !important;
+      flex-wrap: wrap !important;
+      gap: 34px !important;
+    }
+    .home-about-left-image {
+      width: min(100%, 340px) !important;
+      height: 440px !important;
+    }
+    .home-about-content {
+      flex: 1 1 420px !important;
+    }
+    .home-about-title {
+      font-size: 58px !important;
+    }
+    .home-about-rider {
+      display: none !important;
+    }
+    .store-animated-card {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .home-cta {
+      height: 360px !important;
+    }
+    .home-cta-content {
+      padding: 0 32px !important;
+    }
+    .home-cta-title {
+      font-size: 60px !important;
+    }
+    .home-footer-main {
+      padding: 50px 32px 26px !important;
+      flex-direction: column !important;
+      gap: 38px !important;
+    }
+    .home-footer-brand {
+      width: 100% !important;
+    }
+    .home-footer-links {
+      flex-wrap: wrap !important;
+      gap: 38px !important;
+    }
+    .home-footer-bottom {
+      margin: 0 32px !important;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .home-header {
+      height: 78px !important;
+      padding: 0 16px !important;
+    }
+    .home-logo-wrap,
+    .home-logo-wrap svg {
+      width: 112px !important;
+    }
+    .home-header-actions > svg {
+      display: none !important;
+    }
+    .home-menu-button {
+      width: 76px !important;
+      height: 38px !important;
+      font-size: 14px !important;
+    }
+    .home-hero {
+      height: 560px !important;
+    }
+    .home-hero-bg {
+      background-position: 70% top !important;
+    }
+    .home-hero-content {
+      left: 18px !important;
+      right: 18px !important;
+      bottom: 235px !important;
+      max-width: 300px !important;
+    }
+    .home-hero-title {
+      font-size: 40px !important;
+      line-height: 1.04 !important;
+      letter-spacing: 0 !important;
+    }
+    .home-hero-actions {
+      gap: 10px !important;
+    }
+    .home-hero-actions button {
+      height: 40px !important;
+      padding: 0 16px !important;
+      font-size: 14px !important;
+    }
+    .home-floating-bike {
+      display: none !important;
+    }
+    .home-ticker {
+      height: 64px !important;
+    }
+    .home-ticker-item {
+      height: 64px !important;
+      padding: 0 18px !important;
+    }
+    .home-ticker-text {
+      font-size: 19px !important;
+    }
+    .journey-section {
+      padding: 42px 18px !important;
+    }
+    .journey-copy {
+      min-width: 0 !important;
+      width: 100% !important;
+    }
+    .journey-title {
+      font-size: 42px !important;
+      line-height: 1 !important;
+    }
+    .journey-rider {
+      display: none !important;
+    }
+    .journey-text {
+      font-size: 17px !important;
+      line-height: 24px !important;
+    }
+    .journey-content {
+      gap: 20px !important;
+    }
+    .journey-cards {
+      margin-right: -18px !important;
+      padding-right: 18px !important;
+    }
+    .journey-card {
+      flex-basis: 220px !important;
+      height: 300px !important;
+    }
+    .journey-card-label {
+      font-size: 22px !important;
+      line-height: 25px !important;
+    }
+    .home-app-section {
+      padding: 44px 18px !important;
+      flex-direction: column !important;
+      align-items: stretch !important;
+    }
+    .home-app-title {
+      font-size: 42px !important;
+      line-height: 1 !important;
+    }
+    .home-download-label {
+      font-size: 22px !important;
+      line-height: 24px !important;
+    }
+    .home-qr-box {
+      width: 156px !important;
+      height: 156px !important;
+      margin-bottom: 24px !important;
+    }
+    .home-store-buttons {
+      flex-direction: column !important;
+      align-items: stretch !important;
+    }
+    .home-store-buttons > div {
+      justify-content: center !important;
+      width: 100% !important;
+    }
+    .home-phone-stage {
+      min-height: 280px !important;
+    }
+    .home-phone-stage img {
+      max-height: 300px !important;
+      object-fit: contain !important;
+    }
+    .home-feature-list {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 18px !important;
+      width: 100% !important;
+    }
+    .home-feature-list .app-feature {
+      align-items: flex-start !important;
+      gap: 10px !important;
+    }
+    .home-feature-list span {
+      font-size: 13px !important;
+    }
+    .home-community-section {
+      padding: 60px 18px !important;
+    }
+    .home-community-eyebrow,
+    .home-community-subtitle {
+      font-size: 18px !important;
+      line-height: 24px !important;
+    }
+    .home-community-title {
+      font-size: 42px !important;
+      line-height: 1 !important;
+      margin-bottom: 30px !important;
+    }
+    .home-icon-row {
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 22px !important;
+      margin-bottom: 34px !important;
+    }
+    .home-icon-row img {
+      width: 56px !important;
+      height: 56px !important;
+    }
+    .home-platform-section,
+    .home-store-section {
+      padding-left: 18px !important;
+      padding-right: 18px !important;
+      padding-bottom: 58px !important;
+    }
+    .home-section-title {
+      font-size: 42px !important;
+      margin-bottom: 28px !important;
+    }
+    .home-platform-card {
+      height: 320px !important;
+    }
+    .home-platform-card-content {
+      left: 22px !important;
+      right: 22px !important;
+      bottom: 22px !important;
+    }
+    .home-platform-card-title {
+      font-size: 25px !important;
+    }
+    .store-rail {
+      gap: 14px !important;
+    }
+    .store-featured-card {
+      flex-basis: calc(100vw - 36px) !important;
+      width: calc(100vw - 36px) !important;
+      height: 470px !important;
+    }
+    .store-featured-product {
+      right: 18px !important;
+      top: 178px !important;
+      width: calc(100% - 36px) !important;
+      height: 188px !important;
+    }
+    .store-featured-title {
+      top: 118px !important;
+      width: calc(100% - 60px) !important;
+      font-size: 25px !important;
+      line-height: 30px !important;
+    }
+    .store-featured-sub {
+      display: none !important;
+    }
+    .store-featured-price {
+      top: 392px !important;
+      font-size: 34px !important;
+    }
+    .store-compact-card {
+      flex-basis: min(300px, calc(100vw - 36px)) !important;
+      width: min(300px, calc(100vw - 36px)) !important;
+    }
+    .home-about-section {
+      padding: 46px 18px 58px !important;
+      flex-direction: column !important;
+    }
+    .home-about-left-image {
+      width: 100% !important;
+      height: 330px !important;
+    }
+    .home-about-title {
+      font-size: 42px !important;
+      line-height: 1 !important;
+    }
+    .home-about-text {
+      font-size: 17px !important;
+      line-height: 27px !important;
+    }
+    .home-about-stats {
+      gap: 24px !important;
+      flex-wrap: wrap !important;
+    }
+    .home-about-stat-number {
+      font-size: 38px !important;
+    }
+    .home-about-stat-label {
+      font-size: 17px !important;
+    }
+    .home-cta {
+      height: auto !important;
+      min-height: 360px !important;
+    }
+    .home-cta-content {
+      padding: 48px 18px !important;
+    }
+    .home-cta-title {
+      font-size: 44px !important;
+    }
+    .home-cta-text {
+      font-size: 18px !important;
+      line-height: 25px !important;
+    }
+    .home-cta-buttons {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 12px !important;
+    }
+    .home-cta-buttons > div {
+      justify-content: center !important;
+      width: 100% !important;
+    }
+    .home-footer-main {
+      padding: 42px 18px 24px !important;
+    }
+    .home-newsletter {
+      width: 100% !important;
+    }
+    .home-footer-links {
+      flex-direction: column !important;
+      gap: 28px !important;
+    }
+    .home-footer-bottom {
+      margin: 0 18px !important;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .home-hero-title,
+    .home-app-title,
+    .home-community-title,
+    .home-section-title,
+    .home-about-title,
+    .home-cta-title {
+      font-size: 36px !important;
+    }
+    .home-hero-content {
+      max-width: 270px !important;
+    }
+    .home-feature-list {
+      grid-template-columns: 1fr !important;
+    }
+    .journey-card {
+      flex-basis: 206px !important;
+      height: 286px !important;
+    }
+    .journey-card-image {
+      height: 178px !important;
+    }
+    .journey-button {
+      width: 100% !important;
+      min-width: 0 !important;
+    }
+    .home-store-buttons > div,
+    .home-cta-buttons > div {
+      padding-left: 18px !important;
+      padding-right: 18px !important;
+    }
+    .home-qr-box {
+      width: 140px !important;
+      height: 140px !important;
+    }
+    .home-phone-stage {
+      min-height: 240px !important;
+    }
+    .home-phone-stage img {
+      max-height: 255px !important;
+    }
+    .home-icon-row {
+      gap: 16px !important;
+    }
+    .home-platform-card {
+      height: 290px !important;
+    }
+    .home-platform-card-title {
+      font-size: 22px !important;
+    }
+    .store-featured-icon {
+      left: 20px !important;
+      top: 24px !important;
+    }
+    .store-featured-type {
+      left: 68px !important;
+      top: 36px !important;
+      width: 130px !important;
+    }
+    .store-featured-action {
+      right: 20px !important;
+      top: 30px !important;
+      font-size: 16px !important;
+      width: 86px !important;
+    }
+    .store-featured-title {
+      left: 20px !important;
+      top: 104px !important;
+      width: calc(100% - 40px) !important;
+      font-size: 22px !important;
+      line-height: 27px !important;
+    }
+    .store-featured-product {
+      left: 20px !important;
+      right: 20px !important;
+      top: 172px !important;
+      width: calc(100% - 40px) !important;
+      height: 170px !important;
+    }
+    .store-featured-price {
+      left: 20px !important;
+      top: 384px !important;
+      font-size: 30px !important;
+    }
+    .store-featured-card {
+      height: 440px !important;
+    }
+    .home-about-left-image {
+      height: 290px !important;
+    }
+    .home-about-stats {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+    }
+    .home-cta-text {
+      font-size: 16px !important;
+    }
+  }
 `;
 
 function useHomePageStyles() {
@@ -629,17 +1231,17 @@ function Header() {
     { label: 'Tracks', href: '#platform' },
   ];
   return (
-    <header style={{ width: '100%', height: 134, background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 86px', flexShrink: 0, position: 'relative', zIndex: 10 }}>
-      <div style={{ width: 180, height: 75.6, flexShrink: 0 }}><ADCCLogo /></div>
-      <nav style={{ display: 'flex', alignItems: 'center', gap: 48, position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
+    <header className="home-header" style={{ width: '100%', height: 134, background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 86px', flexShrink: 0, position: 'relative', zIndex: 10 }}>
+      <div className="home-logo-wrap" style={{ width: 180, height: 75.6, flexShrink: 0 }}><ADCCLogo /></div>
+      <nav className="home-main-nav" style={{ display: 'flex', alignItems: 'center', gap: 48, position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
         {navLinks.map(link => (
           <a key={link.label} href={link.href} className="hover-green" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 500, fontSize: 20, lineHeight: '27px', color: link.active ? '#019839' : '#000', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'color 0.2s' }}>{link.label}</a>
         ))}
       </nav>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
+      <div className="home-header-actions" style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
         <CloudyIcon />
-        <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 500, fontSize: 17, color: '#000', cursor: 'pointer', whiteSpace: 'nowrap' }}>English</span>
-        <button onClick={() => setMenuOpen(v => !v)} className="btn-green" style={{ width: 101, height: 49, background: menuOpen ? '#017a2e' : '#019839', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 18, color: '#fff' }}>Menu</button>
+        <span className="home-language" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 500, fontSize: 17, color: '#000', cursor: 'pointer', whiteSpace: 'nowrap' }}>English</span>
+        <button onClick={() => setMenuOpen(v => !v)} className="btn-green home-menu-button" style={{ width: 101, height: 49, background: menuOpen ? '#017a2e' : '#019839', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 18, color: '#fff' }}>Menu</button>
       </div>
     </header>
   );
@@ -650,12 +1252,12 @@ function HeroSection() {
   const navigate = useNavigate();
 
   return (
-    <section style={{ position: 'relative', width: '100%', height: 806, overflow: 'hidden', flexShrink: 0 }}>
-      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(/images/hero.png)', backgroundSize: 'cover', backgroundPosition: 'center top' }} />
+    <section className="home-hero" style={{ position: 'relative', width: '100%', height: 806, overflow: 'hidden', flexShrink: 0 }}>
+      <div className="home-hero-bg" style={{ position: 'absolute', inset: 0, backgroundImage: 'url(/images/hero.png)', backgroundSize: 'cover', backgroundPosition: 'center top' }} />
       <div style={{ position: 'absolute', inset: 0, }} />
-      <div style={{ position: 'absolute', left: 86, bottom: 360, maxWidth: 520 }}>
-        <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontWeight: 900, fontSize: 72, lineHeight: 1.1, color: '#000000', textTransform: 'uppercase', letterSpacing: '-0.5px', marginBottom: 28, }}>RIDE ABU DHABI START<br />YOUR CYCLING JOURNEY</h1>
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+      <div className="home-hero-content" style={{ position: 'absolute', left: 86, bottom: 360, maxWidth: 520 }}>
+        <h1 className="home-hero-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontWeight: 900, fontSize: 72, lineHeight: 1.1, color: '#000000', textTransform: 'uppercase', letterSpacing: '-0.5px', marginBottom: 28, }}>RIDE ABU DHABI START<br />YOUR CYCLING JOURNEY</h1>
+        <div className="home-hero-actions" style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
           <button className="btn-green" style={{ display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 22px', background: '#019839', border: 'none', borderRadius: 30, cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 600, fontSize: 18, color: '#fff' }}>
             Download App <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /><path d="M3 13h10" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" /></svg>
           </button>
@@ -664,7 +1266,7 @@ function HeroSection() {
           </button>
         </div>
       </div>
-      <div style={{ position: 'absolute', right: 40, bottom: 60, width: 60, height: 60, background: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.15)', cursor: 'pointer' }}>
+      <div className="home-floating-bike" style={{ position: 'absolute', right: 40, bottom: 60, width: 60, height: 60, background: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.15)', cursor: 'pointer' }}>
         <CyclingIcon />
       </div>
     </section>
@@ -680,13 +1282,13 @@ function StatsTicker() {
     { label: "1.5 Million+ KM Cycled", bg: "#435974", dark: true },
   ];
   return (
-    <div style={{ width: '100%', height: 100, overflow: 'hidden', display: 'flex' }}>
+    <div className="home-ticker" style={{ width: '100%', height: 100, overflow: 'hidden', display: 'flex' }}>
       <div style={{ display: 'flex', alignItems: 'stretch', animation: 'ticker-group-left 18s linear infinite', whiteSpace: 'nowrap' }}>
         {[0, 1].map((groupIndex) => (
           <div key={groupIndex} style={{ minWidth: '100vw', display: 'flex', alignItems: 'stretch', flexShrink: 0 }}>
             {stats.map((s, i) => (
-              <div key={`${groupIndex}-${i}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, padding: '0 36px', height: 100, flex: '1 0 auto', background: s.bg }}>
-                <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 29, textTransform: 'uppercase', color: s.dark ? '#fff' : '#000' }}>{s.label}</span>
+              <div className="home-ticker-item" key={`${groupIndex}-${i}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, padding: '0 36px', height: 100, flex: '1 0 auto', background: s.bg }}>
+                <span className="home-ticker-text" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 29, textTransform: 'uppercase', color: s.dark ? '#fff' : '#000' }}>{s.label}</span>
               </div>
             ))}
           </div>
@@ -704,7 +1306,7 @@ function CyclingJourneySection() {
   const cards = [
     { label: "Find Cycling\nTracks", bg: "#777777", img: "/images/journey-1.png", to:"/user-tracks" },
     { label: "Discover\nEvents", bg: "#777777", img: "/images/journey-2.png", to:"/user-event" },
-    { label: "Join Active\nChallenges", bg: "#777777", img: "/images/journey-3.png" , to:"//user-challenges"},
+    { label: "Join Active\nChallenges", bg: "#777777", img: "/images/journey-3.png" , to:"/user-challenges"},
     { label: "Connect With\nRiders", bg: "#777777",img: "https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=400&q=80" , to:"/login"},
   ];
 
@@ -783,20 +1385,20 @@ function AppSection() {
   }, []);
 
   return (
-    <section id="app" style={{ background: '#435974', width: '100%', padding: '80px 86px', display: 'flex', alignItems: 'flex-start', gap: 60, position: 'relative', overflow: 'hidden' }}>
+    <section id="app" className="home-app-section" style={{ background: '#435974', width: '100%', padding: '80px 86px', display: 'flex', alignItems: 'flex-start', gap: 60, position: 'relative', overflow: 'hidden' }}>
       {/* Left text */}
-      <div style={{ flexShrink: 0 }}>
-        <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 80, lineHeight: 1.007, textTransform: 'uppercase', color: '#fff', marginBottom: 32 }}>Everything You Need.<br />In One App.</h2>
+      <div className="home-app-copy" style={{ flexShrink: 0 }}>
+        <h2 className="home-app-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 80, lineHeight: 1.007, textTransform: 'uppercase', color: '#fff', marginBottom: 32 }}>Everything You Need.<br />In One App.</h2>
         {/* <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 16, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, marginBottom: 32 }}>Track your rides, discover routes, join challenges, and stay connected with the cycling community — all from one powerful app.</p> */}
         <div style={{ marginBottom: 24 }}>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 30, color: '#fff', textTransform: 'uppercase', marginBottom: 23, lineHeight: '30px', }}>Download <br/> ADCC APP</p>
+          <p className="home-download-label" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 30, color: '#fff', textTransform: 'uppercase', marginBottom: 23, lineHeight: '30px', }}>Download <br/> ADCC APP</p>
           {/* QR */}
-          <div style={{ width: 256, height: 256, background: '#fff', borderRadius: 16, padding: 12, marginBottom: 40 }}>
+          <div className="home-qr-box" style={{ width: 256, height: 256, background: '#fff', borderRadius: 16, padding: 12, marginBottom: 40 }}>
             <QRCodePlaceholder />
           </div>
         </div>
         {/* App store buttons */}
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+        <div className="home-store-buttons" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           <div style={{ background: '#fff', borderRadius: 100, padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 20.5v-17c0-.7.8-1.1 1.4-.7l14 8.5c.6.4.6 1.1 0 1.4l-14 8.5c-.6.4-1.4 0-1.4-.7z" fill="#4FC3F7"/><path d="M3 20.5l9-9L3 3.5v17z" fill="#6EEC84"/><path d="M3 3.5l10 8 4-4-14-4z" fill="#F7CD45"/><path d="M3 20.5l10-8 4 4-14 4z" fill="#E4464D"/><text x="13" y="16" fontFamily="Arial" fontWeight="bold" fontSize="6" fill="#000">▶</text></svg>
             <div><div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 9, color: '#555' }}>GET IT ON</div><div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 14, color: '#000' }}>Google Play</div></div>
@@ -810,7 +1412,7 @@ function AppSection() {
       </div>
 
       {/* Phone mockup center */}
-      <div ref={phoneRef} className={`app-phone-stage${phoneVisible ? ' is-visible' : ''}`} style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative', minHeight: 500 }}>
+      <div ref={phoneRef} className={`app-phone-stage home-phone-stage${phoneVisible ? ' is-visible' : ''}`} style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative', minHeight: 500 }}>
         {/* Back phone */}
         <div >
           <img src="/images/mobile.png" alt="App" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} />
@@ -819,7 +1421,7 @@ function AppSection() {
       </div>
 
       {/* Right features */}
-      <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 36 }}>
+      <div className="home-feature-list" style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 36 }}>
         {features.map((f, i) => (
           <div key={i} className="app-feature" style={{ display: 'flex', alignItems: 'center', gap: 16, cursor: 'default' }}>
             <div className="feature-icon" style={{ width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -846,18 +1448,18 @@ function CommunitySection() {
   ];
   
   return (
-    <section id="community" style={{ background: '#EAF4FF', padding: '125px 86px', textAlign: 'center' }}>
-      <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 28, color: '#000', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 16 }}>For the Cycling Community</p>
-      <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 74, color: '#000', textTransform: 'uppercase', letterSpacing: '-0.5px', marginBottom: 48 }}>Eat • Sleep • Bike • Repeat</h2>
+    <section id="community" className="home-community-section" style={{ background: '#EAF4FF', padding: '125px 86px', textAlign: 'center' }}>
+      <p className="home-community-eyebrow" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 28, color: '#000', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 16 }}>For the Cycling Community</p>
+      <h2 className="home-community-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 74, color: '#000', textTransform: 'uppercase', letterSpacing: '-0.5px', marginBottom: 48 }}>Eat • Sleep • Bike • Repeat</h2>
       {/* Icon row */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: 56 }}>
+      <div className="home-icon-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: 56 }}>
         {icons.map((ic, i) => (
           <React.Fragment key={i}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
               <img src={ic.icon} alt={ic.label} style={{ width: 64, height: 64, objectFit: 'contain', display: 'block' }} />
             </div>
             {i < icons.length - 1 && (
-              <div style={{ display: 'flex', alignItems: 'center', padding: '0 24px',}}>
+              <div className="home-icon-divider" style={{ display: 'flex', alignItems: 'center', padding: '0 24px',}}>
                 <div style={{ width: 50, height: 2, background: '#000' }} />
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#000', margin: '0 4px' }} />
                 <div style={{ width: 50, height: 2, background: '#000' }} />
@@ -866,7 +1468,7 @@ function CommunitySection() {
           </React.Fragment>
         ))}
       </div>
-      <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 28, color: '#000', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 28 }}>Everything you need to ride, track, and stay connected.</p>
+      <p className="home-community-subtitle" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 28, color: '#000', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 28 }}>Everything you need to ride, track, and stay connected.</p>
       <button 
       onClick={()=>navigate("/login")}
       className="btn-green" style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: '#019839', border: 'none', borderRadius: 30, padding: '14px 28px', cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 18, color: '#FFF9EF' }}>
@@ -921,11 +1523,11 @@ function ExplorePlatformSection() {
   }, []);
 
   return (
-    <section id="platform" style={{ background: '#EAF4FF', padding: '0 86px 80px' }}>
-      <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 72, color: '#000', textTransform: 'uppercase', textAlign: 'center', paddingTop: 35, marginBottom: 40, lineHeight: '72px' }}>Explore the Platform</h2>
-      <div ref={cardsRef} className={`platform-cards${cardsVisible ? ' is-visible' : ''}`} style={{ display: 'flex', gap: 0, borderRadius: 20, overflow: 'hidden', height: 480 }}>
+    <section id="platform" className="home-platform-section" style={{ background: '#EAF4FF', padding: '0 86px 80px' }}>
+      <h2 className="home-section-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 72, color: '#000', textTransform: 'uppercase', textAlign: 'center', paddingTop: 35, marginBottom: 40, lineHeight: '72px' }}>Explore the Platform</h2>
+      <div ref={cardsRef} className={`platform-cards home-platform-cards${cardsVisible ? ' is-visible' : ''}`} style={{ display: 'flex', gap: 0, borderRadius: 20, overflow: 'hidden', height: 480 }}>
         {cards.map((card, i) => (
-          <div key={i} onClick={() => navigate(card.to)} className="card-hover platform-card" style={{ flex: 1, position: 'relative', overflow: 'hidden', cursor: 'pointer', borderLeft: i > 0 ? '2px solid rgba(255,255,255,0.3)' : 'none' }}>
+          <div key={i} onClick={() => navigate(card.to)} className="card-hover platform-card home-platform-card" style={{ flex: 1, position: 'relative', overflow: 'hidden', cursor: 'pointer', borderLeft: i > 0 ? '2px solid rgba(255,255,255,0.3)' : 'none' }}>
             <img src={card.img} alt={card.title} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s' }} />
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.75) 100%)' }} />
             {/* Tag */}
@@ -933,8 +1535,8 @@ function ExplorePlatformSection() {
               <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400, fontSize: 18, color: '#fff', textTransform: 'uppercase', letterSpacing: '1px' }}>{card.tag}</span>
             </div>
             {/* Bottom content */}
-            <div style={{ position: 'absolute', bottom: 24, left: 32, right: 32 }}>
-              <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 32, color: '#F6EFE7', lineHeight: 1.1, textTransform: 'uppercase', marginBottom: 12 }}>{card.title}</p>
+            <div className="home-platform-card-content" style={{ position: 'absolute', bottom: 24, left: 32, right: 32 }}>
+              <p className="home-platform-card-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 32, color: '#F6EFE7', lineHeight: 1.1, textTransform: 'uppercase', marginBottom: 12 }}>{card.title}</p>
               <div style={{ display: 'inline-flex', flexDirection: 'column' }}>
                 <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 22, color: '#F6EFE7', cursor: 'pointer' }}>{card.action}</span>
                 <div style={{ height: 3, background: '#435974', borderRadius: 2, marginTop: 2 }} />
@@ -1044,8 +1646,8 @@ function StoreSection() {
   }, []);
 
   return (
-    <section id="store" style={{ background: '#EAF4FF', padding: '0 86px 80px' }}>
-      <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 72, color: '#000', textTransform: 'uppercase', textAlign: 'center', marginBottom: 40 }}>ADCC Store</h2>
+    <section id="store" className="home-store-section" style={{ background: '#EAF4FF', padding: '0 86px 80px' }}>
+      <h2 className="home-section-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 72, color: '#000', textTransform: 'uppercase', textAlign: 'center', marginBottom: 40 }}>ADCC Store</h2>
       <div ref={storeRailRef} className={`store-rail${storeCardsVisible ? ' is-visible' : ''}`}>
         {isLoading && (
           <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, color: '#435974', padding: '36px 0' }}>Loading store products...</div>
@@ -1151,23 +1753,23 @@ function AboutSection() {
   }, []);
 
   return (
-    <section ref={aboutRef} id="about" className={`about-section${aboutVisible ? ' is-visible' : ''}`} style={{ background: '#EAF4FF', padding: '60px 86px 80px', display: 'flex', gap: 60, alignItems: 'center' }}>
+    <section ref={aboutRef} id="about" className={`about-section home-about-section${aboutVisible ? ' is-visible' : ''}`} style={{ background: '#EAF4FF', padding: '60px 86px 80px', display: 'flex', gap: 60, alignItems: 'center' }}>
       {/* Left image */}
-      <div className="about-left-image" style={{ flexShrink: 0, width: 380, height: 560, borderRadius: 20, overflow: 'hidden', boxShadow: '0 8px 40px rgba(0,0,0,0.12)' }}>
+      <div className="about-left-image home-about-left-image" style={{ flexShrink: 0, width: 380, height: 560, borderRadius: 20, overflow: 'hidden', boxShadow: '0 8px 40px rgba(0,0,0,0.12)' }}>
         <img src="https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=600&q=80" alt="ADCC Cyclists" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </div>
       {/* Right content */}
-      <div style={{ flex: 1 }}>
-        <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 74, color: '#000', textTransform: 'uppercase', lineHeight: 1.01, marginBottom: 24 }}>About Abu Dhabi<br />Cycling Club</h2>
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, color: '#000', lineHeight: 1.6, marginBottom: 40, maxWidth: 600 }}>
+      <div className="home-about-content" style={{ flex: 1 }}>
+        <h2 className="home-about-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 74, color: '#000', textTransform: 'uppercase', lineHeight: 1.01, marginBottom: 24 }}>About Abu Dhabi<br />Cycling Club</h2>
+        <p className="home-about-text" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, color: '#000', lineHeight: 1.6, marginBottom: 40, maxWidth: 600 }}>
           At Abu Dhabi Cycling Club, every ride is a step toward building a stronger, healthier, and more connected society. We are the heart of the UAE's cycling movement uniting enthusiasts, athletes, and families through the shared joy of cycling.
         </p>
         {/* Stats */}
-        <div style={{ display: 'flex', gap: 48, marginBottom: 40 }}>
+        <div className="home-about-stats" style={{ display: 'flex', gap: 48, marginBottom: 40 }}>
           {stats.map((s, i) => (
             <div key={i}>
-              <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 50, color: '#000', lineHeight: 1 }}>{s.num}</div>
-              <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 22, color: '#444', marginTop: 4 }}>{s.label}</div>
+              <div className="home-about-stat-number" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 50, color: '#000', lineHeight: 1 }}>{s.num}</div>
+              <div className="home-about-stat-label" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 22, color: '#444', marginTop: 4 }}>{s.label}</div>
             </div>
           ))}
         </div>
@@ -1177,7 +1779,7 @@ function AboutSection() {
         </button>
       </div>
       {/* Decorative rider image */}
-      <div style={{ flexShrink: 0, width: 280, height: 340, overflow: 'hidden'}}>
+      <div className="home-about-rider" style={{ flexShrink: 0, width: 280, height: 340, overflow: 'hidden'}}>
         <img src="/images/right-cycle.png" alt="Rider" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </div>
     </section>
@@ -1187,14 +1789,14 @@ function AboutSection() {
 /* ─── CTA BANNER ─────────────────────────────────────────────────────────────*/
 function CTABanner() {
   return (
-    <section style={{ position: 'relative', width: '100%', height: 420, overflow: 'hidden' }}>
+    <section className="home-cta" style={{ position: 'relative', width: '100%', height: 420, overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(https://images.unsplash.com/photo-1508784411316-06c06401e69b?w=1440&q=80)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
       <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.55)' }} />
-      <div style={{ position: 'relative', zIndex: 1, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '0 86px' }}>
-        <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 88, color: '#fff', textTransform: 'uppercase', lineHeight: 1.0, marginBottom: 16 }}>Start Your Ride Today</h2>
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 22, color: 'rgba(255,255,255,0.9)', marginBottom: 36 }}>Download the ADCC app and join the cycling community.</p>
+      <div className="home-cta-content" style={{ position: 'relative', zIndex: 1, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '0 86px' }}>
+        <h2 className="home-cta-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 88, color: '#fff', textTransform: 'uppercase', lineHeight: 1.0, marginBottom: 16 }}>Start Your Ride Today</h2>
+        <p className="home-cta-text" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 22, color: 'rgba(255,255,255,0.9)', marginBottom: 36 }}>Download the ADCC app and join the cycling community.</p>
         {/* App store buttons */}
-        <div style={{ display: 'flex', gap: 20 }}>
+        <div className="home-cta-buttons" style={{ display: 'flex', gap: 20 }}>
           {[
             { bg: 'white', top: 'GET IT ON', main: 'Google Play', icon: '▶' },
             { bg: 'white', top: 'Download on the', main: 'App Store', icon: '' },
@@ -1264,15 +1866,15 @@ function Footer() {
 
   return (
     <footer style={{ background: '#ffffff', borderTop: '1px solid #e5e5e5' }}>
-      <div style={{ padding: '60px 86px 30px', display: 'flex', gap: 60 }}>
+      <div className="home-footer-main" style={{ padding: '60px 86px 30px', display: 'flex', gap: 60 }}>
         {/* Logo + tagline + newsletter */}
-        <div style={{ flexShrink: 0, width: 340 }}>
+        <div className="home-footer-brand" style={{ flexShrink: 0, width: 340 }}>
           <div style={{ marginBottom: 24 }}><ADCCLogo size={0.83} /></div>
           <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 16, color: '#333', lineHeight: 1.6, marginBottom: 32 }}>
             From weekend warriors to elite athletes, we unite cyclists who share a passion for riding. ADCC is where your cycling journey thrives…
           </p>
           {/* Email signup */}
-          <div style={{ display: 'flex', background: '#8DDF93', borderRadius: 10, overflow: 'hidden', height: 52 }}>
+          <div className="home-newsletter" style={{ display: 'flex', background: '#8DDF93', borderRadius: 10, overflow: 'hidden', height: 52 }}>
             <input
               type="email"
               value={email}
@@ -1295,7 +1897,7 @@ function Footer() {
           )}
         </div>
 
-        <div style={{ flex: 1, display: 'flex', gap: 60 }}>
+        <div className="home-footer-links" style={{ flex: 1, display: 'flex', gap: 60 }}>
           {/* Quick links */}
           <div>
             <h3 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 24, color: '#000', textTransform: 'uppercase', marginBottom: 24 }}>Quick Links</h3>
@@ -1336,7 +1938,7 @@ function Footer() {
       </div>
 
       {/* Divider + copyright */}
-      <div style={{ borderTop: '1px solid #D5D5D5', margin: '0 86px', padding: '20px 0', textAlign: 'center' }}>
+      <div className="home-footer-bottom" style={{ borderTop: '1px solid #D5D5D5', margin: '0 86px', padding: '20px 0', textAlign: 'center' }}>
         <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 16, color: 'rgba(0,0,0,0.6)' }}>Copyright 2026. Abu Dhabi Cycling Club</span>
       </div>
     </footer>

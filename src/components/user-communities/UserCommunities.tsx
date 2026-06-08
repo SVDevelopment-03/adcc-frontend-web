@@ -121,6 +121,7 @@ export default function CommunitiesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [cityFilter, setCityFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [openDropdown, setOpenDropdown] = useState<"city" | "type" | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [communities, setCommunities] = useState<ReturnType<typeof mapCommunityCard>[]>([]);
   const [totalPages, setTotalPages] = useState(1);
@@ -192,22 +193,81 @@ export default function CommunitiesPage() {
   const handleCityChange = (value: string) => {
     setCurrentPage(1);
     setCityFilter(value);
+    setOpenDropdown(null);
   };
 
   const handleTypeChange = (value: string) => {
     setCurrentPage(1);
     setTypeFilter(value);
+    setOpenDropdown(null);
+  };
+
+  const cityOptions = useMemo(
+    () => [
+      { value: "all", label: "All Cities" },
+      ...cities.map((city) => ({ value: city, label: city })),
+    ],
+    [cities]
+  );
+
+  const typeOptions = useMemo(
+    () => [
+      { value: "all", label: "All Types" },
+      ...COMMUNITY_TYPE_OPTIONS.map((type) => ({ value: type, label: type })),
+    ],
+    []
+  );
+
+  const renderDropdown = (
+    id: "city" | "type",
+    value: string,
+    options: Array<{ value: string; label: string }>,
+    onChange: (value: string) => void
+  ) => {
+    const selectedLabel = options.find((option) => option.value === value)?.label || options[0]?.label || "";
+    const isOpen = openDropdown === id;
+
+    return (
+      <div className="relative min-w-0">
+        <button
+          type="button"
+          onClick={() => setOpenDropdown((current) => (current === id ? null : id))}
+          className="flex h-[54px] w-full min-w-0 items-center justify-between gap-3 overflow-hidden rounded-full bg-white px-5 text-left text-[16px] sm:text-[18px] lg:h-[66px] lg:px-8 lg:text-[22px]"
+          aria-expanded={isOpen}
+        >
+          <span className="min-w-0 flex-1 truncate">{selectedLabel}</span>
+          <ChevronDown size={22} className={`shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+        </button>
+
+        {isOpen && (
+          <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 max-h-[240px] overflow-y-auto rounded-2xl border border-black/10 bg-white py-2 shadow-[0_16px_40px_rgba(0,0,0,0.16)]">
+            {options.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => onChange(option.value)}
+                className={`block w-full px-5 py-3 text-left text-[15px] transition-colors hover:bg-[#EAF4FF] sm:text-[16px] ${
+                  option.value === value ? "bg-[#EAF4FF] font-semibold text-[#019839]" : "text-black"
+                }`}
+              >
+                <span className="block truncate">{option.label}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
     <div className="min-h-screen bg-[#eaf4ff] text-black">
       <FontLoader />
 
-      <header className="h-[134px] bg-[#eaf4ff] flex items-center justify-between px-10 md:px-20">
+      <header className="flex h-[78px] items-center justify-between bg-[#eaf4ff] px-4 sm:h-[96px] sm:px-6 md:px-10 lg:h-[134px] lg:px-20">
         <img
           src="/ADCC-Logo.png"
           alt="ADCC Logo"
-          className="h-auto w-[135px]  object-contain"
+          className="h-auto w-[112px] object-contain sm:w-[125px] lg:w-[135px]"
         />
 
         <nav className="hidden lg:flex items-center gap-12 text-[20px] font-medium">
@@ -222,39 +282,39 @@ export default function CommunitiesPage() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-6">
-          <Cloud size={24} />
-          <span className="hidden sm:block text-[17px] font-medium">English</span>
-          <button className="rounded-full bg-black px-8 py-4 text-[18px] font-bold text-white">
+        <div className="flex items-center gap-3 sm:gap-5 lg:gap-6">
+          <Cloud size={22} />
+          <span className="hidden sm:block text-[15px] font-medium lg:text-[17px]">English</span>
+          <button className="rounded-full bg-black px-5 py-3 text-[14px] font-bold text-white sm:px-6 lg:px-8 lg:py-4 lg:text-[18px]">
             Menu
           </button>
         </div>
       </header>
 
       <section
-  className="relative h-[940px] w-screen left-1/2 right-1/2 -ml-[50vw] +mr-[50vw] bg-cover bg-center bg-no-repeat"
+        className="relative h-[360px] w-full bg-cover bg-center bg-no-repeat sm:h-[480px] md:h-[620px] lg:h-[940px]"
         style={{
           backgroundImage:
             "linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)), url('/img/pexels-jonathanborba-19431223 1.png')",
         }}
       >
-        <div className="absolute bottom-20 left-10 md:left-20 text-white">
-          <h1 className="text-[60px] font-black uppercase leading-none">
+        <div className="absolute bottom-10 left-4 right-4 text-white sm:bottom-14 sm:left-6 md:bottom-20 md:left-10 lg:left-20">
+          <h1 className="text-[42px] font-black uppercase leading-none sm:text-[50px] lg:text-[60px]">
             Communities
           </h1>
-          <p className="mt-4 text-[24px]">Home / Communities</p>
+          <p className="mt-3 text-[17px] sm:text-[20px] lg:mt-4 lg:text-[24px]">Home / Communities</p>
         </div>
       </section>
 
       {/* <section className="mx-auto grid max-w-[1268px] grid-cols-1 gap-10 px-10 py-20 lg:relative lg:block lg:h-[565px] lg:py-0"> */}
       {/* <section className="mx-auto grid max-w-[1268px] grid-cols-1 items-center gap-[42px] px-10 py-20 lg:grid-cols-[634px_592px]"> */}
-      <section className="mx-auto grid max-w-[1268px] grid-cols-1 items-center gap-[42px] px-10 py-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,592px)]">
+      <section className="mx-auto grid max-w-[1268px] grid-cols-1 items-center gap-8 px-4 py-12 sm:px-6 sm:py-16 md:px-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,592px)] lg:gap-[42px] lg:py-20">
         {/* <div className="max-w-[634px] lg:absolute lg:left-0 lg:top-[206px] lg:w-[634px]"> */}
         <div className="max-w-[634px]">
-          <h2 className="bebas max-w-[634px] text-[42px] leading-[50px] capitalize md:text-[52px] md:leading-[62px] lg:text-[60px] lg:leading-[72px]">
+          <h2 className="bebas max-w-[634px] text-[34px] leading-[39px] capitalize sm:text-[42px] sm:leading-[50px] md:text-[52px] md:leading-[62px] lg:text-[60px] lg:leading-[72px]">
             Connect with Cycling Communities Across Abu Dhabi
           </h2>
-          <p className="mt-6 max-w-[610px] text-[18px] leading-[24px] md:text-[22px] md:leading-[28px] lg:mt-[44px] lg:text-[24px] lg:leading-[30px]">
+          <p className="mt-5 max-w-[610px] text-[16px] leading-[23px] sm:text-[18px] sm:leading-[24px] md:text-[22px] md:leading-[28px] lg:mt-[44px] lg:text-[24px] lg:leading-[30px]">
             Abu Dhabi Cycling Club unites riders through communities focused on
             cycling. Whether for fitness, competition, or fun, find a group that
             suits you.
@@ -263,22 +323,22 @@ export default function CommunitiesPage() {
 
         {/* <div className="h-auto w-full max-w-[592px] overflow-hidden rounded-[10px] lg:absolute lg:right-0 lg:top-[125px] lg:h-[440px] lg:w-[592px]"> */}
         {/* <div className="h-[440px] w-full max-w-[592px] overflow-hidden rounded-[10px]"> */}
-        <div className="h-[440px] w-full overflow-hidden rounded-[10px]">
+        <div className="h-[240px] w-full overflow-hidden rounded-[10px] sm:h-[320px] lg:h-[440px]">
           <img
             src="/img/Frame 2147226625.png"
             alt="Cycling community"
-            className="h-auto w-full object-cover lg:h-full"
+            className="h-full w-full object-cover"
           />
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1268px] px-10 pb-28">
-        <h2 className="text-center text-[50px] font-black uppercase">
+      <section className="mx-auto max-w-[1268px] px-4 pb-16 sm:px-6 md:px-10 lg:pb-28">
+        <h2 className="text-center text-[34px] font-black uppercase sm:text-[42px] lg:text-[50px]">
           Explore Communities
         </h2>
 
-        <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_260px_260px_156px]">
-          <div className="flex h-[66px] items-center rounded-full bg-white px-8">
+        <div className="mt-8 grid grid-cols-1 gap-4 lg:mt-10 lg:grid-cols-[1fr_260px_260px_156px] lg:gap-5">
+          <div className="flex h-[54px] min-w-0 items-center rounded-full bg-white px-5 lg:h-[66px] lg:px-8">
             <input
               value={searchInput}
               onChange={(event) => setSearchInput(event.target.value)}
@@ -286,47 +346,19 @@ export default function CommunitiesPage() {
                 if (event.key === "Enter") handleSearch();
               }}
               placeholder="Search Communities"
-              className="flex-1 bg-transparent text-[22px] outline-none"
+              className="min-w-0 flex-1 bg-transparent text-[16px] outline-none sm:text-[18px] lg:text-[22px]"
             />
-            <Search size={24} />
+            <Search size={22} />
           </div>
 
-          <label className="relative flex h-[66px] items-center rounded-full bg-white px-8 text-[22px]">
-            <select
-              value={cityFilter}
-              onChange={(event) => handleCityChange(event.target.value)}
-              className="w-full appearance-none bg-transparent pr-8 text-[22px] outline-none"
-            >
-              <option value="all">All Cities</option>
-              {cities.map((city) => (
-                <option key={city} value={city}>
-                  {city}
-                </option>
-              ))}
-            </select>
-            <ChevronDown size={24} className="pointer-events-none absolute right-8" />
-          </label>
+          {renderDropdown("city", cityFilter, cityOptions, handleCityChange)}
 
-          <label className="relative flex h-[66px] items-center rounded-full bg-white px-8 text-[22px]">
-            <select
-              value={typeFilter}
-              onChange={(event) => handleTypeChange(event.target.value)}
-              className="w-full appearance-none bg-transparent pr-8 text-[22px] outline-none"
-            >
-              <option value="all">All Types</option>
-              {COMMUNITY_TYPE_OPTIONS.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-            <ChevronDown size={24} className="pointer-events-none absolute right-8" />
-          </label>
+          {renderDropdown("type", typeFilter, typeOptions, handleTypeChange)}
 
           <button
             type="button"
             onClick={handleSearch}
-            className="h-[66px] rounded-full bg-[#019839] text-[22px] font-bold text-white"
+            className="h-[54px] rounded-full bg-[#019839] text-[17px] font-bold text-white lg:h-[66px] lg:text-[22px]"
           >
             Search
           </button>
@@ -336,12 +368,12 @@ export default function CommunitiesPage() {
           <p className="mt-10 text-center text-[18px] text-red-600">{error}</p>
         )}
 
-        <div className="mt-20 grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <div className="mt-10 grid grid-cols-1 gap-6 sm:mt-14 lg:mt-20 lg:grid-cols-2 lg:gap-8">
           {loading
             ? Array.from({ length: COMMUNITIES_PER_PAGE }).map((_, index) => (
                 <div
                   key={`skeleton-${index}`}
-                  className="relative h-[467px] animate-pulse overflow-hidden rounded-[10px] bg-black/10"
+                  className="relative h-[300px] animate-pulse overflow-hidden rounded-[10px] bg-black/10 sm:h-[380px] lg:h-[467px]"
                 />
               ))
             : communities.map((item) => (
@@ -349,7 +381,7 @@ export default function CommunitiesPage() {
                   type="button"
                   key={item.id}
                   onClick={() => navigate(`/user-communities/${encodeURIComponent(item.id)}`)}
-                  className="group relative h-[467px] overflow-hidden rounded-[10px] bg-black text-left"
+                  className="group relative h-[300px] overflow-hidden rounded-[10px] bg-black text-left sm:h-[380px] lg:h-[467px]"
                 >
                   <img
                     src={item.image}
@@ -358,16 +390,16 @@ export default function CommunitiesPage() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
 
-                  <div className="absolute bottom-10 left-8 text-white">
-                    <h3 className="text-[30px] font-black uppercase">
+                  <div className="absolute bottom-5 left-5 right-5 text-white sm:bottom-8 sm:left-7 lg:bottom-10 lg:left-8">
+                    <h3 className="text-[23px] font-black uppercase leading-tight sm:text-[27px] lg:text-[30px]">
                       {item.title}
                     </h3>
 
-                    <div className="mt-5 flex gap-4">
-                      <span className="flex h-10 items-center gap-2 rounded-full bg-white/20 px-5 backdrop-blur-md">
+                    <div className="mt-4 flex flex-wrap gap-2 sm:gap-4 lg:mt-5">
+                      <span className="flex min-h-9 items-center gap-2 rounded-full bg-white/20 px-3 text-[13px] backdrop-blur-md sm:h-10 sm:px-5 sm:text-[16px]">
                         <Users size={18} /> {item.members}
                       </span>
-                      <span className="flex h-10 items-center gap-2 rounded-full bg-white/20 px-5 backdrop-blur-md">
+                      <span className="flex min-h-9 items-center gap-2 rounded-full bg-white/20 px-3 text-[13px] backdrop-blur-md sm:h-10 sm:px-5 sm:text-[16px]">
                         <CalendarDays size={18} /> {item.events}
                       </span>
                     </div>
@@ -383,12 +415,12 @@ export default function CommunitiesPage() {
         )}
 
         {totalPages > 1 && (
-          <div className="mt-20 flex items-center justify-center gap-4 text-[#019839] text-[20px] font-medium md:gap-8">
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-2 text-[16px] font-medium text-[#019839] sm:gap-4 sm:text-[18px] md:gap-8 lg:mt-20 lg:text-[20px]">
             <button
               type="button"
               onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
               disabled={currentPage === 1 || loading}
-              className="flex h-12 w-12 items-center justify-center rounded-full bg-[#019839] text-white disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-[#019839] text-white disabled:cursor-not-allowed disabled:opacity-40 sm:h-12 sm:w-12"
               aria-label="Previous page"
             >
               <ChevronLeft size={22} />
@@ -405,7 +437,7 @@ export default function CommunitiesPage() {
                   type="button"
                   onClick={() => setCurrentPage(page)}
                   disabled={loading}
-                  className={`flex h-12 min-w-12 items-center justify-center rounded-full px-3 ${
+                  className={`flex h-10 min-w-10 items-center justify-center rounded-full px-3 sm:h-12 sm:min-w-12 ${
                     currentPage === page
                       ? "bg-[#019839] text-white"
                       : "text-[#019839] hover:bg-[#019839]/10"
@@ -420,7 +452,7 @@ export default function CommunitiesPage() {
               type="button"
               onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
               disabled={currentPage === totalPages || loading}
-              className="flex h-12 w-12 items-center justify-center rounded-full bg-[#019839] text-white disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-[#019839] text-white disabled:cursor-not-allowed disabled:opacity-40 sm:h-12 sm:w-12"
               aria-label="Next page"
             >
               <ChevronRight size={22} />
@@ -429,19 +461,19 @@ export default function CommunitiesPage() {
         )}
       </section>
 
-      <section className="mx-auto max-w-[1100px] px-10 pb-28 text-center">
-        <h2 className="text-[50px] font-black uppercase">
+      <section className="mx-auto max-w-[1100px] px-4 pb-16 text-center sm:px-6 md:px-10 lg:pb-28">
+        <h2 className="text-[34px] font-black uppercase sm:text-[42px] lg:text-[50px]">
           Frequently Asked Questions
         </h2>
-        <p className="mt-4 text-[18px]">
+        <p className="mt-4 text-[16px] sm:text-[18px]">
           Got questions before hitting the road? We’ve got you covered.
         </p>
 
-        <div className="mt-12 grid grid-cols-1 gap-7 md:grid-cols-2">
+        <div className="mt-8 grid grid-cols-1 gap-4 md:mt-12 md:grid-cols-2 md:gap-7">
           {faqs.map((faq, index) => (
             <button
               key={faq}
-              className="flex min-h-[100px] items-center justify-between rounded-xl border border-[#ccc] px-7 text-left text-[22px] font-medium"
+              className="flex min-h-[82px] items-center justify-between gap-4 rounded-xl border border-[#ccc] px-4 text-left text-[16px] font-medium sm:min-h-[92px] sm:px-6 sm:text-[19px] lg:min-h-[100px] lg:px-7 lg:text-[22px]"
             >
               <span>
                 {String(index + 1).padStart(2, "0")}. {faq}
@@ -453,33 +485,33 @@ export default function CommunitiesPage() {
       </section>
 
       <section
-        className="flex h-[502px] items-center justify-center bg-cover bg-center text-center text-white"
+        className="flex h-auto min-h-[360px] items-center justify-center bg-cover bg-center px-4 py-12 text-center text-white sm:min-h-[420px] lg:h-[502px] lg:py-0"
         style={{
           backgroundImage:
             "linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)), url('https://images.unsplash.com/photo-1511994298241-608e28f14fde?q=80&w=1600&auto=format&fit=crop')",
         }}
       >
         <div>
-          <h2 className="text-[80px] font-black uppercase leading-none">
+          <h2 className="text-[40px] font-black uppercase leading-none sm:text-[54px] lg:text-[80px]">
             Start Your Ride Today
           </h2>
-          <p className="mt-7 text-[26px]">
+          <p className="mt-5 text-[17px] leading-6 sm:mt-7 sm:text-[21px] lg:text-[26px]">
             Download the ADCC app and join the cycling community.
           </p>
 
-          <div className="mt-10 flex justify-center gap-5">
-            <button className="rounded-full bg-white px-9 py-4 text-black">
+          <div className="mx-auto mt-8 flex w-full max-w-[280px] flex-col justify-center gap-3 sm:mt-10 sm:max-w-none sm:flex-row sm:gap-5">
+            <button className="rounded-full bg-white px-6 py-4 text-black sm:px-9">
               <span className="text-xs">GET IT ON</span>{" "}
               <b className="text-lg">Google Play</b>
             </button>
-            <button className="flex items-center gap-3 rounded-full bg-white px-9 py-4 text-black">
+            <button className="flex items-center justify-center gap-3 rounded-full bg-white px-6 py-4 text-black sm:px-9">
               <Apple size={24} /> <b className="text-lg">App Store</b>
             </button>
           </div>
         </div>
       </section>
 
-      <footer className="mx-auto max-w-[1268px] px-10 py-24">
+      <footer className="mx-auto max-w-[1268px] px-4 py-14 sm:px-6 md:px-10 lg:py-24">
         <div className="grid grid-cols-1 gap-16 md:grid-cols-3">
           <div>
             <img
@@ -493,12 +525,12 @@ export default function CommunitiesPage() {
               thrives...
             </p>
 
-            <div className="mt-8 flex h-[57px] max-w-[367px] rounded-lg bg-[#8DDF93] p-[6px]">
+            <div className="mt-8 flex h-auto max-w-[367px] flex-col rounded-lg bg-[#8DDF93] p-[6px] sm:h-[57px] sm:flex-row">
               <input
                 placeholder="Enter your email"
-                className="flex-1 bg-transparent px-4 text-[16px] outline-none"
+                className="min-h-11 flex-1 bg-transparent px-4 text-[16px] outline-none"
               />
-              <button className="rounded-lg bg-[#019839] px-7 text-white">
+              <button className="min-h-11 rounded-lg bg-[#019839] px-7 text-white">
                 Submit
               </button>
             </div>
@@ -539,7 +571,7 @@ export default function CommunitiesPage() {
           Copyright 2026. Abu Dhabi Cycling Club
         </div>
 
-        <button className="fixed bottom-10 right-10 rounded-full bg-[#019839] p-4 text-white shadow-lg">
+        <button className="fixed bottom-5 right-5 rounded-full bg-[#019839] p-3 text-white shadow-lg sm:bottom-10 sm:right-10 sm:p-4">
           <Bike size={28} />
         </button>
       </footer>

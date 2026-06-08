@@ -190,6 +190,229 @@ const FontLoader = () => (
       .journey-card__community { top: 196px; }
       .journey-card__button { top: 261px; }
     }
+
+    @media (max-width: 768px) {
+      .about-local-nav {
+        height: 78px !important;
+        padding: 0 18px !important;
+      }
+      .about-local-nav nav,
+      .about-local-nav > div:last-child span {
+        display: none !important;
+      }
+      .about-local-nav .bebas {
+        font-size: 22px !important;
+      }
+      .about-local-nav button {
+        padding: 10px 18px !important;
+        font-size: 14px !important;
+      }
+      .about-hero {
+        height: 360px !important;
+      }
+      .about-hero-bg {
+        background-position: center center !important;
+      }
+      .about-hero-content {
+        left: 18px !important;
+        right: 18px !important;
+        bottom: 42px !important;
+      }
+      .about-hero-title {
+        font-size: 46px !important;
+      }
+      .about-hero-breadcrumb {
+        font-size: 17px !important;
+      }
+      .about-section {
+        padding: 48px 18px !important;
+      }
+      .about-stats-wrap,
+      .about-mission-head,
+      .about-values-head,
+      .about-footer-main {
+        flex-direction: column !important;
+        gap: 26px !important;
+        align-items: stretch !important;
+      }
+      .about-stats-left,
+      .about-stats-right,
+      .about-mission-card-stack,
+      .about-footer-brand {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .about-section-title,
+      .about-stats-title,
+      .about-mission-title,
+      .about-values-title,
+      .about-coaches-title {
+        font-size: 38px !important;
+        line-height: 1.08 !important;
+        max-width: 100% !important;
+      }
+      .about-stats-photo {
+        max-width: 100% !important;
+        height: 190px !important;
+      }
+      .about-stats-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0 18px !important;
+      }
+      .about-stat-number {
+        font-size: 38px !important;
+      }
+      .about-stat-label {
+        font-size: 15px !important;
+      }
+      .about-body-text,
+      .about-mission-intro {
+        max-width: 100% !important;
+        font-size: 17px !important;
+        line-height: 1.55 !important;
+      }
+      .about-mission-content {
+        flex-direction: column !important;
+        gap: 22px !important;
+        align-items: stretch !important;
+      }
+      .about-mission-card-stack > div {
+        padding: 22px 20px !important;
+      }
+      .journey-card {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+      }
+      .journey-card__image {
+        left: 42% !important;
+        width: min(360px, 74vw) !important;
+        height: auto !important;
+      }
+      .journey-card__title {
+        width: min(178px, 56vw) !important;
+        font-size: 34px !important;
+        line-height: 39px !important;
+      }
+      .journey-card__community {
+        width: 230px !important;
+      }
+      .journey-card__community-text {
+        color: #fff !important;
+        text-shadow: 0 1px 8px rgba(0,0,0,0.45);
+      }
+      .about-values-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 18px !important;
+      }
+      .about-value-card {
+        min-height: 220px !important;
+      }
+      .about-coaches-grid {
+        flex-direction: column !important;
+        height: auto !important;
+        border-radius: 14px !important;
+      }
+      .about-coach-card {
+        min-height: 260px !important;
+        flex: none !important;
+      }
+      .about-cta {
+        height: auto !important;
+        min-height: 380px !important;
+      }
+      .about-cta-title {
+        font-size: 48px !important;
+      }
+      .about-cta-text {
+        font-size: 18px !important;
+        line-height: 1.45 !important;
+      }
+      .about-cta-buttons {
+        flex-direction: column !important;
+        width: min(100%, 260px) !important;
+      }
+      .about-cta-buttons button {
+        justify-content: center !important;
+        width: 100% !important;
+      }
+      .about-newsletter {
+        width: 100% !important;
+        max-width: 340px !important;
+      }
+      .about-footer-bottom {
+        padding-right: 0 !important;
+      }
+      .about-footer-top-button {
+        position: static !important;
+        margin: 18px auto 0 !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .about-section {
+        padding: 42px 16px !important;
+      }
+      .about-hero {
+        height: 320px !important;
+      }
+      .about-section-title,
+      .about-stats-title,
+      .about-mission-title,
+      .about-values-title,
+      .about-coaches-title {
+        font-size: 34px !important;
+      }
+      .about-stats-grid,
+      .about-values-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .btn-green {
+        width: 100% !important;
+        justify-content: center !important;
+        padding-left: 18px !important;
+        padding-right: 18px !important;
+      }
+      .journey-card {
+        height: 330px !important;
+      }
+      .journey-card__image {
+        left: 48% !important;
+        top: -34px !important;
+        width: 260px !important;
+      }
+      .journey-card__title {
+        font-size: 30px !important;
+        line-height: 34px !important;
+        width: 150px !important;
+      }
+      .journey-card__community {
+        top: 208px !important;
+        left: 18px !important;
+      }
+      .journey-card__button {
+        top: 272px !important;
+        left: 18px !important;
+        width: calc(100% - 36px) !important;
+      }
+      .about-cta-title {
+        font-size: 40px !important;
+      }
+      .about-newsletter {
+        height: auto !important;
+        flex-direction: column !important;
+      }
+      .about-newsletter input {
+        min-height: 48px !important;
+      }
+      .about-newsletter button {
+        min-height: 46px !important;
+        border-radius: 0 0 8px 8px !important;
+      }
+    }
   `}</style>
 );
 
@@ -247,7 +470,7 @@ function JourneyCard() {
 // ─── NAVBAR ──────────────────────────────────────────────────────────────────
 function Navbar() {
   return (
-    <header style={{
+    <header className="about-local-nav" style={{
       position: "sticky", top: 0, zIndex: 100,
       width: "100%", height: 134,
       background: "#EAF4FF",
@@ -289,18 +512,18 @@ function Navbar() {
 // ─── HERO ─────────────────────────────────────────────────────────────────────
 function Hero() {
   return (
-    <section style={{ position: "relative", width: "100%", height: 640, overflow: "hidden" }}>
+    <section className="about-hero" style={{ position: "relative", width: "100%", height: 640, overflow: "hidden" }}>
       {/* bg image gradient overlay */}
-      <div style={{
+      <div className="about-hero-bg" style={{
         position: "absolute", inset: 0,
         background: "linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,0.45) 100%)",
         // backgroundImage: "linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,0.45) 100%), url('https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?w=1440&q=80')",
         backgroundImage: "linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,0.45) 100%), url('/img/Frame 2147226602.png')",
         backgroundSize: "cover", backgroundPosition: "center top"
       }} />
-      <div style={{ position: "absolute", bottom: 90, left: 82 }}>
-        <h1 className="bebas" style={{ fontSize: 70, color: "#fff", lineHeight: 1, marginTop: 8, textTransform: "uppercase" }}>About Us</h1>
-        <p style={{ color: "rgba(255,255,255,0.8)", fontSize: 22, fontFamily: "'Satoshi',sans-serif" }}>Home / About us</p>
+      <div className="about-hero-content" style={{ position: "absolute", bottom: 90, left: 82 }}>
+        <h1 className="bebas about-hero-title" style={{ fontSize: 70, color: "#fff", lineHeight: 1, marginTop: 8, textTransform: "uppercase" }}>About Us</h1>
+        <p className="about-hero-breadcrumb" style={{ color: "rgba(255,255,255,0.8)", fontSize: 22, fontFamily: "'Satoshi',sans-serif" }}>Home / About us</p>
       </div>
     </section>
   );
@@ -337,15 +560,15 @@ function StatsSection() {
     { val: "2017", label: "Established in\nAbu Dhabi" },
   ];
   return (
-    <section style={{ background: "#EAF4FF", padding: "80px 82px" }}>
-      <div style={{ display: "flex", gap: 64, alignItems: "flex-start" }}>
+    <section className="about-section" style={{ background: "#EAF4FF", padding: "80px 82px" }}>
+      <div className="about-stats-wrap" style={{ display: "flex", gap: 64, alignItems: "flex-start" }}>
         {/* Headline */}
-        <div style={{ flex: "0 0 520px" }}>
-          <h2 className="bebas" style={{ fontSize: 50, lineHeight: 1.25, textTransform: "uppercase", maxWidth: 500 }}>
+        <div className="about-stats-left" style={{ flex: "0 0 520px" }}>
+          <h2 className="bebas about-stats-title" style={{ fontSize: 50, lineHeight: 1.25, textTransform: "uppercase", maxWidth: 500 }}>
             We are cyclists committed to pushing limits and inspiring a stronger cycling community.
           </h2>
           {/* small cycling photo */}
-          <div style={{
+          <div className="about-stats-photo" style={{
             marginTop: 32, borderRadius: 12, overflow: "hidden",
             width: "100%", maxWidth: 460, height: 220,
             background: "#ddd",
@@ -355,18 +578,18 @@ function StatsSection() {
         </div>
 
         {/* Stats grid + text */}
-        <div style={{ flex: 1 }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 48px" }}>
+        <div className="about-stats-right" style={{ flex: 1 }}>
+          <div className="about-stats-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 48px" }}>
             {stats.map((s, i) => (
               <div key={i} style={{
                 borderLeft: "2px solid #1F509A", paddingLeft: 20, paddingBottom: 36
               }}>
-                <div className="bebas" style={{ fontSize: 50, lineHeight: 1 }}>{s.val}</div>
-                <div style={{ fontFamily: "'Satoshi',sans-serif", fontSize: 18, color: "#444", marginTop: 6, whiteSpace: "pre-line", lineHeight: 1.4 }}>{s.label}</div>
+                <div className="bebas about-stat-number" style={{ fontSize: 50, lineHeight: 1 }}>{s.val}</div>
+                <div className="about-stat-label" style={{ fontFamily: "'Satoshi',sans-serif", fontSize: 18, color: "#444", marginTop: 6, whiteSpace: "pre-line", lineHeight: 1.4 }}>{s.label}</div>
               </div>
             ))}
           </div>
-          <p style={{ fontSize: 22, lineHeight: 1.5, maxWidth: 480, marginBottom: 28, color: "rgba(0,0,0,0.8)" }}>
+          <p className="about-body-text" style={{ fontSize: 22, lineHeight: 1.5, maxWidth: 480, marginBottom: 28, color: "rgba(0,0,0,0.8)" }}>
             Abu Dhabi Cycling Club unites riders of all levels with community rides and training programs.
           </p>
           <button className="btn-green" onClick={() => navigate("/contact-us")}>Get In Touch <Arrow /></button>
@@ -390,6 +613,7 @@ function MissionSection() {
   return (
     // <section style={{ background: "#EAF4FF", padding: "0 82px 80px" }}>
     <section
+      className="about-section"
       style={{
         backgroundImage: "url('/img/image 3517.png')",
         backgroundSize: "cover",
@@ -400,20 +624,20 @@ function MissionSection() {
     >
     
       {/* Headline row */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 40 }}>
+      <div className="about-mission-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 40 }}>
         <div>
-          <h2 className="bebas" style={{ fontSize: 50, lineHeight: 1.2, maxWidth: 480, textTransform: "capitalize" }}>
+          <h2 className="bebas about-mission-title" style={{ fontSize: 50, lineHeight: 1.2, maxWidth: 480, textTransform: "capitalize" }}>
             Driving the Future of Cycling in Abu Dhabi
           </h2>
         </div>
-        <p style={{ maxWidth: 430, fontSize: 22, fontWeight: 500, lineHeight: 1.5, color: "rgba(0,0,0,0.8)", paddingTop: 8 }}>
+        <p className="about-mission-intro" style={{ maxWidth: 430, fontSize: 22, fontWeight: 500, lineHeight: 1.5, color: "rgba(0,0,0,0.8)", paddingTop: 8 }}>
           At Abu Dhabi Cycling Club, our mission is to inspire riders, develop athletes, and build a thriving cycling culture across the emirate.
         </p>
       </div>
 
-      <div className="mission-content" style={{ display: "flex", gap: 28, alignItems: "stretch" }}>
+      <div className="mission-content about-mission-content" style={{ display: "flex", gap: 28, alignItems: "stretch" }}>
         {/* Mission + Vision cards */}
-        <div style={{ flex: "0 0 600px", display: "flex", flexDirection: "column", gap: 20 }}>
+        <div className="about-mission-card-stack" style={{ flex: "0 0 600px", display: "flex", flexDirection: "column", gap: 20 }}>
           {/* 01. Mission */}
           <div style={{ background: "#fff", borderRadius: 18, padding: "28px 32px" }}>
             <div className="bebas" style={{ fontSize: 20, marginBottom: 10 }}>01. Our Mission</div>
@@ -469,19 +693,19 @@ function ValuesSection() {
     { num: "//001", title: "Achievement",bg: "#777777", text: "We promote cycling as a healthy activity that encourages active lifestyles." },
   ];
   return (
-    <section style={{ background: "#EAF4FF", padding: "80px 82px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 40 }}>
+    <section className="about-section" style={{ background: "#EAF4FF", padding: "80px 82px" }}>
+      <div className="about-values-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 40 }}>
         <div>
           <p style={{fontFamily: "'Satoshi',sans-serif", fontSize: 15, fontWeight: 500, marginBottom: 8, color: "#000" }}>Our values</p>
-          <h2 className="bebas" style={{ fontSize: 50, lineHeight: 1.2, maxWidth: 480, textTransform: "capitalize" }}>
+          <h2 className="bebas about-values-title" style={{ fontSize: 50, lineHeight: 1.2, maxWidth: 480, textTransform: "capitalize" }}>
             The Principles That Drive Our Cycling Community
           </h2>
         </div>
         <button className="btn-green" onClick={() => navigate("/user-communities")}>Discover the Community <Arrow /></button>
       </div>
-      <div style={{ display: "flex", gap: 24 }}>
+      <div className="about-values-grid" style={{ display: "flex", gap: 24 }}>
         {values.map((v, i) => (
-          <div key={i} className="value-card"
+          <div key={i} className="value-card about-value-card"
             style={{
             flex: 1, borderRadius: 12,
             padding: "24px 20px 28px", minHeight: 240,
@@ -505,19 +729,19 @@ function CoachesSection() {
     { label: "Club Mechanics", img: "/img/image 2997.png" },
   ];
   return (
-    <section style={{ background: "#EAF4FF", padding: "0 82px 80px" }}>
-      <h2 className="bebas" style={{
+    <section className="about-section about-coaches-section" style={{ background: "#EAF4FF", padding: "0 82px 80px" }}>
+      <h2 className="bebas about-coaches-title" style={{
         fontSize: 50, lineHeight: 1.2, textAlign: "center", maxWidth: 640,
         margin: "0 auto 40px", textTransform: "capitalize"
       }}>
         Meet the Coaches Driving Abu Dhabi's Cycling Community
       </h2>
-      <div style={{
+      <div className="about-coaches-grid" style={{
         display: "flex", borderRadius: 16, overflow: "hidden",
         height: 488, background: "#fff"
       }}>
         {cards.map((c, i) => (
-          <div key={i} style={{ flex: 1, position: "relative", overflow: "hidden" }}>
+          <div key={i} className="about-coach-card" style={{ flex: 1, position: "relative", overflow: "hidden" }}>
             <img src={c.img} alt={c.label} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             <div style={{
               position: "absolute", bottom: 0, left: 0, right: 0, height: 180,
@@ -540,7 +764,7 @@ function CoachesSection() {
 // ─── CTA BANNER ──────────────────────────────────────────────────────────────
 function CTABanner() {
   return (
-    <section style={{ position: "relative", overflow: "hidden", height: 502 }}>
+    <section className="about-cta" style={{ position: "relative", overflow: "hidden", height: 502 }}>
       <div style={{
         position: "absolute", inset: 0,
         backgroundImage: "linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.25)), url('/img/Rectangle 34625231.png')",
@@ -552,14 +776,14 @@ function CTABanner() {
         justifyContent: "center", height: "100%", textAlign: "center",
         padding: "0 24px"
       }}>
-        <h2 className="bebas" style={{ fontSize: 94, color: "#fff", lineHeight: 1, textTransform: "uppercase" }}>
+        <h2 className="bebas about-cta-title" style={{ fontSize: 94, color: "#fff", lineHeight: 1, textTransform: "uppercase" }}>
           Start Your Ride Today
         </h2>
         {/* <p style={{ fontSize: 24, color: "#fff", marginTop: 16, marginBottom: 36, opacity: .95 }}> */}
-        <p style={{ fontFamily: "'Satoshi',sans-serif", fontSize: 26, color: "#fff", marginTop: 16, marginBottom: 36, opacity: .95 }}>
+        <p className="about-cta-text" style={{ fontFamily: "'Satoshi',sans-serif", fontSize: 26, color: "#fff", marginTop: 16, marginBottom: 36, opacity: .95 }}>
           Download the ADCC app and join the cycling community.
         </p>
-        <div style={{ display: "flex", gap: 20 }}>
+        <div className="about-cta-buttons" style={{ display: "flex", gap: 20 }}>
           {["Google Play", "App Store"].map(s => (
             <button key={s} style={{
               background: "#fff", border: "none", borderRadius: 100,
@@ -579,10 +803,10 @@ function CTABanner() {
 // ─── FOOTER ───────────────────────────────────────────────────────────────────
 function Footer() {
   return (
-    <footer style={{ background: "#EAF4FF", padding: "60px 82px 32px" }}>
-      <div style={{ display: "flex", gap: 64, marginBottom: 48 }}>
+    <footer className="about-section" style={{ background: "#EAF4FF", padding: "60px 82px 32px" }}>
+      <div className="about-footer-main" style={{ display: "flex", gap: 64, marginBottom: 48 }}>
         {/* Brand */}
-        <div style={{ flex: "0 0 340px" }}>
+        <div className="about-footer-brand" style={{ flex: "0 0 340px" }}>
           <div style={{ marginBottom: 20 }}>
             <span className="bebas" style={{ fontSize: 26, letterSpacing: 2 }}>ABU◉DHABI<br/>CYCLING CLUB</span>
           </div>
@@ -590,7 +814,7 @@ function Footer() {
             From weekend warriors to elite athletes, we unite cyclists who share a passion for riding. ADCC is where your cycling journey thrives…
           </p>
           {/* email subscribe */}
-          <div style={{
+          <div className="about-newsletter" style={{
             display: "flex", background: "#8DDF93", borderRadius: 8,
             overflow: "hidden", width: 340, height: 56
           }}>
@@ -632,10 +856,10 @@ function Footer() {
         </div>
       </div>
 
-      <div style={{ borderTop: "1px solid #D5D5D5", paddingTop: 24, textAlign: "center", position: "relative" }}>
+      <div className="about-footer-bottom" style={{ borderTop: "1px solid #D5D5D5", paddingTop: 24, textAlign: "center", position: "relative" }}>
         <p style={{ fontSize: 17, color: "rgba(0,0,0,0.7)" }}>Copyright 2026. Abu Dhabi Cycling Club</p>
         {/* scroll-to-top */}
-        <button style={{
+        <button className="about-footer-top-button" style={{
           position: "absolute", right: 0, top: 16,
           width: 55, height: 55, borderRadius: "50%",
           background: "#019839", border: "none", cursor: "pointer",

@@ -192,6 +192,222 @@ const FontLoader = () => (
         height: 360px;
       }
     }
+
+    @media (max-width: 768px) {
+      .track-local-nav {
+        height: 78px !important;
+        padding: 0 18px !important;
+      }
+      .track-local-nav nav,
+      .track-local-nav > div:last-child span {
+        display: none !important;
+      }
+      .track-local-nav .bebas {
+        font-size: 22px !important;
+      }
+      .track-local-nav button {
+        padding: 10px 18px !important;
+        font-size: 14px !important;
+      }
+      .track-hero {
+        height: 360px !important;
+      }
+      .track-hero-bg {
+        background-position: center center !important;
+      }
+      .track-hero-content {
+        left: 18px !important;
+        right: 18px !important;
+        bottom: 42px !important;
+      }
+      .track-hero-title {
+        font-size: 46px !important;
+      }
+      .track-hero-breadcrumb {
+        font-size: 17px !important;
+      }
+      .track-section {
+        padding: 48px 18px !important;
+      }
+      .track-intro-wrap,
+      .track-why-content,
+      .track-footer-main,
+      .track-faq-grid {
+        flex-direction: column !important;
+        gap: 26px !important;
+      }
+      .track-intro-left,
+      .track-intro-right,
+      .track-why-image,
+      .track-footer-brand {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .track-section-title,
+      .track-intro-title,
+      .track-why-title,
+      .track-grid-title,
+      .track-faq-title {
+        font-size: 38px !important;
+        line-height: 1.08 !important;
+        max-width: 100% !important;
+      }
+      .track-journey-offset {
+        padding-top: 34px !important;
+      }
+      .tracks-journey-card {
+        width: 100% !important;
+        overflow: hidden !important;
+      }
+      .tracks-journey-card__image {
+        left: 45% !important;
+        top: -116px !important;
+        width: min(320px, 70vw) !important;
+        height: auto !important;
+      }
+      .track-video {
+        height: 240px !important;
+      }
+      .track-intro-text {
+        font-size: 17px !important;
+        line-height: 1.55 !important;
+      }
+      .track-why-head,
+      .track-grid-head {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 20px !important;
+      }
+      .track-why-image {
+        min-height: 260px !important;
+      }
+      .track-why-grid {
+        grid-template-columns: 1fr 1fr !important;
+      }
+      .track-grid-section {
+        padding: 48px 18px 0 !important;
+      }
+      .track-filter-bar {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        width: 100% !important;
+      }
+      .track-filter-field {
+        width: 100% !important;
+        height: 54px !important;
+      }
+      .track-filter-field select {
+        font-size: 16px !important;
+      }
+      .track-filter-search {
+        height: 54px !important;
+        width: 100% !important;
+        font-size: 17px !important;
+      }
+      .track-cards-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 28px !important;
+      }
+      .track-card {
+        width: 100% !important;
+      }
+      .track-card-image {
+        height: 220px !important;
+      }
+      .track-stat-row {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+      }
+      .track-card-button {
+        width: 100% !important;
+      }
+      .track-pagination {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        padding: 36px 0 48px !important;
+      }
+      .track-pagination button {
+        width: 40px !important;
+        height: 40px !important;
+        min-width: 40px !important;
+      }
+      .track-faq-section {
+        padding: 48px 18px !important;
+      }
+      .track-faq-question {
+        min-height: 82px !important;
+      }
+      .track-faq-question p {
+        font-size: 16px !important;
+      }
+      .track-cta {
+        height: auto !important;
+        min-height: 380px !important;
+      }
+      .track-cta-title {
+        font-size: 48px !important;
+      }
+      .track-cta-text {
+        font-size: 18px !important;
+        line-height: 1.45 !important;
+      }
+      .track-cta-buttons {
+        flex-direction: column !important;
+        width: min(100%, 260px) !important;
+      }
+      .track-cta-buttons button {
+        justify-content: center !important;
+        width: 100% !important;
+      }
+      .track-footer {
+        padding: 48px 18px 28px !important;
+      }
+      .track-newsletter {
+        height: auto !important;
+        flex-direction: column !important;
+      }
+      .track-newsletter input,
+      .track-newsletter button {
+        min-height: 46px !important;
+      }
+      .track-footer-top-button {
+        position: static !important;
+        margin: 18px auto 0 !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .track-hero {
+        height: 320px !important;
+      }
+      .track-section-title,
+      .track-intro-title,
+      .track-why-title,
+      .track-grid-title,
+      .track-faq-title,
+      .track-cta-title {
+        font-size: 34px !important;
+      }
+      .track-why-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .tracks-journey-card__image {
+        left: 50% !important;
+        top: -94px !important;
+        width: 240px !important;
+      }
+      .tracks-journey-card__title {
+        width: 170px !important;
+        font-size: 24px !important;
+        line-height: 28px !important;
+      }
+      .track-video,
+      .track-card-image {
+        height: 200px !important;
+      }
+    }
   `}</style>
 );
 
@@ -230,7 +446,7 @@ function TracksJourneyCard() {
 // ── Navbar ────────────────────────────────────────────────────────────────────
 function Navbar() {
   return (
-    <header style={{
+    <header className="track-local-nav" style={{
       position: "sticky", top: 0, zIndex: 100,
       width: "100%", height: 134, background: "#EAF4FF",
       display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -267,15 +483,15 @@ function Navbar() {
 // ── Hero ──────────────────────────────────────────────────────────────────────
 function Hero() {
   return (
-    <section style={{ position: "relative", width: "100%", height: 640, overflow: "hidden" }}>
-      <div style={{
+    <section className="track-hero" style={{ position: "relative", width: "100%", height: 640, overflow: "hidden" }}>
+      <div className="track-hero-bg" style={{
         position: "absolute", inset: 0,
         backgroundImage: "linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url('/img/pexels-krizz59-12838 1.png')",
         backgroundSize: "cover", backgroundPosition: "center"
       }} />
-      <div style={{ position: "absolute", bottom: 90, left: 82 }}>
-        <p style={{ color: "rgba(255,255,255,0.8)", fontSize: 22 }}>Home / Tracks</p>
-        <h1 className="bebas" style={{ fontSize: 70, color: "#fff", lineHeight: 1, marginTop: 8, textTransform: "uppercase" }}>Tracks</h1>
+      <div className="track-hero-content" style={{ position: "absolute", bottom: 90, left: 82 }}>
+        <p className="track-hero-breadcrumb" style={{ color: "rgba(255,255,255,0.8)", fontSize: 22 }}>Home / Tracks</p>
+        <h1 className="bebas track-hero-title" style={{ fontSize: 70, color: "#fff", lineHeight: 1, marginTop: 8, textTransform: "uppercase" }}>Tracks</h1>
       </div>
     </section>
   );
@@ -284,22 +500,22 @@ function Hero() {
 // ── Explore Intro ─────────────────────────────────────────────────────────────
 function ExploreIntro() {
   return (
-    <section style={{ background: "#EAF4FF", padding: "80px 82px" }}>
+    <section className="track-section" style={{ background: "#EAF4FF", padding: "80px 82px" }}>
       {/* <div style={{ display: "flex", gap: 48, alignItems: "flex-start" }}> */}
-      <div style={{ display: "flex", gap: 48, alignItems: "flex-start", overflow: "visible" }}>
+      <div className="track-intro-wrap" style={{ display: "flex", gap: 48, alignItems: "flex-start", overflow: "visible" }}>
         {/* Left: heading + green card */}
-        <div style={{ flex: "0 0 480px" }}>
-          <h2 className="bebas" style={{ fontSize: 60, lineHeight: 1.1, textTransform: "capitalize", marginBottom: 64 }}>
+        <div className="track-intro-left" style={{ flex: "0 0 480px" }}>
+          <h2 className="bebas track-intro-title" style={{ fontSize: 60, lineHeight: 1.1, textTransform: "capitalize", marginBottom: 64 }}>
             Explore Abu Dhabi's Premier Cycling Tracks
           </h2>
-          <div style={{ paddingTop: 90 }}>
+          <div className="track-journey-offset" style={{ paddingTop: 90 }}>
             <TracksJourneyCard />
           </div>
         </div>
 
         {/* Right: video thumbnail + description */}
-        <div style={{ flex: 1 }}>
-          <div style={{
+        <div className="track-intro-right" style={{ flex: 1 }}>
+          <div className="track-video" style={{
             borderRadius: 12, overflow: "hidden", height: 340, marginBottom: 28,
             backgroundImage: "url('/img/SSYouTube.online_Falcon_daman.png')",
             backgroundSize: "cover", backgroundPosition: "center",
@@ -312,7 +528,7 @@ function ExploreIntro() {
               <span style={{ fontSize: 22, marginLeft: 4 }}>▶</span>
             </div> */}
           </div>
-          <p style={{ fontSize: 22, lineHeight: 1.55, color: "#000" }}>
+          <p className="track-intro-text" style={{ fontSize: 22, lineHeight: 1.55, color: "#000" }}>
             From scenic coastal rides to high-performance cycling circuits, Abu Dhabi offers world-class tracks designed for every rider. Whether you're training for endurance, improving speed, or enjoying a casual ride, discover routes that match your level and ambition.
           </p>
         </div>
@@ -330,7 +546,7 @@ function WhySection() {
     { num: "//004", title: "Performance Training",    desc: "Great for endurance rides, speed training, and workouts to boost your cycling." },
   ];
   return (
-    <section style={{
+    <section className="track-section" style={{
       backgroundImage: "url('/img/image 3517.png')",
       // backgroundSize: "cover",
       backgroundSize: "100% 100%",
@@ -346,8 +562,8 @@ function WhySection() {
       }} /> */}
       <div style={{ position: "relative", zIndex: 2 }}>
         {/* header row */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 48 }}>
-          <h2 className="bebas" style={{ fontSize: 50, color: "#000", lineHeight: 1.2, maxWidth: 300 }}>
+        <div className="track-why-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 48 }}>
+          <h2 className="bebas track-why-title" style={{ fontSize: 50, color: "#000", lineHeight: 1.2, maxWidth: 300 }}>
             Why Use ADCC Tracks?
           </h2>
           <button style={{
@@ -357,16 +573,16 @@ function WhySection() {
           }}>Explore Tracks <span>→</span></button>
         </div>
 
-        <div style={{ display: "flex", gap: 24, alignItems: "stretch" }}>
+        <div className="track-why-content" style={{ display: "flex", gap: 24, alignItems: "stretch" }}>
           {/* cycling photo */}
-          <div style={{
+          <div className="track-why-image" style={{
             flex: "0 0 480px", borderRadius: 12, overflow: "hidden",
             backgroundImage: "url('/img/paolo-candelo-8tXukRrs7yk-unsplash 1.png')",
             backgroundSize: "cover", backgroundPosition: "center", minHeight: 420
           }} />
 
           {/* 2x2 feature grid */}
-          <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+          <div className="track-why-grid" style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
             {features.map((f, i) => (
               <div key={i} style={{
                 background: "rgba(0,0,0,0.2)", backdropFilter: "blur(7.5px)",
@@ -396,6 +612,7 @@ function TrackCard({ track }: { track: PublicTrackCard }) {
 
   return (
     <div
+    className="track-card"
     onMouseEnter={() => setIsHovered(true)}
     onMouseLeave={() => setIsHovered(false)}
     style={{
@@ -407,7 +624,7 @@ function TrackCard({ track }: { track: PublicTrackCard }) {
       cursor: "pointer",
     }}>
       {/* image */}
-      <div style={{
+      <div className="track-card-image" style={{
         height: 240, overflow: "hidden", position: "relative",
         background: "#ddd"
       }}>
@@ -426,7 +643,7 @@ function TrackCard({ track }: { track: PublicTrackCard }) {
         <h3 className="bebas" style={{ fontSize: 24, color: textColor, marginBottom: 16, letterSpacing: 0.5 }}>{track.name}</h3>
 
         {/* stats row */}
-        <div style={{ display: "flex", gap: 6, marginBottom: 20 }}>
+        <div className="track-stat-row" style={{ display: "flex", gap: 6, marginBottom: 20 }}>
           {[
             { label: "Distance", val: track.distance },
             { label: "Elevation", val: track.elevation },
@@ -444,7 +661,7 @@ function TrackCard({ track }: { track: PublicTrackCard }) {
         </div>
 
         {/* button */}
-        <button style={{
+        <button className="track-card-button" style={{
           width: 157, height: 50,
           background: isFeatured ? "#fff" : "transparent",
           border: isFeatured ? "none" : "1px solid rgba(0,0,0,0.5)",
@@ -461,6 +678,7 @@ function TrackCard({ track }: { track: PublicTrackCard }) {
 // ── Tracks grid ───────────────────────────────────────────────────────────────
 function TracksGrid() {
   const [filters, setFilters] = useState<TrackFilters>({ city: ALL_FILTER_VALUE, level: ALL_FILTER_VALUE });
+  const [openDropdown, setOpenDropdown] = useState<keyof TrackFilters | null>(null);
   const [active, setActive] = useState(filters);
   const [page, setPage] = useState(1);
   const [tracks, setTracks] = useState<PublicTrackCard[]>([]);
@@ -509,8 +727,8 @@ function TracksGrid() {
     };
   }, [active, page]);
 
-  const ChevronDown = () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+  const ChevronDown = ({ open = false }: { open?: boolean }) => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, transform: open ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>
       <path d="M6 9l6 6 6-6" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );
@@ -521,27 +739,100 @@ function TracksGrid() {
   ];
   const paginationItems = getPaginationItems(page, totalPages);
 
+  const renderDropdown = ({ key, options }: { key: keyof TrackFilters; options: FilterOption[] }) => {
+    const selectedLabel = options.find((option) => option.value === filters[key])?.label || options[0]?.label || "";
+    const isOpen = openDropdown === key;
+
+    return (
+      <div className="track-filter-field" style={{ position: "relative", width: 220 }}>
+        <button
+          type="button"
+          onClick={() => setOpenDropdown((current) => (current === key ? null : key))}
+          style={{
+            width: "100%",
+            height: 60,
+            background: "#fff",
+            border: "1px solid rgba(0,0,0,0.06)",
+            borderRadius: 40,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "0 16px 0 22px",
+            gap: 8,
+            cursor: "pointer",
+            fontFamily: "'Outfit',sans-serif",
+            fontSize: 20,
+            color: "#000",
+            textAlign: "left",
+          }}
+          aria-expanded={isOpen}
+        >
+          <span style={{ minWidth: 0, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {selectedLabel}
+          </span>
+          <ChevronDown open={isOpen} />
+        </button>
+
+        {isOpen && (
+          <div
+            style={{
+              position: "absolute",
+              left: 0,
+              right: 0,
+              top: "calc(100% + 8px)",
+              zIndex: 30,
+              maxHeight: 240,
+              overflowY: "auto",
+              borderRadius: 18,
+              border: "1px solid rgba(0,0,0,0.1)",
+              background: "#fff",
+              padding: "8px 0",
+              boxShadow: "0 16px 40px rgba(0,0,0,0.16)",
+            }}
+          >
+            {options.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => {
+                  setFilters((previous) => ({ ...previous, [key]: option.value }));
+                  setOpenDropdown(null);
+                }}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  border: 0,
+                  background: option.value === filters[key] ? "#EAF4FF" : "#fff",
+                  color: option.value === filters[key] ? "#019839" : "#000",
+                  padding: "12px 18px",
+                  textAlign: "left",
+                  fontFamily: "'Outfit',sans-serif",
+                  fontSize: 16,
+                  fontWeight: option.value === filters[key] ? 700 : 400,
+                  cursor: "pointer",
+                }}
+              >
+                <span style={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {option.label}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
-    <section style={{ background: "#EAF4FF", padding: "60px 82px 0" }}>
+    <section className="track-grid-section" style={{ background: "#EAF4FF", padding: "60px 82px 0" }}>
       {/* section title + filters */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 32, flexWrap: "wrap", gap: 20 }}>
-        <h2 className="bebas" style={{ fontSize: 50, lineHeight: 1.15, maxWidth: 440, textTransform: "capitalize" }}>
+      <div className="track-grid-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 32, flexWrap: "wrap", gap: 20 }}>
+        <h2 className="bebas track-grid-title" style={{ fontSize: 50, lineHeight: 1.15, maxWidth: 440, textTransform: "capitalize" }}>
           Explore Certified Routes Across the UAE
         </h2>
-        <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-          {filterControls.map(f => (
-            <div key={f.key} style={{
-              width: 220, height: 60, background: "#fff",
-              border: "1px solid rgba(0,0,0,0.06)", borderRadius: 40,
-              display: "flex", alignItems: "center", padding: "0 16px 0 22px", gap: 8
-            }}>
-              <select value={filters[f.key]} onChange={e => setFilters(p => ({ ...p, [f.key]: e.target.value }))}>
-                {f.options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
-              <ChevronDown />
-            </div>
-          ))}
-          <button onClick={() => { setActive(filters); setPage(1); }} style={{
+        <div className="track-filter-bar" style={{ display: "flex", gap: 16, alignItems: "center" }}>
+          {filterControls.map(f => renderDropdown(f))}
+          <button className="track-filter-search" onClick={() => { setActive(filters); setPage(1); }} style={{
             height: 60, padding: "0 32px", background: "#019839", color: "#fff",
             border: "none", borderRadius: 40, fontSize: 20, fontWeight: 700,
             cursor: "pointer", fontFamily: "'Outfit',sans-serif"
@@ -553,7 +844,7 @@ function TracksGrid() {
         {loading ? "Loading tracks..." : `Showing ${totalResults} results`}
       </p>
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "48px 28px" }}>
+      <div className="track-cards-grid" style={{ display: "flex", flexWrap: "wrap", gap: "48px 28px" }}>
         {tracks.map(t => <TrackCard key={t.id} track={t} />)}
       </div>
 
@@ -568,7 +859,7 @@ function TracksGrid() {
       )}
 
       {/* Pagination */}
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 16, padding: "48px 0 64px" }}>
+      <div className="track-pagination" style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 16, padding: "48px 0 64px" }}>
         {paginationItems.map((p, i) => {
           const isDots = typeof p === "string";
           const isActive = p === page;
@@ -612,6 +903,7 @@ function FAQ() {
 
   const Item = ({ faq, idx }) => (
     <div
+      className="track-faq-question"
       onClick={() => setOpen(open === idx ? null : idx)}
       style={{
         border: "1px solid #CCC", borderRadius: 12, padding: "0 24px",
@@ -639,12 +931,12 @@ function FAQ() {
   );
 
   return (
-    <section style={{ background: "#EAF4FF", padding: "80px 82px" }}>
-      <h2 className="bebas" style={{ fontSize: 50, textAlign: "center", marginBottom: 12 }}>Frequently Asked Questions</h2>
+    <section className="track-faq-section" style={{ background: "#EAF4FF", padding: "80px 82px" }}>
+      <h2 className="bebas track-faq-title" style={{ fontSize: 50, textAlign: "center", marginBottom: 12 }}>Frequently Asked Questions</h2>
       <p style={{ fontSize: 17, textAlign: "center", color: "#1D1D1D", marginBottom: 52 }}>
         Got questions before hitting the road? We've got you covered.
       </p>
-      <div style={{ display: "flex", gap: 28 }}>
+      <div className="track-faq-grid" style={{ display: "flex", gap: 28 }}>
         <div style={{ flex: 1 }}>{left.map((f, i)  => <Item key={i}  faq={f} idx={i * 2} />)}</div>
         <div style={{ flex: 1 }}>{right.map((f, i) => <Item key={i}  faq={f} idx={i * 2 + 1} />)}</div>
       </div>
@@ -655,7 +947,7 @@ function FAQ() {
 // ── CTA Banner ────────────────────────────────────────────────────────────────
 function CTABanner() {
   return (
-    <section style={{ position: "relative", overflow: "hidden", height: 502 }}>
+    <section className="track-cta" style={{ position: "relative", overflow: "hidden", height: 502 }}>
       <div style={{
         position: "absolute", inset: 0,
         backgroundImage: "linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.25)), url('https://images.unsplash.com/photo-1570489460099-2a6e43e4c3f0?w=1440&q=80')",
@@ -666,13 +958,13 @@ function CTABanner() {
         display: "flex", flexDirection: "column", alignItems: "center",
         justifyContent: "center", height: "100%", textAlign: "center", padding: "0 24px"
       }}>
-        <h2 className="bebas" style={{ fontSize: 94, color: "#fff", lineHeight: 1, textTransform: "uppercase" }}>
+        <h2 className="bebas track-cta-title" style={{ fontSize: 94, color: "#fff", lineHeight: 1, textTransform: "uppercase" }}>
           Start Your Ride Today
         </h2>
-        <p style={{ fontSize: 24, color: "#fff", marginTop: 12, marginBottom: 36 }}>
+        <p className="track-cta-text" style={{ fontSize: 24, color: "#fff", marginTop: 12, marginBottom: 36 }}>
           Download the ADCC app and join the cycling community.
         </p>
-        <div style={{ display: "flex", gap: 20 }}>
+        <div className="track-cta-buttons" style={{ display: "flex", gap: 20 }}>
           {["Google Play", "App Store"].map(s => (
             <button key={s} style={{
               background: "#fff", border: "none", borderRadius: 100,
@@ -689,16 +981,16 @@ function CTABanner() {
 // ── Footer ────────────────────────────────────────────────────────────────────
 function Footer() {
   return (
-    <footer style={{ background: "#EAF4FF", padding: "60px 82px 32px" }}>
-      <div style={{ display: "flex", gap: 64, marginBottom: 48 }}>
-        <div style={{ flex: "0 0 340px" }}>
+    <footer className="track-footer" style={{ background: "#EAF4FF", padding: "60px 82px 32px" }}>
+      <div className="track-footer-main" style={{ display: "flex", gap: 64, marginBottom: 48 }}>
+        <div className="track-footer-brand" style={{ flex: "0 0 340px" }}>
           <div style={{ marginBottom: 16 }}>
             <span className="bebas" style={{ fontSize: 24, letterSpacing: 2 }}>ABU◉DHABI<br/>CYCLING CLUB</span>
           </div>
           <p style={{ fontSize: 16, lineHeight: 1.6, color: "#000", maxWidth: 340, marginBottom: 24 }}>
             From weekend warriors to elite athletes, we unite cyclists who share a passion for riding. ADCC is where your cycling journey thrives…
           </p>
-          <div style={{ display: "flex", background: "#8DDF93", borderRadius: 8, overflow: "hidden", height: 56 }}>
+          <div className="track-newsletter" style={{ display: "flex", background: "#8DDF93", borderRadius: 8, overflow: "hidden", height: 56 }}>
             <input placeholder="Enter your email" style={{
               flex: 1, border: "none", background: "transparent",
               padding: "0 18px", fontSize: 15, fontFamily: "'Outfit',sans-serif", outline: "none"
@@ -732,7 +1024,7 @@ function Footer() {
       </div>
       <div style={{ borderTop: "1px solid #D5D5D5", paddingTop: 22, textAlign: "center", position: "relative" }}>
         <p style={{ fontSize: 16, color: "rgba(0,0,0,0.7)" }}>Copyright 2026. Abu Dhabi Cycling Club</p>
-        <button style={{
+        <button className="track-footer-top-button" style={{
           position: "absolute", right: 0, top: -28,
           width: 55, height: 55, borderRadius: "50%",
           background: "#019839", border: "none", cursor: "pointer",
