@@ -1,5 +1,6 @@
 import { api } from "./api";
 import { getCached, setCache, invalidateCache } from "../utils/apiCache";
+import type { EventApiResponse } from "./eventsApi";
 
 export type FacilityType =
   | "water"
@@ -183,10 +184,21 @@ export interface GetTracksPageParams {
   type?: string;
   visibility?: string;
   publicOnly?: boolean;
+  search?: string;
 }
 
 export interface TracksPage {
   tracks: Track[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
+export interface TrackEventsPage {
+  events: EventApiResponse[];
   pagination: {
     page: number;
     limit: number;
@@ -243,6 +255,7 @@ export const getTracksPageEn = async (params?: GetTracksPageParams): Promise<Tra
     type: params?.type,
     visibility: params?.visibility,
     publicOnly: params?.publicOnly,
+    search: params?.search,
   };
   const cacheKey = `tracks_en_page:${JSON.stringify(requestParams)}`;
   const cached = getCached<TracksPage>(cacheKey);
@@ -250,6 +263,37 @@ export const getTracksPageEn = async (params?: GetTracksPageParams): Promise<Tra
 
   try {
     const response = await api.get("/v1/en/tracks", {
+      params: requestParams,
+    });
+    const result = normalizeTracksPage(response.data, { page, limit });
+    setCache(cacheKey, result);
+    return result;
+  } catch (error) {
+    console.error("Error fetching tracks page:", error);
+    throw error;
+  }
+};
+
+export const getTracksPage = async (params?: GetTracksPageParams): Promise<TracksPage> => {
+  const page = params?.page ?? 1;
+  const limit = params?.limit ?? 10;
+  const requestParams = {
+    page,
+    limit,
+    city: params?.city,
+    difficulty: params?.difficulty,
+    status: params?.status,
+    type: params?.type,
+    visibility: params?.visibility,
+    publicOnly: params?.publicOnly,
+    search: params?.search,
+  };
+  const cacheKey = `tracks_page:${JSON.stringify(requestParams)}`;
+  const cached = getCached<TracksPage>(cacheKey);
+  if (cached) return cached;
+
+  try {
+    const response = await api.get("/v1/tracks", {
       params: requestParams,
     });
     const result = normalizeTracksPage(response.data, { page, limit });
@@ -491,6 +535,38 @@ export const enableTrack = async (id: string): Promise<void> => {
 /**
  * Track related Events
  */
+
+export const getTrackEventsPage = async (
+  trackId: string,
+  params?: { page?: number; limit?: number },
+): Promise<TrackEventsPage> => {
+  const page = params?.page ?? 1;
+  const limit = params?.limit ?? 10;
+  const cacheKey = `track_events:${trackId}:${page}:${limit}`;
+  const cached = getCached<TrackEventsPage>(cacheKey);
+  if (cached) return cached;
+
+  try {
+    const response = await api.get(`/v1/tracks/${trackId}/events`, {
+      params: { page, limit },
+    });
+    const data = (response.data as any)?.data ?? response.data;
+    const result: TrackEventsPage = {
+      events: Array.isArray(data?.events) ? data.events : [],
+      pagination: data?.pagination ?? {
+        page,
+        limit,
+        total: Array.isArray(data?.events) ? data.events.length : 0,
+        pages: 1,
+      },
+    };
+    setCache(cacheKey, result);
+    return result;
+  } catch (error) {
+    console.error("Error fetching track events:", error);
+    throw error;
+  }
+};
 
 export const getTrackResults = async (trackId: string): Promise<any[]> => {
   try {

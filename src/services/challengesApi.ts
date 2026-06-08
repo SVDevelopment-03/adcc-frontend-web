@@ -117,6 +117,7 @@ function normalizeChallenge(raw: ChallengeApiRaw): Challenge {
 export interface GetChallengesParams {
   status?: Challenge['status'];
   type?: Challenge['type'];
+  search?: string;
   page?: number;
   limit?: number;
 }
@@ -158,7 +159,7 @@ function normalizeChallengesPage(
 export const getChallengesPage = async (params?: GetChallengesParams): Promise<ChallengesPage> => {
   const page = params?.page ?? 1;
   const limit = params?.limit ?? 10;
-  const cacheKey = `challenges-page:${params?.status ?? 'all'}:${params?.type ?? 'all'}:${page}:${limit}`;
+  const cacheKey = `challenges-page:${params?.status ?? 'all'}:${params?.type ?? 'all'}:${params?.search ?? ''}:${page}:${limit}`;
   const cached = getCached<ChallengesPage>(cacheKey);
   if (cached) return cached;
 
@@ -166,6 +167,7 @@ export const getChallengesPage = async (params?: GetChallengesParams): Promise<C
     params: {
       status: params?.status,
       type: params?.type,
+      search: params?.search,
       page,
       limit,
     },

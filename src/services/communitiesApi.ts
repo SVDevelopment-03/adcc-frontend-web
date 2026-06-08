@@ -42,7 +42,37 @@ export interface CommunityApiResponse {
   area?: string;
   image?: string;
   logo?: string;
-  trackId?: string | string[] | { _id?: string; id?: string } | Array<{ _id?: string; id?: string }>;
+  trackId?:
+    | string
+    | string[]
+    | {
+        _id?: string;
+        id?: string;
+        title?: string;
+        titleAr?: string;
+        distance?: number;
+        difficulty?: string;
+        trackType?: string;
+        category?: string;
+        image?: string;
+        city?: string;
+        description?: string;
+        descriptionAr?: string;
+      }
+    | Array<{
+        _id?: string;
+        id?: string;
+        title?: string;
+        titleAr?: string;
+        distance?: number;
+        difficulty?: string;
+        trackType?: string;
+        category?: string;
+        image?: string;
+        city?: string;
+        description?: string;
+        descriptionAr?: string;
+      }>;
   primaryTracks?: string[];
   trackName?: string;
   distance?: number;

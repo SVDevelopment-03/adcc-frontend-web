@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
@@ -14,6 +15,7 @@ import {
   Users,
   Wrench,
 } from "lucide-react";
+import { EventApiResponse, getEventsPage } from "../../services/eventsApi";
 
 type StatCard = {
   icon: LucideIcon;
@@ -33,52 +35,149 @@ type ScheduleItem = {
   description: string;
 };
 
-const eventStats: StatCard[] = [
-  { icon: CalendarDays, title: "March 15", label: "Date" },
-  { icon: MapPin, title: "42 km", label: "Distance" },
-  { icon: Users, title: "156 riders", label: "Participants" },
-  { icon: Trophy, title: "Advanced", label: "Level" },
+type EventEligibility =
+  | {
+      experienceLevel?: string;
+      experinceLevel?: string;
+      helmetRequired?: boolean;
+      roadBikeOnly?: boolean;
+      gender?: string;
+    }
+  | Array<{
+      experienceLevel?: string;
+      experinceLevel?: string;
+      helmetRequired?: boolean;
+      roadBikeOnly?: boolean;
+      gender?: string;
+    }>;
+
+type GrandPrixEvent = EventApiResponse & {
+  eligibility?: EventEligibility;
+};
+
+const TARGET_EVENT_TITLE = "Abu Dhabi Grand Prix Ride";
+const TARGET_EVENT_SLUG = "abu-dhabi-grand-prix-ride";
+const FALLBACK_HERO_IMAGE = "/img/pexels-ander-garcia-1317358711-25016478 1.png";
+const SCHEDULE_IMAGE = "/img/505801846.png";
+
+const formatDate = (date?: string) => {
+  if (!date) return "Date TBA";
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.getTime())) return "Date TBA";
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+  }).format(parsed);
+};
+
+const formatFee = (event?: GrandPrixEvent | null) => {
+  if (!event) return "Loading";
+  if (event.registrationFeeType !== "paid") return "Free";
+  const amount = event.registrationFeeAmount ?? 0;
+  return amount > 0 ? `AED ${amount}` : "Paid";
+};
+
+const getImage = (event?: GrandPrixEvent | null) =>
+  event?.mainImage || event?.eventImage || event?.galleryImages?.[0] || FALLBACK_HERO_IMAGE;
+
+const getParticipants = (event?: GrandPrixEvent | null) =>
+  event?.currentParticipants ?? event?.registrations ?? 0;
+
+const getLevel = (event?: GrandPrixEvent | null) => {
+  if (!event) return "Level TBA";
+  if (event.difficulty) return event.difficulty;
+  const eligibility = Array.isArray(event.eligibility)
+    ? event.eligibility[0]
+    : event.eligibility;
+  return eligibility?.experienceLevel || eligibility?.experinceLevel || "All Levels";
+};
+
+const titleCase = (value: string) =>
+  value
+    .replace(/[-_]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+
+const getStats = (event?: GrandPrixEvent | null): StatCard[] => [
+  { icon: CalendarDays, title: formatDate(event?.eventDate), label: "Date" },
+  {
+    icon: MapPin,
+    title: typeof event?.distance === "number" ? `${event.distance} km` : "TBA",
+    label: "Distance",
+  },
+  {
+    icon: Users,
+    title: `${getParticipants(event)} riders`,
+    label: "Participants",
+  },
+  { icon: Trophy, title: titleCase(getLevel(event)), label: "Level" },
 ];
 
-const facilities: Facility[] = [
-  { title: "Water Stations", icon: Droplets },
-  { title: "Medical Support", icon: Cross, active: true },
-  { title: "Bike Repair", icon: Wrench },
-  { title: "Restrooms", icon: Users },
-  { title: "Parking", icon: ParkingCircle },
+const facilityIconMap: Array<{ match: RegExp; icon: LucideIcon }> = [
+  { match: /water|drink|hydration/i, icon: Droplets },
+  { match: /medical|aid|health|ambulance/i, icon: Cross },
+  { match: /repair|bike|mechanic|workshop/i, icon: Wrench },
+  { match: /parking/i, icon: ParkingCircle },
+  { match: /restroom|toilet|washroom/i, icon: Users },
 ];
 
-const schedule: ScheduleItem[] = [
-  {
-    time: "6:00 AM",
-    title: "Registration Opens",
-    description: "Check-in and collect your race packet",
-  },
-  {
-    time: "7:00 AM",
-    title: "Event Start",
-    description: "The ride begins!",
-  },
-  {
-    time: "11:00 AM",
-    title: "Awards Ceremony",
-    description: "Celebration and prizes",
-  },
-  {
-    time: "11:00 AM",
-    title: "Awards Ceremony",
-    description: "Celebration and prizes",
-  },
-];
+const getFacilityIcon = (title: string) =>
+  facilityIconMap.find(({ match }) => match.test(title))?.icon || Bike;
 
-const faqs = [
-  "Do I need to be an experienced cyclist to join ADCC rides?",
-  "Are there specific tracks for beginners or families?",
-  "What gear do I need to bring for a group ride?",
-  "Can I participate in races without being a professional?",
-  "How do I track my performance or join challenges?",
-  "Are there any women-only rides or training sessions?",
-];
+const getFacilities = (event?: GrandPrixEvent | null): Facility[] =>
+  (event?.amenities || []).map((title, index) => ({
+    title: titleCase(title),
+    icon: getFacilityIcon(title),
+    active: index === 0,
+  }));
+
+const getSchedule = (event?: GrandPrixEvent | null): ScheduleItem[] => {
+  const eventSchedule = event?.schedule || [];
+  if (eventSchedule.length > 0) {
+    return [...eventSchedule]
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+      .map((item) => ({
+        time: item.time,
+        title: item.title,
+        description: item.description || "",
+      }));
+  }
+
+  if (!event) return [];
+
+  return [
+    {
+      time: event.eventTime || "Time TBA",
+      title: "Event Start",
+      description: event.address || event.city || "Location TBA",
+    },
+    ...(event.endTime
+      ? [
+          {
+            time: event.endTime,
+            title: "Event End",
+            description: event.status ? `Current status: ${titleCase(event.status)}` : "",
+          },
+        ]
+      : []),
+  ];
+};
+
+const getFaqs = (event?: GrandPrixEvent | null) => {
+  if (!event) return [];
+  const fee = formatFee(event);
+  const level = titleCase(getLevel(event));
+  const location = event.city || event.address || "the event location";
+  return [
+    `When is ${event.title} scheduled?`,
+    `Where is ${event.title} taking place?`,
+    `What is the ${level} rider level for this event?`,
+    `Is registration ${fee.toLowerCase()} for ${event.title}?`,
+    `How many riders can participate in ${event.title}?`,
+    `What should I know before riding in ${location}?`,
+  ];
+};
 
 const FontLoader = () => (
   <style>{`
@@ -118,45 +217,46 @@ const FontLoader = () => (
   `}</style>
 );
 
-function HeroSection() {
+function HeroSection({ event }: { event: GrandPrixEvent }) {
+  const tags = [event.category, event.city].filter(Boolean);
+
   return (
     <section className="grand-prix-section grand-prix-shell pt-0">
       <div className="relative h-[500px] overflow-hidden bg-[#111] max-md:h-[420px]">
         <img
-          src="/img/pexels-ander-garcia-1317358711-25016478 1.png"
-          alt="Cyclists riding during the Abu Dhabi Grand Prix Ride"
+          src={getImage(event)}
+          alt={event.title}
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-black/40" />
 
         <div className="absolute bottom-[102px] left-[43px] flex gap-[10px] max-sm:left-5">
-          <span className="rounded-full bg-white/30 px-[21px] py-2 text-[16px] font-medium leading-5 text-white backdrop-blur">
-            Race
-          </span>
-          <span className="rounded-full bg-white/30 px-[20px] py-2 text-[16px] font-medium leading-5 text-white backdrop-blur">
-            Abu Dhabi
-          </span>
+          {tags.map((tag) => (
+            <span
+              key={tag}
+              className="rounded-full bg-white/30 px-[21px] py-2 text-[16px] font-medium leading-5 text-white backdrop-blur"
+            >
+              {tag}
+            </span>
+          ))}
         </div>
 
         <h1 className="grand-prix-bebas absolute bottom-[56px] left-[43px] text-[40px] uppercase leading-none text-white max-sm:left-5 max-sm:text-[34px]">
-          Abu Dhabi Grand Prix Ride
+          {event.title}
         </h1>
       </div>
     </section>
   );
 }
 
-function AboutSection() {
+function AboutSection({ event }: { event: GrandPrixEvent }) {
   return (
     <section className="grand-prix-section px-4 pt-[103px] text-center">
       <h2 className="grand-prix-bebas text-[60px] uppercase leading-[72px] max-md:text-[44px] max-md:leading-[52px]">
         About This Event
       </h2>
       <p className="mx-auto mt-[23px] max-w-[851px] text-[24px] font-normal leading-[30px] text-black max-md:text-[18px] max-md:leading-[28px]">
-        Join us for an unforgettable cycling experience in Abu Dhabi. This
-        advanced event is for riders wanting a challenge while enjoying fellow
-        enthusiasts. The route covers 42 km of paths showcasing the UAE's best.
-        Compete or enjoy the ride; it promises to be exceptional.
+        {event.description}
       </p>
       <button
         type="button"
@@ -169,7 +269,12 @@ function AboutSection() {
   );
 }
 
-function RegisterCard() {
+function RegisterCard({ event }: { event: GrandPrixEvent }) {
+  const total = event.maxParticipants ?? 0;
+  const joined = getParticipants(event);
+  const spotsText =
+    total > 0 ? `${Math.max(total - joined, 0)} spots available` : "Open registration";
+
   return (
     <article className="relative h-[236px] w-[426px] shrink-0 rounded-2xl bg-[#435974] text-white max-sm:w-[calc(100vw-56px)]">
       <p className="absolute left-6 top-[19px] flex items-center gap-[7px] text-[18px] font-medium leading-[23px]">
@@ -178,10 +283,10 @@ function RegisterCard() {
       </p>
 
       <h3 className="grand-prix-bebas absolute left-6 top-[66px] text-[50px] uppercase leading-[36px]">
-        Free
+        {formatFee(event)}
       </h3>
       <p className="absolute left-6 top-[110px] text-[14px] leading-5 text-white/60">
-        Limited spots available
+        {spotsText}
       </p>
 
       <div className="absolute bottom-[14px] left-6 right-6 h-[71px] border-t border-white/10">
@@ -215,12 +320,12 @@ function RegisterCard() {
   );
 }
 
-function StatsStrip() {
+function StatsStrip({ event, stats }: { event: GrandPrixEvent; stats: StatCard[] }) {
   return (
     <section className="grand-prix-section mx-auto mt-[60px] h-[270px] w-[1192px] max-w-[calc(100vw-32px)] overflow-x-auto rounded-2xl bg-[#323232] p-[17px] lg:overflow-visible">
       <div className="flex w-max gap-3">
-        <RegisterCard />
-        {eventStats.map(({ icon: Icon, title, label }) => (
+        <RegisterCard event={event} />
+        {stats.map(({ icon: Icon, title, label }) => (
           <article
             key={title}
             className="relative h-[236px] w-[171px] shrink-0 overflow-hidden rounded-[10px] bg-[#435974] text-white"
@@ -241,7 +346,9 @@ function StatsStrip() {
   );
 }
 
-function FacilitiesSection() {
+function FacilitiesSection({ facilities }: { facilities: Facility[] }) {
+  if (facilities.length === 0) return null;
+
   return (
     <section
         className="grand-prix-section mt-[130px] bg-cover bg-center bg-no-repeat py-16 text-white"
@@ -292,20 +399,26 @@ function FacilitiesSection() {
   );
 }
 
-function ScheduleSection() {
+function ScheduleSection({
+  event,
+  schedule,
+}: {
+  event: GrandPrixEvent;
+  schedule: ScheduleItem[];
+}) {
+  if (schedule.length === 0) return null;
+
   return (
     <section
       id="grand-prix-schedule"
       className="grand-prix-section relative z-10 block w-full bg-[#323232] px-4 pb-[78px] pt-[69px] text-white"
     >
       <h2 className="grand-prix-bebas mx-auto max-w-[621px] text-center text-[50px] uppercase leading-[60px] max-md:text-[38px] max-md:leading-[46px]">
-        Abu Dhabi Grand Prix Ride Schedule
+        {event.title} Schedule
       </h2>
 
       <p className="mx-auto mb-[45px] mt-[22px] max-w-[795px] text-center text-[24px] leading-[30px] text-white/70 max-md:text-[18px] max-md:leading-[28px]">
-        Join a world-class cycling event at Yas Marina Circuit. From
-        registration to the final sprint, every moment promises an unforgettable
-        ride.
+        {event.address || event.city || "Event schedule details"}
       </p>
 
       {/* <div className="grand-prix-shell mt-[45px] grid grid-cols-[460px_736px] gap-[53px] max-lg:grid-cols-1"> */}
@@ -314,8 +427,8 @@ function ScheduleSection() {
           <div className="absolute bottom-0 left-0 h-[254px] w-full rounded-tl-xl rounded-br-xl rounded-tr-[60px] rounded-bl-[60px] bg-[#435974]" />
 
           <img
-            src="/img/505801846.png"
-            alt="Abu Dhabi Grand Prix Ride participant"
+            src={event.galleryImages?.[1] || SCHEDULE_IMAGE}
+            alt={`${event.title} participant`}
             className="absolute bottom-0 left-[41px] h-[478px] w-[377px] object-contain"
           />
 
@@ -373,7 +486,9 @@ function ScheduleSection() {
   );
 }
 
-function FaqSection() {
+function FaqSection({ faqs }: { faqs: string[] }) {
+  if (faqs.length === 0) return null;
+
   return (
     <section className="grand-prix-section px-4 pb-[130px] pt-[120px] text-center">
       <h2 className="grand-prix-bebas text-[50px] uppercase leading-[60px] max-md:text-[38px] max-md:leading-[46px]">
@@ -402,15 +517,81 @@ function FaqSection() {
 }
 
 export default function CommunitiesAbuDhabiGrandPrixRide() {
+  const [event, setEvent] = useState<GrandPrixEvent | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    setLoading(true);
+    setError("");
+
+    getEventsPage({
+      search: TARGET_EVENT_TITLE,
+      page: 1,
+      limit: 10,
+    })
+      .then((data) => {
+        if (cancelled) return;
+        const events = (data.events || []) as GrandPrixEvent[];
+        const matchedEvent =
+          events.find((item) => item.slug === TARGET_EVENT_SLUG) ||
+          events.find((item) => item.title.toLowerCase() === TARGET_EVENT_TITLE.toLowerCase()) ||
+          events[0] ||
+          null;
+
+        setEvent(matchedEvent);
+        if (!matchedEvent) {
+          setError("Event details are not available right now.");
+        }
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("Failed to load Grand Prix event:", err);
+        setEvent(null);
+        setError("Event details could not be loaded right now.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const stats = useMemo(() => getStats(event), [event]);
+  const facilities = useMemo(() => getFacilities(event), [event]);
+  const schedule = useMemo(() => getSchedule(event), [event]);
+  const faqs = useMemo(() => getFaqs(event), [event]);
+
   return (
     <div className="grand-prix-page">
       <FontLoader />
-      <HeroSection />
-      <AboutSection />
-      <StatsStrip />
-      <FacilitiesSection />
-      <ScheduleSection />
-      <FaqSection />
+      {loading && (
+        <section className="grand-prix-section grand-prix-shell py-24 text-center">
+          <p className="text-[22px] font-medium text-black/70">Loading event details...</p>
+        </section>
+      )}
+      {!loading && error && (
+        <section className="grand-prix-section grand-prix-shell py-24 text-center">
+          <h1 className="grand-prix-bebas text-[50px] uppercase leading-[60px]">
+            {TARGET_EVENT_TITLE}
+          </h1>
+          <p className="mt-4 text-[20px] font-medium text-black/70">{error}</p>
+        </section>
+      )}
+      {!loading && event && (
+        <>
+          <HeroSection event={event} />
+          <AboutSection event={event} />
+          <StatsStrip event={event} stats={stats} />
+          <FacilitiesSection facilities={facilities} />
+          <ScheduleSection event={event} schedule={schedule} />
+          <FaqSection faqs={faqs} />
+        </>
+      )}
     </div>
   );
 }

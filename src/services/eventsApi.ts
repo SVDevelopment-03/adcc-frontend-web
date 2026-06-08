@@ -55,6 +55,7 @@ export interface GetEventsParams {
   city?: string;
   category?: string;
   level?: string;
+  communityId?: string;
   search?: string;
   page?: number;
   limit?: number;
@@ -95,6 +96,7 @@ export const getEventsPage = async (params?: GetEventsParams): Promise<GetEvents
       city: params?.city,
       category: params?.category,
       level: params?.level,
+      communityId: params?.communityId,
       search: params?.search,
       page: params?.page || 1,
       limit: params?.limit || 10,
@@ -527,4 +529,3 @@ export const exportEventResultsCsv = async (eventId: string): Promise<Blob> => {
     throw error;
   }
 };
-

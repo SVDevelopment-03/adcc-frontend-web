@@ -46,7 +46,7 @@ export default function ChallengeDetailPage() {
           className="relative h-[500px] overflow-hidden bg-cover bg-center"
           style={{
             backgroundImage:
-              "linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url('https://images.unsplash.com/photo-1534787238916-9ba6764efd4f?q=80&w=1600&auto=format&fit=crop')",
+              "linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url('/img/pexels-ander-garcia-1317358711-25016478 1.png')",
           }}
         >
           <div className="absolute bottom-20 left-10 text-white">
@@ -105,7 +105,11 @@ export default function ChallengeDetailPage() {
         ))}
       </section>
 
-      <section className="bg-gradient-to-b from-[#d8ebff] to-[#adc7df] px-10 py-20">
+      {/* <section className="bg-gradient-to-b from-[#d8ebff] to-[#adc7df] px-10 py-20"> */}
+      <section
+        className="bg-gradient-to-b from-[#d8ebff] to-[#adc7df] bg-cover bg-center bg-no-repeat px-10 py-20"
+        style={{ backgroundImage: "url('/img/image 3517.png')" }}
+      >
         <div className="mx-auto max-w-[1268px]">
           <div className="flex flex-col justify-between gap-8 md:flex-row">
             <h2 className="max-w-[487px] text-[50px] font-black uppercase leading-tight">
@@ -118,7 +122,7 @@ export default function ChallengeDetailPage() {
 
           <div className="mt-16 grid grid-cols-1 gap-8 lg:grid-cols-[554px_1fr_1fr]">
             <img
-              src="https://images.unsplash.com/photo-1541625602330-2277a4c46182?q=80&w=1200&auto=format&fit=crop"
+              src="/img/pexels-leyla-helvaci-50263565-13358009 1.png"
               alt="Challenge"
               className="h-[439px] w-full rounded-xl object-cover"
             />
