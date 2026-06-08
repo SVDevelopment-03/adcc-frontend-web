@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Cloud,
   Search,
@@ -115,6 +116,7 @@ const faqs = [
 ];
 
 export default function CommunitiesPage() {
+  const navigate = useNavigate();
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [cityFilter, setCityFilter] = useState("all");
@@ -343,14 +345,16 @@ export default function CommunitiesPage() {
                 />
               ))
             : communities.map((item) => (
-                <div
+                <button
+                  type="button"
                   key={item.id}
-                  className="relative h-[467px] overflow-hidden rounded-[10px] bg-black"
+                  onClick={() => navigate(`/user-communities/${encodeURIComponent(item.id)}`)}
+                  className="group relative h-[467px] overflow-hidden rounded-[10px] bg-black text-left"
                 >
                   <img
                     src={item.image}
                     alt={item.title}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
 
@@ -368,7 +372,7 @@ export default function CommunitiesPage() {
                       </span>
                     </div>
                   </div>
-                </div>
+                </button>
               ))}
         </div>
 

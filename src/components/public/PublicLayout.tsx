@@ -52,7 +52,9 @@ function PublicHeader() {
 
       <nav className="hidden items-center gap-10 text-[20px] font-medium lg:flex">
         {navItems.map((item) => {
-          const isActive = item.match.some((path) => location.pathname === path);
+          const isActive = item.match.some(
+            (path) => location.pathname === path || location.pathname.startsWith(`${path}/`),
+          );
           return (
             <NavLink
               key={item.label}

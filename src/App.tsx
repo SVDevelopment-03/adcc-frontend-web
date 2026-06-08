@@ -13,6 +13,7 @@ import UserEvent from './components/user-event/UserEvent';
 import UserTracks from './components/user-tracks/UserTracks';
 import UserChallenges from './components/user-challenges/UserChallenges';
 import UserCommunities from './components/user-communities/UserCommunities';
+import UserCommunityDetail from './components/user-communities/UserCommunityDetail';
 import CommunitiesAbuDhabiGrandPrixRide from './components/communities-abu-dhabi-grand-prix-ride/CommunitiesAbuDhabiGrandPrixRide';
 import CommunitiesAbuDhabiCyclingCommunity from './components/communities-abu-dhabi-cycling-community/CommunitiesAbuDhabiCyclingCommunity';
 import CommunitiesAlQuadraCyclePath from './components/communities-al-quadra-cycle-path/CommunitiesAlQuadraCyclePath';
@@ -47,13 +48,16 @@ function AppContent() {
     '/user-store-detail',
     '/contact-us',
   ];
+  const isPublicRoute = publicRoutes.some(
+    (route) => location.pathname === route || location.pathname.startsWith(`${route}/`),
+  );
 
   // Redirect to login when user becomes unauthenticated
   useEffect(() => {
-    if (!loading && !isAuthenticated && !publicRoutes.includes(location.pathname)) {
+    if (!loading && !isAuthenticated && !isPublicRoute) {
       navigate('/login', { replace: true });
     }
-  }, [isAuthenticated, loading, location.pathname, navigate]);
+  }, [isAuthenticated, isPublicRoute, loading, navigate]);
 
   if (loading) {
     return (
@@ -109,6 +113,7 @@ function AppContent() {
       <Route path="/user-tracks" element={publicPage(<UserTracks />)} />
       <Route path="/user-challenges" element={publicPage(<UserChallenges />)} />
       <Route path="/user-communities" element={publicPage(<UserCommunities />)} />
+      <Route path="/user-communities/:id" element={publicPage(<UserCommunityDetail />)} />
       <Route
         path="/communities-abu-dhabi-grand-prix-ride"
         element={publicPage(<CommunitiesAbuDhabiGrandPrixRide />)}
