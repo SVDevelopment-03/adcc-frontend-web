@@ -26,30 +26,38 @@ import { Home } from './components/home/Home';
 
 export type UserRole = 'Admin' | 'content-manager' | 'community-manager' | 'moderator';
 
+const publicRoutePrefixes = [
+  '/',
+  '/home',
+  '/login',
+  '/register',
+  '/aboutus',
+  '/user-event',
+  '/user-events',
+  '/user-tracks',
+  '/user-challenges',
+  '/user-communities',
+  '/communities-abu-dhabi-grand-prix-ride',
+  '/communities-abu-dhabi-cycling-community',
+  '/communities-al-quadra-cycle-path',
+  '/communities-march-distance-challenge',
+  '/user-adcc-store',
+  '/user-store-detail',
+  '/contact-us',
+];
+
+function normalizePathname(pathname: string) {
+  if (pathname.length > 1 && pathname.endsWith('/')) return pathname.slice(0, -1);
+  return pathname;
+}
+
 function AppContent() {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, loading } = useAuth();
-  const publicRoutes = [
-    '/home',
-    '/login',
-    '/register',
-    '/aboutus',
-    '/user-event',
-    '/user-events',
-    '/user-tracks',
-    '/user-challenges',
-    '/user-communities',
-    '/communities-abu-dhabi-grand-prix-ride',
-    '/communities-abu-dhabi-cycling-community',
-    '/communities-al-quadra-cycle-path',
-    '/communities-march-distance-challenge',
-    '/user-adcc-store',
-    '/user-store-detail',
-    '/contact-us',
-  ];
-  const isPublicRoute = publicRoutes.some(
-    (route) => location.pathname === route || location.pathname.startsWith(`${route}/`),
+  const pathname = normalizePathname(location.pathname);
+  const isPublicRoute = publicRoutePrefixes.some(
+    (route) => pathname === route || (route !== '/' && pathname.startsWith(`${route}/`)),
   );
 
   // Redirect to login when user becomes unauthenticated
@@ -107,35 +115,35 @@ function AppContent() {
           )
         } 
       />
-      <Route path="/aboutus" element={publicPage(<AboutUs />)} />
-      <Route path="/user-event" element={publicPage(<UserEvent />)} />
-      <Route path="/user-events" element={publicPage(<UserEvent />)} />
-      <Route path="/user-tracks" element={publicPage(<UserTracks />)} />
-      <Route path="/user-challenges" element={publicPage(<UserChallenges />)} />
+      <Route path="/aboutus/*" element={publicPage(<AboutUs />)} />
+      <Route path="/user-event/*" element={publicPage(<UserEvent />)} />
+      <Route path="/user-events/*" element={publicPage(<UserEvent />)} />
+      <Route path="/user-tracks/*" element={publicPage(<UserTracks />)} />
+      <Route path="/user-challenges/*" element={publicPage(<UserChallenges />)} />
       <Route path="/user-communities" element={publicPage(<UserCommunities />)} />
       <Route path="/user-communities/:id" element={publicPage(<UserCommunityDetail />)} />
       <Route
-        path="/communities-abu-dhabi-grand-prix-ride"
+        path="/communities-abu-dhabi-grand-prix-ride/*"
         element={publicPage(<CommunitiesAbuDhabiGrandPrixRide />)}
       />
       <Route
-        path="/communities-abu-dhabi-cycling-community"
+        path="/communities-abu-dhabi-cycling-community/*"
         element={publicPage(<CommunitiesAbuDhabiCyclingCommunity />)}
       />
       <Route
-        path="/communities-al-quadra-cycle-path"
+        path="/communities-al-quadra-cycle-path/*"
         element={publicPage(<CommunitiesAlQuadraCyclePath />)}
       />
       <Route
-        path="/communities-march-distance-challenge"
+        path="/communities-march-distance-challenge/*"
         element={publicPage(<CommunitiesMarchDistanceChallenge />)}
       />
-      <Route path="/user-adcc-store" element={publicPage(<UserAdccStore />)} />
-      <Route path="/user-store-detail" element={publicPage(<StoreDetailPage />)} />
+      <Route path="/user-adcc-store/*" element={publicPage(<UserAdccStore />)} />
+      <Route path="/user-store-detail/*" element={publicPage(<StoreDetailPage />)} />
 
-      <Route path="/contact-us" element={publicPage(<ContactUs />)} />
+      <Route path="/contact-us/*" element={publicPage(<ContactUs />)} />
 
-      <Route path="/home" element={publicPage(<Home />)} />
+      <Route path="/home/*" element={publicPage(<Home />)} />
       
       {/* Protected Routes - All routes are handled in Layout component */}
       <Route 
@@ -150,7 +158,7 @@ function AppContent() {
       {/* Root redirect */}
       <Route 
         path="/" 
-        element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} 
+        element={<Navigate to={isAuthenticated ? "/dashboard" : "/home"} replace />} 
       />
     </Routes>
   );

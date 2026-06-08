@@ -80,9 +80,12 @@ function PublicHeader() {
             padding: 8px 4px !important;
             line-height: 1.25 !important;
           }
+          .public-auth-button {
+            padding: 13px 18px !important;
+          }
           .public-mobile-menu button {
             margin-top: 12px !important;
-            padding: 12px 14px !important;
+            padding: 13px 18px !important;
           }
         }
       `}</style>
@@ -127,15 +130,20 @@ function PublicHeader() {
           >
             Menu
           </button>
-          <div className="invisible absolute right-0 top-full z-[120] min-w-[190px] translate-y-2 pt-3 opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
-            <div className="absolute right-8 top-[7px] h-3 w-3 rotate-45 border-l border-t border-black/10 bg-white" />
-            <div className="overflow-hidden rounded-lg border border-black/10 bg-white px-4 py-5 shadow-[0_18px_45px_rgba(0,0,0,0.16)]">
+          <div className="invisible absolute right-0 top-full z-[120] w-[220px] translate-y-2 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
+            {/* <div className="absolute right-9 top-[10px] h-3.5 w-3.5 rotate-45 border-l border-t border-black/10 bg-white" /> */}
+            <div className="overflow-hidden rounded-xl border border-black/10 bg-white p-3 shadow-[0_18px_45px_rgba(0,0,0,0.16)]">
               <button
                 type="button"
                 onClick={handleAuthAction}
-                className="flex w-full items-center gap-3 rounded-md px-4 py-3 text-left text-[16px] font-semibold text-black transition-colors hover:bg-black hover:text-white focus:bg-black focus:text-white focus:outline-none"
+                className="public-auth-button flex min-h-12 w-full items-center gap-4 rounded-lg px-7 py-3.5 text-left text-[16px] font-semibold text-black transition-colors hover:bg-black hover:text-white focus:bg-black focus:text-white focus:outline-none"
               >
-                {isAuthenticated ? <LogOut className="h-5 w-5" /> : <LogIn className="h-5 w-5" />}
+                {/* {isAuthenticated ? <LogOut className="h-5 w-5" /> : <LogIn className="h-5 w-5" />} */}
+                {isAuthenticated ? (
+                  <LogOut className="ml-5 h-5 w-5" />
+                ) : (
+                  <LogIn className="!ml-5 h-5 w-5" />
+                )}
                 <span>{isAuthenticated ? 'Logout' : 'Login'}</span>
               </button>
             </div>
@@ -168,9 +176,15 @@ function PublicHeader() {
                 setMenuOpen(false);
                 void handleAuthAction();
               }}
-              className="mt-3 flex items-center gap-3 rounded-md bg-[#019839] px-4 py-3 text-left text-[16px] font-bold text-white transition-colors hover:bg-black"
+              // className="public-auth-button mt-3 flex items-center gap-3 rounded-md bg-[#019839] px-5 py-3.5 text-left text-[16px] font-bold text-white transition-colors hover:bg-black"
+              className="public-auth-button mt-3 flex items-center gap-3 rounded-md bg-[#019839] pl-7 pr-5 py-3.5 text-left text-[16px] font-bold text-white transition-colors hover:bg-black"
             >
-              {isAuthenticated ? <LogOut className="h-5 w-5" /> : <LogIn className="h-5 w-5" />}
+              {/* {isAuthenticated ? <LogOut className="h-5 w-5" /> : <LogIn className="h-5 w-5" />} */}
+              {isAuthenticated ? (
+                <LogOut className="ml-5 h-5 w-5" />
+              ) : (
+                <LogIn className="ml-5 h-5 w-5" />
+              )}
               <span>{isAuthenticated ? 'Logout' : 'Login'}</span>
             </button>
           </nav>
