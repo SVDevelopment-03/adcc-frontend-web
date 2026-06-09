@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getStoreItems, StoreItem } from '../../services/storeApi';
 import { subscribeToNewsletter } from '../../services/newsletterApi';
+import { motion } from "framer-motion";
+import gsap from "gsap";
 
 const CSS = `
   @keyframes ticker-group-left {

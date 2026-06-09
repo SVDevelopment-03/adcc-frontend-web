@@ -15,6 +15,44 @@ export const api = axios.create({
   },
 });
 
+const publicRoutePrefixes = [
+  '/home',
+  '/login',
+  '/register',
+  '/aboutus',
+  '/user-event',
+  '/user-events',
+  '/user-tracks',
+  '/user-challenges',
+  '/user-communities',
+  '/communities-abu-dhabi-grand-prix-ride',
+  '/communities-abu-dhabi-cycling-community',
+  '/communities-al-quadra-cycle-path',
+  '/communities-march-distance-challenge',
+  '/user-adcc-store',
+  '/user-store-detail',
+  '/contact-us',
+];
+
+const normalizePathname = (pathname: string) => {
+  if (pathname.length > 1 && pathname.endsWith('/')) return pathname.slice(0, -1);
+  return pathname;
+};
+
+const isPublicPathname = (pathname: string) => {
+  const normalizedPathname = normalizePathname(pathname);
+  return publicRoutePrefixes.some(
+    (route) => normalizedPathname === route || normalizedPathname.startsWith(`${route}/`),
+  );
+};
+
+const redirectToLoginIfNeeded = () => {
+  const pathname = window.location.pathname;
+  if (pathname !== '/login' && pathname !== '/auth' && !isPublicPathname(pathname)) {
+    window.location.href = '/login';
+  }
+};
+
 // Helper function to decode JWT token and get expiration time
 const getTokenExpiration = (token: string): number | null => {
   try {
@@ -93,10 +131,7 @@ const logoutUser = async () => {
     console.log('Firebase auth not available, continuing logout');
   }
   
-  // Redirect to login page
-  if (window.location.pathname !== '/login' && window.location.pathname !== '/auth') {
-    window.location.href = '/auth';
-  }
+  redirectToLoginIfNeeded();
 };
 
 // Function to refresh token
@@ -194,10 +229,7 @@ const refreshToken = async (): Promise<string | null> => {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       
-      // Redirect to login if not already there
-      if (window.location.pathname !== '/login' && window.location.pathname !== '/auth') {
-        window.location.href = '/auth';
-      }
+      redirectToLoginIfNeeded();
     }
     
     isRefreshing = false;
@@ -384,10 +416,7 @@ api.interceptors.response.use(
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
             
-            // Redirect to login if not already there
-            if (window.location.pathname !== '/login' && window.location.pathname !== '/auth') {
-              window.location.href = '/auth';
-            }
+            redirectToLoginIfNeeded();
           }
           
           return Promise.reject(refreshError);

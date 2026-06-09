@@ -102,8 +102,9 @@ function PublicHeader() {
             <NavLink
               key={item.label}
               to={item.to}
-              className="transition-colors hover:text-[#019839]"
-              style={{ color: isActive ? '#019839' : '#000' }}
+              className={`inline-block transition-colors duration-300 ease-out hover:text-[#019839] ${
+                isActive ? 'text-[#019839]' : 'text-black'
+              }`}
             >
               {item.label}
             </NavLink>
@@ -163,8 +164,9 @@ function PublicHeader() {
                   key={item.label}
                   to={item.to}
                   onClick={() => setMenuOpen(false)}
-                  className="rounded-md px-4 py-2.5 transition-colors hover:bg-[#EAF4FF] hover:text-[#019839]"
-                  style={{ color: isActive ? '#019839' : '#000' }}
+                  className={`rounded-md px-4 py-2.5 transition-colors duration-300 ease-out hover:text-[#019839] ${
+                    isActive ? 'text-[#019839]' : 'text-black'
+                  }`}
                 >
                   {item.label}
                 </NavLink>

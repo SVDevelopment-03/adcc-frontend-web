@@ -27,7 +27,6 @@ import { Home } from './components/home/Home';
 export type UserRole = 'Admin' | 'content-manager' | 'community-manager' | 'moderator';
 
 const publicRoutePrefixes = [
-  '/',
   '/home',
   '/login',
   '/register',
