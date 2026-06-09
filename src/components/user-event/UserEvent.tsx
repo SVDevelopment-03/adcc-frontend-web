@@ -1,5 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { EventApiResponse, GetEventsParams, getEventsPage } from "../../services/eventsApi";
+import { motion } from "framer-motion";
+import gsap from "gsap";
 
 const FontLoader = () => (
   <style>{`
@@ -219,9 +221,68 @@ function Hero() {
         backgroundImage: "linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url('/img/pexels-jonathanborba-19431221 1.png')",
         backgroundSize: "cover", backgroundPosition: "center"
       }} />
-      <div className="event-hero-content" style={{ position: "absolute", bottom: 90, left: 82 }}>
-        <p className="event-hero-breadcrumb" style={{ color: "rgba(255,255,255,0.8)", fontSize: 22 }}>Home / Events</p>
-        <h1 className="bebas event-hero-title" style={{ fontSize: 70, color: "#fff", lineHeight: 1, marginTop: 8, textTransform: "uppercase" }}>Events</h1>
+      <div
+        className="event-hero-content"
+        style={{
+          position: "absolute",
+          bottom: 90,
+          left: 82
+        }}
+      >
+        <p
+          className="event-hero-breadcrumb"
+          style={{
+            color: "rgba(255,255,255,0.8)",
+            fontSize: 22
+          }}
+        >
+          {["Home", "/", "Events"].map((word, index) => (
+            <motion.span
+              key={`${word}-${index}`}
+              initial={{ opacity: 0, y: 60 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.35,
+                delay: index * 0.1,
+              }}
+              style={{
+                display: "inline-block",
+                marginRight: "8px",
+              }}
+            >
+              {word}
+            </motion.span>
+          ))}
+        </p>
+
+        <h1
+          className="bebas event-hero-title"
+          style={{
+            fontSize: 70,
+            color: "#fff",
+            lineHeight: 1,
+            marginTop: 8,
+            textTransform: "uppercase"
+          }}
+        >
+          {["Events"].map((word, index) => (
+            <motion.span
+              key={word}
+              initial={{ opacity: 0, y: 100 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.45,
+                delay: 0.35 + index * 0.12,
+              }}
+              style={{
+                display: "inline-block",
+                marginRight: "14px",
+              }}
+            >
+              {word}
+            </motion.span>
+          ))}
+        </h1>
       </div>
     </section>
   );
@@ -231,9 +292,35 @@ function Hero() {
 function SectionHeader() {
   return (
     <section className="event-section-header" style={{ background: "#EAF4FF", padding: "64px 82px 40px", textAlign: "center" }}>
-      <h2 className="bebas event-section-title" style={{ fontSize: 50, lineHeight: 1.2, textTransform: "capitalize", maxWidth: 560, margin: "0 auto 16px" }}>
-        Join the Most Exciting Cycling Events in Abu Dhabi
-      </h2>
+     <h2
+      className="bebas event-section-title"
+      style={{
+        fontSize: 50,
+        lineHeight: 1.2,
+        textTransform: "capitalize",
+        maxWidth: 560,
+        margin: "0 auto 16px"
+      }}
+    >
+      {["Join", "the", "Most", "Exciting", "Cycling", "Events", "in", "Abu", "Dhabi"].map((word, index) => (
+        <motion.span
+          key={`${word}-${index}`}
+          initial={{ opacity: 0, y: 100 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: 0.4,
+            delay: index * 0.07,
+          }}
+          viewport={{ once: true }}
+          style={{
+            display: "inline-block",
+            marginRight: "12px",
+          }}
+        >
+          {word}
+        </motion.span>
+      ))}
+    </h2>
       <p className="event-section-copy" style={{ fontSize: 16, fontWeight: 500, color: "rgba(0,0,0,0.6)", maxWidth: 444, margin: "0 auto", lineHeight: 1.6 }}>
         Explore races, community rides, and challenges by Abu Dhabi Cycling Club. Find events for your location and skill.
       </p>
@@ -286,7 +373,20 @@ function FilterBar({
     const selected = filters[filter.key] || filter.label;
 
     return (
-      <div key={filter.key} className="event-filter-field" style={{ position: "relative", width: 260 }}>
+      // <div key={filter.key} className="event-filter-field" style={{ position: "relative", width: 260 }}>
+      <motion.div
+        key={filter.key}
+        className="event-filter-field"
+        initial={{ opacity: 0, x: 120 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        transition={{
+          duration: 0.5,
+          delay: dropdowns.findIndex((d) => d.key === filter.key) * 0.12,
+          ease: "easeOut",
+        }}
+        viewport={{ once: true }}
+        style={{ position: "relative", width: 260 }}
+      >
         <button
           type="button"
           onClick={() => setOpenDropdown((current) => (current === filter.key ? null : filter.key))}
@@ -361,7 +461,7 @@ function FilterBar({
             ))}
           </div>
         )}
-      </div>
+      </motion.div>
     );
   };
 
@@ -369,62 +469,173 @@ function FilterBar({
     // <div style={{ padding: "0 82px 24px", display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
     <div className="event-filter-bar" style={{ padding: "0 82px 24px", display: "flex", gap: 18, alignItems: "center", gridTemplateColumns: "repeat(3, 403px)" }}>
       {dropdowns.map(renderDropdown)}
-      <button className="event-filter-search" onClick={onSearch} style={{
-        width: 156, height: 66, background: "#019839", color: "#fff",
-        border: "none", borderRadius: 40, fontSize: 20, fontWeight: 700,
-        cursor: "pointer", fontFamily: "'Satoshi',sans-serif", transition: "opacity .2s"
-      }}>{loading ? "Loading..." : "Search"}</button>
+      <motion.button
+        className="event-filter-search"
+        initial={{ opacity: 0, x: 120 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: dropdowns.length * 0.12, ease: "easeOut" }}
+        viewport={{ once: true }}
+        onClick={onSearch}
+        style={{
+          width: 156, height: 66, background: "#019839", color: "#fff",
+          border: "none", borderRadius: 40, fontSize: 20, fontWeight: 700,
+          cursor: "pointer", fontFamily: "'Satoshi',sans-serif", transition: "opacity .2s"
+        }}
+      >
+        {loading ? "Loading..." : "Search"}
+      </motion.button>
     </div>
   );
 }
 
 // ── Event card ────────────────────────────────────────────────────────────────
-function EventCard({ event }: { event: EventApiResponse }) {
-  const tag = event.category || "Event";
-  const image = event.eventImage || event.mainImage || event.galleryImages?.[0] || "https://images.unsplash.com/photo-1471897488648-5eae4ac6d485?w=600&q=80";
-  const participants = event.currentParticipants ?? event.registrations ?? 0;
-  const tagColors = {
-    Race: "#1a6dff", Leisure: "#9b59b6", Challenge: "#e67e22", Community: "#019839"
+function EventCard({ event, index }: { event: EventApiResponse; index: number }) {
+  const [columns, setColumns] = useState(3);
+
+  useEffect(() => {
+    const updateColumns = () => {
+      if (window.innerWidth < 768) setColumns(1);
+      else if (window.innerWidth < 1200) setColumns(2);
+      else setColumns(3);
+    };
+
+    updateColumns();
+    window.addEventListener("resize", updateColumns);
+    return () => window.removeEventListener("resize", updateColumns);
+  }, []);
+
+  const getInitialAnimation = () => {
+    const width = window.innerWidth;
+    const cols = width < 768 ? 1 : width < 1200 ? 2 : 3;
+    const position = index % cols;
+
+    if (cols === 3) {
+      if (position === 0) return { opacity: 0, x: -180 };
+      if (position === 1) return { opacity: 0, y: 140 };
+      return { opacity: 0, x: 180 };
+    }
+
+    if (cols === 2) {
+      return position === 0
+        ? { opacity: 0, x: -180 }
+        : { opacity: 0, x: 180 };
+    }
+
+    return index % 2 === 0
+      ? { opacity: 0, x: -180 }
+      : { opacity: 0, x: 180 };
   };
+
+  const tag = event.category || "Event";
+  const image =
+    event.eventImage ||
+    event.mainImage ||
+    event.galleryImages?.[0] ||
+    "https://images.unsplash.com/photo-1471897488648-5eae4ac6d485?w=600&q=80";
+
+  const participants = event.currentParticipants ?? event.registrations ?? 0;
+
   return (
-    // <div style={{ width: 403, display: "flex", flexDirection: "column", gap: 0 }}>
-    <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 0 }}>
-      {/* image box */}
-      <div className="event-card-image" style={{
-        width: "100%", height: 260, borderRadius: 14, overflow: "hidden",
-        position: "relative", background: "#ddd"
-      }}>
-        <img src={image} alt={event.title}
-          style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-        <span style={{
-          position: "absolute", top: 16, right: 16,
-          background: "rgba(0,0,0,0.4)", backdropFilter: "blur(15px)",
-          borderRadius: 30, padding: "9px 18px",
-          color: "#fff", fontFamily: "'Satoshi',sans-serif", fontSize: 15, fontWeight: 500
-        }}>{tag}</span>
+    <motion.div
+      initial={getInitialAnimation()}
+      whileInView={{ opacity: 1, x: 0, y: 0 }}
+      transition={{
+        duration: 0.7,
+        delay: (index % 3) * 0.12,
+        ease: "easeOut",
+      }}
+      viewport={{ once: true }}
+      style={{ width: "100%", display: "flex", flexDirection: "column", gap: 0 }}
+    >
+      <div
+        className="event-card-image"
+        style={{
+          width: "100%",
+          height: 260,
+          borderRadius: 14,
+          overflow: "hidden",
+          position: "relative",
+          background: "#ddd",
+        }}
+      >
+        {/* <img src={image} alt={event.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> */}
+        <motion.img
+          src={image}
+          alt={event.title}
+          initial={{ opacity: 0, scale: 0.25 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{
+            duration: 0.8,
+            delay: 0.25 + (index % 3) * 0.12,
+            ease: "easeOut",
+          }}
+          viewport={{ once: true }}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            transformOrigin: "center",
+          }}
+        />
+        <span
+          style={{
+            position: "absolute",
+            top: 16,
+            right: 16,
+            background: "rgba(0,0,0,0.4)",
+            backdropFilter: "blur(15px)",
+            borderRadius: 30,
+            padding: "9px 18px",
+            color: "#fff",
+            fontFamily: "'Satoshi',sans-serif",
+            fontSize: 15,
+            fontWeight: 500,
+          }}
+        >
+          {tag}
+        </span>
       </div>
 
-      {/* info */}
       <div style={{ paddingTop: 20 }}>
-        <h3 className="bebas event-card-title" style={{ fontSize: 24, marginBottom: 14, letterSpacing: 0.5 }}>{event.title}</h3>
+        <h3 className="bebas event-card-title" style={{ fontSize: 24, marginBottom: 14, letterSpacing: 0.5 }}>
+          {event.title}
+        </h3>
+
         <div className="event-card-meta" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 12px", marginBottom: 20 }}>
           <Meta icon="📅" text={formatEventDate(event.eventDate)} />
           <Meta icon="⚡" text={typeof event.distance === "number" ? `${event.distance} km` : "Distance TBA"} />
           <Meta icon="👥" text={`${participants} participants`} />
           <Meta icon="📍" text={event.city || event.address || "Location TBA"} />
         </div>
-        <button className="event-card-button" style={{
-          width: 157, height: 50, border: "1.5px solid #019839",
-          borderRadius: 30, background: "transparent",
-          color: "#019839", fontSize: 16, fontWeight: 700,
-          cursor: "pointer", fontFamily: "'Satoshi',sans-serif",
-          transition: "all .2s"
-        }}
-          onMouseEnter={e => { e.target.style.background = "#019839"; e.target.style.color = "#fff"; }}
-          onMouseLeave={e => { e.target.style.background = "transparent"; e.target.style.color = "#019839"; }}
-        >View Details</button>
+
+        <button
+          className="event-card-button"
+          style={{
+            width: 157,
+            height: 50,
+            border: "1.5px solid #019839",
+            borderRadius: 30,
+            background: "transparent",
+            color: "#019839",
+            fontSize: 16,
+            fontWeight: 700,
+            cursor: "pointer",
+            fontFamily: "'Satoshi',sans-serif",
+            transition: "all .2s",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "#019839";
+            e.currentTarget.style.color = "#fff";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "transparent";
+            e.currentTarget.style.color = "#019839";
+          }}
+        >
+          View Details
+        </button>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

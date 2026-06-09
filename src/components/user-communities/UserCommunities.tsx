@@ -20,7 +20,8 @@ import {
   getAvailableCities,
   getCommunities,
 } from "../../services/communitiesApi";
-
+import { motion } from "framer-motion";
+import gsap from "gsap";
 const navLinks = ["About Us", "Events", "Community", "Tracks"];
 
 const FontLoader = () => (
@@ -107,12 +108,30 @@ function buildPageNumbers(currentPage: number, totalPages: number) {
 }
 
 const faqs = [
-  "Do I need to be an experienced cyclist to join ADCC rides?",
-  "Are there specific tracks for beginners or families?",
-  "What gear do I need to bring for a group ride?",
-  "Can I participate in races without being a professional?",
-  "How do I track my performance or join challenges?",
-  "Are there any women-only rides or training sessions?",
+  {
+    q: "Do I need to be an experienced cyclist to join ADCC rides?",
+    a: "Not at all! ADCC welcomes riders of all experience levels. We have beginner-friendly rides as well as advanced training sessions to suit everyone.",
+  },
+  {
+    q: "Are there specific tracks for beginners or families?",
+    a: "Yes! We have several easy, flat tracks such as Corniche Seafront and Saadiyat Island Loop that are perfect for beginners and family outings.",
+  },
+  {
+    q: "What gear do I need to bring for a group ride?",
+    a: "A road-worthy bike, a helmet, water, and appropriate cycling attire. We recommend lights for early morning or evening rides.",
+  },
+  {
+    q: "Can I participate in races without being a professional?",
+    a: "Absolutely. Many of our races have categories for recreational riders. Check individual event details for age and skill category breakdowns.",
+  },
+  {
+    q: "How do I track my performance or join challenges?",
+    a: "Download the ADCC app to log your rides, join challenges, and track your progress alongside thousands of community members.",
+  },
+  {
+    q: "Are there any women-only rides or training sessions?",
+    a: "Yes! ADCC organises regular women-only rides and training sessions. Check our events calendar for upcoming sessions.",
+  },
 ];
 
 export default function CommunitiesPage() {
@@ -123,6 +142,7 @@ export default function CommunitiesPage() {
   const [typeFilter, setTypeFilter] = useState("all");
   const [openDropdown, setOpenDropdown] = useState<"city" | "type" | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [communities, setCommunities] = useState<ReturnType<typeof mapCommunityCard>[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [cities, setCities] = useState<string[]>([]);
@@ -300,9 +320,44 @@ export default function CommunitiesPage() {
       >
         <div className="absolute bottom-10 left-4 right-4 text-white sm:bottom-14 sm:left-6 md:bottom-20 md:left-10 lg:left-20">
           <h1 className="text-[42px] font-black uppercase leading-none sm:text-[50px] lg:text-[60px]">
-            Communities
+            {["Communities"].map((word, index) => (
+              <motion.span
+                key={word}
+                initial={{ opacity: 0, y: 100 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.45,
+                  delay: index * 0.12,
+                }}
+                style={{
+                  display: "inline-block",
+                  marginRight: "14px",
+                }}
+              >
+                {word}
+              </motion.span>
+            ))}
           </h1>
-          <p className="mt-3 text-[17px] sm:text-[20px] lg:mt-4 lg:text-[24px]">Home / Communities</p>
+
+          <p className="mt-3 text-[17px] sm:text-[20px] lg:mt-4 lg:text-[24px]">
+            {["Home", "/", "Communities"].map((word, index) => (
+              <motion.span
+                key={`${word}-${index}`}
+                initial={{ opacity: 0, y: 60 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.35,
+                  delay: 0.25 + index * 0.1,
+                }}
+                style={{
+                  display: "inline-block",
+                  marginRight: "8px",
+                }}
+              >
+                {word}
+              </motion.span>
+            ))}
+          </p>
         </div>
       </section>
 
@@ -312,12 +367,50 @@ export default function CommunitiesPage() {
         {/* <div className="max-w-[634px] lg:absolute lg:left-0 lg:top-[206px] lg:w-[634px]"> */}
         <div className="max-w-[634px]">
           <h2 className="bebas max-w-[634px] text-[34px] leading-[39px] capitalize sm:text-[42px] sm:leading-[50px] md:text-[52px] md:leading-[62px] lg:text-[60px] lg:leading-[72px]">
-            Connect with Cycling Communities Across Abu Dhabi
+            {["Connect", "with", "Cycling", "Communities", "Across", "Abu", "Dhabi"].map((word, index) => (
+              <motion.span
+                key={`${word}-${index}`}
+                initial={{ opacity: 0, y: 100 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.4,
+                  delay: index * 0.07,
+                }}
+                viewport={{ once: true }}
+                style={{
+                  display: "inline-block",
+                  marginRight: "12px",
+                }}
+              >
+                {word}
+              </motion.span>
+            ))}
           </h2>
+
           <p className="mt-5 max-w-[610px] text-[16px] leading-[23px] sm:text-[18px] sm:leading-[24px] md:text-[22px] md:leading-[28px] lg:mt-[44px] lg:text-[24px] lg:leading-[30px]">
-            Abu Dhabi Cycling Club unites riders through communities focused on
-            cycling. Whether for fitness, competition, or fun, find a group that
-            suits you.
+            {[
+              "Abu", "Dhabi", "Cycling", "Club", "unites", "riders", "through",
+              "communities", "focused", "on", "cycling.", "Whether", "for",
+              "fitness,", "competition,", "or", "fun,", "find", "a", "group",
+              "that", "suits", "you."
+            ].map((word, index) => (
+              <motion.span
+                key={`${word}-${index}`}
+                initial={{ opacity: 0, y: 70 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.35,
+                  delay: 0.25 + index * 0.025,
+                }}
+                viewport={{ once: true }}
+                style={{
+                  display: "inline-block",
+                  marginRight: "8px",
+                }}
+              >
+                {word}
+              </motion.span>
+            ))}
           </p>
         </div>
 
@@ -334,11 +427,50 @@ export default function CommunitiesPage() {
 
       <section className="mx-auto max-w-[1268px] px-4 pb-16 sm:px-6 md:px-10 lg:pb-28">
         <h2 className="text-center text-[34px] font-black uppercase sm:text-[42px] lg:text-[50px]">
-          Explore Communities
+          {["Explore", "Communities"].map((word, index) => (
+            <motion.span
+              key={word}
+              initial={{ opacity: 0, y: -100 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.45,
+                delay: index * 0.12,
+              }}
+              viewport={{ once: true }}
+              style={{
+                display: "inline-block",
+                marginRight: "14px",
+              }}
+            >
+              {word}
+            </motion.span>
+          ))}
         </h2>
 
-        <div className="mt-8 grid grid-cols-1 gap-4 lg:mt-10 lg:grid-cols-[1fr_260px_260px_156px] lg:gap-5">
-          <div className="flex h-[54px] min-w-0 items-center rounded-full bg-white px-5 lg:h-[66px] lg:px-8">
+        {/* <div className="mt-8 grid grid-cols-1 gap-4 lg:mt-10 lg:grid-cols-[1fr_260px_260px_156px] lg:gap-5"> */}
+        <motion.div
+          className="mt-8 grid grid-cols-1 gap-4 lg:mt-10 lg:grid-cols-[1fr_260px_260px_156px] lg:gap-5"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={{
+            hidden: {},
+            visible: {
+              transition: {
+                staggerChildren: 0.12,
+              },
+            },
+          }}
+        >
+          {/* <div className="flex h-[54px] min-w-0 items-center rounded-full bg-white px-5 lg:h-[66px] lg:px-8"> */}
+          <motion.div
+            variants={{
+              hidden: { opacity: 0, x: 120 },
+              visible: { opacity: 1, x: 0 },
+            }}
+            transition={{ duration: 0.5 }}
+            className="flex h-[54px] min-w-0 items-center rounded-full bg-white px-5 lg:h-[66px] lg:px-8"
+          >
             <input
               value={searchInput}
               onChange={(event) => setSearchInput(event.target.value)}
@@ -349,20 +481,41 @@ export default function CommunitiesPage() {
               className="min-w-0 flex-1 bg-transparent text-[16px] outline-none sm:text-[18px] lg:text-[22px]"
             />
             <Search size={22} />
-          </div>
+          </motion.div>
 
-          {renderDropdown("city", cityFilter, cityOptions, handleCityChange)}
+          <motion.div
+            variants={{
+              hidden: { opacity: 0, x: 120 },
+              visible: { opacity: 1, x: 0 },
+            }}
+            transition={{ duration: 0.5 }}
+          >
+            {renderDropdown("city", cityFilter, cityOptions, handleCityChange)}
+          </motion.div>
 
-          {renderDropdown("type", typeFilter, typeOptions, handleTypeChange)}
+          <motion.div
+            variants={{
+              hidden: { opacity: 0, x: 120 },
+              visible: { opacity: 1, x: 0 },
+            }}
+            transition={{ duration: 0.5 }}
+          >
+            {renderDropdown("type", typeFilter, typeOptions, handleTypeChange)}
+          </motion.div>
 
-          <button
+          <motion.button
+            variants={{
+              hidden: { opacity: 0, x: 120 },
+              visible: { opacity: 1, x: 0 },
+            }}
+            transition={{ duration: 0.5 }}
             type="button"
             onClick={handleSearch}
             className="h-[54px] rounded-full bg-[#019839] text-[17px] font-bold text-white lg:h-[66px] lg:text-[22px]"
           >
             Search
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
 
         {error && (
           <p className="mt-10 text-center text-[18px] text-red-600">{error}</p>
@@ -376,16 +529,32 @@ export default function CommunitiesPage() {
                   className="relative h-[300px] animate-pulse overflow-hidden rounded-[10px] bg-black/10 sm:h-[380px] lg:h-[467px]"
                 />
               ))
-            : communities.map((item) => (
-                <button
+            : communities.map((item, index) => (
+                <motion.button
+                  initial={{ opacity: 0, y: 120 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.6,
+                    delay: index * 0.12,
+                    ease: "easeOut",
+                  }}
+                  viewport={{ once: true }}
                   type="button"
                   key={item.id}
                   onClick={() => navigate(`/user-communities/${encodeURIComponent(item.id)}`)}
                   className="group relative h-[300px] overflow-hidden rounded-[10px] bg-black text-left sm:h-[380px] lg:h-[467px]"
                 >
-                  <img
+                  <motion.img
                     src={item.image}
                     alt={item.title}
+                    initial={{ opacity: 0, scale: 0.85 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{
+                      duration: 0.45,
+                      delay: index * 0.12,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                    viewport={{ once: true }}
                     className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
@@ -404,7 +573,7 @@ export default function CommunitiesPage() {
                       </span>
                     </div>
                   </div>
-                </button>
+                </motion.button>
               ))}
         </div>
 
@@ -471,15 +640,28 @@ export default function CommunitiesPage() {
 
         <div className="mt-8 grid grid-cols-1 gap-4 md:mt-12 md:grid-cols-2 md:gap-7">
           {faqs.map((faq, index) => (
-            <button
-              key={faq}
-              className="flex min-h-[82px] items-center justify-between gap-4 rounded-xl border border-[#ccc] px-4 text-left text-[16px] font-medium sm:min-h-[92px] sm:px-6 sm:text-[19px] lg:min-h-[100px] lg:px-7 lg:text-[22px]"
+            <div
+              key={faq.q}
+              role="button"
+              tabIndex={0}
+              onClick={() => setOpenFaq(openFaq === index ? null : index)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") setOpenFaq(openFaq === index ? null : index);
+              }}
+              className="cursor-pointer rounded-xl border border-[#ccc] px-4 text-left text-[16px] font-medium sm:px-6 sm:text-[19px] lg:px-7 lg:text-[22px]"
             >
-              <span>
-                {String(index + 1).padStart(2, "0")}. {faq}
-              </span>
-              <Plus size={24} />
-            </button>
+              <div className="flex min-h-[82px] items-center justify-between gap-4 py-4 sm:min-h-[92px] lg:min-h-[100px]">
+                <span>
+                  {String(index + 1).padStart(2, "0")}. {faq.q}
+                </span>
+                <Plus className={`shrink-0 transition-transform ${openFaq === index ? "rotate-45" : ""}`} size={24} />
+              </div>
+              {openFaq === index && (
+                <p className="pb-5 text-[15px] font-normal leading-7 text-black/65 sm:text-[16px] lg:text-[17px]">
+                  {faq.a}
+                </p>
+              )}
+            </div>
           ))}
         </div>
       </section>

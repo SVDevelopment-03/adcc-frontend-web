@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { CSSProperties } from "react";
 import { getTracksPageEn, UAE_CITIES, type Track } from "../../services/trackService";
+import { motion } from "framer-motion";
 
 type PublicTrackCard = {
   id: string;
@@ -490,8 +491,54 @@ function Hero() {
         backgroundSize: "cover", backgroundPosition: "center"
       }} />
       <div className="track-hero-content" style={{ position: "absolute", bottom: 90, left: 82 }}>
-        <p className="track-hero-breadcrumb" style={{ color: "rgba(255,255,255,0.8)", fontSize: 22 }}>Home / Tracks</p>
-        <h1 className="bebas track-hero-title" style={{ fontSize: 70, color: "#fff", lineHeight: 1, marginTop: 8, textTransform: "uppercase" }}>Tracks</h1>
+        <p className="track-hero-breadcrumb" style={{ color: "rgba(255,255,255,0.8)", fontSize: 22 }}>
+          {["Home", "/", "Tracks"].map((word, index) => (
+            <motion.span
+              key={`${word}-${index}`}
+              initial={{ opacity: 0, y: 60 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.35,
+                delay: index * 0.1,
+              }}
+              style={{
+                display: "inline-block",
+                marginRight: "8px",
+              }}
+            >
+              {word}
+            </motion.span>
+          ))}
+        </p>
+
+        <h1
+          className="bebas track-hero-title"
+          style={{
+            fontSize: 70,
+            color: "#fff",
+            lineHeight: 1,
+            marginTop: 8,
+            textTransform: "uppercase"
+          }}
+        >
+          {["Tracks"].map((word, index) => (
+            <motion.span
+              key={word}
+              initial={{ opacity: 0, y: 100 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.45,
+                delay: 0.3 + index * 0.12,
+              }}
+              style={{
+                display: "inline-block",
+                marginRight: "14px",
+              }}
+            >
+              {word}
+            </motion.span>
+          ))}
+        </h1>
       </div>
     </section>
   );
@@ -505,29 +552,88 @@ function ExploreIntro() {
       <div className="track-intro-wrap" style={{ display: "flex", gap: 48, alignItems: "flex-start", overflow: "visible" }}>
         {/* Left: heading + green card */}
         <div className="track-intro-left" style={{ flex: "0 0 480px" }}>
-          <h2 className="bebas track-intro-title" style={{ fontSize: 60, lineHeight: 1.1, textTransform: "capitalize", marginBottom: 64 }}>
-            Explore Abu Dhabi's Premier Cycling Tracks
-          </h2>
-          <div className="track-journey-offset" style={{ paddingTop: 90 }}>
-            <TracksJourneyCard />
-          </div>
+          <h2
+          className="bebas track-intro-title"
+          style={{
+            fontSize: 60,
+            lineHeight: 1.1,
+            textTransform: "capitalize",
+            marginBottom: 64
+          }}
+        >
+          {["Explore", "Abu", "Dhabi's", "Premier", "Cycling", "Tracks"].map((word, index) => (
+            <motion.span
+              key={`${word}-${index}`}
+              initial={{ opacity: 0, y: 100 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.4,
+                delay: index * 0.07,
+              }}
+              viewport={{ once: true }}
+              style={{
+                display: "inline-block",
+                marginRight: "12px",
+              }}
+            >
+              {word}
+            </motion.span>
+          ))}
+        </h2>
+         <motion.div
+          className="track-journey-offset"
+          initial={{ opacity: 0, y: 120 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: 0.7,
+            ease: "easeOut",
+          }}
+          viewport={{ once: true }}
+          style={{ paddingTop: 90 }}
+        >
+          <TracksJourneyCard />
+        </motion.div>
         </div>
 
         {/* Right: video thumbnail + description */}
         <div className="track-intro-right" style={{ flex: 1 }}>
-          <div className="track-video" style={{
+          <motion.div
+          className="track-video"
+          initial={{ opacity: 0, y: 120 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: 0.7,
+            ease: "easeOut",
+          }}
+          viewport={{ once: true }}
+          style={{
+            borderRadius: 12,
+            overflow: "hidden",
+            height: 340,
+            marginBottom: 28,
+            backgroundImage: "url('/img/SSYouTube.online_Falcon_daman.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            position: "relative",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
+          }}
+        >
+        </motion.div>
+          {/* <div className="track-video" style={{
             borderRadius: 12, overflow: "hidden", height: 340, marginBottom: 28,
             backgroundImage: "url('/img/SSYouTube.online_Falcon_daman.png')",
             backgroundSize: "cover", backgroundPosition: "center",
             position: "relative", display: "flex", alignItems: "center", justifyContent: "center"
-          }}>
+          }}> */}
             {/* <div style={{
               width: 60, height: 60, borderRadius: "50%", background: "rgba(255,255,255,0.9)",
               display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer"
             }}>
               <span style={{ fontSize: 22, marginLeft: 4 }}>▶</span>
             </div> */}
-          </div>
+          {/* </div> */}
           <p className="track-intro-text" style={{ fontSize: 22, lineHeight: 1.55, color: "#000" }}>
             From scenic coastal rides to high-performance cycling circuits, Abu Dhabi offers world-class tracks designed for every rider. Whether you're training for endurance, improving speed, or enjoying a casual ride, discover routes that match your level and ambition.
           </p>
@@ -563,8 +669,33 @@ function WhySection() {
       <div style={{ position: "relative", zIndex: 2 }}>
         {/* header row */}
         <div className="track-why-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 48 }}>
-          <h2 className="bebas track-why-title" style={{ fontSize: 50, color: "#000", lineHeight: 1.2, maxWidth: 300 }}>
-            Why Use ADCC Tracks?
+          <h2
+            className="bebas track-why-title"
+            style={{
+              fontSize: 50,
+              color: "#000",
+              lineHeight: 1.2,
+              maxWidth: 300
+            }}
+          >
+            {["Why", "Use", "ADCC", "Tracks?"].map((word, index) => (
+              <motion.span
+                key={`${word}-${index}`}
+                initial={{ opacity: 0, y: 100 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.4,
+                  delay: index * 0.08,
+                }}
+                viewport={{ once: true }}
+                style={{
+                  display: "inline-block",
+                  marginRight: "12px",
+                }}
+              >
+                {word}
+              </motion.span>
+            ))}
           </h2>
           <button style={{
             background: "#019839", color: "#fff", border: "none", borderRadius: 30,
@@ -575,23 +706,49 @@ function WhySection() {
 
         <div className="track-why-content" style={{ display: "flex", gap: 24, alignItems: "stretch" }}>
           {/* cycling photo */}
-          <div className="track-why-image" style={{
-            flex: "0 0 480px", borderRadius: 12, overflow: "hidden",
-            backgroundImage: "url('/img/paolo-candelo-8tXukRrs7yk-unsplash 1.png')",
-            backgroundSize: "cover", backgroundPosition: "center", minHeight: 420
-          }} />
-
+          <motion.div
+            className="track-why-image"
+            initial={{ opacity: 0, x: -140 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.7,
+              ease: "easeOut",
+            }}
+            viewport={{ once: true }}
+            style={{
+              flex: "0 0 480px",
+              borderRadius: 12,
+              overflow: "hidden",
+              backgroundImage: "url('/img/paolo-candelo-8tXukRrs7yk-unsplash 1.png')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              minHeight: 420
+            }}
+          />
           {/* 2x2 feature grid */}
           <div className="track-why-grid" style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
             {features.map((f, i) => (
-              <div key={i} style={{
-                background: "rgba(0,0,0,0.2)", backdropFilter: "blur(7.5px)",
-                borderRadius: 12, padding: "28px 24px"
-              }}>
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 120 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.6,
+                  delay: i * 0.12,
+                  ease: "easeOut",
+                }}
+                viewport={{ once: true }}
+                style={{
+                  background: "rgba(0,0,0,0.2)",
+                  backdropFilter: "blur(7.5px)",
+                  borderRadius: 12,
+                  padding: "28px 24px"
+                }}
+              >
                 <p style={{ fontSize: 13, color: "#fff", fontWeight: 400, marginBottom: 14, opacity: 0.8 }}>{f.num}</p>
                 <h4 style={{ fontSize: 20, fontWeight: 600, color: "#fff", marginBottom: 12, lineHeight: 1.3 }}>{f.title}</h4>
                 <p style={{ fontSize: 15, color: "#fff", lineHeight: 1.6, opacity: 0.9 }}>{f.desc}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -601,7 +758,7 @@ function WhySection() {
 }
 
 // ── Track card ────────────────────────────────────────────────────────────────
-function TrackCard({ track }: { track: PublicTrackCard }) {
+function TrackCard({ track, index = 0 }: { track: PublicTrackCard; index?: number }) {
   const [isHovered, setIsHovered] = useState(false);
   const isFeatured = track.featured || isHovered;
   const cardBg = isFeatured ? "#435974" : "#fff";
@@ -611,8 +768,16 @@ function TrackCard({ track }: { track: PublicTrackCard }) {
   const mutedText = isFeatured ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.8)";
 
   return (
-    <div
+    <motion.div
     className="track-card"
+    initial={{ opacity: 0, y: 120 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    transition={{
+      duration: 0.5,
+      delay: index * 0.08,
+      ease: "easeOut",
+    }}
+    viewport={{ once: true }}
     onMouseEnter={() => setIsHovered(true)}
     onMouseLeave={() => setIsHovered(false)}
     style={{
@@ -671,7 +836,7 @@ function TrackCard({ track }: { track: PublicTrackCard }) {
           transition: "all .2s"
         }}>View Details</button>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -827,16 +992,64 @@ function TracksGrid() {
     <section className="track-grid-section" style={{ background: "#EAF4FF", padding: "60px 82px 0" }}>
       {/* section title + filters */}
       <div className="track-grid-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 32, flexWrap: "wrap", gap: 20 }}>
-        <h2 className="bebas track-grid-title" style={{ fontSize: 50, lineHeight: 1.15, maxWidth: 440, textTransform: "capitalize" }}>
-          Explore Certified Routes Across the UAE
-        </h2>
+       <h2
+        className="bebas track-grid-title"
+        style={{
+          fontSize: 50,
+          lineHeight: 1.15,
+          maxWidth: 440,
+          textTransform: "capitalize"
+        }}
+      >
+        {["Explore", "Certified", "Routes", "Across", "the", "UAE"].map((word, index) => (
+          <motion.span
+            key={`${word}-${index}`}
+            initial={{ opacity: 0, y: 100 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.4,
+              delay: index * 0.08,
+            }}
+            viewport={{ once: true }}
+            style={{
+              display: "inline-block",
+              marginRight: "12px",
+            }}
+          >
+            {word}
+          </motion.span>
+        ))}
+      </h2>
         <div className="track-filter-bar" style={{ display: "flex", gap: 16, alignItems: "center" }}>
-          {filterControls.map(f => renderDropdown(f))}
-          <button className="track-filter-search" onClick={() => { setActive(filters); setPage(1); }} style={{
+          {filterControls.map((f, index) => (
+            <motion.div
+              key={f.key}
+              initial={{ opacity: 0, x: 120 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{
+                duration: 0.5,
+                delay: index * 0.12,
+                ease: "easeOut",
+              }}
+              viewport={{ once: true }}
+            >
+              {renderDropdown(f)}
+            </motion.div>
+          ))}
+          <motion.button
+            className="track-filter-search"
+            initial={{ opacity: 0, x: 120 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.5,
+              delay: filterControls.length * 0.12,
+              ease: "easeOut",
+            }}
+            viewport={{ once: true }} onClick={() => { setActive(filters); setPage(1); }} style={{
             height: 60, padding: "0 32px", background: "#019839", color: "#fff",
             border: "none", borderRadius: 40, fontSize: 20, fontWeight: 700,
             cursor: "pointer", fontFamily: "'Outfit',sans-serif"
-          }}>Search</button>
+          }}>Search</motion.button>
         </div>
       </div>
 
@@ -845,7 +1058,7 @@ function TracksGrid() {
       </p>
 
       <div className="track-cards-grid" style={{ display: "flex", flexWrap: "wrap", gap: "48px 28px" }}>
-        {tracks.map(t => <TrackCard key={t.id} track={t} />)}
+        {tracks.map((t, index) => <TrackCard key={t.id} track={t} index={index} />)}
       </div>
 
       {!loading && error && (

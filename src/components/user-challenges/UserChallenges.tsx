@@ -16,6 +16,7 @@ import {
   getChallengesPage,
   type Challenge,
 } from "../../services/challengesApi";
+import { motion } from "framer-motion";
 
 const navLinks = ["About Us", "Events", "Community", "Tracks"];
 
@@ -25,12 +26,30 @@ const CHALLENGE_FALLBACK_IMAGE =
 const statusTabs: Array<Challenge["status"]> = ["Active", "Upcoming", "Completed"];
 
 const faqs = [
-  "Do I need to be an experienced cyclist to join ADCC rides?",
-  "Are there specific tracks for beginners or families?",
-  "What gear do I need to bring for a group ride?",
-  "Can I participate in races without being a professional?",
-  "How do I track my performance or join challenges?",
-  "Are there any women-only rides or training sessions?",
+  {
+    q: "Do I need to be an experienced cyclist to join ADCC rides?",
+    a: "Not at all! ADCC welcomes riders of all experience levels. We have beginner-friendly rides as well as advanced training sessions to suit everyone.",
+  },
+  {
+    q: "Are there specific tracks for beginners or families?",
+    a: "Yes! We have several easy, flat tracks such as Corniche Seafront and Saadiyat Island Loop that are perfect for beginners and family outings.",
+  },
+  {
+    q: "What gear do I need to bring for a group ride?",
+    a: "A road-worthy bike, a helmet, water, and appropriate cycling attire. We recommend lights for early morning or evening rides.",
+  },
+  {
+    q: "Can I participate in races without being a professional?",
+    a: "Absolutely. Many of our races have categories for recreational riders. Check individual event details for age and skill category breakdowns.",
+  },
+  {
+    q: "How do I track my performance or join challenges?",
+    a: "Download the ADCC app to log your rides, join challenges, and track your progress alongside thousands of community members.",
+  },
+  {
+    q: "Are there any women-only rides or training sessions?",
+    a: "Yes! ADCC organises regular women-only rides and training sessions. Check our events calendar for upcoming sessions.",
+  },
 ];
 
 const formatNumber = (value: number) =>
@@ -58,6 +77,7 @@ const getChallengeDescription = (challenge: Challenge) => {
 export default function ChallengesPage() {
   const [status, setStatus] = useState<Challenge["status"]>("Active");
   const [page, setPage] = useState(1);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [totalResults, setTotalResults] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -187,9 +207,44 @@ export default function ChallengesPage() {
       >
         <div className="absolute bottom-10 left-4 right-4 text-white sm:bottom-14 sm:left-6 md:bottom-20 md:left-10 lg:left-20">
           <h1 className="text-[38px] font-black uppercase leading-none tracking-tight sm:text-[42px]">
-            Challenges
+            {["Challenges"].map((word, index) => (
+              <motion.span
+                key={word}
+                initial={{ opacity: 0, y: 100 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.45,
+                  delay: index * 0.12,
+                }}
+                style={{
+                  display: "inline-block",
+                  marginRight: "14px",
+                }}
+              >
+                {word}
+              </motion.span>
+            ))}
           </h1>
-          <p className="mt-3 text-[16px] sm:mt-4 sm:text-[18px]">Home / Challenges</p>
+
+          <p className="mt-3 text-[16px] sm:mt-4 sm:text-[18px]">
+            {["Home", "/", "Challenges"].map((word, index) => (
+              <motion.span
+                key={`${word}-${index}`}
+                initial={{ opacity: 0, y: 60 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.35,
+                  delay: 0.25 + index * 0.1,
+                }}
+                style={{
+                  display: "inline-block",
+                  marginRight: "8px",
+                }}
+              >
+                {word}
+              </motion.span>
+            ))}
+          </p>
         </div>
       </section>
 
@@ -197,7 +252,24 @@ export default function ChallengesPage() {
       <section className="mx-auto grid max-w-[1260px] grid-cols-1 gap-8 px-4 py-12 sm:px-6 sm:py-16 md:px-10 lg:grid-cols-2 lg:gap-12 lg:py-28">
         <div>
           <h2 className="max-w-[620px] text-[32px] font-black uppercase leading-tight sm:text-[38px] lg:text-[44px]">
-            Push your limits with cycling challenges in Abu Dhabi
+            {["Push", "your", "limits", "with", "cycling", "challenges", "in", "Abu", "Dhabi"].map((word, index) => (
+              <motion.span
+                key={`${word}-${index}`}
+                initial={{ opacity: 0, y: 100 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.4,
+                  delay: index * 0.07,
+                }}
+                viewport={{ once: true }}
+                style={{
+                  display: "inline-block",
+                  marginRight: "12px",
+                }}
+              >
+                {word}
+              </motion.span>
+            ))}
           </h2>
           <p className="mt-5 max-w-[560px] text-[15px] leading-relaxed sm:mt-8 sm:text-[17px]">
             Abu Dhabi Cycling Club provides exciting opportunities for endurance
@@ -208,8 +280,16 @@ export default function ChallengesPage() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {stats.map((item, index) => (
-            <div
+            <motion.div
               key={index}
+              initial={{ opacity: 0, x: 120 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{
+                duration: 0.6,
+                delay: index * 0.12,
+                ease: "easeOut",
+              }}
+              viewport={{ once: true }}
               className={`rounded-xl border p-5 sm:p-6 lg:p-8 ${
                 item.active
                   ? "bg-[#49637f] text-white"
@@ -219,16 +299,23 @@ export default function ChallengesPage() {
               <Users size={32} />
               <h3 className="mt-4 text-[24px] font-black sm:text-[28px]">{item.value}</h3>
               <p className="mt-1 text-[14px] sm:text-[16px]">{item.label}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
 
       {/* Flag Image */}
       <section className="mx-auto max-w-[1260px] px-4 pb-16 sm:px-6 md:px-10 lg:pb-28">
-        <img
+        <motion.img
           src="/img/SSYouTube.online_Falcon_daman.png"
           alt="ADCC Flag"
+          initial={{ opacity: 0, y: 120 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: 0.7,
+            ease: "easeOut",
+          }}
+          viewport={{ once: true }}
           className="h-[220px] w-full rounded-xl object-cover sm:h-[320px] lg:h-[465px]"
         />
       </section>
@@ -236,13 +323,40 @@ export default function ChallengesPage() {
       {/* Challenges */}
       <section className="mx-auto max-w-[1260px] px-4 pb-16 sm:px-6 md:px-10 lg:pb-28">
         <div className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-center lg:mb-14">
-          <h2 className="text-[30px] font-black uppercase sm:text-[36px]">Cycling Challenges</h2>
+          {/* <h2 className="text-[30px] font-black uppercase sm:text-[36px]">Cycling Challenges</h2> */}
+          <h2 className="text-[30px] font-black uppercase sm:text-[36px]">
+            {["Cycling", "Challenges"].map((word, index) => (
+              <motion.span
+                key={word}
+                initial={{ opacity: 0, y: 100 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.45,
+                  delay: index * 0.12,
+                }}
+                viewport={{ once: true }}
+                style={{
+                  display: "inline-block",
+                  marginRight: "14px",
+                }}
+              >
+                {word}
+              </motion.span>
+            ))}
+          </h2>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 md:flex md:gap-5">
             {statusTabs.map((tab) => {
               const selected = status === tab;
               return (
-                <button
+                <motion.button
+                  initial={{ opacity: 0, y: 80 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.45,
+                    delay: statusTabs.indexOf(tab) * 0.1,
+                  }}
+                  viewport={{ once: true }}
                   key={tab}
                   onClick={() => {
                     setStatus(tab);
@@ -255,7 +369,7 @@ export default function ChallengesPage() {
                   }`}
                 >
                   {tab}
-                </button>
+                </motion.button>
               );
             })}
           </div>
@@ -266,8 +380,16 @@ export default function ChallengesPage() {
         </p>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
-          {challenges.map((item) => (
-            <div
+          {challenges.map((item, index) => (
+            <motion.div
+              initial={{ opacity: 0, y: 120 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.6,
+                delay: index * 0.12,
+                ease: "easeOut",
+              }}
+              viewport={{ once: true }}
               key={item.id}
               // className={`overflow-hidden rounded-xl border border-[#cad8e6] ${
               //   item.active ? "bg-[#49637f] text-white" : "bg-[#eef7ff]"
@@ -309,7 +431,7 @@ export default function ChallengesPage() {
                   </button>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 
@@ -373,15 +495,28 @@ export default function ChallengesPage() {
 
         <div className="mt-8 grid grid-cols-1 gap-4 md:mt-12 md:grid-cols-2 md:gap-5">
           {faqs.map((faq, index) => (
-            <button
-              key={faq}
-              className="flex items-center justify-between gap-4 rounded-lg border border-[#cad8e6] bg-[#eef7ff] px-4 py-5 text-left text-[15px] font-medium sm:px-7 sm:py-6 sm:text-[16px]"
+            <div
+              key={faq.q}
+              role="button"
+              tabIndex={0}
+              onClick={() => setOpenFaq(openFaq === index ? null : index)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") setOpenFaq(openFaq === index ? null : index);
+              }}
+              className="cursor-pointer rounded-lg border border-[#cad8e6] bg-[#eef7ff] px-4 text-left text-[15px] font-medium sm:px-7 sm:text-[16px]"
             >
-              <span>
-                {String(index + 1).padStart(2, "0")}. {faq}
-              </span>
-              <Plus size={18} />
-            </button>
+              <div className="flex min-h-[72px] items-center justify-between gap-4 py-5 sm:min-h-[84px] sm:py-6">
+                <span>
+                  {String(index + 1).padStart(2, "0")}. {faq.q}
+                </span>
+                <Plus className={`shrink-0 transition-transform ${openFaq === index ? "rotate-45" : ""}`} size={18} />
+              </div>
+              {openFaq === index && (
+                <p className="pb-5 text-[14px] font-normal leading-6 text-black/65 sm:text-[15px]">
+                  {faq.a}
+                </p>
+              )}
+            </div>
           ))}
         </div>
       </section>

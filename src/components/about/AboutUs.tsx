@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getPublicStats } from "../../services/publicStatsApi";
+import { motion } from "framer-motion";
+import gsap from "gsap";
+
 // ─── Google Fonts ────────────────────────────────────────────────────────────
 const FontLoader = () => (
   <style>{`
@@ -435,14 +438,48 @@ function JourneyCard() {
 
   return (
     <div className="journey-card">
-      <img
+      <motion.img
         src="/img/image 2991.png"
         alt="ADCC cyclist"
         className="journey-card__image"
+        initial={{ opacity: 0, x: 200 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        transition={{
+          duration: 0.8,
+          ease: "easeOut",
+        }}
+        viewport={{ once: true }}
       />
 
       <p className="journey-card__eyebrow">New to Cycling?</p>
-      <h3 className="bebas journey-card__title">Start Your Journey with ADCC</h3>
+      {/* <h3 className="bebas journey-card__title">Start Your Journey with ADCC</h3> */}
+
+      <h3
+        className="bebas journey-card__title"
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "10px",
+        }}
+      >
+        {["Start", "Your", "Journey", "with", "ADCC"].map((word, index) => (
+          <motion.span
+            key={`${word}-${index}`}
+            initial={{ opacity: 0, y: 80 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.35,
+              delay: index * 0.07,
+            }}
+            viewport={{ once: true }}
+            style={{
+              display: "inline-block",
+            }}
+          >
+            {word}
+          </motion.span>
+        ))}
+      </h3>
 
       <div className="journey-card__community" aria-label="+5k in the Community">
         {avatarBackgrounds.map((background, index) => (
@@ -522,8 +559,60 @@ function Hero() {
         backgroundSize: "cover", backgroundPosition: "center top"
       }} />
       <div className="about-hero-content" style={{ position: "absolute", bottom: 90, left: 82 }}>
-        <h1 className="bebas about-hero-title" style={{ fontSize: 70, color: "#fff", lineHeight: 1, marginTop: 8, textTransform: "uppercase" }}>About Us</h1>
-        <p className="about-hero-breadcrumb" style={{ color: "rgba(255,255,255,0.8)", fontSize: 22, fontFamily: "'Satoshi',sans-serif" }}>Home / About us</p>
+        <h1
+          className="bebas about-hero-title"
+          style={{
+            fontSize: 70,
+            color: "#fff",
+            lineHeight: 1,
+            marginTop: 8,
+            textTransform: "uppercase"
+          }}
+        >
+          {["About", "Us"].map((word, index) => (
+            <motion.span
+              key={word}
+              initial={{ opacity: 0, y: 100 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.45,
+                delay: index * 0.15,
+              }}
+              style={{
+                display: "inline-block",
+                marginRight: "16px",
+              }}
+            >
+              {word}
+            </motion.span>
+          ))}
+        </h1>
+        <p
+          className="about-hero-breadcrumb"
+          style={{
+            color: "rgba(255,255,255,0.8)",
+            fontSize: 22,
+            fontFamily: "'Satoshi',sans-serif"
+          }}
+        >
+          {["Home", "/", "About", "us"].map((word, index) => (
+            <motion.span
+              key={`${word}-${index}`}
+              initial={{ opacity: 0, y: 60 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.35,
+                delay: 0.35 + index * 0.1,
+              }}
+              style={{
+                display: "inline-block",
+                marginRight: "8px",
+              }}
+            >
+              {word}
+            </motion.span>
+          ))}
+        </p>
       </div>
     </section>
   );
@@ -564,17 +653,57 @@ function StatsSection() {
       <div className="about-stats-wrap" style={{ display: "flex", gap: 64, alignItems: "flex-start" }}>
         {/* Headline */}
         <div className="about-stats-left" style={{ flex: "0 0 520px" }}>
-          <h2 className="bebas about-stats-title" style={{ fontSize: 50, lineHeight: 1.25, textTransform: "uppercase", maxWidth: 500 }}>
-            We are cyclists committed to pushing limits and inspiring a stronger cycling community.
-          </h2>
+         <h2
+          className="bebas about-stats-title"
+          style={{
+            fontSize: 50,
+            lineHeight: 1.25,
+            textTransform: "uppercase",
+            maxWidth: 500
+          }}
+        >
+          {["We", "are", "cyclists", "committed", "to", "pushing", "limits", "and", "inspiring", "a", "stronger", "cycling", "community."].map((word, index) => (
+            <motion.span
+              key={`${word}-${index}`}
+              initial={{ opacity: 0, y: 100 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.4,
+                delay: index * 0.06,
+              }}
+              viewport={{ once: true }}
+              style={{
+                display: "inline-block",
+                marginRight: "12px",
+              }}
+            >
+              {word}
+            </motion.span>
+          ))}
+        </h2>
           {/* small cycling photo */}
-          <div className="about-stats-photo" style={{
-            marginTop: 32, borderRadius: 12, overflow: "hidden",
-            width: "100%", maxWidth: 460, height: 220,
-            background: "#ddd",
-            backgroundImage: "url('/img/DSC04620.jpg 1.png')",
-            backgroundSize: "cover", backgroundPosition: "center"
-          }} />
+          <motion.div
+            className="about-stats-photo"
+            initial={{ opacity: 0, x: -200 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.8,
+              ease: "easeOut",
+            }}
+            viewport={{ once: true }}
+            style={{
+              marginTop: 32,
+              borderRadius: 12,
+              overflow: "hidden",
+              width: "100%",
+              maxWidth: 460,
+              height: 220,
+              background: "#ddd",
+              backgroundImage: "url('/img/DSC04620.jpg 1.png')",
+              backgroundSize: "cover",
+              backgroundPosition: "center"
+            }}
+          />
         </div>
 
         {/* Stats grid + text */}
@@ -626,8 +755,33 @@ function MissionSection() {
       {/* Headline row */}
       <div className="about-mission-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 40 }}>
         <div>
-          <h2 className="bebas about-mission-title" style={{ fontSize: 50, lineHeight: 1.2, maxWidth: 480, textTransform: "capitalize" }}>
-            Driving the Future of Cycling in Abu Dhabi
+          <h2
+            className="bebas about-mission-title"
+            style={{
+              fontSize: 50,
+              lineHeight: 1.2,
+              maxWidth: 480,
+              textTransform: "capitalize"
+            }}
+          >
+            {["Driving", "the", "Future", "of", "Cycling", "in", "Abu", "Dhabi"].map((word, index) => (
+              <motion.span
+                key={`${word}-${index}`}
+                initial={{ opacity: 0, y: 100 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.4,
+                  delay: index * 0.07,
+                }}
+                viewport={{ once: true }}
+                style={{
+                  display: "inline-block",
+                  marginRight: "12px",
+                }}
+              >
+                {word}
+              </motion.span>
+            ))}
           </h2>
         </div>
         <p className="about-mission-intro" style={{ maxWidth: 430, fontSize: 22, fontWeight: 500, lineHeight: 1.5, color: "rgba(0,0,0,0.8)", paddingTop: 8 }}>
@@ -639,19 +793,48 @@ function MissionSection() {
         {/* Mission + Vision cards */}
         <div className="about-mission-card-stack" style={{ flex: "0 0 600px", display: "flex", flexDirection: "column", gap: 20 }}>
           {/* 01. Mission */}
-          <div style={{ background: "#fff", borderRadius: 18, padding: "28px 32px" }}>
+          <motion.div
+            initial={{ opacity: 0, x: -200 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.7,
+              delay: 0,
+              ease: "easeOut",
+            }}
+            viewport={{ once: true }}
+            style={{
+              background: "#fff",
+              borderRadius: 18,
+              padding: "28px 32px"
+            }}
+          >
             <div className="bebas" style={{ fontSize: 20, marginBottom: 10 }}>01. Our Mission</div>
             <p style={{ fontSize: 15, color: "rgba(0,0,0,0.6)", lineHeight: 1.6 }}>
               To promote cycling as a healthy lifestyle and competitive sport by creating opportunities for riders to train, participate in events, and connect with the cycling community across Abu Dhabi.
             </p>
-          </div>
+          </motion.div>
           {/* 02. Vision */}
-          <div style={{ border: "1px solid rgba(0,0,0,0.22)", borderRadius: 18, padding: "28px 32px" }}>
+          {/* <div style={{ border: "1px solid rgba(0,0,0,0.22)", borderRadius: 18, padding: "28px 32px" }}> */}
+          <motion.div
+            initial={{ opacity: 0, x: -200 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.7,
+              delay: 0.2,
+              ease: "easeOut",
+            }}
+            viewport={{ once: true }}
+            style={{
+              border: "1px solid rgba(0,0,0,0.22)",
+              borderRadius: 18,
+              padding: "28px 32px"
+            }}
+          >
             <div className="bebas" style={{ fontSize: 20, marginBottom: 10 }}>02. Our Vision</div>
             <p style={{ fontSize: 15, color: "rgba(0,0,0,0.6)", lineHeight: 1.6 }}>
               To become the leading cycling club in the UAE, known for excellence, inclusivity, and producing championship-level athletes who represent Abu Dhabi on the world stage.
             </p>
-          </div>
+          </motion.div>
         </div>
 
         <JourneyCard />
@@ -697,15 +880,51 @@ function ValuesSection() {
       <div className="about-values-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 40 }}>
         <div>
           <p style={{fontFamily: "'Satoshi',sans-serif", fontSize: 15, fontWeight: 500, marginBottom: 8, color: "#000" }}>Our values</p>
-          <h2 className="bebas about-values-title" style={{ fontSize: 50, lineHeight: 1.2, maxWidth: 480, textTransform: "capitalize" }}>
-            The Principles That Drive Our Cycling Community
+          <h2
+            className="bebas about-values-title"
+            style={{
+              fontSize: 50,
+              lineHeight: 1.2,
+              maxWidth: 480,
+              textTransform: "capitalize"
+            }}
+          >
+            {["The", "Principles", "That", "Drive", "Our", "Cycling", "Community"].map((word, index) => (
+              <motion.span
+                key={`${word}-${index}`}
+                initial={{ opacity: 0, y: 100 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.4,
+                  delay: index * 0.07,
+                }}
+                viewport={{ once: true }}
+                style={{
+                  display: "inline-block",
+                  marginRight: "12px",
+                }}
+              >
+                {word}
+              </motion.span>
+            ))}
           </h2>
         </div>
         <button className="btn-green" onClick={() => navigate("/user-communities")}>Discover the Community <Arrow /></button>
       </div>
       <div className="about-values-grid" style={{ display: "flex", gap: 24 }}>
         {values.map((v, i) => (
-          <div key={i} className="value-card about-value-card"
+          // <div key={i} className="value-card about-value-card"
+          <motion.div
+            key={i}
+            className="value-card about-value-card"
+            initial={{ opacity: 0, x: 320 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.7,
+              delay: i * 0.18,
+              ease: "easeOut",
+            }}
+            viewport={{ once: true }}
             style={{
             flex: 1, borderRadius: 12,
             padding: "24px 20px 28px", minHeight: 240,
@@ -714,7 +933,7 @@ function ValuesSection() {
             <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 17, fontWeight: 500, color: "#fff", marginBottom: 56 }}>{v.num}</div>
             <div className="bebas" style={{ fontSize: 28, color: "#fff", marginBottom: 10 }}>{v.title}</div>
             <p style={{fontFamily: "'Satoshi',sans-serif", fontSize: 16, color: "#fff", lineHeight: 1.55, opacity: .9 }}>{v.text}</p>
-          </div>
+          </motion.div>
         ))}
       </div>
     </section>
@@ -730,28 +949,113 @@ function CoachesSection() {
   ];
   return (
     <section className="about-section about-coaches-section" style={{ background: "#EAF4FF", padding: "0 82px 80px" }}>
-      <h2 className="bebas about-coaches-title" style={{
-        fontSize: 50, lineHeight: 1.2, textAlign: "center", maxWidth: 640,
-        margin: "0 auto 40px", textTransform: "capitalize"
-      }}>
-        Meet the Coaches Driving Abu Dhabi's Cycling Community
+      <h2
+        className="bebas about-coaches-title"
+        style={{
+          fontSize: 50,
+          lineHeight: 1.2,
+          textAlign: "center",
+          maxWidth: 640,
+          margin: "0 auto 40px",
+          textTransform: "capitalize"
+        }}
+      >
+        {["Meet", "the", "Coaches", "Driving", "Abu", "Dhabi's", "Cycling", "Community"].map((word, index) => (
+          <motion.span
+            key={`${word}-${index}`}
+            initial={{ opacity: 0, y: 100 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.4,
+              delay: index * 0.07,
+            }}
+            viewport={{ once: true }}
+            style={{
+              display: "inline-block",
+              marginRight: "12px",
+            }}
+          >
+            {word}
+          </motion.span>
+        ))}
       </h2>
       <div className="about-coaches-grid" style={{
         display: "flex", borderRadius: 16, overflow: "hidden",
         height: 488, background: "#fff"
       }}>
         {cards.map((c, i) => (
-          <div key={i} className="about-coach-card" style={{ flex: 1, position: "relative", overflow: "hidden" }}>
-            <img src={c.img} alt={c.label} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            <div style={{
-              position: "absolute", bottom: 0, left: 0, right: 0, height: 180,
-              background: "linear-gradient(360deg,#000 0%,transparent 100%)"
-            }} />
-            <span className="bebas" style={{
-              position: "absolute", bottom: 24, left: 20,
-              color: "#fff", fontSize: 26, letterSpacing: 1, fontFamily: "'Bebas Neue','Bebas Kai',sans-serif",
-            }}>{c.label}</span>
-          </div>
+          // <div key={i} className="about-coach-card" style={{ flex: 1, position: "relative", overflow: "hidden" }}>
+          <motion.div
+            key={i}
+            className="about-coach-card"
+            initial={{ opacity: 0, x: 150 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.7,
+              delay: i * 0.15,
+              ease: "easeOut",
+            }}
+            viewport={{ once: true }}
+            style={{
+              flex: 1,
+              position: "relative",
+              overflow: "hidden"
+            }}
+          >
+            {/* <img src={c.img} alt={c.label} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> */}
+            <img
+              src={c.img}
+              alt={c.label}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                display: "block",
+                position: "absolute",
+                inset: 0,
+                zIndex: 0,
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: 180,
+                background: "linear-gradient(360deg,#000 0%,transparent 100%)",
+                zIndex: 1,
+                pointerEvents: "none",
+              }}
+            />
+            <motion.div
+              className="bebas about-coach-label"
+              initial={false}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.45,
+                delay: 0.3 + i * 0.15,
+              }}
+              viewport={{ once: true }}
+              style={{
+                position: "absolute",
+                bottom: 24,
+                left: 20,
+                color: "#fff",
+                fontSize: 26,
+                lineHeight: 1,
+                letterSpacing: 1,
+                fontFamily: "'Bebas Neue','Bebas Kai',sans-serif",
+                zIndex: 5,
+                display: "block",
+                opacity: 1,
+                textShadow: "0 2px 10px rgba(0,0,0,0.55)",
+                pointerEvents: "none",
+              }}
+            >
+              {c.label}
+            </motion.div>
+          </motion.div>
         ))}
       </div>
       <div style={{ textAlign: "center", marginTop: 36 }}>

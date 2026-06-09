@@ -30,6 +30,19 @@ const CSS = `
       filter: blur(0);
     }
   }
+  @keyframes imageExpand {
+    from {
+      opacity: 0;
+      transform: scaleX(0.2) scaleY(0.2);
+      filter: blur(8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: scaleX(1) scaleY(1);
+      filter: blur(0);
+    }
+  }
   @keyframes aboutLeftFadeIn {
     from {
       opacity: 0;
@@ -1258,7 +1271,58 @@ function HeroSection() {
       <div className="home-hero-bg" style={{ position: 'absolute', inset: 0, backgroundImage: 'url(/images/hero.png)', backgroundSize: 'cover', backgroundPosition: 'center top' }} />
       <div style={{ position: 'absolute', inset: 0, }} />
       <div className="home-hero-content" style={{ position: 'absolute', left: 86, bottom: 360, maxWidth: 520 }}>
-        <h1 className="home-hero-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontWeight: 900, fontSize: 72, lineHeight: 1.1, color: '#000000', textTransform: 'uppercase', letterSpacing: '-0.5px', marginBottom: 28, }}>RIDE ABU DHABI START<br />YOUR CYCLING JOURNEY</h1>
+        {/* <h1 className="home-hero-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontWeight: 900, fontSize: 72, lineHeight: 1.1, color: '#000000', textTransform: 'uppercase', letterSpacing: '-0.5px', marginBottom: 28, }}>RIDE ABU DHABI START<br />YOUR CYCLING JOURNEY</h1> */}
+        <h1
+          className="home-hero-title"
+          style={{
+            fontFamily: "'Bebas Neue', sans-serif",
+            fontWeight: 900,
+            fontSize: 72,
+            lineHeight: 1.1,
+            color: '#000000',
+            textTransform: 'uppercase',
+            letterSpacing: '-0.5px',
+            marginBottom: 28,
+          }}
+        >
+          {["RIDE", "ABU", "DHABI", "START"].map((word, index) => (
+            <motion.span
+              key={word}
+              initial={{ opacity: 0, y: 100 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.45,
+                delay: index * 0.12,
+              }}
+              style={{
+                display: "inline-block",
+                marginRight: "14px",
+              }}
+            >
+              {word}
+            </motion.span>
+          ))}
+
+          <br />
+
+          {["YOUR", "CYCLING", "JOURNEY"].map((word, index) => (
+            <motion.span
+              key={word}
+              initial={{ opacity: 0, y: 100 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.45,
+                delay: 0.45 + index * 0.12,
+              }}
+              style={{
+                display: "inline-block",
+                marginRight: "14px",
+              }}
+            >
+              {word}
+            </motion.span>
+          ))}
+        </h1>
         <div className="home-hero-actions" style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
           <button className="btn-green" style={{ display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 22px', background: '#019839', border: 'none', borderRadius: 30, cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 600, fontSize: 18, color: '#fff' }}>
             Download App <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /><path d="M3 13h10" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" /></svg>
@@ -1300,9 +1364,38 @@ function StatsTicker() {
   );
 }
 
+function scrambleText(
+  element: HTMLElement,
+  finalText: string,
+  speed = 2
+) {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+  let iteration = 0;
+
+  const interval = setInterval(() => {
+    element.innerText = finalText
+      .split("")
+      .map((letter, index) => {
+        if (index < iteration) {
+          return finalText[index];
+        }
+
+        return chars[Math.floor(Math.random() * chars.length)];
+      })
+      .join("");
+
+    if (iteration >= finalText.length) {
+      clearInterval(interval);
+    }
+
+    iteration += 1 / 2;
+  }, speed);
+}
+
 /* ─── CYCLING JOURNEY ────────────────────────────────────────────────────────*/
 function CyclingJourneySection() {
   const navigate = useNavigate();
+  const textRef = useRef<HTMLParagraphElement | null>(null);
   const cardsRef = useRef<HTMLDivElement | null>(null);
   const [cardsVisible, setCardsVisible] = useState(false);
   const cards = [
@@ -1315,6 +1408,13 @@ function CyclingJourneySection() {
   useEffect(() => {
     const cardsEl = cardsRef.current;
     if (!cardsEl) return;
+
+    if (textRef.current) {
+      scrambleText(
+        textRef.current,
+        "Choose how you want to ride with ADCC. Discover routes, join challenges, and be part of a growing cycling community."
+      );
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => setCardsVisible(entry.isIntersecting),
@@ -1329,10 +1429,59 @@ function CyclingJourneySection() {
   return (
     <section className="journey-section">
       <div className="journey-copy">
-        <h2 className="journey-title">Begin Your <br/> Cycling Journey</h2>
-        <div className="journey-rider">
+        <h2 className="journey-title">
+          {["Begin", "Your"].map((word, index) => (
+            <motion.span
+              key={word}
+              initial={{ opacity: 0, y: 100 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.45,
+                delay: index * 0.12,
+              }}
+              viewport={{ once: true }}
+              style={{
+                display: "inline-block",
+                marginRight: "14px",
+              }}
+            >
+              {word}
+            </motion.span>
+          ))}
+
+          <br />
+
+          {["Cycling", "Journey"].map((word, index) => (
+            <motion.span
+              key={word}
+              initial={{ opacity: 0, y: 100 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.45,
+                delay: 0.25 + index * 0.12,
+              }}
+              viewport={{ once: true }}
+              style={{
+                display: "inline-block",
+                marginRight: "14px",
+              }}
+            >
+              {word}
+            </motion.span>
+          ))}
+        </h2>
+        <motion.div
+          className="journey-rider"
+          initial={{ opacity: 0, x: -150 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{
+            duration: 1.2,
+            ease: "easeOut",
+          }}
+          viewport={{ once: true }}
+        >
           <img src="/images/journey.png" alt="ADCC cyclist" />
-        </div>
+        </motion.div>
       </div>
       <div className="journey-content">
         <div ref={cardsRef} className={`journey-cards${cardsVisible ? ' is-visible' : ''}`}>
@@ -1343,14 +1492,31 @@ function CyclingJourneySection() {
               <div className="journey-card-arrow">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#C12D32" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </div>
-              <div className="journey-card-image">
+              {/* <div className="journey-card-image">
                 <img src={card.img} alt={card.label.replace('\n', ' ')} />
+              </div> */}
+              <div className="journey-card-image">
+                <img
+                  src={card.img}
+                  alt={card.label.replace('\n', ' ')}
+                  style={{
+                    animation: cardsVisible
+                      ? `imageExpand 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards`
+                      : "none",
+                    animationDelay: `${i * 0.18}s`,
+                    transformOrigin: "center",
+                    opacity: 0,
+                  }}
+                />
               </div>
             </div>
           ))}
         </div>
         <div>
-          <p className="journey-text">Choose how you want to ride with ADCC. Discover routes, join challenges, and be part of a growing cycling community.</p>
+          {/* <p className="journey-text">Choose how you want to ride with ADCC. Discover routes, join challenges, and be part of a growing cycling community.</p> */}
+          <p ref={textRef} className="journey-text">
+            Choose how you want to ride with ADCC. Discover routes, join challenges, and be part of a growing cycling community.
+          </p>
           <button onClick={() => navigate('/user-tracks')} className="btn-green journey-button">
             Explore all Routes
             <span className="journey-button-icon">→</span>
@@ -1390,25 +1556,184 @@ function AppSection() {
     <section id="app" className="home-app-section" style={{ background: '#435974', width: '100%', padding: '80px 86px', display: 'flex', alignItems: 'flex-start', gap: 60, position: 'relative', overflow: 'hidden' }}>
       {/* Left text */}
       <div className="home-app-copy" style={{ flexShrink: 0 }}>
-        <h2 className="home-app-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 80, lineHeight: 1.007, textTransform: 'uppercase', color: '#fff', marginBottom: 32 }}>Everything You Need.<br />In One App.</h2>
+        {/* <h2 className="home-app-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 80, lineHeight: 1.007, textTransform: 'uppercase', color: '#fff', marginBottom: 32 }}>Everything You Need.<br />In One App.</h2> */}
+        <h2
+          className="home-app-title"
+          style={{
+            fontFamily: "'Bebas Neue', sans-serif",
+            fontSize: 80,
+            lineHeight: 1.007,
+            textTransform: 'uppercase',
+            color: '#fff',
+            marginBottom: 32
+          }}
+        >
+          {["Everything", "You", "Need."].map((word, index) => (
+            <motion.span
+              key={word}
+              initial={{ opacity: 0, y: 100 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.45,
+                delay: index * 0.12,
+              }}
+              viewport={{ once: true }}
+              style={{
+                display: "inline-block",
+                marginRight: "14px",
+              }}
+            >
+              {word}
+            </motion.span>
+          ))}
+
+          <br />
+
+          {["In", "One", "App."].map((word, index) => (
+            <motion.span
+              key={word}
+              initial={{ opacity: 0, y: 100 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.45,
+                delay: 0.3 + index * 0.12,
+              }}
+              viewport={{ once: true }}
+              style={{
+                display: "inline-block",
+                marginRight: "14px",
+              }}
+            >
+              {word}
+            </motion.span>
+          ))}
+        </h2>
         {/* <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 16, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, marginBottom: 32 }}>Track your rides, discover routes, join challenges, and stay connected with the cycling community — all from one powerful app.</p> */}
         <div style={{ marginBottom: 24 }}>
-          <p className="home-download-label" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 30, color: '#fff', textTransform: 'uppercase', marginBottom: 23, lineHeight: '30px', }}>Download <br/> ADCC APP</p>
+          {/* <p className="home-download-label" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 30, color: '#fff', textTransform: 'uppercase', marginBottom: 23, lineHeight: '30px', }}>Download <br/> ADCC APP</p> */}
+          <p
+            className="home-download-label"
+            style={{
+              fontFamily: "'Outfit', sans-serif",
+              fontWeight: 700,
+              fontSize: 30,
+              color: '#fff',
+              textTransform: 'uppercase',
+              marginBottom: 23,
+              lineHeight: '30px',
+            }}
+          >
+            {["Download"].map((word, index) => (
+              <motion.span
+                key={word}
+                initial={{ opacity: 0, y: 80 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.4,
+                  delay: index * 0.1,
+                }}
+                viewport={{ once: true }}
+                style={{
+                  display: "inline-block",
+                  marginRight: "10px",
+                }}
+              >
+                {word}
+              </motion.span>
+            ))}
+
+            <br />
+
+            {["ADCC", "APP"].map((word, index) => (
+              <motion.span
+                key={word}
+                initial={{ opacity: 0, y: 80 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.4,
+                  delay: 0.15 + index * 0.1,
+                }}
+                viewport={{ once: true }}
+                style={{
+                  display: "inline-block",
+                  marginRight: "10px",
+                }}
+              >
+                {word}
+              </motion.span>
+            ))}
+          </p>
           {/* QR */}
-          <div className="home-qr-box" style={{ width: 256, height: 256, background: '#fff', borderRadius: 16, padding: 12, marginBottom: 40 }}>
+          {/* <div className="home-qr-box" style={{ width: 256, height: 256, background: '#fff', borderRadius: 16, padding: 12, marginBottom: 40 }}>
             <QRCodePlaceholder />
-          </div>
+          </div> */}
+          <motion.div
+            className="home-qr-box"
+            initial={{ opacity: 0, x: 120 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.7,
+              ease: "easeOut",
+            }}
+            viewport={{ once: true }}
+            style={{
+              width: 256,
+              height: 256,
+              background: '#fff',
+              borderRadius: 16,
+              padding: 12,
+              marginBottom: 40
+            }}
+          >
+            <QRCodePlaceholder />
+          </motion.div>
         </div>
         {/* App store buttons */}
         <div className="home-store-buttons" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-          <div style={{ background: '#fff', borderRadius: 100, padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+          {/* <div style={{ background: '#fff', borderRadius: 100, padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}> */}
+          <motion.div
+            initial={{ opacity: 0, y: 100 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.5,
+              delay: 0,
+            }}
+            viewport={{ once: true }}
+            style={{
+              background: '#fff',
+              borderRadius: 100,
+              padding: '10px 20px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8
+            }}
+          >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 20.5v-17c0-.7.8-1.1 1.4-.7l14 8.5c.6.4.6 1.1 0 1.4l-14 8.5c-.6.4-1.4 0-1.4-.7z" fill="#4FC3F7"/><path d="M3 20.5l9-9L3 3.5v17z" fill="#6EEC84"/><path d="M3 3.5l10 8 4-4-14-4z" fill="#F7CD45"/><path d="M3 20.5l10-8 4 4-14 4z" fill="#E4464D"/><text x="13" y="16" fontFamily="Arial" fontWeight="bold" fontSize="6" fill="#000">▶</text></svg>
             <div><div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 9, color: '#555' }}>GET IT ON</div><div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 14, color: '#000' }}>Google Play</div></div>
-          </div>
-          <div style={{ background: '#fff', borderRadius: 100, padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+          </motion.div>
+          {/* <div style={{ background: '#fff', borderRadius: 100, padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}> */}
+          <motion.div
+            initial={{ opacity: 0, y: 100 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.5,
+              delay: 0.18,
+            }}
+            viewport={{ once: true }}
+            style={{
+              background: '#fff',
+              borderRadius: 100,
+              padding: '10px 20px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8
+            }}
+          >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" fill="#000"/></svg>
             <div><div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 9, color: '#555' }}>Download on the</div><div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 14, color: '#000' }}>App Store</div></div>
-          </div>
+          </motion.div>
         </div>
         
       </div>
@@ -1451,8 +1776,69 @@ function CommunitySection() {
   
   return (
     <section id="community" className="home-community-section" style={{ background: '#EAF4FF', padding: '125px 86px', textAlign: 'center' }}>
-      <p className="home-community-eyebrow" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 28, color: '#000', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 16 }}>For the Cycling Community</p>
-      <h2 className="home-community-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 74, color: '#000', textTransform: 'uppercase', letterSpacing: '-0.5px', marginBottom: 48 }}>Eat • Sleep • Bike • Repeat</h2>
+      {/* <p className="home-community-eyebrow" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 28, color: '#000', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 16 }}>For the Cycling Community</p> */}
+      <p
+        className="home-community-eyebrow"
+        style={{
+          fontFamily: "'Outfit', sans-serif",
+          fontWeight: 700,
+          fontSize: 28,
+          color: '#000',
+          textTransform: 'uppercase',
+          letterSpacing: '2px',
+          marginBottom: 16
+        }}
+      >
+        {["For", "the", "Cycling", "Community"].map((word, index) => (
+          <motion.span
+            key={word}
+            initial={{ opacity: 0, y: -80 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.4,
+              delay: index * 0.12,
+            }}
+            viewport={{ once: true }}
+            style={{
+              display: "inline-block",
+              marginRight: "12px",
+            }}
+          >
+            {word}
+          </motion.span>
+        ))}
+      </p>
+      {/* <h2 className="home-community-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 74, color: '#000', textTransform: 'uppercase', letterSpacing: '-0.5px', marginBottom: 48 }}>Eat • Sleep • Bike • Repeat</h2> */}
+      <h2
+        className="home-community-title"
+        style={{
+          fontFamily: "'Bebas Neue', sans-serif",
+          fontSize: 74,
+          color: '#000',
+          textTransform: 'uppercase',
+          letterSpacing: '-0.5px',
+          marginBottom: 48
+        }}
+      >
+        {["Eat", "•", "Sleep", "•", "Bike", "•", "Repeat"].map((word, index) => (
+          <motion.span
+            key={`${word}-${index}`}
+            initial={{ opacity: 0, y: 100 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.45,
+              delay: index * 0.1,
+            }}
+            viewport={{ once: true }}
+            style={{
+              display: "inline-block",
+              marginRight: "12px",
+            }}
+          >
+            {word}
+          </motion.span>
+        ))}
+      </h2>
       {/* Icon row */}
       <div className="home-icon-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: 56 }}>
         {icons.map((ic, i) => (
@@ -1470,7 +1856,38 @@ function CommunitySection() {
           </React.Fragment>
         ))}
       </div>
-      <p className="home-community-subtitle" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 28, color: '#000', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 28 }}>Everything you need to ride, track, and stay connected.</p>
+      {/* <p className="home-community-subtitle" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 28, color: '#000', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 28 }}>Everything you need to ride, track, and stay connected.</p> */}
+      <p
+        className="home-community-subtitle"
+        style={{
+          fontFamily: "'Outfit', sans-serif",
+          fontWeight: 700,
+          fontSize: 28,
+          color: '#000',
+          textTransform: 'uppercase',
+          letterSpacing: '1px',
+          marginBottom: 28
+        }}
+      >
+        {["Everything", "you", "need", "to", "ride,", "track,", "and", "stay", "connected."].map((word, index) => (
+          <motion.span
+            key={`${word}-${index}`}
+            initial={{ opacity: 0, y: 90 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.4,
+              delay: index * 0.08,
+            }}
+            viewport={{ once: true }}
+            style={{
+              display: "inline-block",
+              marginRight: "10px",
+            }}
+          >
+            {word}
+          </motion.span>
+        ))}
+      </p>
       <button 
       onClick={()=>navigate("/login")}
       className="btn-green" style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: '#019839', border: 'none', borderRadius: 30, padding: '14px 28px', cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 18, color: '#FFF9EF' }}>
@@ -1526,11 +1943,59 @@ function ExplorePlatformSection() {
 
   return (
     <section id="platform" className="home-platform-section" style={{ background: '#EAF4FF', padding: '0 86px 80px' }}>
-      <h2 className="home-section-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 72, color: '#000', textTransform: 'uppercase', textAlign: 'center', paddingTop: 35, marginBottom: 40, lineHeight: '72px' }}>Explore the Platform</h2>
+      {/* <h2 className="home-section-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 72, color: '#000', textTransform: 'uppercase', textAlign: 'center', paddingTop: 35, marginBottom: 40, lineHeight: '72px' }}>Explore the Platform</h2> */}
+      <h2
+        className="home-section-title"
+        style={{
+          fontFamily: "'Bebas Neue', sans-serif",
+          fontSize: 72,
+          color: '#000',
+          textTransform: 'uppercase',
+          textAlign: 'center',
+          paddingTop: 35,
+          marginBottom: 40,
+          lineHeight: '72px'
+        }}
+      >
+        {["Explore", "the", "Platform"].map((word, index) => (
+          <motion.span
+            key={word}
+            initial={{ opacity: 0, y: 100 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.45,
+              delay: index * 0.12,
+            }}
+            viewport={{ once: true }}
+            style={{
+              display: "inline-block",
+              marginRight: "14px",
+            }}
+          >
+            {word}
+          </motion.span>
+        ))}
+      </h2>
       <div ref={cardsRef} className={`platform-cards home-platform-cards${cardsVisible ? ' is-visible' : ''}`} style={{ display: 'flex', gap: 0, borderRadius: 20, overflow: 'hidden', height: 480 }}>
         {cards.map((card, i) => (
           <div key={i} onClick={() => navigate(card.to)} className="card-hover platform-card home-platform-card" style={{ flex: 1, position: 'relative', overflow: 'hidden', cursor: 'pointer', borderLeft: i > 0 ? '2px solid rgba(255,255,255,0.3)' : 'none' }}>
-            <img src={card.img} alt={card.title} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s' }} />
+            {/* <img src={card.img} alt={card.title} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s' }} /> */}
+            <img
+              src={card.img}
+              alt={card.title}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                transition: 'transform 0.4s',
+                animation: cardsVisible
+                  ? `imageExpand 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards`
+                  : "none",
+                animationDelay: `${i * 0.18}s`,
+                transformOrigin: "center",
+                opacity: 0,
+              }}
+            />
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.75) 100%)' }} />
             {/* Tag */}
             <div style={{ position: 'absolute', top: 43, left: 32, background: '#435974', borderRadius: 20, padding: '5px 14px' }}>
@@ -1729,10 +2194,40 @@ function StoreSection() {
   );
 }
 
+function scrambleNumber(
+  element: HTMLElement,
+  finalText: string,
+  speed = 30
+) {
+  const chars = "1234567890+";
+  let iteration = 0;
+
+  const interval = setInterval(() => {
+    element.innerText = finalText
+      .split("")
+      .map((letter, index) => {
+        if (index < iteration) {
+          return finalText[index];
+        }
+
+        return chars[Math.floor(Math.random() * chars.length)];
+      })
+      .join("");
+
+    if (iteration >= finalText.length) {
+      clearInterval(interval);
+    }
+
+    iteration += 1.5;
+  }, speed);
+}
+
 /* ─── ABOUT SECTION ──────────────────────────────────────────────────────────*/
 function AboutSection() {
   const navigate = useNavigate();
+  const hasAnimatedStats = useRef(false);
   const aboutRef = useRef<HTMLElement | null>(null);
+  const statsRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [aboutVisible, setAboutVisible] = useState(false);
   const stats = [
     { num: '15K+', label: 'Riders' },
@@ -1744,9 +2239,24 @@ function AboutSection() {
     const aboutEl = aboutRef.current;
     if (!aboutEl) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => setAboutVisible(entry.isIntersecting),
-      { threshold: 0.35 }
+      const observer = new IntersectionObserver(
+      ([entry]) => {
+        setAboutVisible(entry.isIntersecting);
+
+        if (entry.isIntersecting && !hasAnimatedStats.current) {
+          hasAnimatedStats.current = true;
+
+          statsRefs.current.forEach((el, index) => {
+            if (el) {
+              setTimeout(() => {
+                                scrambleNumber(el, stats[index].num, 25);
+              }, index * 180);
+            }
+          });
+        }
+      },
+      // { threshold: 0.35 }
+      { threshold: 0.1 }
     );
 
     observer.observe(aboutEl);
@@ -1757,12 +2267,81 @@ function AboutSection() {
   return (
     <section ref={aboutRef} id="about" className={`about-section home-about-section${aboutVisible ? ' is-visible' : ''}`} style={{ background: '#EAF4FF', padding: '60px 86px 80px', display: 'flex', gap: 60, alignItems: 'center' }}>
       {/* Left image */}
-      <div className="about-left-image home-about-left-image" style={{ flexShrink: 0, width: 380, height: 560, borderRadius: 20, overflow: 'hidden', boxShadow: '0 8px 40px rgba(0,0,0,0.12)' }}>
-        <img src="https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=600&q=80" alt="ADCC Cyclists" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-      </div>
+      <motion.div
+        className="home-about-left-image"
+        initial={{ opacity: 0, x: -300 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        viewport={{ once: true }}
+        style={{
+          flexShrink: 0,
+          width: 380,
+          height: 560,
+          borderRadius: 20,
+          overflow: 'hidden',
+          boxShadow: '0 8px 40px rgba(0,0,0,0.12)'
+        }}
+      >
+        <img
+          src="https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=600&q=80"
+          alt="ADCC Cyclists"
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+      </motion.div>
       {/* Right content */}
       <div className="home-about-content" style={{ flex: 1 }}>
-        <h2 className="home-about-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 74, color: '#000', textTransform: 'uppercase', lineHeight: 1.01, marginBottom: 24 }}>About Abu Dhabi<br />Cycling Club</h2>
+        {/* <h2 className="home-about-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 74, color: '#000', textTransform: 'uppercase', lineHeight: 1.01, marginBottom: 24 }}>About Abu Dhabi<br />Cycling Club</h2> */}
+        <h2
+          className="home-about-title"
+          style={{
+            fontFamily: "'Bebas Neue', sans-serif",
+            fontSize: 74,
+            color: '#000',
+            textTransform: 'uppercase',
+            lineHeight: 1.01,
+            marginBottom: 24
+          }}
+        >
+          {["About", "Abu", "Dhabi"].map((word, index) => (
+            <motion.span
+              key={word}
+              initial={{ opacity: 0, y: 100 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.45,
+                delay: index * 0.12,
+              }}
+              viewport={{ once: true }}
+              style={{
+                display: "inline-block",
+                marginRight: "14px",
+              }}
+            >
+              {word}
+            </motion.span>
+          ))}
+
+          <br />
+
+          {["Cycling", "Club"].map((word, index) => (
+            <motion.span
+              key={word}
+              initial={{ opacity: 0, y: 100 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.45,
+                delay: 0.35 + index * 0.12,
+              }}
+              viewport={{ once: true }}
+              style={{
+                display: "inline-block",
+                marginRight: "14px",
+              }}
+            >
+              {word}
+            </motion.span>
+          ))}
+        </h2>
         <p className="home-about-text" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, color: '#000', lineHeight: 1.6, marginBottom: 40, maxWidth: 600 }}>
           At Abu Dhabi Cycling Club, every ride is a step toward building a stronger, healthier, and more connected society. We are the heart of the UAE's cycling movement uniting enthusiasts, athletes, and families through the shared joy of cycling.
         </p>
@@ -1770,7 +2349,11 @@ function AboutSection() {
         <div className="home-about-stats" style={{ display: 'flex', gap: 48, marginBottom: 40 }}>
           {stats.map((s, i) => (
             <div key={i}>
-              <div className="home-about-stat-number" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 50, color: '#000', lineHeight: 1 }}>{s.num}</div>
+              <div className="home-about-stat-number" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 50, color: '#000', lineHeight: 1 }}>
+                <div ref={(el) => (statsRefs.current[i] = el)}>
+                  {s.num}
+                </div>
+              </div>
               <div className="home-about-stat-label" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 22, color: '#444', marginTop: 4 }}>{s.label}</div>
             </div>
           ))}
@@ -1781,9 +2364,32 @@ function AboutSection() {
         </button>
       </div>
       {/* Decorative rider image */}
-      <div className="home-about-rider" style={{ flexShrink: 0, width: 280, height: 340, overflow: 'hidden'}}>
-        <img src="/images/right-cycle.png" alt="Rider" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-      </div>
+    <motion.div
+      className="home-about-rider"
+      initial={{ opacity: 0, x: 150 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      transition={{
+        duration: 0.8,
+        ease: "easeOut",
+      }}
+      viewport={{ once: true }}
+      style={{
+        flexShrink: 0,
+        width: 280,
+        height: 340,
+        overflow: 'hidden'
+      }}
+    >
+      <img
+        src="/images/right-cycle.png"
+        alt="Rider"
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover'
+        }}
+      />
+    </motion.div>
     </section>
   );
 }
