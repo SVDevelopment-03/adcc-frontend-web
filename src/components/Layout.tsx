@@ -26,7 +26,7 @@ import { ChallengeDetail } from './challenges/ChallengeDetail';
 import { ChallengeCreate } from './challenges/ChallengeCreate';
 import { FeedModeration } from './feed/FeedModeration';
 import { MarketplaceModeration } from './marketplace/MarketplaceModeration';
-import { ClubMerchandise } from './merchandise/ClubMerchandise';
+import { Merchandise } from './merchandise/Merchandise';
 import { MarketplaceItemEdit } from './marketplace/MarketplaceItemEdit';
 import { CMS } from './cms/CMS';
 import { MediaLibrary } from './media/MediaLibrary';
@@ -228,7 +228,7 @@ export function Layout() {
             <Route path="/badges/:id/edit" element={withRoleSidebarAccess('badges', <BadgesEditWrapper />)} />
             <Route path="/feed" element={withRoleSidebarAccess('feed', <FeedModeration />)} />
             <Route path="/marketplace" element={withRoleSidebarAccess('marketplace', <MarketplaceModeration navigate={() => {}} role={currentRole} />)} />
-            <Route path="/merchandise" element={withRoleSidebarAccess('merchandise', <ClubMerchandise />)} />
+            <Route path="/merchandise" element={withRoleSidebarAccess('merchandise', <Merchandise navigate={() => {}} />)} />
             <Route path="/marketplace/:id/edit" element={withRoleSidebarAccess('marketplace', <MarketplaceItemEdit />)} />
             <Route path="/cms" element={withPermission('manage_cms', <CMS />)} />
             <Route path="/media" element={withPermission('manage_media', <MediaLibrary />)} />
