@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Edit, Users, CheckCircle, Calendar, TrendingUp, Award, Trophy, Bell } from 'lucide-react';
-import { getChallengeById } from '../../services/challengesApi';
+import { ArrowLeft, Edit, Users, CheckCircle, Calendar, TrendingUp, Award, Trophy, Bell, Send } from 'lucide-react';
+import { getChallengeById, getChallengeParticipants, ChallengeParticipant } from '../../services/challengesApi';
+import { sendTestBroadcastPush } from '../../services/authApi';
+import { toast } from 'sonner';
 import { UserRole } from '../../App';
 import { useTranslation } from 'react-i18next';
 
@@ -17,8 +19,57 @@ export function ChallengeDetail({ role }: ChallengeDetailProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'participants' | 'leaderboard' | 'notifications'>('overview');
+  const [notifTitle, setNotifTitle] = useState('');
+  const [notifMessage, setNotifMessage] = useState('');
+  const [notifDeliveryType, setNotifDeliveryType] = useState<'app' | 'email' | 'both'>('app');
+  const [isSendingNotif, setIsSendingNotif] = useState(false);
+  const [notifResult, setNotifResult] = useState<{ ok: boolean; message: string } | null>(null);
+  const [challengeParticipants, setChallengeParticipants] = useState<ChallengeParticipant[]>([]);
+  const [participantsLoaded, setParticipantsLoaded] = useState(false);
 
   const canEdit = true;
+
+  useEffect(() => {
+    if ((activeTab === 'participants' || activeTab === 'notifications') && challengeId && !participantsLoaded) {
+      getChallengeParticipants(challengeId)
+        .then(data => { setChallengeParticipants(data); setParticipantsLoaded(true); })
+        .catch(() => setParticipantsLoaded(true));
+    }
+  }, [activeTab, challengeId, participantsLoaded]);
+
+  const handleSendChallengeNotif = async () => {
+    if (!notifTitle.trim() || !notifMessage.trim()) {
+      toast.error('Title and message are required');
+      return;
+    }
+    const selectedUserIds = challengeParticipants.map(p => p.userId).filter(Boolean);
+    if (selectedUserIds.length === 0) {
+      toast.error('No participants found for this challenge');
+      return;
+    }
+    setIsSendingNotif(true);
+    setNotifResult(null);
+    try {
+      await sendTestBroadcastPush({
+        title: notifTitle.trim(),
+        body: notifMessage.trim(),
+        audienceType: 'selected_users',
+        selectedUserIds,
+        deliveryType: notifDeliveryType,
+      });
+      const label = notifDeliveryType === 'app' ? 'push notification' : notifDeliveryType === 'email' ? 'email' : 'notification';
+      setNotifResult({ ok: true, message: `${label} sent to ${selectedUserIds.length} participant(s)` });
+      toast.success(`Notification sent to ${selectedUserIds.length} participant(s)`);
+      setNotifTitle('');
+      setNotifMessage('');
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || err?.message || 'Failed to send notification';
+      setNotifResult({ ok: false, message: msg });
+      toast.error(msg);
+    } finally {
+      setIsSendingNotif(false);
+    }
+  };
 
   const fetchChallenge = useCallback(async () => {
     if (!challengeId) {
@@ -249,12 +300,78 @@ export function ChallengeDetail({ role }: ChallengeDetailProps) {
       )}
 
       {activeTab === 'participants' && (
-        <div className="p-6 rounded-2xl shadow-sm bg-white">
-          <div className="text-center py-12">
-            <Users className="w-12 h-12 mx-auto mb-3" style={{ color: '#ECC180' }} />
-            <h3 className="text-lg mb-1" style={{ color: '#333' }}>{t('challenges.noParticipants')}</h3>
-            <p className="text-sm" style={{ color: '#999' }}>{t('challenges.participantsHint')}</p>
+        <div className="rounded-2xl shadow-sm bg-white overflow-hidden">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <div className="flex items-center gap-3">
+              <Users className="w-5 h-5" style={{ color: '#C12D32' }} />
+              <h3 className="text-lg" style={{ color: '#333' }}>
+                Participants
+                {participantsLoaded && (
+                  <span className="ml-2 text-sm font-normal" style={{ color: '#999' }}>
+                    ({challengeParticipants.length})
+                  </span>
+                )}
+              </h3>
+            </div>
           </div>
+
+          {!participantsLoaded ? (
+            <div className="flex items-center justify-center py-16">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: '#C12D32' }} />
+            </div>
+          ) : challengeParticipants.length === 0 ? (
+            <div className="text-center py-16">
+              <Users className="w-12 h-12 mx-auto mb-3" style={{ color: '#E5E7EB' }} />
+              <h3 className="text-lg mb-1" style={{ color: '#333' }}>{t('challenges.noParticipants')}</h3>
+              <p className="text-sm" style={{ color: '#999' }}>{t('challenges.participantsHint')}</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr style={{ backgroundColor: '#FFF9EF' }}>
+                    <th className="text-left px-6 py-3 text-sm font-medium" style={{ color: '#666' }}>#</th>
+                    <th className="text-left px-4 py-3 text-sm font-medium" style={{ color: '#666' }}>Name</th>
+                    <th className="text-left px-4 py-3 text-sm font-medium" style={{ color: '#666' }}>Email</th>
+                    <th className="text-left px-4 py-3 text-sm font-medium" style={{ color: '#666' }}>Progress</th>
+                    <th className="text-left px-4 py-3 text-sm font-medium" style={{ color: '#666' }}>Joined</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {challengeParticipants.map((p, idx) => (
+                    <tr key={p.userId} className="border-t border-gray-100 hover:bg-gray-50">
+                      <td className="px-6 py-3 text-sm" style={{ color: '#999' }}>{idx + 1}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm text-white font-medium" style={{ backgroundColor: '#C12D32' }}>
+                            {p.fullName ? p.fullName[0].toUpperCase() : '?'}
+                          </div>
+                          <span className="text-sm font-medium" style={{ color: '#333' }}>{p.fullName || '—'}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-sm" style={{ color: '#666' }}>{p.email || '—'}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden" style={{ minWidth: 80 }}>
+                            <div
+                              className="h-full rounded-full"
+                              style={{ width: `${p.progressPercent}%`, backgroundColor: p.progressPercent >= 100 ? '#10B981' : '#C12D32' }}
+                            />
+                          </div>
+                          <span className="text-xs font-medium w-10 text-right" style={{ color: p.progressPercent >= 100 ? '#10B981' : '#C12D32' }}>
+                            {p.progressPercent}%
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-sm" style={{ color: '#999' }}>
+                        {p.joinedAt ? new Date(p.joinedAt).toLocaleDateString() : '—'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 
@@ -269,11 +386,97 @@ export function ChallengeDetail({ role }: ChallengeDetailProps) {
       )}
 
       {activeTab === 'notifications' && (
-        <div className="p-6 rounded-2xl shadow-sm bg-white">
-          <div className="text-center py-12">
-            <Bell className="w-12 h-12 mx-auto mb-3" style={{ color: '#ECC180' }} />
-            <h3 className="text-lg mb-1" style={{ color: '#333' }}>{t('challenges.noNotifications')}</h3>
-            <p className="text-sm" style={{ color: '#999' }}>{t('challenges.notificationsHint')}</p>
+        <div className="space-y-6">
+          <div className="flex items-center gap-3 p-4 rounded-xl border border-blue-100" style={{ backgroundColor: '#EFF6FF' }}>
+            <Users className="w-5 h-5 shrink-0" style={{ color: '#3B82F6' }} />
+            <p className="text-sm" style={{ color: '#1D4ED8' }}>
+              {participantsLoaded
+                ? <><span className="font-medium">{challengeParticipants.length} participant(s)</span> currently joined this challenge.</>
+                : 'Loading participants…'}
+              {' '}Notifications will be sent only to joined participants.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-2xl shadow-sm bg-white space-y-5">
+            <div className="flex items-center gap-3 mb-2">
+              <Bell className="w-5 h-5" style={{ color: '#C12D32' }} />
+              <h3 className="text-lg" style={{ color: '#333' }}>Send Notification to Participants</h3>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: '#555' }}>Delivery Method</label>
+              <div className="flex gap-3">
+                {(['app', 'email', 'both'] as const).map(type => (
+                  <button
+                    key={type}
+                    onClick={() => setNotifDeliveryType(type)}
+                    className="flex-1 py-2 rounded-lg border text-sm transition-all"
+                    style={{
+                      backgroundColor: notifDeliveryType === type ? '#C12D32' : '#fff',
+                      color: notifDeliveryType === type ? '#fff' : '#555',
+                      borderColor: notifDeliveryType === type ? '#C12D32' : '#D1D5DB',
+                    }}
+                  >
+                    {type === 'app' ? 'In-App' : type === 'email' ? 'Email' : 'Both'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: '#555' }}>Notification Title</label>
+              <input
+                type="text"
+                value={notifTitle}
+                onChange={e => setNotifTitle(e.target.value)}
+                placeholder="e.g. Challenge Update"
+                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: '#555' }}>Message</label>
+              <textarea
+                value={notifMessage}
+                onChange={e => setNotifMessage(e.target.value)}
+                placeholder="Write your message to challenge participants..."
+                rows={4}
+                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600 resize-none"
+              />
+            </div>
+
+            {notifResult && (
+              <div
+                className="flex items-start gap-3 p-4 rounded-lg border text-sm"
+                style={{
+                  backgroundColor: notifResult.ok ? '#F0FDF4' : '#FEF2F2',
+                  borderColor: notifResult.ok ? '#86EFAC' : '#FECACA',
+                  color: notifResult.ok ? '#15803D' : '#991B1B',
+                }}
+              >
+                <Bell className="w-4 h-4 mt-0.5 shrink-0" />
+                <span>{notifResult.message}</span>
+              </div>
+            )}
+
+            <button
+              onClick={handleSendChallengeNotif}
+              disabled={isSendingNotif || !notifTitle.trim() || !notifMessage.trim() || !participantsLoaded}
+              className="flex items-center gap-2 px-6 py-3 rounded-lg text-white transition-all hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ backgroundColor: '#C12D32' }}
+            >
+              {isSendingNotif ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Sending…
+                </>
+              ) : (
+                <>
+                  <Send className="w-4 h-4" />
+                  Send Notification
+                </>
+              )}
+            </button>
           </div>
         </div>
       )}

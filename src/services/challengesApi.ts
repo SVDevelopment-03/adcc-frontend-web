@@ -249,3 +249,17 @@ export const deleteChallengeById = async (id: string): Promise<void> => {
   invalidateCache(`challenge:${id}`);
   await api.delete(`/v1/challenges/${id}`);
 };
+
+export interface ChallengeParticipant {
+  userId: string;
+  fullName: string;
+  email: string;
+  progressPercent: number;
+  joinedAt: string;
+}
+
+/** Get all joined participants for a challenge */
+export const getChallengeParticipants = async (id: string): Promise<ChallengeParticipant[]> => {
+  const res = await api.get<{ data?: { participants: ChallengeParticipant[] } }>(`/v1/challenges/${id}/participants`);
+  return res.data?.data?.participants ?? [];
+};

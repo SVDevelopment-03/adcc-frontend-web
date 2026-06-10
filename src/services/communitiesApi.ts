@@ -365,9 +365,9 @@ export interface CommunityMember {
 }
 
 // Get Community Members
-export const getCommunityMembers = async (id: string): Promise<CommunityMember[]> => {
+export const getCommunityMembers = async (id: string, limit = 1000): Promise<CommunityMember[]> => {
   try {
-    const response = await api.get<any>(`/v1/communities/${id}/communityMembers`);
+    const response = await api.get<any>(`/v1/communities/${id}/communityMembers`, { params: { limit } });
     const root = response.data as any;
     const data = root?.data ?? root;
 

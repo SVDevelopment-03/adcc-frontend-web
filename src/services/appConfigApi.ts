@@ -63,3 +63,10 @@ export async function updateAppConfig(payload: AppConfigState): Promise<AppConfi
   return config;
 }
 
+export async function testSmtpConnection(): Promise<{ ok: boolean; message: string }> {
+  const res = await api.post<ApiEnvelope<{ ok: boolean; message: string }>>('/v1/app-config/test-email');
+  const data = res.data?.data;
+  if (!data) throw new Error(res.data?.message || 'Test failed');
+  return data;
+}
+

@@ -16,8 +16,11 @@ import {
   Upload,
   Route,
   Activity,
+  Bell,
+  Send,
 } from 'lucide-react';
 import { getCommunityById, deleteCommunity as deleteCommunityApi, CommunityApiResponse, getCommunityMembers, addGalleryImages, deleteGalleryImage, updateCommunity, CommunityMember } from '../../services/communitiesApi';
+import { sendTestBroadcastPush } from '../../services/authApi';
 import { toast } from 'sonner';
 import { getAllTracks, Track } from '../../services/trackService';
 import { getAllEvents, EventApiResponse } from '../../services/eventsApi';
@@ -27,7 +30,7 @@ import { PostFormModal, PostFormData } from './PostFormModal';
 
 
 
-type TabType = 'overview' | 'feed' | 'events' | 'tracks' | 'gallery' | 'members';
+type TabType = 'overview' | 'feed' | 'events' | 'tracks' | 'gallery' | 'members' | 'notifications';
 
 export function CommunityDetail() {
   const { t } = useTranslation();
@@ -51,6 +54,13 @@ export function CommunityDetail() {
   const [postModal, setPostModal] = useState<{ mode: 'create' | 'edit'; post?: CommunityPost } | null>(null);
   const [isSubmittingPost, setIsSubmittingPost] = useState(false);
   const [selectedFeedPost, setSelectedFeedPost] = useState<CommunityPost | null>(null);
+
+  // Notifications tab state
+  const [notifTitle, setNotifTitle] = useState('');
+  const [notifMessage, setNotifMessage] = useState('');
+  const [notifDeliveryType, setNotifDeliveryType] = useState<'app' | 'email' | 'both'>('app');
+  const [isSendingNotif, setIsSendingNotif] = useState(false);
+  const [notifResult, setNotifResult] = useState<{ ok: boolean; message: string } | null>(null);
 
   const openCreatePostModal = () => setPostModal({ mode: 'create' });
   const openEditPostModal = (post: CommunityPost) => setPostModal({ mode: 'edit', post });
@@ -230,6 +240,51 @@ export function CommunityDetail() {
     const n = typeof raw === 'number' && !Number.isNaN(raw) ? raw : Number(raw);
     return Number.isFinite(n) ? n : 0;
   }, [community]);
+
+  const isValidObjectId = (id: string) => /^[0-9a-f]{24}$/i.test(id);
+
+  const handleSendCommunityNotif = async () => {
+    if (!notifTitle.trim() || !notifMessage.trim()) {
+      toast.error('Title and message are required');
+      return;
+    }
+    const selectedUserIds = membersData
+      .map((m: any) => {
+        // m.userId is a populated user object { _id, fullName, email }
+        // or occasionally a plain string (unpopulated reference)
+        const uid = m.userId?._id ?? (typeof m.userId === 'string' ? m.userId : null) ?? '';
+        return String(uid).trim();
+      })
+      .filter(id => id && isValidObjectId(id));
+
+    if (selectedUserIds.length === 0) {
+      toast.error('No members found for this community');
+      return;
+    }
+
+    setIsSendingNotif(true);
+    setNotifResult(null);
+    try {
+      await sendTestBroadcastPush({
+        title: notifTitle.trim(),
+        body: notifMessage.trim(),
+        audienceType: 'selected_users',
+        selectedUserIds,
+        deliveryType: notifDeliveryType,
+      });
+      const label = notifDeliveryType === 'app' ? 'push notification' : notifDeliveryType === 'email' ? 'email' : 'notification';
+      setNotifResult({ ok: true, message: `${label} sent to ${selectedUserIds.length} member(s)` });
+      toast.success(`Notification sent to ${selectedUserIds.length} member(s)`);
+      setNotifTitle('');
+      setNotifMessage('');
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || err?.message || 'Failed to send notification';
+      setNotifResult({ ok: false, message: msg });
+      toast.error(msg);
+    } finally {
+      setIsSendingNotif(false);
+    }
+  };
 
   const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -425,6 +480,7 @@ export function CommunityDetail() {
             { id: 'tracks', label: t('communities.detail.tabs.tracks'), icon: Route },
             { id: 'gallery', label: t('communities.detail.tabs.gallery'), icon: Image },
             { id: 'members', label: t('communities.detail.tabs.members'), icon: Users },
+            { id: 'notifications', label: 'Notifications', icon: Bell },
           ] as const).map((tab) => {
             const Icon = tab.icon;
             return (
@@ -970,6 +1026,101 @@ export function CommunityDetail() {
               </table>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Notifications Tab */}
+      {activeTab === 'notifications' && (
+        <div className="space-y-6">
+          <div className="flex items-center gap-3 p-4 rounded-xl border border-blue-100" style={{ backgroundColor: '#EFF6FF' }}>
+            <Users className="w-5 h-5 flex-shrink-0" style={{ color: '#3B82F6' }} />
+            <p className="text-sm" style={{ color: '#1D4ED8' }}>
+              <span className="font-medium">{membersData.length} member(s)</span> in this community.
+              Notifications will be sent to all members.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white shadow-sm space-y-5">
+            <div className="flex items-center gap-3 mb-2">
+              <Bell className="w-5 h-5" style={{ color: '#C12D32' }} />
+              <h3 className="text-lg" style={{ color: '#333' }}>Send Notification to Members</h3>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: '#555' }}>Delivery Method</label>
+              <div className="flex gap-3">
+                {(['app', 'email', 'both'] as const).map(type => (
+                  <button
+                    key={type}
+                    onClick={() => setNotifDeliveryType(type)}
+                    className="flex-1 py-2 rounded-lg border text-sm transition-all"
+                    style={{
+                      backgroundColor: notifDeliveryType === type ? '#C12D32' : '#fff',
+                      color: notifDeliveryType === type ? '#fff' : '#555',
+                      borderColor: notifDeliveryType === type ? '#C12D32' : '#D1D5DB',
+                    }}
+                  >
+                    {type === 'app' ? 'In-App' : type === 'email' ? 'Email' : 'Both'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: '#555' }}>Notification Title</label>
+              <input
+                type="text"
+                value={notifTitle}
+                onChange={e => setNotifTitle(e.target.value)}
+                placeholder="e.g. Community Announcement"
+                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: '#555' }}>Message</label>
+              <textarea
+                value={notifMessage}
+                onChange={e => setNotifMessage(e.target.value)}
+                placeholder="Write your message to community members..."
+                rows={4}
+                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600 resize-none"
+              />
+            </div>
+
+            {notifResult && (
+              <div
+                className="flex items-start gap-3 p-4 rounded-lg border text-sm"
+                style={{
+                  backgroundColor: notifResult.ok ? '#F0FDF4' : '#FEF2F2',
+                  borderColor: notifResult.ok ? '#86EFAC' : '#FECACA',
+                  color: notifResult.ok ? '#15803D' : '#991B1B',
+                }}
+              >
+                <Bell className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <span>{notifResult.message}</span>
+              </div>
+            )}
+
+            <button
+              onClick={handleSendCommunityNotif}
+              disabled={isSendingNotif || !notifTitle.trim() || !notifMessage.trim()}
+              className="flex items-center gap-2 px-6 py-3 rounded-lg text-white transition-all hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ backgroundColor: '#C12D32' }}
+            >
+              {isSendingNotif ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Sending…
+                </>
+              ) : (
+                <>
+                  <Send className="w-4 h-4" />
+                  Send Notification
+                </>
+              )}
+            </button>
+          </div>
         </div>
       )}
 

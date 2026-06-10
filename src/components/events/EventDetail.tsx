@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Edit, Bell, ImageIcon, Trophy, UserCheck, Users, Star, Calendar, MapPin, Clock, Award, Upload, Trash2, Plus } from 'lucide-react';
+import { ArrowLeft, Edit, Bell, ImageIcon, Trophy, UserCheck, Users, Star, Calendar, MapPin, Clock, Award, Upload, Trash2, Plus, Send } from 'lucide-react';
 import { toast } from 'sonner';
 import { addEventGalleryImages, deleteEventGalleryImage, getEventById, updateEvent as updateEventApi, EventApiResponse, getEventResults, adminUpdateParticipantResult } from '../../services/eventsApi';
 import { getAllCommunities } from '../../services/communitiesApi';
+import { sendTestBroadcastPush } from '../../services/authApi';
 import { DetailPageSkeleton } from '../ui/skeleton';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 
@@ -21,6 +22,14 @@ export function EventDetail() {
   const [activeTab, setActiveTab] = useState<'overview' | 'participants' | 'results' | 'gallery' | 'notifications'>('overview');
   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
   const [deleteImageUrl, setDeleteImageUrl] = useState<string | null>(null);
+
+  // Notifications tab state
+  const [notifTitle, setNotifTitle] = useState('');
+  const [notifMessage, setNotifMessage] = useState('');
+  const [notifDeliveryType, setNotifDeliveryType] = useState<'app' | 'email' | 'both'>('app');
+  const [notifAudience, setNotifAudience] = useState<'all' | 'registered' | 'checked-in'>('all');
+  const [isSendingNotif, setIsSendingNotif] = useState(false);
+  const [notifResult, setNotifResult] = useState<{ ok: boolean; message: string; count: number } | null>(null);
 
   // Results tab state
   const [communities, setCommunities] = useState<any[]>([]);
@@ -215,8 +224,59 @@ const formatTimeInput = (raw: string): string => {
     // navigate('/sevents');
   };
 
-  const handleSendPush = () => {
-    toast.success(t('events.detail.toasts.notificationSent'));
+  const handleSendEventNotif = async () => {
+    if (!notifTitle.trim() || !notifMessage.trim()) {
+      toast.error('Title and message are required');
+      return;
+    }
+
+    // Filter participants by audience selection
+    let targetParticipants = normalizedParticipants;
+    if (notifAudience === 'registered') {
+      targetParticipants = normalizedParticipants.filter(
+        p => p.status !== 'cancelled' && p.status !== 'no-show'
+      );
+    } else if (notifAudience === 'checked-in') {
+      targetParticipants = normalizedParticipants.filter(
+        p => p.status === 'checked-in' || p.status === 'completed'
+      );
+    }
+
+    const selectedUserIds = targetParticipants
+      .map(p => p.userId)
+      .filter(Boolean) as string[];
+
+    if (selectedUserIds.length === 0) {
+      toast.error('No eligible participants found for the selected audience');
+      return;
+    }
+
+    setIsSendingNotif(true);
+    setNotifResult(null);
+    try {
+      await sendTestBroadcastPush({
+        title: notifTitle.trim(),
+        body: notifMessage.trim(),
+        audienceType: 'selected_users',
+        selectedUserIds,
+        deliveryType: notifDeliveryType,
+      });
+      const label = notifDeliveryType === 'app'
+        ? 'push notification'
+        : notifDeliveryType === 'email'
+          ? 'email'
+          : 'notification';
+      setNotifResult({ ok: true, message: `${label} sent to ${selectedUserIds.length} participant(s)`, count: selectedUserIds.length });
+      toast.success(`Notification sent to ${selectedUserIds.length} participant(s)`);
+      setNotifTitle('');
+      setNotifMessage('');
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || err?.message || 'Failed to send notification';
+      setNotifResult({ ok: false, message: msg, count: 0 });
+      toast.error(msg);
+    } finally {
+      setIsSendingNotif(false);
+    }
   };
 
   const handleFeaturedToggle = async () => {
@@ -931,46 +991,120 @@ const formatTimeInput = (raw: string): string => {
       )}
 
       {activeTab === 'notifications' && (
-        <div className="p-6 rounded-2xl bg-white shadow-sm">
-          <h3 className="text-lg mb-6" style={{ color: '#333' }}>{t('events.detail.notificationsTab.heading')}</h3>
-          
-          <div className="space-y-4 mb-6">
+        <div className="space-y-6">
+          {/* Participant count banner */}
+          <div className="flex items-center gap-3 p-4 rounded-xl border border-blue-100" style={{ backgroundColor: '#EFF6FF' }}>
+            <Users className="w-5 h-5 flex-shrink-0" style={{ color: '#3B82F6' }} />
+            <p className="text-sm" style={{ color: '#1D4ED8' }}>
+              <span className="font-medium">{normalizedParticipants.length} enrolled participant(s)</span> for this event.
+              Notifications will only be sent to the audience you select below.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white shadow-sm space-y-5">
+            <div className="flex items-center gap-3 mb-2">
+              <Bell className="w-5 h-5" style={{ color: '#C12D32' }} />
+              <h3 className="text-lg" style={{ color: '#333' }}>Send Notification to Participants</h3>
+            </div>
+
+            {/* Audience selector */}
             <div>
-              <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.detail.notificationsTab.sendTo')}</label>
-              <select className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600">
-                <option>{t('events.detail.notificationsTab.allParticipants')}</option>
-                <option>{t('events.detail.notificationsTab.registeredOnly')}</option>
-                <option>{t('events.detail.notificationsTab.checkedInOnly')}</option>
-                <option>{t('events.detail.notificationsTab.entireCommunity')}</option>
+              <label className="block text-sm font-medium mb-2" style={{ color: '#555' }}>Send To</label>
+              <select
+                value={notifAudience}
+                onChange={e => setNotifAudience(e.target.value as typeof notifAudience)}
+                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600 bg-white"
+              >
+                <option value="all">All Enrolled Participants ({normalizedParticipants.length})</option>
+                <option value="registered">
+                  Registered Only ({normalizedParticipants.filter(p => p.status !== 'cancelled' && p.status !== 'no-show').length})
+                </option>
+                <option value="checked-in">
+                  Checked-in / Completed ({normalizedParticipants.filter(p => p.status === 'checked-in' || p.status === 'completed').length})
+                </option>
               </select>
             </div>
 
+            {/* Delivery type */}
             <div>
-              <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.detail.notificationsTab.messageTitle')}</label>
+              <label className="block text-sm font-medium mb-2" style={{ color: '#555' }}>Delivery Method</label>
+              <div className="flex gap-3">
+                {(['app', 'email', 'both'] as const).map(type => (
+                  <button
+                    key={type}
+                    onClick={() => setNotifDeliveryType(type)}
+                    className="flex-1 py-2 rounded-lg border text-sm transition-all capitalize"
+                    style={{
+                      backgroundColor: notifDeliveryType === type ? '#C12D32' : '#fff',
+                      color: notifDeliveryType === type ? '#fff' : '#555',
+                      borderColor: notifDeliveryType === type ? '#C12D32' : '#D1D5DB',
+                    }}
+                  >
+                    {type === 'app' ? 'In-App' : type === 'email' ? 'Email' : 'Both'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Title */}
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: '#555' }}>Notification Title</label>
               <input
                 type="text"
-                placeholder={t('events.detail.notificationsTab.messageTitlePlaceholder')}
+                value={notifTitle}
+                onChange={e => setNotifTitle(e.target.value)}
+                placeholder="e.g. Event Reminder"
                 className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
               />
             </div>
 
+            {/* Message */}
             <div>
-              <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.detail.notificationsTab.message')}</label>
+              <label className="block text-sm font-medium mb-2" style={{ color: '#555' }}>Message</label>
               <textarea
-                placeholder={t('events.detail.notificationsTab.messagePlaceholder')}
+                value={notifMessage}
+                onChange={e => setNotifMessage(e.target.value)}
+                placeholder="Write your message to participants..."
                 rows={4}
-                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
+                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600 resize-none"
               />
             </div>
-          </div>
 
-          <button
-            className="flex items-center gap-2 px-6 py-3 rounded-lg text-white transition-all hover:shadow-md"
-            style={{ backgroundColor: '#C12D32' }}
-          >
-            <Bell className="w-5 h-5" />
-            {t('events.detail.sendPushNotification')}
-          </button>
+            {/* Result box */}
+            {notifResult && (
+              <div
+                className="flex items-start gap-3 p-4 rounded-lg border text-sm"
+                style={{
+                  backgroundColor: notifResult.ok ? '#F0FDF4' : '#FEF2F2',
+                  borderColor: notifResult.ok ? '#86EFAC' : '#FECACA',
+                  color: notifResult.ok ? '#15803D' : '#991B1B',
+                }}
+              >
+                <Bell className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <span>{notifResult.message}</span>
+              </div>
+            )}
+
+            {/* Send button */}
+            <button
+              onClick={handleSendEventNotif}
+              disabled={isSendingNotif || !notifTitle.trim() || !notifMessage.trim()}
+              className="flex items-center gap-2 px-6 py-3 rounded-lg text-white transition-all hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ backgroundColor: '#C12D32' }}
+            >
+              {isSendingNotif ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Sending…
+                </>
+              ) : (
+                <>
+                  <Send className="w-4 h-4" />
+                  Send Notification
+                </>
+              )}
+            </button>
+          </div>
         </div>
       )}
 

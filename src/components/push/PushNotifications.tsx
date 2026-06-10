@@ -157,11 +157,16 @@ export function PushNotifications() {
     setLastError('');
     try {
       const shouldBroadcastAllDevices = audience === 'all_devices';
-      const response = shouldBroadcastAllDevices
-        ? await sendTestBroadcastPush({ ...nextPayload, audienceType: 'all' })
-        : audience === 'selected_users'
-          ? await sendTestBroadcastPush(nextPayload)
-          : await sendStaffWebPush(nextPayload);
+      const needsBroadcast =
+        shouldBroadcastAllDevices ||
+        audience === 'selected_users' ||
+        nextPayload.deliveryType === 'email' ||
+        nextPayload.deliveryType === 'both';
+      const response = needsBroadcast
+        ? await sendTestBroadcastPush(
+            shouldBroadcastAllDevices ? { ...nextPayload, audienceType: 'all' } : nextPayload
+          )
+        : await sendStaffWebPush(nextPayload);
 
       setHistory((prev) => [
         {

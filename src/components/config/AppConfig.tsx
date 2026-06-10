@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Bell, Globe, Mail, Save, Settings, Shield, SlidersHorizontal } from 'lucide-react';
+import { Bell, Globe, Mail, Save, Settings, Shield, SlidersHorizontal, Wifi } from 'lucide-react';
 import { toast } from 'sonner';
-import { getAppConfig, updateAppConfig, type AppConfigState, type FeatureKey, type NotificationKey, type SecurityKey } from '../../services/appConfigApi';
+import { getAppConfig, updateAppConfig, testSmtpConnection, type AppConfigState, type FeatureKey, type NotificationKey, type SecurityKey } from '../../services/appConfigApi';
 
 export function AppConfig() {
   const storageKey = 'adcc.appConfig.v1';
@@ -48,6 +48,8 @@ export function AppConfig() {
   const [initial, setInitial] = useState<AppConfigState>(defaultConfig);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isTesting, setIsTesting] = useState(false);
+  const [smtpTestResult, setSmtpTestResult] = useState<{ ok: boolean; message: string } | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -126,6 +128,27 @@ export function AppConfig() {
     setConfig((prev) => ({ ...prev, notifications: { ...prev.notifications, [key]: !prev.notifications[key] } }));
   const toggleSecurity = (key: SecurityKey) => setConfig((prev) => ({ ...prev, security: { ...prev.security, [key]: !prev.security[key] } }));
   const toggleEmailEnabled = () => setConfig((prev) => ({ ...prev, emailSettings: { ...prev.emailSettings, enabled: !prev.emailSettings.enabled } }));
+
+  const onTestSmtp = async () => {
+    if (isTesting) return;
+    setIsTesting(true);
+    setSmtpTestResult(null);
+    try {
+      const result = await testSmtpConnection();
+      setSmtpTestResult(result);
+      if (result.ok) {
+        toast.success('SMTP connection successful');
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error: any) {
+      const msg = error?.message || 'Test failed';
+      setSmtpTestResult({ ok: false, message: msg });
+      toast.error(msg);
+    } finally {
+      setIsTesting(false);
+    }
+  };
 
   const onSave = async () => {
     if (!isDirty) return;
@@ -460,6 +483,32 @@ export function AppConfig() {
                 onChange={(next) => setField('emailSettings', { ...config.emailSettings, smtpSecure: next })}
                 ariaLabel="Use secure SMTP"
               />
+            </div>
+
+            <div className="md:col-span-2">
+              <button
+                type="button"
+                onClick={() => { void onTestSmtp(); }}
+                disabled={isTesting}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg border text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ borderColor: '#C12D32', color: '#C12D32' }}
+              >
+                <Wifi className="w-4 h-4" />
+                {isTesting ? 'Testing...' : 'Test Connection'}
+              </button>
+
+              {smtpTestResult !== null ? (
+                <div
+                  className="mt-2 px-4 py-3 rounded-lg text-sm"
+                  style={{
+                    backgroundColor: smtpTestResult.ok ? '#f0fdf4' : '#fff1f2',
+                    color: smtpTestResult.ok ? '#166534' : '#991b1b',
+                    border: `1px solid ${smtpTestResult.ok ? '#bbf7d0' : '#fecaca'}`,
+                  }}
+                >
+                  {smtpTestResult.ok ? '✓ ' : '✗ '}{smtpTestResult.message}
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
