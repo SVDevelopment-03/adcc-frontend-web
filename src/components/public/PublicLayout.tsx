@@ -200,14 +200,14 @@ function StoreButton({ type }: { type: 'google' | 'apple' }) {
   return (
     <button
       type="button"
-      className="flex min-h-11 w-full max-w-[213px] items-center justify-center gap-3 rounded-full bg-white px-5 text-black shadow-lg sm:min-h-12 sm:w-auto sm:px-6"
+      className="inline-flex h-[53px] w-[198px] flex-none items-center justify-center gap-[10px] rounded-[100px] bg-white px-[26px] py-0 text-black shadow-lg sm:h-[57px] sm:w-[213px] sm:px-[34px]"
     >
-      {type === 'google' ? <Play className="h-5 w-5 fill-[#34A853] text-[#34A853] sm:h-6 sm:w-6" /> : <Apple className="h-5 w-5 sm:h-6 sm:w-6" />}
-      <span className="text-left">
-        <span className="block text-[9px] font-semibold uppercase leading-none text-black/60">
+      {type === 'google' ? <Play className="h-[27px] w-[27px] shrink-0 fill-[#34A853] text-[#34A853] sm:h-[31px] sm:w-[29px]" /> : <Apple className="h-[24px] w-[24px] shrink-0 sm:h-[26px] sm:w-[26px]" />}
+      <span className="flex min-w-0 flex-none flex-col items-start justify-center text-left">
+        <span className="block whitespace-nowrap text-[8px] font-semibold uppercase leading-[1.05] text-black/60 sm:text-[9px]">
           {type === 'google' ? 'Get it on' : 'Download on the'}
         </span>
-        <span className="block text-[15px] font-bold leading-tight sm:text-[16px]">
+        <span className="block whitespace-nowrap text-[15px] font-bold leading-[1.1] sm:text-[16px]">
           {type === 'google' ? 'Google Play' : 'App Store'}
         </span>
       </span>
@@ -238,7 +238,7 @@ function PublicFooter() {
         </div>
       </section>
 
-      <footer className="relative bg-[#EAF4FF] px-4! py-12! pb-4! sm:px-6! sm:py-16! md:px-10! lg:px-16! lg:py-20! xl:px-20! xl:py-25!">
+      <footer className="relative bg-[#EAF4FF] px-4! pt-12! pb-[25px]! sm:px-6! sm:pt-16! md:px-10! lg:px-16! lg:pt-20! xl:px-20! xl:pt-25!">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(280px,1fr)_190px_minmax(280px,1fr)] lg:gap-12">
           <div className="sm:col-span-2 lg:col-span-1">
             <Logo compact />
@@ -264,7 +264,7 @@ function PublicFooter() {
             <ul className="!mt-5 space-y-3! text-[16px] sm:!mt-7 sm:space-y-4! sm:text-[18px]">
               <li><NavLink to="/aboutus">About Us</NavLink></li>
               <li><NavLink to="/user-tracks">Rides</NavLink></li>
-              <li><NavLink to="/user-events">Events</NavLink></li>
+              <li><NavLink to="/user-event">Events</NavLink></li>
               <li><NavLink to="/user-challenges">Cyclist's Corner</NavLink></li>
               <li><NavLink to="/contact-us">Contact Us</NavLink></li>
             </ul>
@@ -285,8 +285,10 @@ function PublicFooter() {
           <Bike className="h-5 w-5 md:h-6 md:w-6" />
         </button>
 
-        <div className="mt-10! border-t border-black/15 pt-5! text-center text-[13px] leading-5 text-black/70 sm:mt-14! sm:text-[15px] md:mt-20! md:pt-6!">
-          Copyright 2026. Abu Dhabi Cycling Club
+        <div className="mt-10! border-t border-black/15 pt-[20px]! text-center sm:mt-14! md:mt-20!">
+          <span className="inline-block h-[23px] w-[319px] max-w-full font-['Outfit'] text-[18px] font-normal leading-none text-black">
+            Copyright 2026. Abu Dhabi Cycling Club
+          </span>
         </div>
       </footer>
     </>

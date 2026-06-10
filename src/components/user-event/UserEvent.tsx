@@ -230,59 +230,86 @@ function Hero() {
         }}
       >
         <p
-          className="event-hero-breadcrumb"
+          className="event-hero-breadcrumb overflow-hidden"
           style={{
             color: "rgba(255,255,255,0.8)",
-            fontSize: 22
+            fontSize: 22,
           }}
         >
           {["Home", "/", "Events"].map((word, index) => (
-            <motion.span
+            <span
               key={`${word}-${index}`}
-              initial={{ opacity: 0, y: 60 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.35,
-                delay: index * 0.1,
-              }}
-              style={{
-                display: "inline-block",
-                marginRight: "8px",
-              }}
+              className="inline-block overflow-hidden"
+              style={{ marginRight: "8px" }}
             >
-              {word}
-            </motion.span>
+              <motion.span
+                className="inline-block"
+                initial={{
+                  y: "120%",
+                  opacity: 0,
+                }}
+                animate={{
+                  y: "0%",
+                  opacity: 1,
+                }}
+                transition={{
+                  duration: 0.7,
+                  delay: index * 0.08,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {word}
+              </motion.span>
+            </span>
           ))}
         </p>
-
-        <h1
-          className="bebas event-hero-title"
+        <motion.h1
+          className="bebas event-hero-title overflow-hidden"
           style={{
             fontSize: 70,
             color: "#fff",
             lineHeight: 1,
             marginTop: 8,
-            textTransform: "uppercase"
+            textTransform: "uppercase",
+          }}
+          initial="hidden"
+          animate="visible"
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.08,
+              },
+            },
           }}
         >
           {["Events"].map((word, index) => (
-            <motion.span
+            <span
               key={word}
-              initial={{ opacity: 0, y: 100 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.45,
-                delay: 0.35 + index * 0.12,
-              }}
-              style={{
-                display: "inline-block",
-                marginRight: "14px",
-              }}
+              className="inline-block overflow-hidden"
+              style={{ marginRight: "14px" }}
             >
-              {word}
-            </motion.span>
+              <motion.span
+                className="inline-block"
+                variants={{
+                  hidden: {
+                    y: "120%",
+                    opacity: 0,
+                  },
+                  visible: {
+                    y: "0%",
+                    opacity: 1,
+                  },
+                }}
+                transition={{
+                  duration: 0.7,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {word}
+              </motion.span>
+            </span>
           ))}
-        </h1>
+        </motion.h1>
       </div>
     </section>
   );
@@ -292,35 +319,54 @@ function Hero() {
 function SectionHeader() {
   return (
     <section className="event-section-header" style={{ background: "#EAF4FF", padding: "64px 82px 40px", textAlign: "center" }}>
-     <h2
-      className="bebas event-section-title"
+     <motion.h2
+      className="bebas event-section-title overflow-hidden"
       style={{
         fontSize: 50,
         lineHeight: 1.2,
         textTransform: "capitalize",
         maxWidth: 560,
-        margin: "0 auto 16px"
+        margin: "0 auto 16px",
+      }}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      variants={{
+        visible: {
+          transition: {
+            staggerChildren: 0.08,
+          },
+        },
       }}
     >
       {["Join", "the", "Most", "Exciting", "Cycling", "Events", "in", "Abu", "Dhabi"].map((word, index) => (
-        <motion.span
+        <span
           key={`${word}-${index}`}
-          initial={{ opacity: 0, y: 100 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 0.4,
-            delay: index * 0.07,
-          }}
-          viewport={{ once: true }}
-          style={{
-            display: "inline-block",
-            marginRight: "12px",
-          }}
+          className="inline-block overflow-hidden"
+          style={{ marginRight: "12px" }}
         >
-          {word}
-        </motion.span>
+          <motion.span
+            className="inline-block"
+            variants={{
+              hidden: {
+                y: "120%",
+                opacity: 0,
+              },
+              visible: {
+                y: "0%",
+                opacity: 1,
+              },
+            }}
+            transition={{
+              duration: 0.7,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            {word}
+          </motion.span>
+        </span>
       ))}
-    </h2>
+    </motion.h2>
       <p className="event-section-copy" style={{ fontSize: 16, fontWeight: 500, color: "rgba(0,0,0,0.6)", maxWidth: 444, margin: "0 auto", lineHeight: 1.6 }}>
         Explore races, community rides, and challenges by Abu Dhabi Cycling Club. Find events for your location and skill.
       </p>
@@ -376,20 +422,34 @@ function FilterBar({
       // <div key={filter.key} className="event-filter-field" style={{ position: "relative", width: 260 }}>
       <motion.div
         key={filter.key}
-        className="event-filter-field"
-        initial={{ opacity: 0, x: 120 }}
-        whileInView={{ opacity: 1, x: 0 }}
-        transition={{
-          duration: 0.5,
-          delay: dropdowns.findIndex((d) => d.key === filter.key) * 0.12,
-          ease: "easeOut",
-        }}
+        className="event-filter-field overflow-hidden"
+        initial="hidden"
+        whileInView="visible"
         viewport={{ once: true }}
+        variants={{
+          hidden: {
+            opacity: 0,
+            y: "120%",
+          },
+          visible: {
+            opacity: 1,
+            y: "0%",
+          },
+        }}
+        transition={{
+          duration: 0.7,
+          delay: dropdowns.findIndex((d) => d.key === filter.key) * 0.08,
+          ease: [0.22, 1, 0.36, 1],
+        }}
         style={{ position: "relative", width: 260 }}
       >
         <button
           type="button"
-          onClick={() => setOpenDropdown((current) => (current === filter.key ? null : filter.key))}
+          onClick={() =>
+            setOpenDropdown((current) =>
+              current === filter.key ? null : filter.key
+            )
+          }
           style={{
             width: "100%",
             height: 66,
@@ -409,14 +469,29 @@ function FilterBar({
           }}
           aria-expanded={isOpen}
         >
-          <span style={{ minWidth: 0, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          <span
+            style={{
+              minWidth: 0,
+              flex: 1,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
             {selected}
           </span>
+
           <ChevronDown open={isOpen} />
         </button>
 
         {isOpen && (
-          <div
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.3,
+              ease: [0.22, 1, 0.36, 1],
+            }}
             style={{
               position: "absolute",
               left: 0,
@@ -437,7 +512,10 @@ function FilterBar({
                 key={option}
                 type="button"
                 onClick={() => {
-                  setFilters((previous) => ({ ...previous, [filter.key]: option }));
+                  setFilters((previous) => ({
+                    ...previous,
+                    [filter.key]: option,
+                  }));
                   setOpenDropdown(null);
                 }}
                 style={{
@@ -454,12 +532,19 @@ function FilterBar({
                   cursor: "pointer",
                 }}
               >
-                <span style={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <span
+                  style={{
+                    display: "block",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
                   {option}
                 </span>
               </button>
             ))}
-          </div>
+          </motion.div>
         )}
       </motion.div>
     );
@@ -884,8 +969,8 @@ export default function Events() {
         <Hero />
         <SectionHeader />
         <EventsGrid />
-        <CTABanner />
-        <Footer />
+        {/* <CTABanner /> */}
+        {/* <Footer /> */}
       </div>
     </>
   );

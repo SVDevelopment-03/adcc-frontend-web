@@ -16,6 +16,7 @@ import {
   getCommunityById,
 } from "../../services/communitiesApi";
 import { EventApiResponse, getEventsPage } from "../../services/eventsApi";
+import { motion } from "framer-motion";
 
 type CommunityTrack = {
   _id?: string;
@@ -136,9 +137,46 @@ function HeroSection({ community }: { community: CommunityApiResponse }) {
             <span className="rounded-full bg-white/30 px-4 py-2 text-[13px] backdrop-blur sm:px-5 sm:text-[16px]">{tag}</span>
             <span className="rounded-full bg-white/30 px-4 py-2 text-[13px] backdrop-blur sm:px-5 sm:text-[16px]">{location}</span>
           </div>
-          <h1 className="max-w-[820px] text-[30px] font-black uppercase leading-tight sm:text-[36px] md:text-[40px] md:leading-none">
-            {community.title}
-          </h1>
+          <motion.h1
+            className="max-w-[820px] text-[30px] font-black uppercase leading-tight sm:text-[36px] md:text-[40px] md:leading-none overflow-hidden"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={{
+              visible: {
+                transition: {
+                  staggerChildren: 0.08,
+                },
+              },
+            }}
+          >
+            {community.title?.split(" ").map((word, index) => (
+              <span
+                key={index}
+                className="inline-block overflow-hidden mr-3"
+              >
+                <motion.span
+                  className="inline-block"
+                  variants={{
+                    hidden: {
+                      y: "120%",
+                      opacity: 0,
+                    },
+                    visible: {
+                      y: "0%",
+                      opacity: 1,
+                    },
+                  }}
+                  transition={{
+                    duration: 0.7,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  {word}
+                </motion.span>
+              </span>
+            ))}
+          </motion.h1>
         </div>
       </div>
     </section>
@@ -151,11 +189,83 @@ function AboutSection({ community }: { community: CommunityApiResponse }) {
   return (
     <section className="mx-auto grid max-w-[1268px] grid-cols-1 items-start gap-8 px-4 py-14 sm:px-6 sm:py-16 md:px-10 lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-12 lg:py-24">
       <div>
-        <h2 className="text-[34px] font-black uppercase leading-tight sm:text-[44px] md:text-[60px] md:leading-none">About This Community</h2>
+        <motion.h2
+          className="text-[34px] font-black uppercase leading-tight sm:text-[44px] md:text-[60px] md:leading-none overflow-hidden"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.08,
+              },
+            },
+          }}
+        >
+          {"About This Community".split(" ").map((word, index) => (
+            <span
+              key={index}
+              className="mr-3 inline-block overflow-hidden"
+            >
+              <motion.span
+                className="inline-block"
+                variants={{
+                  hidden: {
+                    y: "120%",
+                    opacity: 0,
+                  },
+                  visible: {
+                    y: "0%",
+                    opacity: 1,
+                  },
+                }}
+                transition={{
+                  duration: 0.7,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {word}
+              </motion.span>
+            </span>
+          ))}
+        </motion.h2>
         <p className="mt-5 max-w-[820px] text-[17px] leading-[25px] sm:mt-8 sm:text-[20px] sm:leading-[28px] md:text-[24px] md:leading-[30px]">{community.description}</p>
-        <button className="mt-8 inline-flex w-full items-center justify-center gap-3 rounded-full bg-[#019839] px-6 py-4 text-[16px] font-bold text-white sm:w-auto sm:px-8 sm:text-[18px]">
-          Join this Community <ArrowRight size={20} />
-        </button>
+        <motion.button
+          initial={{ opacity: 0, x: -120 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{
+            duration: 0.8,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          className="mt-8 inline-flex w-full items-center justify-center gap-3 rounded-full bg-[#019839] px-6 py-4 text-[16px] font-bold text-white sm:w-auto sm:px-8 sm:text-[18px]"
+        >
+          <motion.span
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{
+              delay: 0.15,
+              duration: 0.6,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            Join this Community
+          </motion.span>
+
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{
+              delay: 0.25,
+              duration: 0.5,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            <ArrowRight size={20} />
+          </motion.div>
+        </motion.button>
       </div>
 
       <div className="rounded-2xl bg-[#435974] p-5 text-white sm:p-8">
@@ -208,17 +318,52 @@ function StatsSection({ community }: { community: CommunityApiResponse }) {
   ];
 
   return (
-    <section className="mx-4 mb-16 grid max-w-[1192px] grid-cols-1 gap-4 rounded-2xl bg-[#323232] p-4 sm:mx-6 md:mx-10 md:grid-cols-2 lg:mx-auto lg:mb-24 lg:grid-cols-4">
+    <motion.section
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      variants={{
+        visible: {
+          transition: {
+            staggerChildren: 0.12,
+          },
+        },
+      }}
+      className="mx-4 mb-16 grid max-w-[1192px] grid-cols-1 gap-4 rounded-2xl bg-[#323232] p-4 sm:mx-6 md:mx-10 md:grid-cols-2 lg:mx-auto lg:mb-24 lg:grid-cols-4"
+    >
       {stats.map(({ icon: Icon, value, label }) => (
-        <article key={label} className="rounded-xl bg-[#435974] p-5 text-white sm:p-8">
+        <motion.article
+          key={label}
+          variants={{
+            hidden: {
+              opacity: 0,
+              y: 120,
+            },
+            visible: {
+              opacity: 1,
+              y: 0,
+            },
+          }}
+          transition={{
+            duration: 0.8,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          className="rounded-xl bg-[#435974] p-5 text-white sm:p-8"
+        >
           <span className="inline-flex rounded-full bg-white p-3 text-[#019839] sm:p-4">
             <Icon size={25} />
           </span>
-          <h3 className="mt-8 text-[25px] font-black uppercase sm:mt-12 sm:text-[30px] lg:mt-16">{value}</h3>
-          <p className="text-[17px] text-white/60 sm:text-[20px]">{label}</p>
-        </article>
+
+          <h3 className="mt-8 text-[25px] font-black uppercase sm:mt-12 sm:text-[30px] lg:mt-16">
+            {value}
+          </h3>
+
+          <p className="text-[17px] text-white/60 sm:text-[20px]">
+            {label}
+          </p>
+        </motion.article>
       ))}
-    </section>
+    </motion.section>
   );
 }
 
@@ -237,15 +382,88 @@ function LocationSection({ community }: { community: CommunityApiResponse }) {
   return (
     <section className="bg-[#d8ebff] px-4 py-14 sm:px-6 sm:py-16 md:px-10 md:py-20">
       <div className="mx-auto max-w-[1268px]">
-        <h2 className="text-center text-[34px] font-black uppercase sm:text-[42px] md:text-[50px]">Community Details</h2>
-        <div className="mt-8 grid grid-cols-1 gap-4 sm:mt-12 md:grid-cols-2 lg:grid-cols-3">
-          {details.map(([label, value]) => (
-            <div key={label} className="rounded-xl bg-white p-5 sm:p-7">
-              <p className="text-[16px] font-medium text-black/50">{label}</p>
-              <h3 className="mt-3 text-[20px] font-black uppercase sm:text-[24px]">{value}</h3>
-            </div>
+        <motion.h2
+          className="text-center text-[34px] font-black uppercase sm:text-[42px] md:text-[50px] overflow-hidden"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.08,
+              },
+            },
+          }}
+        >
+          {"Community Details".split(" ").map((word, index) => (
+            <span
+              key={index}
+              className="mr-3 inline-block overflow-hidden"
+            >
+              <motion.span
+                className="inline-block"
+                variants={{
+                  hidden: {
+                    y: "120%",
+                    opacity: 0,
+                  },
+                  visible: {
+                    y: "0%",
+                    opacity: 1,
+                  },
+                }}
+                transition={{
+                  duration: 0.7,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {word}
+              </motion.span>
+            </span>
           ))}
-        </div>
+        </motion.h2>
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.12,
+              },
+            },
+          }}
+          className="mt-8 grid grid-cols-1 gap-4 sm:mt-12 md:grid-cols-2 lg:grid-cols-3"
+        >
+          {details.map(([label, value]) => (
+            <motion.div
+              key={label}
+              variants={{
+                hidden: {
+                  opacity: 0,
+                  y: "120%",
+                },
+                visible: {
+                  opacity: 1,
+                  y: "0%",
+                },
+              }}
+              transition={{
+                duration: 0.8,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="rounded-xl bg-white p-5 sm:p-7"
+            >
+              <p className="text-[16px] font-medium text-black/50">
+                {label}
+              </p>
+
+              <h3 className="mt-3 text-[20px] font-black uppercase sm:text-[24px]">
+                {value}
+              </h3>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );
@@ -256,13 +474,76 @@ function TracksSection({ tracks }: { tracks: CommunityTrack[] }) {
 
   return (
     <section className="bg-[#777] px-4 py-14 sm:px-6 sm:py-16 md:px-10 lg:py-24">
-      <h2 className="mb-8 text-center text-[34px] font-black uppercase text-white sm:mb-12 sm:text-[42px] md:text-[50px] lg:mb-16">
-        Linked Tracks
-      </h2>
-      <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-6 sm:gap-8 lg:grid-cols-3 lg:gap-10">
+      <motion.h2
+        className="mb-8 text-center text-[34px] font-black uppercase text-white sm:mb-12 sm:text-[42px] md:text-[50px] lg:mb-16 overflow-hidden"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={{
+          visible: {
+            transition: {
+              staggerChildren: 0.08,
+            },
+          },
+        }}
+      >
+        {"Linked Tracks".split(" ").map((word, index) => (
+          <span
+            key={index}
+            className="mr-3 inline-block overflow-hidden"
+          >
+            <motion.span
+              className="inline-block"
+              variants={{
+                hidden: {
+                  y: "120%",
+                  opacity: 0,
+                },
+                visible: {
+                  y: "0%",
+                  opacity: 1,
+                },
+              }}
+              transition={{
+                duration: 0.7,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            >
+              {word}
+            </motion.span>
+          </span>
+        ))}
+      </motion.h2>
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.15 }}
+        variants={{
+          visible: {
+            transition: {
+              staggerChildren: 0.14,
+            },
+          },
+        }}
+        className="mx-auto grid max-w-[1240px] grid-cols-1 gap-6 sm:gap-8 lg:grid-cols-3 lg:gap-10"
+      >
         {tracks.map((track, index) => (
-          <article
+          <motion.article
             key={track._id || track.id || track.title}
+            variants={{
+              hidden: {
+                opacity: 0,
+                y: "120%",
+              },
+              visible: {
+                opacity: 1,
+                y: "0%",
+              },
+            }}
+            transition={{
+              duration: 0.9,
+              ease: [0.22, 1, 0.36, 1],
+            }}
             className={`rounded-xl p-3 transition-colors duration-200 ${
               index === 0
                 ? "bg-[#435974] text-white hover:bg-[#323232]"
@@ -274,27 +555,40 @@ function TracksSection({ tracks }: { tracks: CommunityTrack[] }) {
               alt={track.title || "Community track"}
               className="h-[220px] w-full rounded-lg object-cover sm:h-[260px] lg:h-[300px]"
             />
+
             <div className="p-4">
               <p className="flex gap-2 text-sm opacity-80">
                 <MapPin size={18} /> {track.city || "Location TBA"}
               </p>
-              <h3 className="mt-4 text-[22px] font-black uppercase sm:text-[26px]">{track.title || "Track"}</h3>
+
+              <h3 className="mt-4 text-[22px] font-black uppercase sm:text-[26px]">
+                {track.title || "Track"}
+              </h3>
+
               <div className="mt-6 grid grid-cols-1 gap-2 text-center sm:grid-cols-3">
                 {[
-                  ["Distance", typeof track.distance === "number" ? `${track.distance} km` : "TBA"],
+                  [
+                    "Distance",
+                    typeof track.distance === "number"
+                      ? `${track.distance} km`
+                      : "TBA",
+                  ],
                   ["Type", track.trackType || track.category || "TBA"],
                   ["Level", titleCase(track.difficulty)],
                 ].map(([label, value]) => (
-                  <div key={label} className="rounded border border-white/20 bg-[#323232] p-3 text-white">
+                  <div
+                    key={label}
+                    className="rounded border border-white/20 bg-[#323232] p-3 text-white"
+                  >
                     <p className="text-[14px]">{label}</p>
                     <b className="text-[16px]">{value}</b>
                   </div>
                 ))}
               </div>
             </div>
-          </article>
+          </motion.article>
         ))}
-      </div>
+      </motion.div>
     </section>
   );
 }
@@ -333,17 +627,95 @@ function EventCard({ event }: { event: EventApiResponse }) {
 function EventsSection({ events }: { events: EventApiResponse[] }) {
   return (
     <section className="mx-auto max-w-[1269px] px-4 py-14 sm:px-6 sm:py-16 md:px-10 lg:py-28">
-      <h2 className="mb-8 text-center text-[34px] font-black uppercase sm:mb-12 sm:text-[42px] md:text-[50px] lg:mb-16">Community Events</h2>
+      <motion.h2
+        className="mb-8 text-center text-[34px] font-black uppercase sm:mb-12 sm:text-[42px] md:text-[50px] lg:mb-16 overflow-hidden"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={{
+          visible: {
+            transition: {
+              staggerChildren: 0.08,
+            },
+          },
+        }}
+      >
+        {"Community Events".split(" ").map((word, index) => (
+          <span
+            key={index}
+            className="mr-3 inline-block overflow-hidden"
+          >
+            <motion.span
+              className="inline-block"
+              variants={{
+                hidden: {
+                  y: "120%",
+                  opacity: 0,
+                },
+                visible: {
+                  y: "0%",
+                  opacity: 1,
+                },
+              }}
+              transition={{
+                duration: 0.7,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            >
+              {word}
+            </motion.span>
+          </span>
+        ))}
+      </motion.h2>
       {events.length === 0 ? (
-        <p className="text-center text-[17px] font-medium text-black/60 sm:text-[20px]">
+        <motion.p
+          initial={{ opacity: 0, y: 80 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{
+            duration: 0.8,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          className="text-center text-[17px] font-medium text-black/60 sm:text-[20px]"
+        >
           No upcoming events are linked with this community yet.
-        </p>
+        </motion.p>
       ) : (
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.14,
+              },
+            },
+          }}
+          className="grid grid-cols-1 gap-8 lg:grid-cols-3"
+        >
           {events.map((event) => (
-            <EventCard key={event._id || event.id || event.title} event={event} />
+            <motion.div
+              key={event._id || event.id || event.title}
+              variants={{
+                hidden: {
+                  opacity: 0,
+                  y: "120%",
+                },
+                visible: {
+                  opacity: 1,
+                  y: "0%",
+                },
+              }}
+              transition={{
+                duration: 0.9,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            >
+              <EventCard event={event} />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       )}
     </section>
   );
@@ -362,24 +734,6 @@ function GallerySection({ community }: { community: CommunityApiResponse }) {
             <img src={image} alt={`${community.title} gallery ${index + 1}`} className="h-full w-full object-cover" />
           </div>
         ))}
-      </div>
-    </section>
-  );
-}
-
-function AppCta({ community }: { community: CommunityApiResponse }) {
-  return (
-    <section
-      className="flex h-auto min-h-[360px] items-center justify-center bg-cover bg-center px-4 py-12 text-center text-white sm:min-h-[420px] sm:px-6 md:px-10 lg:h-[502px] lg:py-0"
-      style={{
-        backgroundImage: `linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.35)),url('${getCommunityImage(
-          community,
-        )}')`,
-      }}
-    >
-      <div>
-        <h2 className="text-[40px] font-black uppercase leading-none sm:text-[54px] lg:text-[80px]">Start Your Ride Today</h2>
-        <p className="mt-5 text-[17px] leading-6 sm:mt-7 sm:text-[22px] lg:text-[26px]">Download the ADCC app and join {community.title}.</p>
       </div>
     </section>
   );
@@ -459,7 +813,6 @@ export default function UserCommunityDetail() {
       <TracksSection tracks={tracks} />
       <EventsSection events={events} />
       <GallerySection community={community} />
-      <AppCta community={community} />
       <button className="fixed bottom-5 right-5 rounded-full bg-[#019839] p-3 text-white shadow-lg sm:bottom-10 sm:right-10 sm:p-4">
         <ImageIcon size={28} />
       </button>

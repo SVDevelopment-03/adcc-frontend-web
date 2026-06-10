@@ -226,23 +226,31 @@ export default function ChallengesPage() {
             ))}
           </h1>
 
-          <p className="mt-3 text-[16px] sm:mt-4 sm:text-[18px]">
+          <p className="mt-3 text-[16px] sm:mt-4 sm:text-[18px] overflow-hidden">
             {["Home", "/", "Challenges"].map((word, index) => (
-              <motion.span
+              <span
                 key={`${word}-${index}`}
-                initial={{ opacity: 0, y: 60 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.35,
-                  delay: 0.25 + index * 0.1,
-                }}
-                style={{
-                  display: "inline-block",
-                  marginRight: "8px",
-                }}
+                className="mr-2 inline-block overflow-hidden"
               >
-                {word}
-              </motion.span>
+                <motion.span
+                  className="inline-block"
+                  initial={{
+                    y: "120%",
+                    opacity: 0,
+                  }}
+                  animate={{
+                    y: "0%",
+                    opacity: 1,
+                  }}
+                  transition={{
+                    duration: 0.7,
+                    delay: index * 0.08,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  {word}
+                </motion.span>
+              </span>
             ))}
           </p>
         </div>
@@ -251,26 +259,46 @@ export default function ChallengesPage() {
       {/* Intro */}
       <section className="mx-auto grid max-w-[1260px] grid-cols-1 gap-8 px-4 py-12 sm:px-6 sm:py-16 md:px-10 lg:grid-cols-2 lg:gap-12 lg:py-28">
         <div>
-          <h2 className="max-w-[620px] text-[32px] font-black uppercase leading-tight sm:text-[38px] lg:text-[44px]">
+          <motion.h2
+            className="max-w-[620px] text-[32px] font-black uppercase leading-tight sm:text-[38px] lg:text-[44px] overflow-hidden"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={{
+              visible: {
+                transition: {
+                  staggerChildren: 0.08,
+                },
+              },
+            }}
+          >
             {["Push", "your", "limits", "with", "cycling", "challenges", "in", "Abu", "Dhabi"].map((word, index) => (
-              <motion.span
+              <span
                 key={`${word}-${index}`}
-                initial={{ opacity: 0, y: 100 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.4,
-                  delay: index * 0.07,
-                }}
-                viewport={{ once: true }}
-                style={{
-                  display: "inline-block",
-                  marginRight: "12px",
-                }}
+                className="mr-3 inline-block overflow-hidden"
               >
-                {word}
-              </motion.span>
+                <motion.span
+                  className="inline-block"
+                  variants={{
+                    hidden: {
+                      y: "120%",
+                      opacity: 0,
+                    },
+                    visible: {
+                      y: "0%",
+                      opacity: 1,
+                    },
+                  }}
+                  transition={{
+                    duration: 0.7,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  {word}
+                </motion.span>
+              </span>
             ))}
-          </h2>
+          </motion.h2>
           <p className="mt-5 max-w-[560px] text-[15px] leading-relaxed sm:mt-8 sm:text-[17px]">
             Abu Dhabi Cycling Club provides exciting opportunities for endurance
             rides and competitive challenges. Whether chasing distance, speed, or
@@ -324,77 +352,135 @@ export default function ChallengesPage() {
       <section className="mx-auto max-w-[1260px] px-4 pb-16 sm:px-6 md:px-10 lg:pb-28">
         <div className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-center lg:mb-14">
           {/* <h2 className="text-[30px] font-black uppercase sm:text-[36px]">Cycling Challenges</h2> */}
-          <h2 className="text-[30px] font-black uppercase sm:text-[36px]">
+          <motion.h2
+            className="text-[30px] font-black uppercase sm:text-[36px] overflow-hidden"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={{
+              visible: {
+                transition: {
+                  staggerChildren: 0.08,
+                },
+              },
+            }}
+          >
             {["Cycling", "Challenges"].map((word, index) => (
-              <motion.span
+              <span
                 key={word}
-                initial={{ opacity: 0, y: 100 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.45,
-                  delay: index * 0.12,
-                }}
-                viewport={{ once: true }}
-                style={{
-                  display: "inline-block",
-                  marginRight: "14px",
-                }}
+                className="mr-4 inline-block overflow-hidden"
               >
-                {word}
-              </motion.span>
+                <motion.span
+                  className="inline-block"
+                  variants={{
+                    hidden: {
+                      y: "120%",
+                      opacity: 0,
+                    },
+                    visible: {
+                      y: "0%",
+                      opacity: 1,
+                    },
+                  }}
+                  transition={{
+                    duration: 0.7,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  {word}
+                </motion.span>
+              </span>
             ))}
-          </h2>
-
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 md:flex md:gap-5">
+          </motion.h2>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={{
+              visible: {
+                transition: {
+                  staggerChildren: 0.08,
+                },
+              },
+            }}
+            className="grid grid-cols-1 gap-3 sm:grid-cols-3 md:flex md:gap-5"
+          >
             {statusTabs.map((tab) => {
               const selected = status === tab;
+
               return (
-                <motion.button
-                  initial={{ opacity: 0, y: 80 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: 0.45,
-                    delay: statusTabs.indexOf(tab) * 0.1,
-                  }}
-                  viewport={{ once: true }}
+                <span
                   key={tab}
-                  onClick={() => {
-                    setStatus(tab);
-                    setPage(1);
-                  }}
-                  className={`rounded-full px-5 py-3 text-[15px] sm:px-6 md:px-8 lg:px-14 lg:py-4 lg:text-[16px] ${
-                    selected
-                      ? "bg-[#00a84f] font-bold text-white"
-                      : "border border-[#cad8e6] text-[#6f7f8f]"
-                  }`}
+                  className="inline-block overflow-hidden rounded-full"
                 >
-                  {tab}
-                </motion.button>
+                  <motion.button
+                    variants={{
+                      hidden: {
+                        y: "120%",
+                        opacity: 0,
+                      },
+                      visible: {
+                        y: "0%",
+                        opacity: 1,
+                      },
+                    }}
+                    transition={{
+                      duration: 0.7,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                    onClick={() => {
+                      setStatus(tab);
+                      setPage(1);
+                    }}
+                    className={`rounded-full px-5 py-3 text-[15px] sm:px-6 md:px-8 lg:px-14 lg:py-4 lg:text-[16px] ${
+                      selected
+                        ? "bg-[#00a84f] font-bold text-white"
+                        : "border border-[#cad8e6] text-[#6f7f8f]"
+                    }`}
+                  >
+                    {tab}
+                  </motion.button>
+                </span>
               );
             })}
-          </div>
+          </motion.div>
         </div>
 
         <p className="mb-6 text-[15px] font-medium">
           {loading ? "Loading challenges..." : `Showing ${totalResults} ${status.toLowerCase()} challenges`}
         </p>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.12 }}
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.12,
+              },
+            },
+          }}
+          className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8"
+        >
           {challenges.map((item, index) => (
             <motion.div
-              initial={{ opacity: 0, y: 120 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.6,
-                delay: index * 0.12,
-                ease: "easeOut",
-              }}
-              viewport={{ once: true }}
               key={item.id}
-              // className={`overflow-hidden rounded-xl border border-[#cad8e6] ${
-              //   item.active ? "bg-[#49637f] text-white" : "bg-[#eef7ff]"
-              // }`}
-              className="group overflow-hidden rounded-xl border border-[#cad8e6] bg-[#eef7ff] transition-all duration-300 hover:bg-[#49637f] hover:text-white"
+              variants={{
+                hidden: {
+                  opacity: 0,
+                  y: "120%",
+                },
+                visible: {
+                  opacity: 1,
+                  y: "0%",
+                },
+              }}
+              transition={{
+                duration: 0.85,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="group overflow-hidden rounded-xl border border-[#cad8e6] bg-[#eef7ff] transition-all duration-300 hover:bg-[#435974] hover:text-white"
             >
               <img
                 src={item.image || CHALLENGE_FALLBACK_IMAGE}
@@ -406,21 +492,22 @@ export default function ChallengesPage() {
                 <h3 className="text-[21px] font-black uppercase sm:text-[24px]">
                   {item.title}
                 </h3>
-                <p className="mt-2 text-[15px]">{getChallengeDescription(item)}</p>
 
-                <div
-                  // className={`mt-8 flex items-center justify-between rounded-md px-6 py-5 ${
-                  //   item.active ? "bg-[#89a2bf]" : "bg-[#89a2bf]"
-                  // } text-white`}
-                  className="mt-6 flex flex-col gap-5 rounded-md bg-[#89a2bf] px-4 py-5 text-white transition-all duration-300 group-hover:bg-[#6f89a7] sm:mt-8 sm:flex-row sm:items-center sm:justify-between sm:px-6"
-                >
+                <p className="mt-2 text-[15px]">
+                  {getChallengeDescription(item)}
+                </p>
+
+                <div className="mt-6 flex flex-col gap-5 rounded-md bg-[#89a2bf] px-4 py-5 text-white transition-all duration-300 group-hover:bg-[#435974] sm:mt-8 sm:flex-row sm:items-center sm:justify-between sm:px-6">
                   <div className="space-y-2 text-[15px]">
                     <p className="flex items-center gap-2">
                       <Clock size={16} /> {getDaysText(item)}
                     </p>
+
                     <p className="flex items-center gap-2">
-                      <Users size={16} /> {formatNumber(item.participants)} participants
+                      <Users size={16} />{" "}
+                      {formatNumber(item.participants)} participants
                     </p>
+
                     <p className="flex items-center gap-2">
                       <Trophy size={16} /> {item.target} {item.unit}
                     </p>
@@ -433,7 +520,7 @@ export default function ChallengesPage() {
               </div>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {!loading && error && (
           <p className="pt-8 text-[16px] font-medium text-red-700">{error}</p>
@@ -486,22 +573,86 @@ export default function ChallengesPage() {
 
       {/* FAQ */}
       <section className="mx-auto max-w-[1100px] px-4 pb-16 text-center sm:px-6 md:px-10 lg:pb-28">
-        <h2 className="text-[30px] font-black uppercase sm:text-[34px]">
-          Frequently Asked Questions
-        </h2>
+        <motion.h2
+          className="text-[30px] font-black uppercase sm:text-[34px] overflow-hidden"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.08,
+              },
+            },
+          }}
+        >
+          {"Frequently Asked Questions".split(" ").map((word, index) => (
+            <span
+              key={index}
+              className="mr-3 inline-block overflow-hidden"
+            >
+              <motion.span
+                className="inline-block"
+                variants={{
+                  hidden: {
+                    y: "120%",
+                    opacity: 0,
+                  },
+                  visible: {
+                    y: "0%",
+                    opacity: 1,
+                  },
+                }}
+                transition={{
+                  duration: 0.7,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {word}
+              </motion.span>
+            </span>
+          ))}
+        </motion.h2>
         <p className="mt-4 text-[15px]">
           Got questions before hitting the road? We’ve got you covered.
         </p>
 
-        <div className="mt-8 grid grid-cols-1 gap-4 md:mt-12 md:grid-cols-2 md:gap-5">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.1,
+              },
+            },
+          }}
+          className="mt-8 grid grid-cols-1 gap-4 md:mt-12 md:grid-cols-2 md:gap-5"
+        >
           {faqs.map((faq, index) => (
-            <div
+            <motion.div
               key={faq.q}
+              variants={{
+                hidden: {
+                  opacity: 0,
+                  y: "120%",
+                },
+                visible: {
+                  opacity: 1,
+                  y: "0%",
+                },
+              }}
+              transition={{
+                duration: 0.8,
+                ease: [0.22, 1, 0.36, 1],
+              }}
               role="button"
               tabIndex={0}
               onClick={() => setOpenFaq(openFaq === index ? null : index)}
               onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") setOpenFaq(openFaq === index ? null : index);
+                if (event.key === "Enter" || event.key === " ")
+                  setOpenFaq(openFaq === index ? null : index);
               }}
               className="cursor-pointer rounded-lg border border-[#cad8e6] bg-[#eef7ff] px-4 text-left text-[15px] font-medium sm:px-7 sm:text-[16px]"
             >
@@ -509,16 +660,28 @@ export default function ChallengesPage() {
                 <span>
                   {String(index + 1).padStart(2, "0")}. {faq.q}
                 </span>
-                <Plus className={`shrink-0 transition-transform ${openFaq === index ? "rotate-45" : ""}`} size={18} />
+
+                <Plus
+                  className={`shrink-0 transition-transform ${
+                    openFaq === index ? "rotate-45" : ""
+                  }`}
+                  size={18}
+                />
               </div>
+
               {openFaq === index && (
-                <p className="pb-5 text-[14px] font-normal leading-6 text-black/65 sm:text-[15px]">
+                <motion.p
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  transition={{ duration: 0.35 }}
+                  className="pb-5 text-[14px] font-normal leading-6 text-black/65 sm:text-[15px]"
+                >
                   {faq.a}
-                </p>
+                </motion.p>
               )}
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
 
       {/* CTA */}
