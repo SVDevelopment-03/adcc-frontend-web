@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getPublicStats } from "../../services/publicStatsApi";
 import { motion } from "framer-motion";
-import gsap from "gsap";
 
 // ─── Google Fonts ────────────────────────────────────────────────────────────
 const FontLoader = () => (
@@ -559,58 +558,86 @@ function Hero() {
         backgroundSize: "cover", backgroundPosition: "center top"
       }} />
       <div className="about-hero-content" style={{ position: "absolute", bottom: 90, left: 82 }}>
-        <h1
-          className="bebas about-hero-title"
+        <motion.h1
+          className="bebas about-hero-title overflow-hidden"
           style={{
             fontSize: 70,
             color: "#fff",
             lineHeight: 1,
             marginTop: 8,
-            textTransform: "uppercase"
+            textTransform: "uppercase",
+          }}
+          initial="hidden"
+          animate="visible"
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.08,
+              },
+            },
           }}
         >
           {["About", "Us"].map((word, index) => (
-            <motion.span
+            <span
               key={word}
-              initial={{ opacity: 0, y: 100 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.45,
-                delay: index * 0.15,
-              }}
-              style={{
-                display: "inline-block",
-                marginRight: "16px",
-              }}
+              className="inline-block overflow-hidden"
+              style={{ marginRight: "16px" }}
             >
-              {word}
-            </motion.span>
+              <motion.span
+                className="inline-block"
+                variants={{
+                  hidden: {
+                    y: "120%",
+                    opacity: 0,
+                  },
+                  visible: {
+                    y: "0%",
+                    opacity: 1,
+                  },
+                }}
+                transition={{
+                  duration: 0.7,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {word}
+              </motion.span>
+            </span>
           ))}
-        </h1>
+        </motion.h1>
         <p
-          className="about-hero-breadcrumb"
+          className="about-hero-breadcrumb overflow-hidden"
           style={{
             color: "rgba(255,255,255,0.8)",
             fontSize: 22,
-            fontFamily: "'Satoshi',sans-serif"
+            fontFamily: "'Satoshi',sans-serif",
           }}
         >
           {["Home", "/", "About", "us"].map((word, index) => (
-            <motion.span
+            <span
               key={`${word}-${index}`}
-              initial={{ opacity: 0, y: 60 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.35,
-                delay: 0.35 + index * 0.1,
-              }}
-              style={{
-                display: "inline-block",
-                marginRight: "8px",
-              }}
+              className="inline-block overflow-hidden"
+              style={{ marginRight: "8px" }}
             >
-              {word}
-            </motion.span>
+              <motion.span
+                className="inline-block"
+                initial={{
+                  y: "120%",
+                  opacity: 0,
+                }}
+                animate={{
+                  y: "0%",
+                  opacity: 1,
+                }}
+                transition={{
+                  duration: 0.7,
+                  delay: index * 0.08,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {word}
+              </motion.span>
+            </span>
           ))}
         </p>
       </div>
@@ -653,34 +680,67 @@ function StatsSection() {
       <div className="about-stats-wrap" style={{ display: "flex", gap: 64, alignItems: "flex-start" }}>
         {/* Headline */}
         <div className="about-stats-left" style={{ flex: "0 0 520px" }}>
-         <h2
-          className="bebas about-stats-title"
-          style={{
-            fontSize: 50,
-            lineHeight: 1.25,
-            textTransform: "uppercase",
-            maxWidth: 500
-          }}
-        >
-          {["We", "are", "cyclists", "committed", "to", "pushing", "limits", "and", "inspiring", "a", "stronger", "cycling", "community."].map((word, index) => (
-            <motion.span
-              key={`${word}-${index}`}
-              initial={{ opacity: 0, y: 100 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.4,
-                delay: index * 0.06,
-              }}
-              viewport={{ once: true }}
-              style={{
-                display: "inline-block",
-                marginRight: "12px",
-              }}
-            >
-              {word}
-            </motion.span>
-          ))}
-        </h2>
+          <motion.h2
+            className="bebas about-stats-title overflow-hidden"
+            style={{
+              fontSize: 50,
+              lineHeight: 1,
+              textTransform: "uppercase",
+              maxWidth: 500,
+            }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={{
+              visible: {
+                transition: {
+                  staggerChildren: 0.06,
+                },
+              },
+            }}
+          >
+            {[
+              "We",
+              "are",
+              "cyclists",
+              "committed",
+              "to",
+              "pushing",
+              "limits",
+              "and",
+              "inspiring",
+              "a",
+              "stronger",
+              "cycling",
+              "community.",
+            ].map((word, index) => (
+              <span
+                key={`${word}-${index}`}
+                className="inline-block overflow-hidden"
+                style={{ marginRight: "12px" }}
+              >
+                <motion.span
+                  className="inline-block"
+                  variants={{
+                    hidden: {
+                      y: "120%",
+                      opacity: 0,
+                    },
+                    visible: {
+                      y: "0%",
+                      opacity: 1,
+                    },
+                  }}
+                  transition={{
+                    duration: 0.7,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  {word}
+                </motion.span>
+              </span>
+            ))}
+          </motion.h2>
           {/* small cycling photo */}
           <motion.div
             className="about-stats-photo"
@@ -755,34 +815,53 @@ function MissionSection() {
       {/* Headline row */}
       <div className="about-mission-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 40 }}>
         <div>
-          <h2
-            className="bebas about-mission-title"
+          <motion.h2
+            className="bebas about-mission-title overflow-hidden"
             style={{
               fontSize: 50,
               lineHeight: 1.2,
               maxWidth: 480,
-              textTransform: "capitalize"
+              textTransform: "capitalize",
+            }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={{
+              visible: {
+                transition: {
+                  staggerChildren: 0.07,
+                },
+              },
             }}
           >
             {["Driving", "the", "Future", "of", "Cycling", "in", "Abu", "Dhabi"].map((word, index) => (
-              <motion.span
+              <span
                 key={`${word}-${index}`}
-                initial={{ opacity: 0, y: 100 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.4,
-                  delay: index * 0.07,
-                }}
-                viewport={{ once: true }}
-                style={{
-                  display: "inline-block",
-                  marginRight: "12px",
-                }}
+                className="inline-block overflow-hidden"
+                style={{ marginRight: "12px" }}
               >
-                {word}
-              </motion.span>
+                <motion.span
+                  className="inline-block"
+                  variants={{
+                    hidden: {
+                      y: "120%",
+                      opacity: 0,
+                    },
+                    visible: {
+                      y: "0%",
+                      opacity: 1,
+                    },
+                  }}
+                  transition={{
+                    duration: 0.7,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  {word}
+                </motion.span>
+              </span>
             ))}
-          </h2>
+          </motion.h2>
         </div>
         <p className="about-mission-intro" style={{ maxWidth: 430, fontSize: 22, fontWeight: 500, lineHeight: 1.5, color: "rgba(0,0,0,0.8)", paddingTop: 8 }}>
           At Abu Dhabi Cycling Club, our mission is to inspire riders, develop athletes, and build a thriving cycling culture across the emirate.
@@ -791,51 +870,111 @@ function MissionSection() {
 
       <div className="mission-content about-mission-content" style={{ display: "flex", gap: 28, alignItems: "stretch" }}>
         {/* Mission + Vision cards */}
-        <div className="about-mission-card-stack" style={{ flex: "0 0 600px", display: "flex", flexDirection: "column", gap: 20 }}>
+        <motion.div
+          className="about-mission-card-stack"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.14,
+              },
+            },
+          }}
+          style={{
+            flex: "0 0 600px",
+            display: "flex",
+            flexDirection: "column",
+            gap: 20,
+          }}
+        >
           {/* 01. Mission */}
           <motion.div
-            initial={{ opacity: 0, x: -200 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{
-              duration: 0.7,
-              delay: 0,
-              ease: "easeOut",
+            variants={{
+              hidden: {
+                opacity: 0,
+                x: "-120%",
+              },
+              visible: {
+                opacity: 1,
+                x: "0%",
+              },
             }}
-            viewport={{ once: true }}
+            transition={{
+              duration: 0.8,
+              ease: [0.22, 1, 0.36, 1],
+            }}
             style={{
               background: "#fff",
               borderRadius: 18,
-              padding: "28px 32px"
+              padding: "28px 32px",
             }}
           >
-            <div className="bebas" style={{ fontSize: 20, marginBottom: 10 }}>01. Our Mission</div>
-            <p style={{ fontSize: 15, color: "rgba(0,0,0,0.6)", lineHeight: 1.6 }}>
-              To promote cycling as a healthy lifestyle and competitive sport by creating opportunities for riders to train, participate in events, and connect with the cycling community across Abu Dhabi.
+            <div
+              className="bebas"
+              style={{ fontSize: 20, marginBottom: 10 }}
+            >
+              01. Our Mission
+            </div>
+
+            <p
+              style={{
+                fontSize: 15,
+                color: "rgba(0,0,0,0.6)",
+                lineHeight: 1.6,
+              }}
+            >
+              To promote cycling as a healthy lifestyle and competitive
+              sport by creating opportunities for riders to train,
+              participate in events, and connect with the cycling
+              community across Abu Dhabi.
             </p>
           </motion.div>
+
           {/* 02. Vision */}
-          {/* <div style={{ border: "1px solid rgba(0,0,0,0.22)", borderRadius: 18, padding: "28px 32px" }}> */}
           <motion.div
-            initial={{ opacity: 0, x: -200 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{
-              duration: 0.7,
-              delay: 0.2,
-              ease: "easeOut",
+            variants={{
+              hidden: {
+                opacity: 0,
+                x: "-120%",
+              },
+              visible: {
+                opacity: 1,
+                x: "0%",
+              },
             }}
-            viewport={{ once: true }}
+            transition={{
+              duration: 0.8,
+              ease: [0.22, 1, 0.36, 1],
+            }}
             style={{
               border: "1px solid rgba(0,0,0,0.22)",
               borderRadius: 18,
-              padding: "28px 32px"
+              padding: "28px 32px",
             }}
           >
-            <div className="bebas" style={{ fontSize: 20, marginBottom: 10 }}>02. Our Vision</div>
-            <p style={{ fontSize: 15, color: "rgba(0,0,0,0.6)", lineHeight: 1.6 }}>
-              To become the leading cycling club in the UAE, known for excellence, inclusivity, and producing championship-level athletes who represent Abu Dhabi on the world stage.
+            <div
+              className="bebas"
+              style={{ fontSize: 20, marginBottom: 10 }}
+            >
+              02. Our Vision
+            </div>
+
+            <p
+              style={{
+                fontSize: 15,
+                color: "rgba(0,0,0,0.6)",
+                lineHeight: 1.6,
+              }}
+            >
+              To become the leading cycling club in the UAE, known
+              for excellence, inclusivity, and producing
+              championship-level athletes who represent Abu Dhabi
+              on the world stage.
             </p>
           </motion.div>
-        </div>
+        </motion.div>
 
         <JourneyCard />
       </div>
@@ -880,62 +1019,133 @@ function ValuesSection() {
       <div className="about-values-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 40 }}>
         <div>
           <p style={{fontFamily: "'Satoshi',sans-serif", fontSize: 15, fontWeight: 500, marginBottom: 8, color: "#000" }}>Our values</p>
-          <h2
-            className="bebas about-values-title"
+          <motion.h2
+            className="bebas about-values-title overflow-hidden"
             style={{
               fontSize: 50,
               lineHeight: 1.2,
               maxWidth: 480,
-              textTransform: "capitalize"
+              textTransform: "capitalize",
+            }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={{
+              visible: {
+                transition: {
+                  staggerChildren: 0.07,
+                },
+              },
             }}
           >
             {["The", "Principles", "That", "Drive", "Our", "Cycling", "Community"].map((word, index) => (
-              <motion.span
+              <span
                 key={`${word}-${index}`}
-                initial={{ opacity: 0, y: 100 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.4,
-                  delay: index * 0.07,
-                }}
-                viewport={{ once: true }}
-                style={{
-                  display: "inline-block",
-                  marginRight: "12px",
-                }}
+                className="inline-block overflow-hidden"
+                style={{ marginRight: "12px" }}
               >
-                {word}
-              </motion.span>
+                <motion.span
+                  className="inline-block"
+                  variants={{
+                    hidden: {
+                      y: "120%",
+                      opacity: 0,
+                    },
+                    visible: {
+                      y: "0%",
+                      opacity: 1,
+                    },
+                  }}
+                  transition={{
+                    duration: 0.7,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  {word}
+                </motion.span>
+              </span>
             ))}
-          </h2>
+          </motion.h2>
         </div>
         <button className="btn-green" onClick={() => navigate("/user-communities")}>Discover the Community <Arrow /></button>
       </div>
-      <div className="about-values-grid" style={{ display: "flex", gap: 24 }}>
+      <motion.div
+        className="about-values-grid"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.15 }}
+        variants={{
+          visible: {
+            transition: {
+              staggerChildren: 0.12,
+            },
+          },
+        }}
+        style={{ display: "flex", gap: 24 }}
+      >
         {values.map((v, i) => (
-          // <div key={i} className="value-card about-value-card"
           <motion.div
             key={i}
             className="value-card about-value-card"
-            initial={{ opacity: 0, x: 320 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{
-              duration: 0.7,
-              delay: i * 0.18,
-              ease: "easeOut",
+            variants={{
+              hidden: {
+                opacity: 0,
+                x: "120%",
+              },
+              visible: {
+                opacity: 1,
+                x: "0%",
+              },
             }}
-            viewport={{ once: true }}
+            transition={{
+              duration: 0.8,
+              ease: [0.22, 1, 0.36, 1],
+            }}
             style={{
-            flex: 1, borderRadius: 12,
-            padding: "24px 20px 28px", minHeight: 240,
-            backdropFilter: "blur(15px)"
-          }}>
-            <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 17, fontWeight: 500, color: "#fff", marginBottom: 56 }}>{v.num}</div>
-            <div className="bebas" style={{ fontSize: 28, color: "#fff", marginBottom: 10 }}>{v.title}</div>
-            <p style={{fontFamily: "'Satoshi',sans-serif", fontSize: 16, color: "#fff", lineHeight: 1.55, opacity: .9 }}>{v.text}</p>
+              flex: 1,
+              borderRadius: 12,
+              padding: "24px 20px 28px",
+              minHeight: 240,
+              backdropFilter: "blur(15px)",
+            }}
+          >
+            <div
+              style={{
+                fontFamily: "'Outfit',sans-serif",
+                fontSize: 17,
+                fontWeight: 500,
+                color: "#fff",
+                marginBottom: 56,
+              }}
+            >
+              {v.num}
+            </div>
+
+            <div
+              className="bebas"
+              style={{
+                fontSize: 28,
+                color: "#fff",
+                marginBottom: 10,
+              }}
+            >
+              {v.title}
+            </div>
+
+            <p
+              style={{
+                fontFamily: "'Satoshi',sans-serif",
+                fontSize: 16,
+                color: "#fff",
+                lineHeight: 1.55,
+                opacity: 0.9,
+              }}
+            >
+              {v.text}
+            </p>
           </motion.div>
         ))}
-      </div>
+      </motion.div>
     </section>
   );
 }
@@ -949,36 +1159,55 @@ function CoachesSection() {
   ];
   return (
     <section className="about-section about-coaches-section" style={{ background: "#EAF4FF", padding: "0 82px 80px" }}>
-      <h2
-        className="bebas about-coaches-title"
+      <motion.h2
+        className="bebas about-coaches-title overflow-hidden"
         style={{
           fontSize: 50,
           lineHeight: 1.2,
           textAlign: "center",
           maxWidth: 640,
           margin: "0 auto 40px",
-          textTransform: "capitalize"
+          textTransform: "capitalize",
+        }}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={{
+          visible: {
+            transition: {
+              staggerChildren: 0.07,
+            },
+          },
         }}
       >
         {["Meet", "the", "Coaches", "Driving", "Abu", "Dhabi's", "Cycling", "Community"].map((word, index) => (
-          <motion.span
+          <span
             key={`${word}-${index}`}
-            initial={{ opacity: 0, y: 100 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.4,
-              delay: index * 0.07,
-            }}
-            viewport={{ once: true }}
-            style={{
-              display: "inline-block",
-              marginRight: "12px",
-            }}
+            className="inline-block overflow-hidden"
+            style={{ marginRight: "12px" }}
           >
-            {word}
-          </motion.span>
+            <motion.span
+              className="inline-block"
+              variants={{
+                hidden: {
+                  y: "120%",
+                  opacity: 0,
+                },
+                visible: {
+                  y: "0%",
+                  opacity: 1,
+                },
+              }}
+              transition={{
+                duration: 0.7,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            >
+              {word}
+            </motion.span>
+          </span>
         ))}
-      </h2>
+      </motion.h2>
       <div className="about-coaches-grid" style={{
         display: "flex", borderRadius: 16, overflow: "hidden",
         height: 488, background: "#fff"

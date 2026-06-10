@@ -491,23 +491,34 @@ function Hero() {
         backgroundSize: "cover", backgroundPosition: "center"
       }} />
       <div className="track-hero-content" style={{ position: "absolute", bottom: 90, left: 82 }}>
-        <p className="track-hero-breadcrumb" style={{ color: "rgba(255,255,255,0.8)", fontSize: 22 }}>
+        <p
+          className="track-hero-breadcrumb overflow-hidden"
+          style={{ color: "rgba(255,255,255,0.8)", fontSize: 22 }}
+        >
           {["Home", "/", "Tracks"].map((word, index) => (
-            <motion.span
+            <span
               key={`${word}-${index}`}
-              initial={{ opacity: 0, y: 60 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.35,
-                delay: index * 0.1,
-              }}
-              style={{
-                display: "inline-block",
-                marginRight: "8px",
-              }}
+              className="mr-2 inline-block overflow-hidden"
             >
-              {word}
-            </motion.span>
+              <motion.span
+                className="inline-block"
+                initial={{
+                  y: "120%",
+                  opacity: 0,
+                }}
+                animate={{
+                  y: "0%",
+                  opacity: 1,
+                }}
+                transition={{
+                  duration: 0.7,
+                  delay: index * 0.08,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {word}
+              </motion.span>
+            </span>
           ))}
         </p>
 
@@ -552,34 +563,47 @@ function ExploreIntro() {
       <div className="track-intro-wrap" style={{ display: "flex", gap: 48, alignItems: "flex-start", overflow: "visible" }}>
         {/* Left: heading + green card */}
         <div className="track-intro-left" style={{ flex: "0 0 480px" }}>
-          <h2
-          className="bebas track-intro-title"
-          style={{
-            fontSize: 60,
-            lineHeight: 1.1,
-            textTransform: "capitalize",
-            marginBottom: 64
-          }}
-        >
-          {["Explore", "Abu", "Dhabi's", "Premier", "Cycling", "Tracks"].map((word, index) => (
-            <motion.span
-              key={`${word}-${index}`}
-              initial={{ opacity: 0, y: 100 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.4,
-                delay: index * 0.07,
-              }}
-              viewport={{ once: true }}
-              style={{
-                display: "inline-block",
-                marginRight: "12px",
-              }}
-            >
-              {word}
-            </motion.span>
-          ))}
-        </h2>
+          <motion.h2
+            className="bebas track-intro-title overflow-hidden"
+            style={{
+              fontSize: 60,
+              lineHeight: 1.0,
+              textTransform: "capitalize",
+              marginBottom: 64,
+            }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={{
+              visible: {
+                transition: {
+                  staggerChildren: 0.08,
+                },
+              },
+            }}
+          >
+            {["Explore", "Abu", "Dhabi's", "Premier", "Cycling", "Tracks"].map((word, index) => (
+              <span
+                key={`${word}-${index}`}
+                className="inline-block overflow-hidden"
+                style={{ marginRight: "12px" }}
+              >
+                <motion.span
+                  className="inline-block"
+                  variants={{
+                    hidden: { y: "120%", opacity: 0 },
+                    visible: { y: "0%", opacity: 1 },
+                  }}
+                  transition={{
+                    duration: 0.7,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  {word}
+                </motion.span>
+              </span>
+            ))}
+          </motion.h2>
          <motion.div
           className="track-journey-offset"
           initial={{ opacity: 0, y: 120 }}
@@ -669,34 +693,53 @@ function WhySection() {
       <div style={{ position: "relative", zIndex: 2 }}>
         {/* header row */}
         <div className="track-why-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 48 }}>
-          <h2
-            className="bebas track-why-title"
+          <motion.h2
+            className="bebas track-why-title overflow-hidden"
             style={{
               fontSize: 50,
               color: "#000",
               lineHeight: 1.2,
-              maxWidth: 300
+              maxWidth: 300,
+            }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={{
+              visible: {
+                transition: {
+                  staggerChildren: 0.08,
+                },
+              },
             }}
           >
             {["Why", "Use", "ADCC", "Tracks?"].map((word, index) => (
-              <motion.span
+              <span
                 key={`${word}-${index}`}
-                initial={{ opacity: 0, y: 100 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.4,
-                  delay: index * 0.08,
-                }}
-                viewport={{ once: true }}
-                style={{
-                  display: "inline-block",
-                  marginRight: "12px",
-                }}
+                className="inline-block overflow-hidden"
+                style={{ marginRight: "12px" }}
               >
-                {word}
-              </motion.span>
+                <motion.span
+                  className="inline-block"
+                  variants={{
+                    hidden: {
+                      y: "120%",
+                      opacity: 0,
+                    },
+                    visible: {
+                      y: "0%",
+                      opacity: 1,
+                    },
+                  }}
+                  transition={{
+                    duration: 0.7,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  {word}
+                </motion.span>
+              </span>
             ))}
-          </h2>
+          </motion.h2>
           <button style={{
             background: "#019839", color: "#fff", border: "none", borderRadius: 30,
             padding: "13px 28px", fontWeight: 700, fontSize: 18, cursor: "pointer",
@@ -761,9 +804,12 @@ function WhySection() {
 function TrackCard({ track, index = 0 }: { track: PublicTrackCard; index?: number }) {
   const [isHovered, setIsHovered] = useState(false);
   const isFeatured = track.featured || isHovered;
-  const cardBg = isFeatured ? "#435974" : "#fff";
-  const textColor = isFeatured ? "#fff" : "#000";
-  const statBg = isFeatured ? "#435974" : "#323232";
+  // const cardBg = isFeatured ? "#435974" : "#fff";
+  const cardBg = isHovered ? "#435974" : "#fff";
+  // const textColor = isFeatured ? "#fff" : "#000";
+  const textColor = isHovered ? "#fff" : "#000";
+  // const statBg = isFeatured ? "#435974" : "#323232";
+  const statBg = "#435974";
   const borderStyle = isFeatured ? "none" : "1px solid rgba(0,0,0,0.3)";
   const mutedText = isFeatured ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.8)";
 
@@ -992,34 +1038,53 @@ function TracksGrid() {
     <section className="track-grid-section" style={{ background: "#EAF4FF", padding: "60px 82px 0" }}>
       {/* section title + filters */}
       <div className="track-grid-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 32, flexWrap: "wrap", gap: 20 }}>
-       <h2
-        className="bebas track-grid-title"
-        style={{
-          fontSize: 50,
-          lineHeight: 1.15,
-          maxWidth: 440,
-          textTransform: "capitalize"
-        }}
-      >
-        {["Explore", "Certified", "Routes", "Across", "the", "UAE"].map((word, index) => (
-          <motion.span
-            key={`${word}-${index}`}
-            initial={{ opacity: 0, y: 100 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.4,
-              delay: index * 0.08,
-            }}
-            viewport={{ once: true }}
-            style={{
-              display: "inline-block",
-              marginRight: "12px",
-            }}
-          >
-            {word}
-          </motion.span>
-        ))}
-      </h2>
+        <motion.h2
+          className="bebas track-grid-title overflow-hidden"
+          style={{
+            fontSize: 50,
+            lineHeight: 1.15,
+            maxWidth: 440,
+            textTransform: "capitalize",
+          }}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.08,
+              },
+            },
+          }}
+        >
+          {["Explore", "Certified", "Routes", "Across", "the", "UAE"].map((word, index) => (
+            <span
+              key={`${word}-${index}`}
+              className="inline-block overflow-hidden"
+              style={{ marginRight: "12px" }}
+            >
+              <motion.span
+                className="inline-block"
+                variants={{
+                  hidden: {
+                    y: "120%",
+                    opacity: 0,
+                  },
+                  visible: {
+                    y: "0%",
+                    opacity: 1,
+                  },
+                }}
+                transition={{
+                  duration: 0.7,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {word}
+              </motion.span>
+            </span>
+          ))}
+        </motion.h2>
         <div className="track-filter-bar" style={{ display: "flex", gap: 16, alignItems: "center" }}>
           {filterControls.map((f, index) => (
             <motion.div

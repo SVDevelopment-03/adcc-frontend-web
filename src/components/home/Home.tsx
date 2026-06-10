@@ -4,6 +4,7 @@ import { getStoreItems, StoreItem } from '../../services/storeApi';
 import { subscribeToNewsletter } from '../../services/newsletterApi';
 import { motion } from "framer-motion";
 import gsap from "gsap";
+import useEmblaCarousel from 'embla-carousel-react';
 
 const CSS = `
   @keyframes ticker-group-left {
@@ -68,6 +69,16 @@ const CSS = `
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: #EAF4FF; }
   ::-webkit-scrollbar { display: none; }
+  .home-page {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  .home-page > header,
+  .home-page > section,
+  .home-page > footer {
+    max-width: 100%;
+  }
 
   .hover-green:hover { color: #019839 !important; }
   .btn-green { transition: background 0.2s; }
@@ -146,6 +157,18 @@ const CSS = `
     text-align: right;
     z-index: 2;
   }
+  .store-featured-card.is-marketplace .store-featured-icon {
+    top: 53px;
+  }
+  .store-featured-card.is-marketplace .store-featured-type {
+    top: 66px;
+    width: 186px;
+  }
+  .store-featured-card.is-marketplace .store-featured-action {
+    right: 40px;
+    top: 59px;
+    width: 202px;
+  }
   .store-featured-title {
     position: absolute;
     left: 62px;
@@ -158,6 +181,13 @@ const CSS = `
     color: #000;
     z-index: 2;
   }
+  .store-featured-card.is-marketplace .store-featured-title {
+    left: 50%;
+    top: 142px;
+    width: 316px;
+    transform: translateX(-50%);
+    text-align: center;
+  }
   .store-featured-sub {
     position: absolute;
     left: 62px;
@@ -168,6 +198,13 @@ const CSS = `
     line-height: 18px;
     color: #000;
     z-index: 2;
+  }
+  .store-featured-card.is-marketplace .store-featured-sub {
+    left: 50%;
+    top: 190px;
+    width: 215px;
+    transform: translateX(-50%);
+    text-align: center;
   }
   .store-featured-price {
     position: absolute;
@@ -180,6 +217,10 @@ const CSS = `
     color: #435974;
     z-index: 2;
   }
+  .store-featured-card.is-marketplace .store-featured-price {
+    left: 53px;
+    top: 505px;
+  }
   .store-featured-product {
     position: absolute;
     right: 38px;
@@ -190,6 +231,60 @@ const CSS = `
     object-position: center;
     border-radius: 18px;
     z-index: 1;
+  }
+  .store-featured-card.is-marketplace .store-featured-product {
+    left: 32px;
+    right: 33px;
+    top: 223px;
+    width: calc(100% - 65px);
+    height: 282px;
+    object-fit: contain;
+    border-radius: 0;
+  }
+  .store-product-carousel {
+    overflow: hidden;
+  }
+  .store-product-carousel-track {
+    display: flex;
+    height: 100%;
+  }
+  .store-product-carousel-slide {
+    flex: 0 0 100%;
+    min-width: 0;
+    height: 100%;
+  }
+  .store-product-carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .store-carousel-controls {
+    position: absolute;
+    right: 38px;
+    bottom: 38px;
+    display: flex;
+    gap: 12px;
+    z-index: 3;
+  }
+  .store-carousel-button {
+    width: 36px;
+    height: 36px;
+    border: 1.5px solid #000;
+    border-radius: 50%;
+    background: transparent;
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    line-height: 1;
+    transition: background 0.2s, color 0.2s;
+  }
+  .store-carousel-button:hover {
+    background: #019839;
+    color: #fff;
+    border-color: #019839;
   }
   .store-compact-card {
     flex: 0 0 320px;
@@ -545,6 +640,27 @@ const CSS = `
       width: 52%;
       height: 300px;
     }
+    .store-featured-card.is-marketplace .store-featured-action {
+      width: 172px;
+    }
+    .store-featured-card.is-marketplace .store-featured-title {
+      top: 136px;
+      width: 300px;
+    }
+    .store-featured-card.is-marketplace .store-featured-sub {
+      top: 184px;
+    }
+    .store-featured-card.is-marketplace .store-featured-product {
+      left: 28px;
+      right: 28px;
+      top: 220px;
+      width: calc(100% - 56px);
+      height: 220px;
+    }
+    .store-featured-card.is-marketplace .store-featured-price {
+      left: 30px;
+      top: 440px;
+    }
   }
 
   @media (max-width: 1024px) {
@@ -611,7 +727,7 @@ const CSS = `
       display: flex !important;
       flex-direction: column !important;
       gap: 32px !important;
-      overflow: visible !important;
+      overflow: hidden !important;
       padding: 58px 32px !important;
     }
     .journey-copy {
@@ -976,6 +1092,40 @@ const CSS = `
       top: 392px !important;
       font-size: 34px !important;
     }
+    .store-featured-card.is-marketplace .store-featured-action {
+      width: 156px !important;
+    }
+    .store-featured-card.is-marketplace .store-featured-title {
+      top: 116px !important;
+      width: calc(100% - 60px) !important;
+      font-size: 25px !important;
+      line-height: 30px !important;
+    }
+    .store-featured-card.is-marketplace .store-featured-sub {
+      display: block !important;
+      top: 150px !important;
+      width: calc(100% - 60px) !important;
+    }
+    .store-featured-card.is-marketplace .store-featured-product {
+      left: 18px !important;
+      right: 18px !important;
+      top: 190px !important;
+      width: calc(100% - 36px) !important;
+      height: 180px !important;
+    }
+    .store-featured-card.is-marketplace .store-featured-price {
+      left: 30px !important;
+      top: 392px !important;
+    }
+    .store-carousel-controls {
+      right: 24px !important;
+      bottom: 38px !important;
+      gap: 10px !important;
+    }
+    .store-carousel-button {
+      width: 32px !important;
+      height: 32px !important;
+    }
     .store-compact-card {
       flex-basis: min(300px, calc(100vw - 36px)) !important;
       width: min(300px, calc(100vw - 36px)) !important;
@@ -1128,6 +1278,44 @@ const CSS = `
       top: 384px !important;
       font-size: 30px !important;
     }
+    .store-featured-card.is-marketplace .store-featured-type {
+      width: 122px !important;
+    }
+    .store-featured-card.is-marketplace .store-featured-action {
+      width: 126px !important;
+      font-size: 14px !important;
+    }
+    .store-featured-card.is-marketplace .store-featured-title {
+      top: 100px !important;
+      width: calc(100% - 40px) !important;
+      font-size: 22px !important;
+      line-height: 27px !important;
+    }
+    .store-featured-card.is-marketplace .store-featured-sub {
+      top: 136px !important;
+      width: calc(100% - 40px) !important;
+      font-size: 12px !important;
+    }
+    .store-featured-card.is-marketplace .store-featured-product {
+      left: 20px !important;
+      right: 20px !important;
+      top: 182px !important;
+      width: calc(100% - 40px) !important;
+      height: 160px !important;
+    }
+    .store-featured-card.is-marketplace .store-featured-price {
+      left: 20px !important;
+      top: 384px !important;
+    }
+    .store-carousel-controls {
+      right: 20px !important;
+      bottom: 26px !important;
+      gap: 8px !important;
+    }
+    .store-carousel-button {
+      width: 30px !important;
+      height: 30px !important;
+    }
     .store-featured-card {
       height: 440px !important;
     }
@@ -1271,58 +1459,87 @@ function HeroSection() {
       <div className="home-hero-bg" style={{ position: 'absolute', inset: 0, backgroundImage: 'url(/images/hero.png)', backgroundSize: 'cover', backgroundPosition: 'center top' }} />
       <div style={{ position: 'absolute', inset: 0, }} />
       <div className="home-hero-content" style={{ position: 'absolute', left: 86, bottom: 360, maxWidth: 520 }}>
-        {/* <h1 className="home-hero-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontWeight: 900, fontSize: 72, lineHeight: 1.1, color: '#000000', textTransform: 'uppercase', letterSpacing: '-0.5px', marginBottom: 28, }}>RIDE ABU DHABI START<br />YOUR CYCLING JOURNEY</h1> */}
-        <h1
-          className="home-hero-title"
+        <motion.h1
+          className="home-hero-title overflow-hidden"
           style={{
             fontFamily: "'Bebas Neue', sans-serif",
             fontWeight: 900,
             fontSize: 72,
             lineHeight: 1.1,
-            color: '#000000',
-            textTransform: 'uppercase',
-            letterSpacing: '-0.5px',
+            color: "#000000",
+            textTransform: "uppercase",
+            letterSpacing: "-0.5px",
             marginBottom: 28,
+          }}
+          initial="hidden"
+          animate="visible"
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.08,
+              },
+            },
           }}
         >
           {["RIDE", "ABU", "DHABI", "START"].map((word, index) => (
-            <motion.span
+            <span
               key={word}
-              initial={{ opacity: 0, y: 100 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.45,
-                delay: index * 0.12,
-              }}
-              style={{
-                display: "inline-block",
-                marginRight: "14px",
-              }}
+              className="inline-block overflow-hidden"
+              style={{ marginRight: "14px" }}
             >
-              {word}
-            </motion.span>
+              <motion.span
+                className="inline-block"
+                variants={{
+                  hidden: {
+                    y: "120%",
+                    opacity: 0,
+                  },
+                  visible: {
+                    y: "0%",
+                    opacity: 1,
+                  },
+                }}
+                transition={{
+                  duration: 0.7,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {word}
+              </motion.span>
+            </span>
           ))}
 
           <br />
 
           {["YOUR", "CYCLING", "JOURNEY"].map((word, index) => (
-            <motion.span
+            <span
               key={word}
-              initial={{ opacity: 0, y: 100 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.45,
-                delay: 0.45 + index * 0.12,
-              }}
-              style={{
-                display: "inline-block",
-                marginRight: "14px",
-              }}
+              className="inline-block overflow-hidden"
+              style={{ marginRight: "14px" }}
             >
-              {word}
-            </motion.span>
+              <motion.span
+                className="inline-block"
+                variants={{
+                  hidden: {
+                    y: "120%",
+                    opacity: 0,
+                  },
+                  visible: {
+                    y: "0%",
+                    opacity: 1,
+                  },
+                }}
+                transition={{
+                  duration: 0.7,
+                  delay: 0.32 + index * 0.02,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {word}
+              </motion.span>
+            </span>
           ))}
-        </h1>
+        </motion.h1>
         <div className="home-hero-actions" style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
           <button className="btn-green" style={{ display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 22px', background: '#019839', border: 'none', borderRadius: 30, cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 600, fontSize: 18, color: '#fff' }}>
             Download App <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /><path d="M3 13h10" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" /></svg>
@@ -1429,47 +1646,78 @@ function CyclingJourneySection() {
   return (
     <section className="journey-section">
       <div className="journey-copy">
-        <h2 className="journey-title">
+        <motion.h2
+          className="journey-title overflow-hidden"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.08,
+              },
+            },
+          }}
+        >
           {["Begin", "Your"].map((word, index) => (
-            <motion.span
+            <span
               key={word}
-              initial={{ opacity: 0, y: 100 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.45,
-                delay: index * 0.12,
-              }}
-              viewport={{ once: true }}
-              style={{
-                display: "inline-block",
-                marginRight: "14px",
-              }}
+              className="inline-block overflow-hidden"
+              style={{ marginRight: "14px" }}
             >
-              {word}
-            </motion.span>
+              <motion.span
+                className="inline-block"
+                variants={{
+                  hidden: {
+                    y: "120%",
+                    opacity: 0,
+                  },
+                  visible: {
+                    y: "0%",
+                    opacity: 1,
+                  },
+                }}
+                transition={{
+                  duration: 0.7,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {word}
+              </motion.span>
+            </span>
           ))}
 
           <br />
 
           {["Cycling", "Journey"].map((word, index) => (
-            <motion.span
+            <span
               key={word}
-              initial={{ opacity: 0, y: 100 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.45,
-                delay: 0.25 + index * 0.12,
-              }}
-              viewport={{ once: true }}
-              style={{
-                display: "inline-block",
-                marginRight: "14px",
-              }}
+              className="inline-block overflow-hidden"
+              style={{ marginRight: "14px" }}
             >
-              {word}
-            </motion.span>
+              <motion.span
+                className="inline-block"
+                variants={{
+                  hidden: {
+                    y: "120%",
+                    opacity: 0,
+                  },
+                  visible: {
+                    y: "0%",
+                    opacity: 1,
+                  },
+                }}
+                transition={{
+                  duration: 0.7,
+                  delay: 0.3 + index * 0.02,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {word}
+              </motion.span>
+            </span>
           ))}
-        </h2>
+        </motion.h2>
         <motion.div
           className="journey-rider"
           initial={{ opacity: 0, x: -150 }}
@@ -1557,185 +1805,245 @@ function AppSection() {
       {/* Left text */}
       <div className="home-app-copy" style={{ flexShrink: 0 }}>
         {/* <h2 className="home-app-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 80, lineHeight: 1.007, textTransform: 'uppercase', color: '#fff', marginBottom: 32 }}>Everything You Need.<br />In One App.</h2> */}
-        <h2
-          className="home-app-title"
+        <motion.h2
+          className="home-app-title overflow-hidden"
           style={{
             fontFamily: "'Bebas Neue', sans-serif",
             fontSize: 80,
-            lineHeight: 1.007,
-            textTransform: 'uppercase',
-            color: '#fff',
-            marginBottom: 32
+            lineHeight: 1,
+            textTransform: "uppercase",
+            color: "#fff",
+            marginBottom: 32,
+          }}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.08,
+              },
+            },
           }}
         >
-          {["Everything", "You", "Need."].map((word, index) => (
-            <motion.span
+          {["Everything", "You", "Need."].map((word) => (
+            <span
               key={word}
-              initial={{ opacity: 0, y: 100 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.45,
-                delay: index * 0.12,
-              }}
-              viewport={{ once: true }}
-              style={{
-                display: "inline-block",
-                marginRight: "14px",
-              }}
+              className="inline-block overflow-hidden"
+              style={{ marginRight: "14px" }}
             >
-              {word}
-            </motion.span>
+              <motion.span
+                className="inline-block"
+                variants={{
+                  hidden: {
+                    y: "120%",
+                    opacity: 0,
+                  },
+                  visible: {
+                    y: "0%",
+                    opacity: 1,
+                  },
+                }}
+                transition={{
+                  duration: 0.7,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {word}
+              </motion.span>
+            </span>
           ))}
 
           <br />
 
-          {["In", "One", "App."].map((word, index) => (
-            <motion.span
+          {["In", "One", "App."].map((word) => (
+            <span
               key={word}
-              initial={{ opacity: 0, y: 100 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.45,
-                delay: 0.3 + index * 0.12,
-              }}
-              viewport={{ once: true }}
-              style={{
-                display: "inline-block",
-                marginRight: "14px",
-              }}
+              className="inline-block overflow-hidden"
+              style={{ marginRight: "14px" }}
             >
-              {word}
-            </motion.span>
+              <motion.span
+                className="inline-block"
+                variants={{
+                  hidden: {
+                    y: "120%",
+                    opacity: 0,
+                  },
+                  visible: {
+                    y: "0%",
+                    opacity: 1,
+                  },
+                }}
+                transition={{
+                  duration: 0.7,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {word}
+              </motion.span>
+            </span>
           ))}
-        </h2>
+        </motion.h2>
         {/* <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 16, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, marginBottom: 32 }}>Track your rides, discover routes, join challenges, and stay connected with the cycling community — all from one powerful app.</p> */}
         <div style={{ marginBottom: 24 }}>
-          {/* <p className="home-download-label" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 30, color: '#fff', textTransform: 'uppercase', marginBottom: 23, lineHeight: '30px', }}>Download <br/> ADCC APP</p> */}
-          <p
-            className="home-download-label"
+          <motion.p
+            className="home-download-label overflow-hidden"
             style={{
               fontFamily: "'Outfit', sans-serif",
               fontWeight: 700,
               fontSize: 30,
-              color: '#fff',
-              textTransform: 'uppercase',
+              color: "#fff",
+              textTransform: "uppercase",
               marginBottom: 23,
-              lineHeight: '30px',
+              lineHeight: "30px",
+            }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={{
+              visible: {
+                transition: {
+                  staggerChildren: 0.08,
+                },
+              },
             }}
           >
-            {["Download"].map((word, index) => (
-              <motion.span
+            {["Download"].map((word) => (
+              <span
                 key={word}
-                initial={{ opacity: 0, y: 80 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.4,
-                  delay: index * 0.1,
-                }}
-                viewport={{ once: true }}
-                style={{
-                  display: "inline-block",
-                  marginRight: "10px",
-                }}
+                className="inline-block overflow-hidden"
+                style={{ marginRight: "10px" }}
               >
-                {word}
-              </motion.span>
+                <motion.span
+                  className="inline-block"
+                  variants={{
+                    hidden: {
+                      y: "120%",
+                      opacity: 0,
+                    },
+                    visible: {
+                      y: "0%",
+                      opacity: 1,
+                    },
+                  }}
+                  transition={{
+                    duration: 0.7,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  {word}
+                </motion.span>
+              </span>
             ))}
 
             <br />
 
-            {["ADCC", "APP"].map((word, index) => (
-              <motion.span
+            {["ADCC", "APP"].map((word) => (
+              <span
                 key={word}
-                initial={{ opacity: 0, y: 80 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.4,
-                  delay: 0.15 + index * 0.1,
-                }}
-                viewport={{ once: true }}
-                style={{
-                  display: "inline-block",
-                  marginRight: "10px",
-                }}
+                className="inline-block overflow-hidden"
+                style={{ marginRight: "10px" }}
               >
-                {word}
-              </motion.span>
+                <motion.span
+                  className="inline-block"
+                  variants={{
+                    hidden: {
+                      y: "120%",
+                      opacity: 0,
+                    },
+                    visible: {
+                      y: "0%",
+                      opacity: 1,
+                    },
+                  }}
+                  transition={{
+                    duration: 0.7,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  {word}
+                </motion.span>
+              </span>
             ))}
-          </p>
-          {/* QR */}
-          {/* <div className="home-qr-box" style={{ width: 256, height: 256, background: '#fff', borderRadius: 16, padding: 12, marginBottom: 40 }}>
-            <QRCodePlaceholder />
-          </div> */}
+          </motion.p>
+
           <motion.div
             className="home-qr-box"
-            initial={{ opacity: 0, x: 120 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{
+              opacity: 0,
+              x: 80,
+            }}
+            whileInView={{
+              opacity: 1,
+              x: "0%",
+            }}
             transition={{
-              duration: 0.7,
-              ease: "easeOut",
+              duration: 0.8,
+              ease: [0.22, 1, 0.36, 1],
             }}
             viewport={{ once: true }}
             style={{
               width: 256,
               height: 256,
-              background: '#fff',
+              background: "#fff",
               borderRadius: 16,
               padding: 12,
-              marginBottom: 40
+              marginBottom: 40,
             }}
           >
             <QRCodePlaceholder />
           </motion.div>
         </div>
         {/* App store buttons */}
-        <div className="home-store-buttons" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-          {/* <div style={{ background: '#fff', borderRadius: 100, padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}> */}
-          <motion.div
-            initial={{ opacity: 0, y: 100 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.5,
-              delay: 0,
-            }}
-            viewport={{ once: true }}
-            style={{
-              background: '#fff',
-              borderRadius: 100,
-              padding: '10px 20px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8
-            }}
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 20.5v-17c0-.7.8-1.1 1.4-.7l14 8.5c.6.4.6 1.1 0 1.4l-14 8.5c-.6.4-1.4 0-1.4-.7z" fill="#4FC3F7"/><path d="M3 20.5l9-9L3 3.5v17z" fill="#6EEC84"/><path d="M3 3.5l10 8 4-4-14-4z" fill="#F7CD45"/><path d="M3 20.5l10-8 4 4-14 4z" fill="#E4464D"/><text x="13" y="16" fontFamily="Arial" fontWeight="bold" fontSize="6" fill="#000">▶</text></svg>
-            <div><div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 9, color: '#555' }}>GET IT ON</div><div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 14, color: '#000' }}>Google Play</div></div>
-          </motion.div>
-          {/* <div style={{ background: '#fff', borderRadius: 100, padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}> */}
-          <motion.div
-            initial={{ opacity: 0, y: 100 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.5,
-              delay: 0.18,
-            }}
-            viewport={{ once: true }}
-            style={{
-              background: '#fff',
-              borderRadius: 100,
-              padding: '10px 20px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8
-            }}
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" fill="#000"/></svg>
-            <div><div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 9, color: '#555' }}>Download on the</div><div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 14, color: '#000' }}>App Store</div></div>
-          </motion.div>
-        </div>
-        
+        <motion.div
+          className="home-store-buttons"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.12,
+              },
+            },
+          }}
+          style={{
+            display: "flex",
+            gap: 12,
+            flexWrap: "wrap",
+          }}
+        >
+          {[0, 1].map((item) => (
+            <motion.div
+              key={item}
+              variants={{
+                hidden: {
+                  opacity: 0,
+                  translateY: 80,
+                },
+                visible: {
+                  opacity: 1,
+                  translateY: 0,
+                },
+              }}
+              transition={{
+                duration: 0.7,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              style={{
+                background: "#fff",
+                borderRadius: 100,
+                padding: "10px 20px",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
+              {item === 0 ? <>Google Play content here</> : <>App Store content here</>}
+            </motion.div>
+          ))}
+        </motion.div>      
       </div>
 
       {/* Phone mockup center */}
@@ -1777,68 +2085,94 @@ function CommunitySection() {
   return (
     <section id="community" className="home-community-section" style={{ background: '#EAF4FF', padding: '125px 86px', textAlign: 'center' }}>
       {/* <p className="home-community-eyebrow" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 28, color: '#000', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 16 }}>For the Cycling Community</p> */}
-      <p
-        className="home-community-eyebrow"
+      <motion.p
+        className="home-community-eyebrow overflow-hidden"
         style={{
           fontFamily: "'Outfit', sans-serif",
           fontWeight: 700,
           fontSize: 28,
-          color: '#000',
-          textTransform: 'uppercase',
-          letterSpacing: '2px',
-          marginBottom: 16
+          color: "#000",
+          textTransform: "uppercase",
+          letterSpacing: "2px",
+          marginBottom: 16,
+        }}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={{
+          visible: {
+            transition: {
+              staggerChildren: 0.08,
+            },
+          },
         }}
       >
-        {["For", "the", "Cycling", "Community"].map((word, index) => (
-          <motion.span
+        {["For", "the", "Cycling", "Community"].map((word) => (
+          <span
             key={word}
-            initial={{ opacity: 0, y: -80 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.4,
-              delay: index * 0.12,
-            }}
-            viewport={{ once: true }}
-            style={{
-              display: "inline-block",
-              marginRight: "12px",
-            }}
+            className="inline-block overflow-hidden"
+            style={{ marginRight: "12px" }}
           >
-            {word}
-          </motion.span>
+            <motion.span
+              className="inline-block"
+              variants={{
+                hidden: { y: "120%", opacity: 0 },
+                visible: { y: "0%", opacity: 1 },
+              }}
+              transition={{
+                duration: 0.7,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            >
+              {word}
+            </motion.span>
+          </span>
         ))}
-      </p>
-      {/* <h2 className="home-community-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 74, color: '#000', textTransform: 'uppercase', letterSpacing: '-0.5px', marginBottom: 48 }}>Eat • Sleep • Bike • Repeat</h2> */}
-      <h2
-        className="home-community-title"
+      </motion.p>
+
+      <motion.h2
+        className="home-community-title overflow-hidden"
         style={{
           fontFamily: "'Bebas Neue', sans-serif",
           fontSize: 74,
-          color: '#000',
-          textTransform: 'uppercase',
-          letterSpacing: '-0.5px',
-          marginBottom: 48
+          color: "#000",
+          textTransform: "uppercase",
+          letterSpacing: "-0.5px",
+          marginBottom: 48,
+        }}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={{
+          visible: {
+            transition: {
+              staggerChildren: 0.08,
+            },
+          },
         }}
       >
         {["Eat", "•", "Sleep", "•", "Bike", "•", "Repeat"].map((word, index) => (
-          <motion.span
+          <span
             key={`${word}-${index}`}
-            initial={{ opacity: 0, y: 100 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.45,
-              delay: index * 0.1,
-            }}
-            viewport={{ once: true }}
-            style={{
-              display: "inline-block",
-              marginRight: "12px",
-            }}
+            className="inline-block overflow-hidden"
+            style={{ marginRight: "12px" }}
           >
-            {word}
-          </motion.span>
+            <motion.span
+              className="inline-block"
+              variants={{
+                hidden: { y: "120%", opacity: 0 },
+                visible: { y: "0%", opacity: 1 },
+              }}
+              transition={{
+                duration: 0.7,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            >
+              {word}
+            </motion.span>
+          </span>
         ))}
-      </h2>
+      </motion.h2>
       {/* Icon row */}
       <div className="home-icon-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: 56 }}>
         {icons.map((ic, i) => (
@@ -1857,37 +2191,66 @@ function CommunitySection() {
         ))}
       </div>
       {/* <p className="home-community-subtitle" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 28, color: '#000', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 28 }}>Everything you need to ride, track, and stay connected.</p> */}
-      <p
-        className="home-community-subtitle"
+      <motion.p
+        className="home-community-subtitle overflow-hidden"
         style={{
           fontFamily: "'Outfit', sans-serif",
           fontWeight: 700,
           fontSize: 28,
-          color: '#000',
-          textTransform: 'uppercase',
-          letterSpacing: '1px',
-          marginBottom: 28
+          color: "#000",
+          textTransform: "uppercase",
+          letterSpacing: "1px",
+          marginBottom: 28,
+        }}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={{
+          visible: {
+            transition: {
+              staggerChildren: 0.08,
+            },
+          },
         }}
       >
-        {["Everything", "you", "need", "to", "ride,", "track,", "and", "stay", "connected."].map((word, index) => (
-          <motion.span
+        {[
+          "Everything",
+          "you",
+          "need",
+          "to",
+          "ride,",
+          "track,",
+          "and",
+          "stay",
+          "connected.",
+        ].map((word, index) => (
+          <span
             key={`${word}-${index}`}
-            initial={{ opacity: 0, y: 90 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.4,
-              delay: index * 0.08,
-            }}
-            viewport={{ once: true }}
-            style={{
-              display: "inline-block",
-              marginRight: "10px",
-            }}
+            className="inline-block overflow-hidden"
+            style={{ marginRight: "10px" }}
           >
-            {word}
-          </motion.span>
+            <motion.span
+              className="inline-block"
+              variants={{
+                hidden: {
+                  y: "120%",
+                  opacity: 0,
+                },
+                visible: {
+                  y: "0%",
+                  opacity: 1,
+                },
+              }}
+              transition={{
+                duration: 0.7,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            >
+              {word}
+            </motion.span>
+          </span>
         ))}
-      </p>
+      </motion.p>
       <button 
       onClick={()=>navigate("/login")}
       className="btn-green" style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: '#019839', border: 'none', borderRadius: 30, padding: '14px 28px', cursor: 'pointer', fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 18, color: '#FFF9EF' }}>
@@ -1944,38 +2307,57 @@ function ExplorePlatformSection() {
   return (
     <section id="platform" className="home-platform-section" style={{ background: '#EAF4FF', padding: '0 86px 80px' }}>
       {/* <h2 className="home-section-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 72, color: '#000', textTransform: 'uppercase', textAlign: 'center', paddingTop: 35, marginBottom: 40, lineHeight: '72px' }}>Explore the Platform</h2> */}
-      <h2
-        className="home-section-title"
+      <motion.h2
+        className="home-section-title overflow-hidden"
         style={{
           fontFamily: "'Bebas Neue', sans-serif",
           fontSize: 72,
-          color: '#000',
-          textTransform: 'uppercase',
-          textAlign: 'center',
+          color: "#000",
+          textTransform: "uppercase",
+          textAlign: "center",
           paddingTop: 35,
           marginBottom: 40,
-          lineHeight: '72px'
+          lineHeight: "72px",
+        }}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={{
+          visible: {
+            transition: {
+              staggerChildren: 0.08,
+            },
+          },
         }}
       >
-        {["Explore", "the", "Platform"].map((word, index) => (
-          <motion.span
+        {["Explore", "the", "Platform"].map((word) => (
+          <span
             key={word}
-            initial={{ opacity: 0, y: 100 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.45,
-              delay: index * 0.12,
-            }}
-            viewport={{ once: true }}
-            style={{
-              display: "inline-block",
-              marginRight: "14px",
-            }}
+            className="inline-block overflow-hidden"
+            style={{ marginRight: "14px" }}
           >
-            {word}
-          </motion.span>
+            <motion.span
+              className="inline-block"
+              variants={{
+                hidden: {
+                  y: "120%",
+                  opacity: 0,
+                },
+                visible: {
+                  y: "0%",
+                  opacity: 1,
+                },
+              }}
+              transition={{
+                duration: 0.7,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            >
+              {word}
+            </motion.span>
+          </span>
         ))}
-      </h2>
+      </motion.h2>
       <div ref={cardsRef} className={`platform-cards home-platform-cards${cardsVisible ? ' is-visible' : ''}`} style={{ display: 'flex', gap: 0, borderRadius: 20, overflow: 'hidden', height: 480 }}>
         {cards.map((card, i) => (
           <div key={i} onClick={() => navigate(card.to)} className="card-hover platform-card home-platform-card" style={{ flex: 1, position: 'relative', overflow: 'hidden', cursor: 'pointer', borderLeft: i > 0 ? '2px solid rgba(255,255,255,0.3)' : 'none' }}>
@@ -2024,12 +2406,34 @@ type StoreCardProduct = {
   title: string;
   sub: string;
   price: string;
-  bg: string;
   img: string;
+  images: string[];
 };
 
 const STORE_FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&q=80';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+const STORE_FALLBACK_PRODUCTS: StoreCardProduct[] = [
+  {
+    id: 'store-fallback-official-merchandise',
+    type: 'Official Merchandise',
+    action: 'View Store',
+    title: 'ADCC Performance Jersey',
+    sub: 'Lightweight • Breathable • Race Fit',
+    price: 'AED 220',
+    img: '/img/image 297012.png',
+    images: ['/img/image 297012.png'],
+  },
+  {
+    id: 'store-fallback-community-marketplace',
+    type: 'Community Marketplace',
+    action: 'Explore Marketplace',
+    title: 'Pre-Owned Road Bike',
+    sub: 'Verified listings from ADCC riders',
+    price: 'AED 1,500',
+    img: '/img/image 2970.png',
+    images: ['/img/image 2970.png', '/img/image 2970 (1).png'],
+  },
+];
 
 function formatStorePrice(item: StoreItem) {
   const currency = item.currency || 'AED';
@@ -2047,10 +2451,88 @@ function getStoreImage(item: StoreItem) {
   return new URL(trimmedImage.replace(/^\/+/, ''), `${API_BASE_URL}/`).toString();
 }
 
+function getStoreImages(item: StoreItem) {
+  const images = [item.coverImage, ...(item.photos || [])]
+    .filter((image): image is string => Boolean(image?.trim()))
+    .map((image) => {
+      const trimmedImage = image.trim();
+      if (/^(https?:|data:|blob:)/i.test(trimmedImage)) return trimmedImage;
+      return new URL(trimmedImage.replace(/^\/+/, ''), `${API_BASE_URL}/`).toString();
+    });
+
+  return Array.from(new Set(images));
+}
+
 function getStoreSubText(item: StoreItem) {
   const details = [item.condition, item.city].filter(Boolean);
   if (details.length) return details.join(' • ');
   return item.description || 'Available from ADCC store';
+}
+
+function StoreProductImageCarousel({ images, title }: { images: string[]; title: string }) {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: images.length > 1, align: 'start' });
+
+  useEffect(() => {
+    emblaApi?.reInit();
+    emblaApi?.scrollTo(0, true);
+  }, [emblaApi, images]);
+
+  useEffect(() => {
+    if (!emblaApi || images.length <= 1) return undefined;
+
+    const intervalId = window.setInterval(() => {
+      emblaApi.scrollNext();
+    }, 3000);
+
+    return () => window.clearInterval(intervalId);
+  }, [emblaApi, images.length]);
+
+  return (
+    <>
+      <div className="store-featured-product store-product-carousel" ref={emblaRef}>
+        <div className="store-product-carousel-track">
+          {images.map((image, index) => (
+            <div className="store-product-carousel-slide" key={`${image}-${index}`}>
+              <img
+                src={image}
+                alt={title}
+                onError={(event) => {
+                  event.currentTarget.onerror = null;
+                  event.currentTarget.src = STORE_FALLBACK_IMAGE;
+                }}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+      {images.length > 1 && (
+        <div className="store-carousel-controls">
+          <button
+            type="button"
+            className="store-carousel-button"
+            aria-label="Previous product image"
+            onClick={(event) => {
+              event.stopPropagation();
+              emblaApi?.scrollPrev();
+            }}
+          >
+            ‹
+          </button>
+          <button
+            type="button"
+            className="store-carousel-button"
+            aria-label="Next product image"
+            onClick={(event) => {
+              event.stopPropagation();
+              emblaApi?.scrollNext();
+            }}
+          >
+            ›
+          </button>
+        </div>
+      )}
+    </>
+  );
 }
 
 function StoreSection() {
@@ -2068,21 +2550,30 @@ function StoreSection() {
       try {
         setIsLoading(true);
         setLoadError('');
-        const items = await getStoreItems({ status: 'Approved', limit: 3 });
+        const items = await getStoreItems({ status: 'Approved', limit: 8 });
         if (!isMounted) return;
 
-        setProducts(
-          items.map((item) => ({
+        const apiProducts = items.slice(0, 8).map((item, index) => ({
             id: item.id || item._id || item.title,
-            type: item.category || 'Community Marketplace',
-            action: 'View Store',
+            type: index === 0 ? 'Official Merchandise' : 'Community Marketplace',
+            action: index === 0 ? 'View Store' : 'Explore Marketplace',
             title: item.title,
             sub: getStoreSubText(item),
             price: formatStorePrice(item),
-            bg: '#D8E5FB',
             img: getStoreImage(item),
-          }))
-        );
+            images: getStoreImages(item),
+          }));
+        const officialProduct = apiProducts[0] || STORE_FALLBACK_PRODUCTS[0];
+        const marketplaceProducts = [
+          ...apiProducts.slice(1).map((item) => ({
+            ...item,
+            type: 'Community Marketplace',
+            action: 'Explore Marketplace',
+          })),
+          ...(apiProducts.length < 2 ? STORE_FALLBACK_PRODUCTS.slice(1) : []),
+        ];
+
+        setProducts([officialProduct, marketplaceProducts[0]].filter(Boolean).slice(0, 2));
       } catch (error) {
         if (!isMounted) return;
         setLoadError(error instanceof Error ? error.message : 'Failed to load store products');
@@ -2126,15 +2617,21 @@ function StoreSection() {
           <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, color: '#435974', padding: '36px 0' }}>No store products available.</div>
         )}
         {products.map((p, i) => (
-          i === 0 ? (
-            <div key={p.id} onClick={() => navigate('/user-adcc-store')} className="store-card store-featured-card store-animated-card">
-              <div className="store-featured-icon">
-                <img src="/images/users.png" alt="" />
-              </div>
-              <span className="store-featured-type">{p.type}</span>
-              <span className="store-featured-action">{p.action}</span>
-              <h3 className="store-featured-title">{p.title}</h3>
-              <p className="store-featured-sub">{p.sub}</p>
+          <div
+            key={p.id}
+            onClick={() => navigate('/user-adcc-store')}
+            className={`store-card store-featured-card store-animated-card${i === 1 ? ' is-marketplace' : ''}`}
+          >
+            <div className="store-featured-icon">
+              <img src="/images/users.png" alt="" />
+            </div>
+            <span className="store-featured-type">{p.type}</span>
+            <span className="store-featured-action">{p.action}</span>
+            <h3 className="store-featured-title">{p.title}</h3>
+            <p className="store-featured-sub">{p.sub}</p>
+            {i === 1 ? (
+              <StoreProductImageCarousel images={p.images.length ? p.images : [p.img]} title={p.title} />
+            ) : (
               <img
                 className="store-featured-product"
                 src={p.img}
@@ -2144,50 +2641,9 @@ function StoreSection() {
                   event.currentTarget.src = STORE_FALLBACK_IMAGE;
                 }}
               />
-              <span className="store-featured-price">{p.price}</span>
-            </div>
-          ) : (
-          <div key={p.id} onClick={() => navigate('/user-adcc-store')} className="store-card store-compact-card store-animated-card" style={{ background: p.bg }}>
-            {/* Header row */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 20px 0' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ width: 32, height: 32, background: '#435974', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <img src="/images/users.png" alt="" />
-                </div>
-                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 12, color: '#000', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{p.type}</span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 18, color: '#000', cursor: 'pointer', borderBottom: '3px solid #019839', paddingBottom: 1 }}>{p.action}</span>
-              </div>
-            </div>
-            {/* Title */}
-            <div style={{ padding: '16px 20px 4px' }}>
-              <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 24, color: '#000', lineHeight: 1.2, marginBottom: 6 }}>{p.title}</h3>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, color: '#444' }}>{p.sub}</p>
-            </div>
-            {/* Product image */}
-            <div style={{ margin: '12px 20px', height: 200, borderRadius: 12, overflow: 'hidden', background: '#c5d5ee' }}>
-              <img
-                src={p.img}
-                alt={p.title}
-                onError={(event) => {
-                  event.currentTarget.onerror = null;
-                  event.currentTarget.src = STORE_FALLBACK_IMAGE;
-                }}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            </div>
-            {/* Price + nav arrows */}
-            <div style={{ padding: '0 20px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 36, color: '#435974', textTransform: 'uppercase' }}>{p.price}</span>
-              <div style={{ display: 'flex', gap: 8 }}>
-                {['←', '→'].map((arrow, j) => (
-                  <div key={j} style={{ width: 36, height: 36, border: '1px solid #000', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 16, color: '#000', transition: 'background 0.2s' }}>{arrow}</div>
-                ))}
-              </div>
-            </div>
+            )}
+            <span className="store-featured-price">{p.price}</span>
           </div>
-          )
         ))}
       </div>
     </section>
@@ -2291,57 +2747,85 @@ function AboutSection() {
       {/* Right content */}
       <div className="home-about-content" style={{ flex: 1 }}>
         {/* <h2 className="home-about-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 74, color: '#000', textTransform: 'uppercase', lineHeight: 1.01, marginBottom: 24 }}>About Abu Dhabi<br />Cycling Club</h2> */}
-        <h2
-          className="home-about-title"
+        <motion.h2
+          className="home-about-title overflow-hidden"
           style={{
             fontFamily: "'Bebas Neue', sans-serif",
             fontSize: 74,
-            color: '#000',
-            textTransform: 'uppercase',
-            lineHeight: 1.01,
-            marginBottom: 24
+            color: "#000",
+            textTransform: "uppercase",
+            lineHeight: 1.0,
+            marginBottom: 24,
+          }}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.08,
+              },
+            },
           }}
         >
-          {["About", "Abu", "Dhabi"].map((word, index) => (
-            <motion.span
+          {["About", "Abu", "Dhabi"].map((word) => (
+            <span
               key={word}
-              initial={{ opacity: 0, y: 100 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.45,
-                delay: index * 0.12,
-              }}
-              viewport={{ once: true }}
-              style={{
-                display: "inline-block",
-                marginRight: "14px",
-              }}
+              className="inline-block overflow-hidden"
+              style={{ marginRight: "14px" }}
             >
-              {word}
-            </motion.span>
+              <motion.span
+                className="inline-block"
+                variants={{
+                  hidden: {
+                    y: "120%",
+                    opacity: 0,
+                  },
+                  visible: {
+                    y: "0%",
+                    opacity: 1,
+                  },
+                }}
+                transition={{
+                  duration: 0.7,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {word}
+              </motion.span>
+            </span>
           ))}
 
           <br />
 
-          {["Cycling", "Club"].map((word, index) => (
-            <motion.span
+          {["Cycling", "Club"].map((word) => (
+            <span
               key={word}
-              initial={{ opacity: 0, y: 100 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.45,
-                delay: 0.35 + index * 0.12,
-              }}
-              viewport={{ once: true }}
-              style={{
-                display: "inline-block",
-                marginRight: "14px",
-              }}
+              className="inline-block overflow-hidden"
+              style={{ marginRight: "14px" }}
             >
-              {word}
-            </motion.span>
+              <motion.span
+                className="inline-block"
+                variants={{
+                  hidden: {
+                    y: "120%",
+                    opacity: 0,
+                  },
+                  visible: {
+                    y: "0%",
+                    opacity: 1,
+                  },
+                }}
+                transition={{
+                  duration: 0.7,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {word}
+              </motion.span>
+            </span>
           ))}
-        </h2>
+        </motion.h2>
         <p className="home-about-text" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, color: '#000', lineHeight: 1.6, marginBottom: 40, maxWidth: 600 }}>
           At Abu Dhabi Cycling Club, every ride is a step toward building a stronger, healthier, and more connected society. We are the heart of the UAE's cycling movement uniting enthusiasts, athletes, and families through the shared joy of cycling.
         </p>
@@ -2558,7 +3042,7 @@ export function Home() {
   useHomePageStyles();
 
   return (
-    <div style={{ minHeight: '100vh', background: '#EAF4FF', display: 'flex', flexDirection: 'column' }}>
+    <div className="home-page" style={{ minHeight: '100vh', background: '#EAF4FF', display: 'flex', flexDirection: 'column' }}>
       <Header />
       <HeroSection />
       <StatsTicker />
@@ -2568,8 +3052,8 @@ export function Home() {
       <ExplorePlatformSection />
       <StoreSection />
       <AboutSection />
-      <CTABanner />
-      <Footer />
+      {/* <CTABanner />
+      <Footer /> */}
     </div>
   );
 }

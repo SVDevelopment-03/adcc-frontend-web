@@ -15,7 +15,8 @@ const products = [
 export default function AdccStorePage() {
   return (
     <div className="min-h-screen bg-[#eaf4ff] text-black">
-      <header className="h-[134px] flex items-center justify-between px-10 md:px-20">
+      {/* <header className="h-[134px] flex items-center justify-between px-10 md:px-20"> */}
+      <header className="flex h-[78px] items-center justify-between px-4 sm:h-[96px] sm:px-6 md:px-10 lg:h-[134px] lg:px-20">
         <img src="/ADCC-Logo.png" alt="ADCC" className="h-[57px] w-[135px] object-contain" />
 
         <nav className="hidden lg:flex gap-12 text-[20px] font-medium">
@@ -41,13 +42,13 @@ export default function AdccStorePage() {
             "linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url('/img/pexels-zakhar-36955801 1.png')",
         }}
       >
-        <div className="absolute bottom-20 left-10 md:left-20 text-white">
+        <div className="absolute bottom-20 left-4 text-white sm:left-6 md:left-10 lg:left-20">
           <h1 className="text-[60px] font-black uppercase leading-none">ADCC Store</h1>
           <p className="mt-4 text-[24px]">Home / ADCC Store</p>
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1268px] px-10 py-28">
+      <section className="w-full px-4 py-28 sm:px-6 md:px-10 lg:px-20">
         <h2 className="text-center text-[50px] font-black uppercase">
           Browse Our Cycling Collection
         </h2>
@@ -81,7 +82,7 @@ export default function AdccStorePage() {
               // className={`min-h-[381px] rounded-[10px] border p-8 shadow-inner ${
               //   active ? "bg-[#435974] text-white border-[#727272]" : "border-black/5"
               // }`}
-              className="min-h-[381px] rounded-[10px] border border-black/5 p-8 shadow-inner transition-all duration-300 hover:border-[#727272] hover:bg-[#435974] hover:text-white"
+              className="min-h-[381px] rounded-[10px] border border-black/5 p-8 shadow-inner transition-all duration-300 hover:border-[#727272] hover:bg-[#435974] hover:border-[#435974] hover:text-white"
             >
               <h3 className="text-[24px] font-black uppercase">{name}</h3>
               <p className="mt-1 text-[18px] font-bold">{price}</p>
@@ -110,7 +111,8 @@ export default function AdccStorePage() {
         </div>
       </section>
 
-      <section className="mx-auto relative grid max-w-[1268px] grid-cols-1 items-end gap-16 px-10 pb-28 lg:grid-cols-2">
+      {/* <section className="mx-auto relative grid max-w-[1268px] grid-cols-1 items-end overflow-hidden gap-16 px-10 pb-28 lg:grid-cols-2"> */}
+      <section className="relative grid w-full grid-cols-1 items-end gap-16 overflow-hidden px-4 pb-28 sm:px-6 md:px-10 lg:grid-cols-2 lg:px-20">
         <div>
           <h2 className="max-w-[516px] text-[50px] font-normal font-[#000000] uppercase leading-[60px]">
             Gear Up with Official&nbsp;Cycling
@@ -133,12 +135,13 @@ export default function AdccStorePage() {
           <img
             src="/img/image 30691.png"
             alt="Cycling essentials"
-            className="h-[568px] w-[686px] object-contain absolute bottom-[-27px] right-[-223px]"
+            // className="h-[568px] w-[686px] object-contain absolute bottom-[-27px] right-[-223px]"
+            className="h-[568px] w-full max-w-[686px] object-contain lg:absolute lg:bottom-[-27px] lg:right-0"
           />
         {/* </div> */}
       </section>
 
-      <section
+      {/* <section
         className="flex h-[502px] items-center justify-center bg-cover bg-center text-center text-white"
         style={{
           backgroundImage:
@@ -160,9 +163,9 @@ export default function AdccStorePage() {
             </button>
           </div>
         </div>
-      </section>
+      </section> */}
 
-      <footer className="mx-auto max-w-[1268px] px-10 py-24">
+      <footer className="w-full px-4 py-24 sm:px-6 md:px-10 lg:px-20">
         <div className="grid grid-cols-1 gap-16 md:grid-cols-3">
           <div>
             <img src="/ADCC-Logo.png" alt="ADCC" className="h-[63px] w-[149px] object-contain" />

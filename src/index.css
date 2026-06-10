@@ -27,9 +27,8 @@ select {
 }
 
 /* Public pages are wrapped by a shared header/footer. Hide legacy page-local
-   wrappers without affecting admin screens or nested content sections. */
+   wrappers without affecting admin screens or content sections. */
 .public-layout-content > div > header,
-.public-layout-content > div > section:nth-last-child(2),
 .public-layout-content > div > footer {
   display: none !important;
 }
