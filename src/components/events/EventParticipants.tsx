@@ -1,10 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Search, Download, UserX, Check, X } from 'lucide-react';
-import { getEventResults, checkInParticipant, markParticipantNoShow, checkInAllParticipants, markAllParticipantsNoShow, removeEventParticipant, exportEventResultsCsv } from '../../services/eventsApi';
+import {
+  getEventResults,
+  checkInParticipant,
+  markParticipantNoShow,
+  checkInAllParticipants,
+  markAllParticipantsNoShow,
+  removeEventParticipant,
+  exportEventResultsCsv,
+} from '../../services/eventsApi';
 import { toast } from 'sonner';
 import { UserRole } from '../../App';
-// import { getparticipants } from '../../services/eventsApi';
+
 interface EventParticipantsProps {
   navigate?: (page: string, params?: any) => void;
   role: UserRole;
@@ -18,6 +26,8 @@ export function EventParticipants({ role }: EventParticipantsProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
+  const [bulkLoading, setBulkLoading] = useState<'checkin' | 'noshow' | null>(null);
 
   const normalizeStatus = (s: string | undefined) => {
     if (!s) return 'registered';
@@ -30,34 +40,26 @@ export function EventParticipants({ role }: EventParticipantsProps) {
       userId: p.user?._id || p.userId,
       participantCode: p.participantCode || p.registrationCode || p._id || p.id,
       userName: p.user?.fullName || p.userName || '-',
-      userCommunity: p.user?.email || p.userCommunity || '-',
+      userCommunity: p.community?.title || p.user?.email || p.userCommunity || '-',
       status: normalizeStatus(p.status),
       registeredAt: p.createdAt || p.registeredAt || null,
       checkedInAt: p.checkedInAt || null,
-      rank: p.rank,
-      time: p.time,
     }));
 
-  const fetchParticipants = React.useCallback(async (silent = false) => {
-    if (!eventId || eventId === 'undefined') {
-      setIsLoading(false);
-      return;
-    }
+  const fetchParticipants = useCallback(async (silent = false) => {
+    if (!eventId || eventId === 'undefined') { setIsLoading(false); return; }
     try {
       if (!silent) setIsLoading(true);
       const resultsData = await getEventResults(eventId);
       setParticipantsData(mapResultsFromBackend(resultsData));
-    } catch (error) {
+    } catch {
       toast.error('Failed to load event participants');
-      console.error(error);
     } finally {
       if (!silent) setIsLoading(false);
     }
   }, [eventId]);
 
-  useEffect(() => {
-    fetchParticipants();
-  }, [fetchParticipants]);
+  useEffect(() => { fetchParticipants(); }, [fetchParticipants]);
 
   if (isLoading) {
     return (
@@ -67,67 +69,79 @@ export function EventParticipants({ role }: EventParticipantsProps) {
     );
   }
 
-  const filteredParticipants = participantsData.filter(participant => {
-    const userName = (participant.userName || '').toLowerCase();
-    const userCommunity = (participant.userCommunity || '').toLowerCase();
-    const participantCode = (participant.participantCode || '').toLowerCase();
-    const matchesSearch = userName.includes(searchQuery.toLowerCase()) ||
-                         userCommunity.includes(searchQuery.toLowerCase()) ||
-                         participantCode.includes(searchQuery.toLowerCase());
-    const matchesStatus = !statusFilter || participant.status === statusFilter;
+  const filteredParticipants = participantsData.filter(p => {
+    const matchesSearch =
+      (p.userName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (p.userCommunity || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (p.participantCode || '').toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = !statusFilter || p.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
+  // Individual actions with optimistic updates
   const handleCheckIn = async (participantId: string) => {
-    const target = participantsData.find((p) => p.id === participantId);
-    if (!target || !target.userId || !eventId) return;
+    const target = participantsData.find(p => p.id === participantId);
+    if (!target || !target.userId || !eventId || processingIds.has(participantId)) return;
+    setProcessingIds(prev => new Set([...prev, participantId]));
+    setParticipantsData(prev =>
+      prev.map(p => p.id === participantId
+        ? { ...p, status: 'checked-in', checkedInAt: new Date().toISOString() }
+        : p)
+    );
     try {
       await checkInParticipant(eventId, target.userId);
-      await fetchParticipants(true);
       toast.success('Participant checked in');
-    } catch (error) {
-      console.error('Error checking in participant:', error);
-      toast.error('Failed to check in participant');
+    } catch (error: any) {
+      setParticipantsData(prev =>
+        prev.map(p => p.id === participantId ? { ...p, status: target.status, checkedInAt: target.checkedInAt } : p)
+      );
+      toast.error(error?.response?.data?.message || 'Failed to check in participant');
+    } finally {
+      setProcessingIds(prev => { const s = new Set(prev); s.delete(participantId); return s; });
+      fetchParticipants(true);
     }
   };
 
   const handleMarkNoShow = async (participantId: string) => {
-    const target = participantsData.find((p) => p.id === participantId);
-    if (!target || !target.userId || !eventId) return;
+    const target = participantsData.find(p => p.id === participantId);
+    if (!target || !target.userId || !eventId || processingIds.has(participantId)) return;
+    setProcessingIds(prev => new Set([...prev, participantId]));
+    setParticipantsData(prev =>
+      prev.map(p => p.id === participantId ? { ...p, status: 'no-show' } : p)
+    );
     try {
       await markParticipantNoShow(eventId, target.userId);
-      await fetchParticipants(true);
       toast.success('Marked as no-show');
-    } catch (error) {
-      console.error('Error marking participant no-show:', error);
-      toast.error('Failed to mark no-show');
+    } catch (error: any) {
+      setParticipantsData(prev =>
+        prev.map(p => p.id === participantId ? { ...p, status: target.status } : p)
+      );
+      toast.error(error?.response?.data?.message || 'Failed to mark no-show');
+    } finally {
+      setProcessingIds(prev => { const s = new Set(prev); s.delete(participantId); return s; });
+      fetchParticipants(true);
     }
   };
 
   const handleRemoveParticipant = async (participantId: string, userName: string) => {
     if (!eventId) return;
     if (!confirm(`Remove ${userName} from this event?`)) return;
-
+    const target = participantsData.find(p => p.id === participantId);
+    if (!target?.userId) return;
+    setParticipantsData(prev => prev.filter(p => p.id !== participantId));
     try {
-      const target = participantsData.find((p) => p.id === participantId);
-      const userId = target?.userId;
-      if (!userId) return;
-
-      await removeEventParticipant(eventId, userId);
-      await fetchParticipants(true);
+      await removeEventParticipant(eventId, target.userId);
       toast.success('Participant removed');
-    } catch (error) {
-      console.error('Error removing participant:', error);
-      toast.error('Failed to remove participant');
+    } catch (error: any) {
+      setParticipantsData(prev => [...prev, target]);
+      toast.error(error?.response?.data?.message || 'Failed to remove participant');
+    } finally {
+      fetchParticipants(true);
     }
   };
 
   const handleExportCSV = async () => {
-    if (!eventId || eventId === 'undefined') {
-      toast.error('Cannot export results: invalid event');
-      return;
-    }
-
+    if (!eventId || eventId === 'undefined') { toast.error('Invalid event'); return; }
     try {
       const blob = await exportEventResultsCsv(eventId);
       const url = window.URL.createObjectURL(blob);
@@ -139,15 +153,60 @@ export function EventParticipants({ role }: EventParticipantsProps) {
       link.remove();
       window.URL.revokeObjectURL(url);
       toast.success('Export started');
-    } catch (error) {
-      console.error('Error exporting results CSV:', error);
+    } catch {
       toast.error('Failed to export results');
+    }
+  };
+
+  // Bulk actions with optimistic updates — affect ALL participants
+  const handleCheckInAll = async () => {
+    if (!eventId || bulkLoading) return;
+    setBulkLoading('checkin');
+    const now = new Date().toISOString();
+    setParticipantsData(prev =>
+      prev.map(p =>
+        p.status !== 'completed'
+          ? { ...p, status: 'checked-in', checkedInAt: now }
+          : p
+      )
+    );
+    try {
+      await checkInAllParticipants(eventId);
+      toast.success('All participants checked in');
+    } catch (error: any) {
+      await fetchParticipants(true);
+      toast.error(error?.response?.data?.message || 'Failed to check in all participants');
+    } finally {
+      setBulkLoading(null);
+      fetchParticipants(true);
+    }
+  };
+
+  const handleNoShowAll = async () => {
+    if (!eventId || bulkLoading) return;
+    setBulkLoading('noshow');
+    setParticipantsData(prev =>
+      prev.map(p =>
+        p.status !== 'completed'
+          ? { ...p, status: 'no-show' }
+          : p
+      )
+    );
+    try {
+      await markAllParticipantsNoShow(eventId);
+      toast.success('All participants marked as no-show');
+    } catch (error: any) {
+      await fetchParticipants(true);
+      toast.error(error?.response?.data?.message || 'Failed to mark all no-show');
+    } finally {
+      setBulkLoading(null);
+      fetchParticipants(true);
     }
   };
 
   const stats = {
     total: participantsData.length,
-    registered: participantsData.filter(p => !p.status || p.status === 'registered').length,
+    registered: participantsData.filter(p => p.status === 'registered' || p.status === 'joined').length,
     checkedIn: participantsData.filter(p => p.status === 'checked-in').length,
     completed: participantsData.filter(p => p.status === 'completed').length,
     noShow: participantsData.filter(p => p.status === 'no-show').length,
@@ -157,15 +216,11 @@ export function EventParticipants({ role }: EventParticipantsProps) {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <button
-          onClick={() => navigate(`/events/${eventId}`)}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
+        <button onClick={() => navigate(`/events/${eventId}`)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
           <ArrowLeft className="w-6 h-6" style={{ color: '#333' }} />
         </button>
         <div className="flex-1">
           <h1 className="text-3xl mb-2" style={{ color: '#333' }}>Participant Management</h1>
-          <p style={{ color: '#666' }}>{event.title || event.name}</p>
         </div>
         <button
           onClick={handleExportCSV}
@@ -179,30 +234,18 @@ export function EventParticipants({ role }: EventParticipantsProps) {
 
       {/* Stats */}
       <div className="grid grid-cols-5 gap-4">
-        <div className="p-4 rounded-xl bg-white shadow-sm">
-          <p className="text-sm mb-1" style={{ color: '#666' }}>Total</p>
-          <p className="text-2xl" style={{ color: '#333' }}>{stats.total}</p>
-        </div>
-
-        <div className="p-4 rounded-xl bg-white shadow-sm">
-          <p className="text-sm mb-1" style={{ color: '#666' }}>Registered</p>
-          <p className="text-2xl" style={{ color: '#3B82F6' }}>{stats.registered}</p>
-        </div>
-
-        <div className="p-4 rounded-xl bg-white shadow-sm">
-          <p className="text-sm mb-1" style={{ color: '#666' }}>Checked In</p>
-          <p className="text-2xl" style={{ color: '#10B981' }}>{stats.checkedIn}</p>
-        </div>
-
-        <div className="p-4 rounded-xl bg-white shadow-sm">
-          <p className="text-sm mb-1" style={{ color: '#666' }}>Completed</p>
-          <p className="text-2xl" style={{ color: '#F59E0B' }}>{stats.completed}</p>
-        </div>
-
-        <div className="p-4 rounded-xl bg-white shadow-sm">
-          <p className="text-sm mb-1" style={{ color: '#666' }}>No-Show</p>
-          <p className="text-2xl" style={{ color: '#EF4444' }}>{stats.noShow}</p>
-        </div>
+        {[
+          { label: 'Total', value: stats.total, color: '#333' },
+          { label: 'Registered', value: stats.registered, color: '#3B82F6' },
+          { label: 'Checked In', value: stats.checkedIn, color: '#10B981' },
+          { label: 'Completed', value: stats.completed, color: '#F59E0B' },
+          { label: 'No-Show', value: stats.noShow, color: '#EF4444' },
+        ].map(s => (
+          <div key={s.label} className="p-4 rounded-xl bg-white shadow-sm">
+            <p className="text-sm mb-1" style={{ color: '#666' }}>{s.label}</p>
+            <p className="text-2xl" style={{ color: s.color }}>{s.value}</p>
+          </div>
+        ))}
       </div>
 
       {/* Filters */}
@@ -214,16 +257,15 @@ export function EventParticipants({ role }: EventParticipantsProps) {
               type="text"
               placeholder="Search by name or community..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600 bg-white"
               style={{ color: '#333' }}
             />
           </div>
-
           <div className="flex gap-4">
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              onChange={e => setStatusFilter(e.target.value)}
               className="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600 bg-white"
               style={{ color: '#333' }}
             >
@@ -233,12 +275,8 @@ export function EventParticipants({ role }: EventParticipantsProps) {
               <option value="completed">Completed</option>
               <option value="no-show">No-Show</option>
             </select>
-
             <button
-              onClick={() => {
-                setSearchQuery('');
-                setStatusFilter('');
-              }}
+              onClick={() => { setSearchQuery(''); setStatusFilter(''); }}
               className="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
               style={{ color: '#666' }}
             >
@@ -249,90 +287,90 @@ export function EventParticipants({ role }: EventParticipantsProps) {
       </div>
 
       {/* Participants Table */}
-      <div className="p-6 rounded-2xl bg-white shadow-sm overflow-x-auto">
+      <div className="rounded-2xl bg-white shadow-sm overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-200">
-              <th className="text-left py-3 px-4" style={{ color: '#666' }}>Participant ID</th>
-              <th className="text-left py-3 px-4" style={{ color: '#666' }}>Name</th>
-              <th className="text-left py-3 px-4" style={{ color: '#666' }}>Community</th>
-              <th className="text-left py-3 px-4" style={{ color: '#666' }}>Status</th>
-              <th className="text-left py-3 px-4" style={{ color: '#666' }}>Registered At</th>
-              <th className="text-left py-3 px-4" style={{ color: '#666' }}>Checked In</th>
-              <th className="text-left py-3 px-4" style={{ color: '#666' }}>Rank</th>
-              <th className="text-left py-3 px-4" style={{ color: '#666' }}>Time</th>
-              <th className="text-right py-3 px-4" style={{ color: '#666' }}>Actions</th>
+              <th className="text-left py-3 px-4 text-sm font-medium" style={{ color: '#666' }}>Participant ID</th>
+              <th className="text-left py-3 px-4 text-sm font-medium" style={{ color: '#666' }}>Name</th>
+              <th className="text-left py-3 px-4 text-sm font-medium" style={{ color: '#666' }}>Community</th>
+              <th className="text-left py-3 px-4 text-sm font-medium" style={{ color: '#666' }}>Status</th>
+              <th className="text-left py-3 px-4 text-sm font-medium" style={{ color: '#666' }}>Registered At</th>
+              <th className="text-left py-3 px-4 text-sm font-medium" style={{ color: '#666' }}>Checked In</th>
+              <th className="text-right py-3 px-4 text-sm font-medium" style={{ color: '#666' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredParticipants.map(participant => (
-              <tr key={participant._id || participant.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                <td className="py-3 px-4 font-mono text-sm" style={{ color: '#333' }}>{participant.participantCode || participant.id || '-'}</td>
-                <td className="py-3 px-4" style={{ color: '#333' }}>{participant.user?.fullName || participant.userName || '-'}</td>
-                <td className="py-3 px-4" style={{ color: '#666' }}>{participant.user?.email || participant.userCommunity || '-'}</td>
-                <td className="py-3 px-2">
-                  <span
-                    className="px-0 py-1 rounded-full text-xs capitalize text-white"
-                    style={{
-                      backgroundColor:
-                        participant.status === 'checked-in' ? '#10B981' :
-                        participant.status === 'no-show' ? '#EF4444' :
-                        participant.status === 'completed' ? '#F59E0B' :
-                        participant.status === 'registered' || participant.status === 'joined' ? '#3B82F6' : '#6B7280',
-                    }}
-                  >
-                    {participant.status || 'registered'}
-                  </span>
-                </td>
-                <td className="py-3 px-4" style={{ color: '#666' }}>
-                  {participant.createdAt ? new Date(participant.createdAt).toLocaleDateString() : participant.registeredAt ? new Date(participant.registeredAt).toLocaleDateString() : '-'}
-                </td>
-                <td className="py-3 px-4" style={{ color: '#666' }}>
-                  {participant.checkedInAt ? new Date(participant.checkedInAt).toLocaleString() : '-'}
-                </td>
-                <td className="py-3 px-4" style={{ color: '#333' }}>
-                  {participant.rank ? `#${participant.rank}` : '-'}
-                </td>
-                <td className="py-3 px-4" style={{ color: '#333' }}>
-                  {participant.time || '-'}
-                </td>
-                <td className="py-3 px-4">
-                  <div className="flex items-center justify-end gap-2">
-                    
+            {filteredParticipants.map(participant => {
+              const isCheckedIn = participant.status === 'checked-in';
+              const isNoShow = participant.status === 'no-show';
+              const isCompleted = participant.status === 'completed';
+              const isProcessing = processingIds.has(participant.id);
+
+              return (
+                <tr key={participant.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                  <td className="py-3 px-4 font-mono text-sm" style={{ color: '#333' }}>{participant.participantCode || participant.id || '-'}</td>
+                  <td className="py-3 px-4 text-sm" style={{ color: '#333' }}>{participant.userName}</td>
+                  <td className="py-3 px-4 text-sm" style={{ color: '#666' }}>{participant.userCommunity}</td>
+                  <td className="py-3 px-2">
+                    <span
+                      className="px-2 py-1 rounded-full text-xs capitalize text-white"
+                      style={{
+                        backgroundColor:
+                          isCheckedIn ? '#10B981' :
+                          isNoShow ? '#EF4444' :
+                          isCompleted ? '#F59E0B' : '#3B82F6',
+                      }}
+                    >
+                      {participant.status || 'registered'}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 text-sm" style={{ color: '#666' }}>
+                    {participant.registeredAt ? new Date(participant.registeredAt).toLocaleDateString() : '-'}
+                  </td>
+                  <td className="py-3 px-4 text-sm" style={{ color: '#666' }}>
+                    {participant.checkedInAt ? new Date(participant.checkedInAt).toLocaleString() : '-'}
+                  </td>
+
+                  {/* Actions — always visible, disabled when already in that state */}
+                  <td className="py-3 px-4">
+                    <div className="flex items-center justify-end gap-2">
+                      {/* Check-in: disabled if already checked-in or completed */}
                       <button
                         onClick={() => handleCheckIn(participant.id)}
-                        className="p-2 rounded-lg transition-colors hover:bg-green-50"
-                        title="Check In"
+                        disabled={isProcessing || isCheckedIn || isCompleted}
+                        className="p-2 rounded-lg transition-colors hover:bg-green-50 disabled:opacity-30 disabled:cursor-not-allowed"
+                        title={isCheckedIn ? 'Already checked in' : isCompleted ? 'Completed' : 'Check In'}
                       >
                         <Check className="w-4 h-4" style={{ color: '#10B981' }} />
                       </button>
-                   
 
-                    
+                      {/* No-show: disabled if already no-show or completed */}
                       <button
                         onClick={() => handleMarkNoShow(participant.id)}
-                        className="p-2 rounded-lg transition-colors hover:bg-red-50"
-                        title="Mark No-Show"
+                        disabled={isProcessing || isNoShow || isCompleted}
+                        className="p-2 rounded-lg transition-colors hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed"
+                        title={isNoShow ? 'Already no-show' : isCompleted ? 'Completed' : 'Mark No-Show'}
                       >
                         <X className="w-4 h-4" style={{ color: '#EF4444' }} />
                       </button>
-                   
 
-                    <button
-                      onClick={() => handleRemoveParticipant(participant.id, participant.userName)}
-                      className="p-2 rounded-lg transition-colors hover:bg-red-50"
-                      title="Remove Participant"
-                    >
-                      <UserX className="w-4 h-4" style={{ color: '#EF4444' }} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                      <button
+                        onClick={() => handleRemoveParticipant(participant.id, participant.userName)}
+                        className="p-2 rounded-lg transition-colors hover:bg-red-50"
+                        title="Remove Participant"
+                      >
+                        <UserX className="w-4 h-4" style={{ color: '#EF4444' }} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
 
             {filteredParticipants.length === 0 && (
               <tr>
-                  <td colSpan={9} className="py-12 text-center" style={{ color: '#999' }}>
+                <td colSpan={7} className="py-12 text-center text-sm" style={{ color: '#999' }}>
                   No participants found
                 </td>
               </tr>
@@ -342,43 +380,25 @@ export function EventParticipants({ role }: EventParticipantsProps) {
       </div>
 
       {/* Bulk Actions */}
-      {filteredParticipants.length > 0 && (
+      {participantsData.length > 0 && (
         <div className="p-6 rounded-2xl bg-white shadow-sm">
           <h3 className="text-lg mb-4" style={{ color: '#333' }}>Bulk Actions</h3>
           <div className="flex flex-wrap gap-3">
             <button
-              className="px-4 py-2 rounded-lg transition-all hover:shadow-md"
+              onClick={handleCheckInAll}
+              disabled={bulkLoading === 'checkin'}
+              className="px-4 py-2 rounded-lg transition-all hover:shadow-md disabled:opacity-50"
               style={{ backgroundColor: '#10B981', color: '#fff' }}
-              onClick={async () => {
-                if (!eventId) return;
-                try {
-                  await checkInAllParticipants(eventId);
-                  await fetchParticipants(true);
-                  toast.success('All registered participants checked in');
-                } catch (error) {
-                  console.error('Error checking in all participants:', error);
-                  toast.error('Failed to check in all participants');
-                }
-              }}
             >
-              Check In All Registered
+              {bulkLoading === 'checkin' ? 'Checking in…' : 'Check In All Registered'}
             </button>
             <button
-              className="px-4 py-2 rounded-lg transition-all hover:shadow-md"
+              onClick={handleNoShowAll}
+              disabled={bulkLoading === 'noshow'}
+              className="px-4 py-2 rounded-lg transition-all hover:shadow-md disabled:opacity-50"
               style={{ backgroundColor: '#EF4444', color: '#fff' }}
-              onClick={async () => {
-                if (!eventId) return;
-                try {
-                  await markAllParticipantsNoShow(eventId);
-                  await fetchParticipants(true);
-                  toast.success('All applicable participants marked as no-show');
-                } catch (error) {
-                  console.error('Error marking all no-show:', error);
-                  toast.error('Failed to mark all no-show');
-                }
-              }}
             >
-              Mark All No-Show
+              {bulkLoading === 'noshow' ? 'Marking…' : 'Mark All No-Show'}
             </button>
             <button
               onClick={handleExportCSV}

@@ -517,6 +517,21 @@ export const removeEventParticipant = async (
   }
 };
 
+// Admin: update rank/time for a single participant result
+export const adminUpdateParticipantResult = async (
+  eventId: string,
+  userId: string,
+  data: { rank?: number | null; time?: string; points?: number | null }
+): Promise<any> => {
+  try {
+    const response = await api.patch(`/v1/events/${eventId}/participants/${userId}/result`, data);
+    return response.data?.data ?? response.data;
+  } catch (error) {
+    console.error('Error updating participant result:', error);
+    throw error;
+  }
+};
+
 // Export event results as CSV (goes through axios interceptors)
 export const exportEventResultsCsv = async (eventId: string): Promise<Blob> => {
   try {

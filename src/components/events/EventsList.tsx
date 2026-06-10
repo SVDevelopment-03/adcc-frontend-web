@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { UserRole } from '../../App';
-import { Plus, Search, Calendar, Users, MapPin, Star, Edit, Eye, UserCheck, Trophy, Ban, Archive, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Search, Calendar, Users, MapPin, Star, Edit, Eye, UserCheck, Trophy, Ban, Archive, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 import { availableCategories, availableCities } from '../../data/eventsData';
 import { getAllEvents, deleteEvent as deleteEventApi, disableEvent as disableEventApi, EventApiResponse } from '../../services/eventsApi';
 import { toast } from 'sonner';
@@ -591,6 +591,15 @@ export function EventsList({ role }: EventsListProps) {
                           {t('events.card.disable')}
                         </button>
                       )}
+
+                      <button
+                        onClick={() => handleDelete(eventId)}
+                        className="flex items-center gap-1 px-3 py-2 rounded-lg transition-all hover:shadow-md"
+                        style={{ backgroundColor: '#FEE2E2', color: '#C12D32' }}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        {t('events.card.delete', 'Delete')}
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -671,6 +680,20 @@ export function EventsList({ role }: EventsListProps) {
         confirmLabel={t('events.edit.disableEvent', 'Disable Event')}
         cancelLabel={t('common.cancel', 'Cancel')}
         icon={Ban}
+        iconBgColor="#FEE2E2"
+        iconColor="#EF4444"
+        confirmBgColor="#EF4444"
+      />
+
+      <ConfirmDialog
+        open={showDeleteModal}
+        onClose={() => { setShowDeleteModal(false); setEventToDelete(null); }}
+        onConfirm={confirmDelete}
+        title={t('events.deleteModal.title', 'Delete Event') + '?'}
+        message={t('events.deleteModal.message', 'Are you sure you want to delete this event? This action cannot be undone.')}
+        confirmLabel={t('events.deleteModal.confirm', 'Delete')}
+        cancelLabel={t('common.cancel', 'Cancel')}
+        icon={Trash2}
         iconBgColor="#FEE2E2"
         iconColor="#EF4444"
         confirmBgColor="#EF4444"

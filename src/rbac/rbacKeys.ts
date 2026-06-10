@@ -10,6 +10,7 @@ export type SidebarItemId =
   | 'badges'
   | 'feed'
   | 'marketplace'
+  | 'merchandise'
   | 'cms'
   | 'media'
   | 'push'
@@ -24,7 +25,7 @@ export type SidebarItemId =
 export const ROLE_DEFAULT_SIDEBAR_ITEMS: Record<UserRole, SidebarItemId[]> = {
   Admin: [
     'dashboard', 'events', 'communities', 'tracks', 'challenges', 'badges',
-    'feed', 'marketplace', 'cms', 'media', 'push', 'users', 'admins', 'reports',
+    'feed', 'marketplace', 'merchandise', 'cms', 'media', 'push', 'users', 'admins', 'reports',
     'config', 'languages', 'roles',
   ],
   'community-manager': [

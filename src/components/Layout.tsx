@@ -11,6 +11,7 @@ import { EventsList } from './events/EventsList';
 import { EventCreate } from './events/EventCreate';
 import { EventDetail } from './events/EventDetail';
 import { EventParticipants } from './events/EventParticipants';
+import { EventResults } from './events/EventResults';
 import { EventEdit } from './events/EventEdit';
 import { CommunitiesList } from './communities/CommunitiesList';
 import { CommunityCreate } from './communities/CommunityCreate';
@@ -25,6 +26,7 @@ import { ChallengeDetail } from './challenges/ChallengeDetail';
 import { ChallengeCreate } from './challenges/ChallengeCreate';
 import { FeedModeration } from './feed/FeedModeration';
 import { MarketplaceModeration } from './marketplace/MarketplaceModeration';
+import { ClubMerchandise } from './merchandise/ClubMerchandise';
 import { MarketplaceItemEdit } from './marketplace/MarketplaceItemEdit';
 import { CMS } from './cms/CMS';
 import { MediaLibrary } from './media/MediaLibrary';
@@ -204,6 +206,7 @@ export function Layout() {
             <Route path="/events/:id/edit" element={withPermission('manage_events', <EventEdit navigate={() => {}} role={currentRole} />)} />
             <Route path="/events/:id" element={withPermission('manage_events', <EventDetail />)} />
             <Route path="/events/:id/event-participants" element={withPermission('manage_events', <EventParticipants role={currentRole} />)} />
+            <Route path="/events/:id/results" element={withPermission('manage_events', <EventResults />)} />
 
             <Route path="/communities" element={withRoleSidebarAccess('communities', <CommunitiesList role={currentRole} />)} />
             <Route path="/communities/create" element={withRoleSidebarAccess('communities', <CommunityCreate />)} />
@@ -225,6 +228,7 @@ export function Layout() {
             <Route path="/badges/:id/edit" element={withRoleSidebarAccess('badges', <BadgesEditWrapper />)} />
             <Route path="/feed" element={withRoleSidebarAccess('feed', <FeedModeration />)} />
             <Route path="/marketplace" element={withRoleSidebarAccess('marketplace', <MarketplaceModeration navigate={() => {}} role={currentRole} />)} />
+            <Route path="/merchandise" element={withRoleSidebarAccess('merchandise', <ClubMerchandise />)} />
             <Route path="/marketplace/:id/edit" element={withRoleSidebarAccess('marketplace', <MarketplaceItemEdit />)} />
             <Route path="/cms" element={withPermission('manage_cms', <CMS />)} />
             <Route path="/media" element={withPermission('manage_media', <MediaLibrary />)} />

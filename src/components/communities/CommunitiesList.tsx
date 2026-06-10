@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Users, MapPin, Calendar, Star, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Search, Users, MapPin, Calendar, Star, Filter, ChevronLeft, ChevronRight, Edit, Trash2 } from 'lucide-react';
 import { CardSkeleton } from '../ui/skeleton';
 import { UserRole } from '../../App';
 import { toast } from 'sonner';
@@ -541,6 +541,24 @@ export function CommunitiesList({ role }: CommunitiesListProps) {
               >
                 {community.isActive ? t('communities.card.active') : t('communities.card.inactive')}
               </span>
+              <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                <button
+                  onClick={() => navigate(`/communities/${community.id}/edit`)}
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs border border-gray-200 hover:bg-gray-50 transition-all"
+                  style={{ color: '#666' }}
+                >
+                  <Edit className="w-3.5 h-3.5" />
+                  {t('communities.card.edit', 'Edit')}
+                </button>
+                <button
+                  onClick={() => handleDelete(community.id)}
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs border border-red-200 hover:bg-red-50 transition-all"
+                  style={{ color: '#C12D32' }}
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  {t('communities.card.delete', 'Delete')}
+                </button>
+              </div>
             </div>
           </div>
         ))}

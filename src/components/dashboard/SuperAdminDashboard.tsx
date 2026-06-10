@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Users, Calendar, Building2, MapPin } from 'lucide-react';
+import { Users, Calendar, Building2, MapPin, Store, TrendingUp, ShoppingBag, Package } from 'lucide-react';
 import { StatCard } from './StatCard';
 import { UpcomingEvents } from './UpcomingEvents';
 import { PendingApprovals } from './PendingApprovals';
@@ -122,6 +122,75 @@ export function SuperAdminDashboard() {
           loading={loading}
           tracksRankedByEvents={landing?.tracksRankedByEvents}
         />
+      </div>
+
+      {/* Row 5: Club Merchandise */}
+      <div className="p-6 rounded-2xl shadow-sm bg-white">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#FFF9EF' }}>
+              <Store className="w-5 h-5" style={{ color: '#C12D32' }} />
+            </div>
+            <div>
+              <h2 className="text-xl" style={{ color: '#333' }}>{t('dashboard.clubMerchandise', 'Club Merchandise')}</h2>
+              <p className="text-sm" style={{ color: '#666' }}>{t('dashboard.clubMerchandiseSubtitle', 'ADCC official products and store overview')}</p>
+            </div>
+          </div>
+          <button
+            onClick={() => navigate('/marketplace')}
+            className="px-4 py-2 rounded-lg text-sm transition-all hover:shadow-md"
+            style={{ backgroundColor: '#C12D32', color: '#fff' }}
+          >
+            {t('dashboard.manageStore', 'Manage Store')}
+          </button>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="p-4 rounded-xl" style={{ backgroundColor: '#FFF9EF' }}>
+            <div className="flex items-center gap-2 mb-1">
+              <TrendingUp className="w-4 h-4" style={{ color: '#C12D32' }} />
+              <span className="text-xs" style={{ color: '#666' }}>{t('dashboard.revenue', 'Revenue')}</span>
+            </div>
+            <p className="text-xl" style={{ color: '#C12D32' }}>—</p>
+          </div>
+          <div className="p-4 rounded-xl" style={{ backgroundColor: '#EFF6FF' }}>
+            <div className="flex items-center gap-2 mb-1">
+              <ShoppingBag className="w-4 h-4" style={{ color: '#3B82F6' }} />
+              <span className="text-xs" style={{ color: '#666' }}>{t('dashboard.totalOrders', 'Total Orders')}</span>
+            </div>
+            <p className="text-xl" style={{ color: '#3B82F6' }}>—</p>
+          </div>
+          <div className="p-4 rounded-xl" style={{ backgroundColor: '#ECFDF5' }}>
+            <div className="flex items-center gap-2 mb-1">
+              <Package className="w-4 h-4" style={{ color: '#10B981' }} />
+              <span className="text-xs" style={{ color: '#666' }}>{t('dashboard.products', 'Products')}</span>
+            </div>
+            <p className="text-xl" style={{ color: '#10B981' }}>—</p>
+          </div>
+          <div className="p-4 rounded-xl" style={{ backgroundColor: stats?.pendingStoreItems ? '#FFFBEB' : '#F9FAFB' }}>
+            <div className="flex items-center gap-2 mb-1">
+              <ShoppingBag className="w-4 h-4" style={{ color: stats?.pendingStoreItems ? '#F59E0B' : '#9CA3AF' }} />
+              <span className="text-xs" style={{ color: '#666' }}>{t('dashboard.pendingApprovals', 'Pending Approvals')}</span>
+            </div>
+            <p className="text-xl" style={{ color: stats?.pendingStoreItems ? '#F59E0B' : '#333' }}>
+              {loading ? '—' : (stats?.pendingStoreItems ?? 0)}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 p-4 rounded-xl" style={{ backgroundColor: '#F9FAFB', border: '1px dashed #E5E7EB' }}>
+          <Store className="w-5 h-5 shrink-0" style={{ color: '#9CA3AF' }} />
+          <p className="text-sm" style={{ color: '#666' }}>
+            {t('dashboard.merchandiseComingSoon', 'Full merchandise management (products, orders, inventory) is coming soon. Marketplace moderation is available now.')}
+          </p>
+          <button
+            onClick={() => navigate('/marketplace')}
+            className="ml-auto text-xs underline shrink-0"
+            style={{ color: '#C12D32' }}
+          >
+            {t('dashboard.goToMarketplace', 'Go to Marketplace')}
+          </button>
+        </div>
       </div>
     </div>
   );

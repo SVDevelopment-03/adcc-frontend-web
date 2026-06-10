@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Edit, Copy, Bell, ImageIcon, Trophy, UserCheck, Users, Star, Share2, Calendar, MapPin, Clock, Award, Upload,Trash2 } from 'lucide-react';
+import { ArrowLeft, Edit, Bell, ImageIcon, Trophy, UserCheck, Users, Star, Calendar, MapPin, Clock, Award, Upload, Trash2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
-import { addEventGalleryImages, deleteEventGalleryImage, getEventById, updateEvent as updateEventApi, EventApiResponse, getEventResults } from '../../services/eventsApi';
+import { addEventGalleryImages, deleteEventGalleryImage, getEventById, updateEvent as updateEventApi, EventApiResponse, getEventResults, adminUpdateParticipantResult } from '../../services/eventsApi';
+import { getAllCommunities } from '../../services/communitiesApi';
 import { DetailPageSkeleton } from '../ui/skeleton';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 
@@ -21,8 +22,16 @@ export function EventDetail() {
   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
   const [deleteImageUrl, setDeleteImageUrl] = useState<string | null>(null);
 
+  // Results tab state
+  const [communities, setCommunities] = useState<any[]>([]);
+  const [resultEdits, setResultEdits] = useState<Record<string, { rank: string; time: string; points: string; saving: boolean }>>({});
+  const [showAddResult, setShowAddResult] = useState(false);
+  const [addForm, setAddForm] = useState({ participantId: '', communityId: '', time: '', rank: '', points: '' });
+  const [addingSaving, setAddingSaving] = useState(false);
+
   useEffect(() => {
     loadEvent();
+    getAllCommunities().then(data => setCommunities(Array.isArray(data) ? data : [])).catch(() => {});
   }, [id]);
 
   // Re-fetch when language changes so backend returns translated values
@@ -51,6 +60,69 @@ export function EventDetail() {
       toast.error(t('events.detail.toasts.loadError'));
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const normalizeStatus = (s: string | undefined) =>
+    s ? String(s).toLowerCase().replace(/_/g, '-') : 'registered';
+
+const formatTimeInput = (raw: string): string => {
+    const digits = raw.replace(/\D/g, '').slice(0, 6);
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 4) return `${digits.slice(0, 2)}:${digits.slice(2)}`;
+    return `${digits.slice(0, 2)}:${digits.slice(2, 4)}:${digits.slice(4)}`;
+  };
+
+  const normalizedParticipants = participants.map((p: any) => ({
+    id: p._id || p.id,
+    userId: p.user?._id || p.userId,
+    userName: p.user?.fullName || p.userName || '-',
+    userCommunity: p.community?.title || p.userCommunity || '-',
+    communityId: p.community?._id || p.community?.id || '',
+    status: normalizeStatus(p.status),
+    rank: p.rank ?? null,
+    time: p.time || '',
+    points: p.pointsEarned ?? null,
+  }));
+
+  const checkedInParticipants = normalizedParticipants.filter(
+    p => p.status === 'checked-in' || p.status === 'completed'
+  );
+
+  const handleSaveResult = async (participant: any) => {
+    const edit = resultEdits[participant.id];
+    if (!edit || !eventId) return;
+    const rankNum = edit.rank ? parseInt(edit.rank) : null;
+    const pointsNum = edit.points ? parseInt(edit.points) : null;
+    setResultEdits(prev => ({ ...prev, [participant.id]: { ...prev[participant.id], saving: true } }));
+    try {
+      await adminUpdateParticipantResult(eventId, participant.userId, { rank: rankNum, time: edit.time || undefined, points: pointsNum });
+      await loadEvent();
+      setResultEdits(prev => { const next = { ...prev }; delete next[participant.id]; return next; });
+      toast.success('Result saved');
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || 'Failed to save result');
+      setResultEdits(prev => ({ ...prev, [participant.id]: { ...prev[participant.id], saving: false } }));
+    }
+  };
+
+  const handleAddResult = async () => {
+    if (!addForm.participantId || !eventId) { toast.error('Select a participant'); return; }
+    const target = normalizedParticipants.find(p => p.id === addForm.participantId);
+    if (!target?.userId) return;
+    const rankNum = addForm.rank ? parseInt(addForm.rank) : null;
+    const pointsNum = addForm.points ? parseInt(addForm.points) : null;
+    setAddingSaving(true);
+    try {
+      await adminUpdateParticipantResult(eventId, target.userId, { rank: rankNum, time: addForm.time || undefined, points: pointsNum });
+      await loadEvent();
+      setAddForm({ participantId: '', communityId: '', time: '', rank: '', points: '' });
+      setShowAddResult(false);
+      toast.success('Result added');
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || 'Failed to add result');
+    } finally {
+      setAddingSaving(false);
     }
   };
 
@@ -309,18 +381,16 @@ export function EventDetail() {
         >
           {t('events.detail.tabs.participants')}
         </button>
-        {event.category === 'Race' && (
-          <button
-            onClick={() => setActiveTab('results')}
-            className="px-6 py-3 transition-colors"
-            style={{
-              color: activeTab === 'results' ? '#C12D32' : '#666',
-              borderBottom: activeTab === 'results' ? '2px solid #C12D32' : 'none',
-            }}
-          >
-            {t('events.detail.tabs.results')}
-          </button>
-        )}
+        <button
+          onClick={() => setActiveTab('results')}
+          className="px-6 py-3 transition-colors"
+          style={{
+            color: activeTab === 'results' ? '#C12D32' : '#666',
+            borderBottom: activeTab === 'results' ? '2px solid #C12D32' : 'none',
+          }}
+        >
+          {t('events.detail.tabs.results')}
+        </button>
         <button
           onClick={() => setActiveTab('gallery')}
           className="px-6 py-3 transition-colors"
@@ -560,16 +630,14 @@ export function EventDetail() {
                 {t('events.detail.manageParticipants')}
               </button>
 
-              {event.category === 'Race' && (
-                <button
-                  onClick={() => navigate('event-results', { selectedEventId: eventId })}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-white transition-all hover:shadow-md"
-                  style={{ backgroundColor: '#F59E0B' }}
-                >
-                  <Trophy className="w-5 h-5" />
-                  {t('events.detail.enterResults')}
-                </button>
-              )}
+              <button
+                onClick={() => navigate(`/events/${eventId}/results`)}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-white transition-all hover:shadow-md"
+                style={{ backgroundColor: '#F59E0B' }}
+              >
+                <Trophy className="w-5 h-5" />
+                {t('events.detail.enterResults', 'Enter Results')}
+              </button>
             </div>
           </div>
         </div>
@@ -625,19 +693,196 @@ export function EventDetail() {
         </div>
       )}
 
-      {activeTab === 'results' && event.category === 'Race' && (
-        <div className="p-6 rounded-2xl bg-white shadow-sm">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg" style={{ color: '#333' }}>{t('events.detail.resultsTab.heading')}</h3>
+      {activeTab === 'results' && (
+        <div className="rounded-2xl bg-white shadow-sm overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <div className="flex items-center gap-3">
+              <Trophy className="w-5 h-5" style={{ color: '#C12D32' }} />
+              <h3 className="text-lg" style={{ color: '#333' }}>Add Result Entry</h3>
+            </div>
             <button
-              onClick={() => navigate('event-results', { selectedEventId: eventId })}
-              className="px-4 py-2 rounded-lg text-white transition-all hover:shadow-md"
-              style={{ backgroundColor: '#C12D32' }}
+              onClick={() => setShowAddResult(v => !v)}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all hover:shadow-md"
+              style={{ backgroundColor: showAddResult ? '#F3F4F6' : '#C12D32', color: showAddResult ? '#666' : '#fff' }}
             >
-              {t('events.detail.enterResults')}
+              <Plus className="w-4 h-4" />
+              {showAddResult ? 'Cancel' : 'Add Result'}
             </button>
           </div>
-          <p style={{ color: '#666' }}>{t('events.detail.resultsTab.body')}</p>
+
+          {/* Add Result Form */}
+          {showAddResult && (
+            <div className="p-6 border-b border-gray-100" style={{ backgroundColor: '#FAFAFA' }}>
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                <div>
+                  <label className="block text-xs mb-1 font-medium" style={{ color: '#666' }}>Rank</label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={addForm.rank}
+                    onChange={e => setAddForm(f => ({ ...f, rank: e.target.value }))}
+                    placeholder="e.g. 1"
+                    className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-red-600"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs mb-1 font-medium" style={{ color: '#666' }}>Rider Name</label>
+                  <select
+                    value={addForm.participantId}
+                    onChange={e => {
+                      const p = normalizedParticipants.find(p => p.id === e.target.value);
+                      setAddForm(f => ({ ...f, participantId: e.target.value, communityId: p?.communityId || '' }));
+                    }}
+                    className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-red-600 bg-white"
+                    style={{ color: addForm.participantId ? '#333' : '#999' }}
+                  >
+                    <option value="">Select rider...</option>
+                    {normalizedParticipants.map(p => (
+                      <option key={p.id} value={p.id}>{p.userName}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs mb-1 font-medium" style={{ color: '#666' }}>Community</label>
+                  <select
+                    value={addForm.communityId}
+                    onChange={e => setAddForm(f => ({ ...f, communityId: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-red-600 bg-white"
+                    style={{ color: addForm.communityId ? '#333' : '#999' }}
+                  >
+                    <option value="">Select community...</option>
+                    {communities.map(c => (
+                      <option key={c._id || c.id} value={c._id || c.id}>{c.title || c.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs mb-1 font-medium" style={{ color: '#666' }}>Time (HH:MM:SS)</label>
+                  <input
+                    type="text"
+                    value={addForm.time}
+                    onChange={e => setAddForm(f => ({ ...f, time: formatTimeInput(e.target.value) }))}
+                    placeholder="00:00:00"
+                    maxLength={8}
+                    className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-red-600"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs mb-1 font-medium" style={{ color: '#666' }}>Points</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min={0}
+                      value={addForm.points}
+                      onChange={e => setAddForm(f => ({ ...f, points: e.target.value }))}
+                      placeholder="e.g. 300"
+                      className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-red-600"
+                    />
+                    <button
+                      onClick={handleAddResult}
+                      disabled={addingSaving || !addForm.participantId}
+                      className="px-4 py-2 rounded-lg text-sm text-white transition-all hover:shadow-md disabled:opacity-50"
+                      style={{ backgroundColor: '#C12D32' }}
+                    >
+                      {addingSaving ? 'Saving…' : 'Save'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Results Summary Table */}
+          {checkedInParticipants.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr style={{ backgroundColor: '#FFF9EF' }}>
+                    <th className="text-left px-5 py-3 text-sm font-medium" style={{ color: '#666' }}>Rank</th>
+                    <th className="text-left px-4 py-3 text-sm font-medium" style={{ color: '#666' }}>Rider Name</th>
+                    <th className="text-left px-4 py-3 text-sm font-medium" style={{ color: '#666' }}>Community</th>
+                    <th className="text-left px-4 py-3 text-sm font-medium" style={{ color: '#666' }}>Time</th>
+                    <th className="text-left px-4 py-3 text-sm font-medium" style={{ color: '#666' }}>Points</th>
+                    <th className="text-right px-4 py-3 text-sm font-medium" style={{ color: '#666' }}>Save</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {checkedInParticipants
+                    .sort((a, b) => (a.rank ?? 9999) - (b.rank ?? 9999))
+                    .map(p => {
+                      const edit = resultEdits[p.id];
+                      const currentRank = edit ? edit.rank : (p.rank ? String(p.rank) : '');
+                      const currentTime = edit ? edit.time : (p.time || '');
+                      const currentPoints = edit ? edit.points : (p.points ? String(p.points) : '');
+                      return (
+                        <tr key={p.id} className="border-t border-gray-100 hover:bg-gray-50">
+                          <td className="px-5 py-3">
+                            <input
+                              type="number"
+                              min={1}
+                              value={currentRank}
+                              placeholder="—"
+                              onChange={e => setResultEdits(prev => ({
+                                ...prev,
+                                [p.id]: { rank: e.target.value, time: prev[p.id]?.time ?? currentTime, points: prev[p.id]?.points ?? currentPoints, saving: false },
+                              }))}
+                              className="w-16 px-2 py-1 rounded-lg border border-gray-200 text-sm text-center focus:outline-none focus:ring-2 focus:ring-red-600"
+                            />
+                          </td>
+                          <td className="px-4 py-3 text-sm font-medium" style={{ color: '#333' }}>{p.userName}</td>
+                          <td className="px-4 py-3 text-sm" style={{ color: '#666' }}>{p.userCommunity}</td>
+                          <td className="px-4 py-3">
+                            <input
+                              type="text"
+                              value={currentTime}
+                              placeholder="HH:MM:SS"
+                              maxLength={8}
+                              onChange={e => setResultEdits(prev => ({
+                                ...prev,
+                                [p.id]: { rank: prev[p.id]?.rank ?? currentRank, time: formatTimeInput(e.target.value), points: prev[p.id]?.points ?? currentPoints, saving: false },
+                              }))}
+                              className="w-24 px-2 py-1 rounded-lg border border-gray-200 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-red-600"
+                            />
+                          </td>
+                          <td className="px-4 py-3">
+                            <input
+                              type="number"
+                              min={0}
+                              value={currentPoints}
+                              placeholder="0"
+                              onChange={e => setResultEdits(prev => ({
+                                ...prev,
+                                [p.id]: { rank: prev[p.id]?.rank ?? currentRank, time: prev[p.id]?.time ?? currentTime, points: e.target.value, saving: false },
+                              }))}
+                              className="w-20 px-2 py-1 rounded-lg border border-gray-200 text-sm text-center focus:outline-none focus:ring-2 focus:ring-red-600"
+                            />
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            {edit && (
+                              <button
+                                onClick={() => handleSaveResult(p)}
+                                disabled={edit.saving}
+                                className="px-3 py-1 rounded-lg text-xs text-white transition-all hover:shadow-md disabled:opacity-50"
+                                style={{ backgroundColor: '#C12D32' }}
+                              >
+                                {edit.saving ? '…' : 'Save'}
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="py-12 text-center" style={{ color: '#999' }}>
+              <Trophy className="w-10 h-10 mx-auto mb-3" style={{ color: '#E5E7EB' }} />
+              <p className="text-sm">No checked-in participants yet.</p>
+              <p className="text-xs mt-1">Check in participants first, then add their results here.</p>
+            </div>
+          )}
         </div>
       )}
 

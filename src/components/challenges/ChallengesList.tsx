@@ -390,6 +390,32 @@ export function ChallengesList({ role }: ChallengesListProps) {
               <div className="text-xs" style={{ color: '#999' }}>
                 {new Date(challenge.startDate).toLocaleDateString()} - {new Date(challenge.endDate).toLocaleDateString()}
               </div>
+
+              {/* Action Buttons */}
+              {(canEdit || canDelete) && (
+                <div className="flex gap-2 pt-3 border-t border-gray-100" onClick={(e) => e.stopPropagation()}>
+                  {canEdit && (
+                    <button
+                      onClick={() => navigate(`/challenges/${challenge.id}/edit`)}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs border border-gray-200 hover:bg-gray-50 transition-all"
+                      style={{ color: '#666' }}
+                    >
+                      <Edit className="w-3.5 h-3.5" />
+                      {t('common.edit', 'Edit')}
+                    </button>
+                  )}
+                  {canDelete && (
+                    <button
+                      onClick={() => setDeleteConfirm(challenge.id)}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs border border-red-200 hover:bg-red-50 transition-all"
+                      style={{ color: '#C12D32' }}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      {t('common.delete', 'Delete')}
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         ))}

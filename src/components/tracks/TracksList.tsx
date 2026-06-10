@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from '../../contexts/LocaleContext';
-import { Plus, Search, MapPin, Calendar, Users, Edit, Eye, Archive } from 'lucide-react';
+import { Plus, Search, MapPin, Calendar, Users, Edit, Eye, Archive, Trash2 } from 'lucide-react';
 import { UserRole } from '../../App';
 import { toast } from 'sonner';
 import { CardSkeleton } from '../ui/skeleton';
@@ -468,6 +468,14 @@ export function TracksList({ role }: TracksListProps) {
                               <Archive className="w-4 h-4" />
                               <span className="text-sm">{t('tracks.card.archive')}</span>
                             </button>
+                            <button
+                              onClick={() => trackId && handleDelete(trackId)}
+                              className="flex items-center gap-1 px-3 py-1.5 rounded-lg transition-all hover:shadow-md"
+                              style={{ backgroundColor: '#FEE2E2', color: '#C12D32' }}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              <span className="text-sm">{t('tracks.card.delete', 'Delete')}</span>
+                            </button>
                           </>
                         )}
                       </div>
@@ -483,6 +491,34 @@ export function TracksList({ role }: TracksListProps) {
               <p className="text-sm" style={{ color: '#999' }}>{t('tracks.empty.tryFilters')}</p>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowDeleteModal(false)}>
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-xl mb-4" style={{ color: '#333' }}>{t('tracks.deleteModal.title', 'Delete Track?')}</h3>
+            <p className="mb-6" style={{ color: '#666' }}>
+              {t('tracks.deleteModal.body', 'Are you sure you want to delete this track? This action cannot be undone.')}
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={confirmDelete}
+                className="flex-1 px-4 py-2 rounded-lg text-white transition-all hover:shadow-md"
+                style={{ backgroundColor: '#C12D32' }}
+              >
+                {t('tracks.deleteModal.confirm', 'Delete')}
+              </button>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 px-4 py-2 rounded-lg border border-gray-200 transition-all hover:bg-gray-50"
+                style={{ color: '#666' }}
+              >
+                {t('tracks.deleteModal.cancel', 'Cancel')}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
