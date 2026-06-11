@@ -1318,15 +1318,15 @@ export default function Tracks() {
   return (
     <>
       <FontLoader />
-      <div style={{ minWidth: 320 }}>
+      <div style={{ minWidth: 320, overflowX: "hidden" }}>
         <Navbar />
         <Hero />
         <ExploreIntro />
         <WhySection />
         <TracksGrid />
         <FAQ />
-        <CTABanner />
-        <Footer />
+        {/* <CTABanner /> */}
+        {/* <Footer /> */}
       </div>
     </>
   );

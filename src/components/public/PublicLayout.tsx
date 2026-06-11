@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Apple, Bike, CloudSun, LogIn, LogOut, Mail, MapPin, Menu, MessageCircle, Phone, Play } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -10,25 +10,20 @@ interface PublicLayoutProps {
 const navItems = [
   { label: 'Home', to: '/home', match: ['/home'] },
   { label: 'About Us', to: '/aboutus', match: ['/aboutus'] },
-  { label: 'Events', to: '/user-event', match: ['/user-event', '/user-events', '/communities-abu-dhabi-grand-prix-ride'] },
-  {
-    label: 'Community',
-    to: '/user-communities',
-    match: [
-      '/user-communities',
-      '/communities-abu-dhabi-cycling-community',
-      '/communities-march-distance-challenge',
-    ],
-  },
+  { label: 'Events', to: '/user-events', match: ['/user-events'] },
+  { label: 'Community', to: '/user-communities', match: ['/user-communities'],},
   { label: 'Challenges', to: '/user-challenges', match: ['/user-challenges'] },
-  { label: 'Tracks', to: '/user-tracks', match: ['/user-tracks', '/communities-al-quadra-cycle-path'] },
+  { label: 'Tracks', to: '/user-tracks', match: ['/user-tracks'] },
 ];
 
 function Logo({ compact = false }: { compact?: boolean }) {
+  const navigate = useNavigate();
+
   return (
    <img
     src="/images/adcc-logo.png"
     alt="Abu Dhabi Cycling Club"
+    onClick={() => navigate("/home")}
     className={compact ? 'h-14 w-34 object-contain sm:h-16 sm:w-38' : 'h-13 w-32 object-contain sm:h-15 sm:w-36 lg:h-17 lg:w-42 xl:h-19 xl:w-45'}
    />
   );
@@ -102,8 +97,11 @@ function PublicHeader() {
             <NavLink
               key={item.label}
               to={item.to}
-              className={`inline-block transition-colors duration-300 ease-out hover:text-[#019839] ${
-                isActive ? 'text-[#019839]' : 'text-black'
+              // className={`inline-block transition-colors duration-300 ease-out hover:text-[#019839] ${
+              //   isActive ? 'text-[#019839]' : 'text-black'
+              // }`}
+              className={`inline-block transition-colors duration-300 ease-out hover:!text-[#019839] ${
+                isActive ? '!text-[#019839]' : '!text-black'
               }`}
             >
               {item.label}
@@ -164,8 +162,8 @@ function PublicHeader() {
                   key={item.label}
                   to={item.to}
                   onClick={() => setMenuOpen(false)}
-                  className={`rounded-md px-4 py-2.5 transition-colors duration-300 ease-out hover:text-[#019839] ${
-                    isActive ? 'text-[#019839]' : 'text-black'
+                  className={`rounded-md px-4 py-2.5 transition-colors duration-300 ease-out hover:!text-[#019839] ${
+                    isActive ? '!text-[#019839]' : '!text-black'
                   }`}
                 >
                   {item.label}
@@ -296,6 +294,12 @@ function PublicFooter() {
 }
 
 export function PublicLayout({ children }: PublicLayoutProps) {
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+  
   return (
     <div className="public-layout min-h-screen bg-[#EAF4FF] text-black">
       <PublicHeader />

@@ -165,7 +165,8 @@ export default function ChallengesPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#eaf4ff] text-black">
+    // <div className="min-h-screen bg-[#eaf4ff] text-black">
+    <div className="min-h-screen overflow-x-hidden bg-[#eaf4ff] text-black">
       {/* Header */}
       <header className="flex h-[78px] items-center justify-between bg-[#eaf4ff] px-4 sm:h-[96px] sm:px-6 md:px-10 lg:h-[134px] lg:px-20">
         <div className="flex items-center gap-2">
@@ -257,7 +258,7 @@ export default function ChallengesPage() {
       </section>
 
       {/* Intro */}
-      <section className="mx-auto grid max-w-[1260px] grid-cols-1 gap-8 px-4 py-12 sm:px-6 sm:py-16 md:px-10 lg:grid-cols-2 lg:gap-12 lg:py-28">
+      <section className="grid w-full grid-cols-1 gap-8 px-4 py-12 sm:px-6 sm:py-16 md:px-10 lg:grid-cols-2 lg:gap-12 lg:px-16 lg:py-28 xl:px-20 2xl:px-24">
         <div>
           <motion.h2
             className="max-w-[620px] text-[32px] font-black uppercase leading-tight sm:text-[38px] lg:text-[44px] overflow-hidden"
@@ -333,7 +334,7 @@ export default function ChallengesPage() {
       </section>
 
       {/* Flag Image */}
-      <section className="mx-auto max-w-[1260px] px-4 pb-16 sm:px-6 md:px-10 lg:pb-28">
+      <section className="w-full px-4 pb-16 sm:px-6 md:px-10 lg:px-16 lg:pb-28 xl:px-20 2xl:px-24">
         <motion.img
           src="/img/SSYouTube.online_Falcon_daman.png"
           alt="ADCC Flag"
@@ -349,7 +350,7 @@ export default function ChallengesPage() {
       </section>
 
       {/* Challenges */}
-      <section className="mx-auto max-w-[1260px] px-4 pb-16 sm:px-6 md:px-10 lg:pb-28">
+      <section className="w-full px-4 pb-16 sm:px-6 md:px-10 lg:px-16 lg:pb-28 xl:px-20 2xl:px-24">
         <div className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-center lg:mb-14">
           {/* <h2 className="text-[30px] font-black uppercase sm:text-[36px]">Cycling Challenges</h2> */}
           <motion.h2
@@ -572,7 +573,7 @@ export default function ChallengesPage() {
       </section>
 
       {/* FAQ */}
-      <section className="mx-auto max-w-[1100px] px-4 pb-16 text-center sm:px-6 md:px-10 lg:pb-28">
+      <section className="w-full px-4 pb-16 text-center sm:px-6 md:px-10 lg:px-16 lg:pb-28 xl:px-20 2xl:px-24">
         <motion.h2
           className="text-[30px] font-black uppercase sm:text-[34px] overflow-hidden"
           initial="hidden"
@@ -684,37 +685,8 @@ export default function ChallengesPage() {
         </motion.div>
       </section>
 
-      {/* CTA */}
-      <section
-        className="relative flex h-auto min-h-[360px] items-center justify-center bg-cover bg-center px-4 py-12 text-center text-white sm:min-h-[420px] lg:h-[500px] lg:py-0"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(0,0,0,.62), rgba(0,0,0,.62)), url('https://images.unsplash.com/photo-1511994298241-608e28f14fde?q=80&w=1600&auto=format&fit=crop')",
-        }}
-      >
-        <div>
-          <h2 className="text-[40px] font-black uppercase leading-tight sm:text-[48px] lg:text-[56px]">
-            Start Your Ride Today
-          </h2>
-          <p className="mt-5 text-[16px] leading-6 sm:mt-6 sm:text-[19px]">
-            Download the ADCC app and join the cycling community
-          </p>
-
-          <div className="mx-auto mt-8 flex w-full max-w-[280px] flex-col justify-center gap-3 sm:max-w-none sm:flex-row sm:gap-5">
-            <button className="flex items-center justify-center gap-3 rounded-full bg-white px-7 py-3 text-black">
-              <span className="text-xs">GET IT ON</span>
-              <b>Google Play</b>
-            </button>
-            <button className="flex items-center justify-center gap-3 rounded-full bg-white px-7 py-3 text-black">
-              <Apple size={20} />
-              <b>App Store</b>
-            </button>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
-      <footer className="mx-auto max-w-[1260px] px-4 py-14 sm:px-6 md:px-10 lg:py-24">
+      <footer className="w-full px-4 py-14 sm:px-6 md:px-10 lg:px-16 lg:py-24 xl:px-20 2xl:px-24">
         <div className="grid grid-cols-1 gap-14 md:grid-cols-3">
           <div>
             <img

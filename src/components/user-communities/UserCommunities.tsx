@@ -280,7 +280,8 @@ export default function CommunitiesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#eaf4ff] text-black">
+    // <div className="min-h-screen bg-[#eaf4ff] text-black">
+    <div className="min-h-screen overflow-x-hidden bg-[#eaf4ff] text-black">
       <FontLoader />
 
       <header className="flex h-[78px] items-center justify-between bg-[#eaf4ff] px-4 sm:h-[96px] sm:px-6 md:px-10 lg:h-[134px] lg:px-20">
@@ -363,7 +364,7 @@ export default function CommunitiesPage() {
 
       {/* <section className="mx-auto grid max-w-[1268px] grid-cols-1 gap-10 px-10 py-20 lg:relative lg:block lg:h-[565px] lg:py-0"> */}
       {/* <section className="mx-auto grid max-w-[1268px] grid-cols-1 items-center gap-[42px] px-10 py-20 lg:grid-cols-[634px_592px]"> */}
-      <section className="mx-auto grid max-w-[1268px] grid-cols-1 items-center gap-8 px-4 py-12 sm:px-6 sm:py-16 md:px-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,592px)] lg:gap-[42px] lg:py-20">
+      <section className="grid w-full grid-cols-1 items-center gap-8 px-4 py-12 sm:px-6 sm:py-16 md:px-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,592px)] lg:gap-[42px] lg:px-16 lg:py-20 xl:px-20 2xl:px-24">
         {/* <div className="max-w-[634px] lg:absolute lg:left-0 lg:top-[206px] lg:w-[634px]"> */}
         <div className="max-w-[634px]">
           <h2 className="bebas max-w-[634px] text-[34px] leading-[39px] capitalize sm:text-[42px] sm:leading-[50px] md:text-[52px] md:leading-[62px] lg:text-[60px] lg:leading-[72px]">
@@ -425,7 +426,7 @@ export default function CommunitiesPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1268px] px-4 pb-16 sm:px-6 md:px-10 lg:pb-28">
+      <section className="w-full px-4 pb-16 sm:px-6 md:px-10 lg:px-16 lg:pb-28 xl:px-20 2xl:px-24">
         <h2 className="text-center text-[34px] font-black uppercase sm:text-[42px] lg:text-[50px]">
           {["Explore", "Communities"].map((word, index) => (
             <motion.span
@@ -630,7 +631,7 @@ export default function CommunitiesPage() {
         )}
       </section>
 
-      <section className="mx-auto max-w-[1100px] px-4 pb-16 text-center sm:px-6 md:px-10 lg:pb-28">
+      <section className="w-full px-4 pb-16 text-center sm:px-6 md:px-10 lg:px-16 lg:pb-28 xl:px-20 2xl:px-24">
         <h2 className="text-[34px] font-black uppercase sm:text-[42px] lg:text-[50px]">
           Frequently Asked Questions
         </h2>
@@ -666,34 +667,7 @@ export default function CommunitiesPage() {
         </div>
       </section>
 
-      <section
-        className="flex h-auto min-h-[360px] items-center justify-center bg-cover bg-center px-4 py-12 text-center text-white sm:min-h-[420px] lg:h-[502px] lg:py-0"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)), url('https://images.unsplash.com/photo-1511994298241-608e28f14fde?q=80&w=1600&auto=format&fit=crop')",
-        }}
-      >
-        <div>
-          <h2 className="text-[40px] font-black uppercase leading-none sm:text-[54px] lg:text-[80px]">
-            Start Your Ride Today
-          </h2>
-          <p className="mt-5 text-[17px] leading-6 sm:mt-7 sm:text-[21px] lg:text-[26px]">
-            Download the ADCC app and join the cycling community.
-          </p>
-
-          <div className="mx-auto mt-8 flex w-full max-w-[280px] flex-col justify-center gap-3 sm:mt-10 sm:max-w-none sm:flex-row sm:gap-5">
-            <button className="rounded-full bg-white px-6 py-4 text-black sm:px-9">
-              <span className="text-xs">GET IT ON</span>{" "}
-              <b className="text-lg">Google Play</b>
-            </button>
-            <button className="flex items-center justify-center gap-3 rounded-full bg-white px-6 py-4 text-black sm:px-9">
-              <Apple size={24} /> <b className="text-lg">App Store</b>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <footer className="mx-auto max-w-[1268px] px-4 py-14 sm:px-6 md:px-10 lg:py-24">
+      <footer className="w-full px-4 py-14 sm:px-6 md:px-10 lg:px-16 lg:py-24 xl:px-20 2xl:px-24">
         <div className="grid grid-cols-1 gap-16 md:grid-cols-3">
           <div>
             <img
