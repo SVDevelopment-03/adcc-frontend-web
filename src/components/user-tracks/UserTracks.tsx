@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import type { CSSProperties } from "react";
+import { useTranslation } from "react-i18next";
 import { getTracksPageEn, UAE_CITIES, type Track } from "../../services/trackService";
 import { motion } from "framer-motion";
+import { APP_STORE_LINKS } from "../../config/appStoreLinks";
 
 type PublicTrackCard = {
   id: string;
@@ -83,7 +85,7 @@ const getPaginationItems = (page: number, totalPages: number): Array<number | st
 const FontLoader = () => (
   <style>{`
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Bebas+Neue&display=swap');
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; }
     body { background: #EAF4FF; font-family: 'Outfit', sans-serif; color: #000; }
     .bebas { font-family: 'Bebas Neue', sans-serif; font-weight: 400; letter-spacing: 0.02em; }
     a { text-decoration: none; color: inherit; }
@@ -358,7 +360,8 @@ const FontLoader = () => (
         flex-direction: column !important;
         width: min(100%, 260px) !important;
       }
-      .track-cta-buttons button {
+      .track-cta-buttons button,
+      .track-cta-buttons a {
         justify-content: center !important;
         width: 100% !important;
       }
@@ -835,12 +838,11 @@ function TrackCard({ track, index = 0 }: { track: PublicTrackCard; index?: numbe
       cursor: "pointer",
     }}>
       {/* image */}
-      <div className="track-card-image" style={{
+      <div className="track-card-image adcc-image adcc-image--fill" style={{
         height: 240, overflow: "hidden", position: "relative",
         background: "#ddd"
       }}>
-        <img src={track.img} alt={track.name}
-          style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <img className="adcc-image__img adcc-image__img--fill" src={track.img} alt={track.name} />
       </div>
 
       {/* info */}
@@ -1165,21 +1167,20 @@ function TracksGrid() {
 }
 
 // ── FAQ ───────────────────────────────────────────────────────────────────────
-const FAQS = [
-  { q: "01. Do I need to be an experienced cyclist to join ADCC rides?",    a: "Not at all! ADCC welcomes riders of all experience levels. We have beginner-friendly rides as well as advanced training sessions to suit everyone." },
-  { q: "02. Are there specific tracks for beginners or families?",           a: "Yes! We have several easy, flat tracks such as Corniche Seafront and Saadiyat Island Loop that are perfect for beginners and family outings." },
-  { q: "03. What gear do I need to bring for a group ride?",                a: "A road-worthy bike, a helmet, water, and appropriate cycling attire. We recommend lights for early morning or evening rides." },
-  { q: "04. Can I participate in races without being a professional?",      a: "Absolutely. Many of our races have categories for recreational riders. Check individual event details for age and skill category breakdowns." },
-  { q: "05. How do I track my performance or join challenges?",             a: "Download the ADCC app to log your rides, join challenges, and track your progress alongside thousands of community members." },
-  { q: "06. Are there any women-only rides or training sessions?",          a: "Yes! ADCC organises regular women-only rides and training sessions. Check our events calendar for upcoming sessions." },
-];
+type FaqItem = { q: string; a: string };
 
 function FAQ() {
-  const [open, setOpen] = useState(null);
-  const left  = FAQS.filter((_, i) => i % 2 === 0);
-  const right = FAQS.filter((_, i) => i % 2 !== 0);
+  const { t, i18n } = useTranslation();
+  const [open, setOpen] = useState<number | null>(null);
+  const faqs = t("public.tracks.faq.items", { returnObjects: true }) as FaqItem[];
+  const left = faqs.filter((_, i) => i % 2 === 0);
+  const right = faqs.filter((_, i) => i % 2 !== 0);
 
-  const Item = ({ faq, idx }) => (
+  useEffect(() => {
+    setOpen(null);
+  }, [i18n.language]);
+
+  const Item = ({ faq, idx }: { faq: FaqItem; idx: number }) => (
     <div
       className="track-faq-question"
       onClick={() => setOpen(open === idx ? null : idx)}
@@ -1187,14 +1188,15 @@ function FAQ() {
         border: "1px solid #CCC", borderRadius: 12, padding: "0 24px",
         cursor: "pointer", overflow: "hidden",
         transition: "all .25s",
-        marginBottom: 16
+        marginBottom: 16,
+        textAlign: "start",
       }}
     >
       <div style={{
         display: "flex", justifyContent: "space-between", alignItems: "center",
-        minHeight: 100, gap: 16
+        minHeight: 100, gap: 16,
       }}>
-        <p style={{ fontSize: 20, fontWeight: 500, color: "rgba(0,0,0,0.8)", lineHeight: 1.4, flex: 1 }}>{faq.q}</p>
+        <p style={{ fontSize: 20, fontWeight: 500, color: "rgba(0,0,0,0.8)", lineHeight: 1.4, flex: 1, textAlign: "start" }}>{faq.q}</p>
         <span style={{
           width: 28, height: 28, borderRadius: "50%",
           border: "2px solid #000", display: "flex", alignItems: "center", justifyContent: "center",
@@ -1203,20 +1205,20 @@ function FAQ() {
         }}>+</span>
       </div>
       {open === idx && (
-        <p style={{ fontSize: 16, color: "rgba(0,0,0,0.65)", lineHeight: 1.7, paddingBottom: 20 }}>{faq.a}</p>
+        <p style={{ fontSize: 16, color: "rgba(0,0,0,0.65)", lineHeight: 1.7, paddingBottom: 20, textAlign: "start" }}>{faq.a}</p>
       )}
     </div>
   );
 
   return (
     <section className="track-faq-section" style={{ background: "#EAF4FF", padding: "80px 82px" }}>
-      <h2 className="bebas track-faq-title" style={{ fontSize: 50, textAlign: "center", marginBottom: 12 }}>Frequently Asked Questions</h2>
+      <h2 className="bebas track-faq-title" style={{ fontSize: 50, textAlign: "center", marginBottom: 12 }}>{t("public.tracks.faq.title")}</h2>
       <p style={{ fontSize: 17, textAlign: "center", color: "#1D1D1D", marginBottom: 52 }}>
-        Got questions before hitting the road? We've got you covered.
+        {t("public.tracks.faq.subtitle")}
       </p>
       <div className="track-faq-grid" style={{ display: "flex", gap: 28 }}>
-        <div style={{ flex: 1 }}>{left.map((f, i)  => <Item key={i}  faq={f} idx={i * 2} />)}</div>
-        <div style={{ flex: 1 }}>{right.map((f, i) => <Item key={i}  faq={f} idx={i * 2 + 1} />)}</div>
+        <div style={{ flex: 1 }}>{left.map((f, i)  => <Item key={`${i18n.language}-l-${i}`} faq={f} idx={i * 2} />)}</div>
+        <div style={{ flex: 1 }}>{right.map((f, i) => <Item key={`${i18n.language}-r-${i}`} faq={f} idx={i * 2 + 1} />)}</div>
       </div>
     </section>
   );
@@ -1243,12 +1245,21 @@ function CTABanner() {
           Download the ADCC app and join the cycling community.
         </p>
         <div className="track-cta-buttons" style={{ display: "flex", gap: 20 }}>
-          {["Google Play", "App Store"].map(s => (
-            <button key={s} style={{
-              background: "#fff", border: "none", borderRadius: 100,
-              padding: "14px 32px", fontWeight: 600, fontSize: 16, cursor: "pointer",
-              fontFamily: "'Outfit',sans-serif"
-            }}>{s}</button>
+          {[
+            { label: "Google Play", href: APP_STORE_LINKS.googlePlay },
+            { label: "App Store", href: APP_STORE_LINKS.appStore },
+          ].map(({ label, href }) => (
+            <a
+              key={label}
+              href={href}
+              style={{
+                background: "#fff", border: "none", borderRadius: 100,
+                padding: "14px 32px", fontWeight: 600, fontSize: 16, cursor: "pointer",
+                fontFamily: "'Outfit',sans-serif", textDecoration: "none", color: "#000",
+              }}
+            >
+              {label}
+            </a>
           ))}
         </div>
       </div>

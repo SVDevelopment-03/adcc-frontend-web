@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getPublicStats } from "../../services/publicStatsApi";
 import { motion } from "framer-motion";
+import { AnimatedButton } from "../ui/AnimatedButton";
+import { AnimatedImage } from "../ui/AnimatedImage";
 
 // ─── Google Fonts ────────────────────────────────────────────────────────────
 const FontLoader = () => (
@@ -22,21 +24,11 @@ const FontLoader = () => (
       --blue-dark: #013282;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; }
 
     body { background: var(--bg); font-family: 'Outfit', sans-serif; color: var(--black); }
 
     .bebas { font-family: 'Bebas Neue', 'Bebas Kai', sans-serif; font-weight: 400; letter-spacing: 0.02em; }
-
-    .btn-green {
-      display: inline-flex; align-items: center; gap: 10px;
-      background: var(--green); color: var(--cream);
-      border: none; border-radius: 30px; cursor: pointer;
-      font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 18px;
-      padding: 13px 28px; transition: opacity .2s;
-    }
-    .btn-green:hover { opacity: .88; }
-    .btn-green svg { transform: rotate(180deg); }
 
     .journey-card {
       flex: 0 0 480px;
@@ -146,24 +138,8 @@ const FontLoader = () => (
       left: 20px;
       top: 275px;
       width: 223px;
-      height: 49px;
-      border: 0;
-      border-radius: 30px;
-      background: #019839;
-      color: #FFF9EF;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 23px;
-      font-family: 'Outfit', sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-      line-height: 125%;
-      cursor: pointer;
       z-index: 3;
     }
-
-    .journey-card__button svg { transform: rotate(180deg); }
 
     @media (max-width: 1220px) {
       .mission-content {
@@ -372,12 +348,6 @@ const FontLoader = () => (
       .about-values-grid {
         grid-template-columns: 1fr !important;
       }
-      .btn-green {
-        width: 100% !important;
-        justify-content: center !important;
-        padding-left: 18px !important;
-        padding-right: 18px !important;
-      }
       .journey-card {
         height: 330px !important;
       }
@@ -418,12 +388,6 @@ const FontLoader = () => (
   `}</style>
 );
 
-// ─── Arrow icon ───────────────────────────────────────────────────────────────
-const Arrow = ({ color = "#fff" }) => (
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <path d="M4 10H16M16 10L10 4M16 10L10 16" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
 
 function JourneyCard() {
   const navigate = useNavigate();
@@ -492,12 +456,13 @@ function JourneyCard() {
         <span className="journey-card__community-text">+5k in the Community</span>
       </div>
 
-      <button
+      <AnimatedButton
         className="journey-card__button"
         onClick={() => navigate("/contact-us")}
+        fullWidth
       >
-        Get In Touch <Arrow />
-      </button>
+        Get In Touch
+      </AnimatedButton>
 
     </div>
   );
@@ -539,7 +504,7 @@ function Navbar() {
       {/* Right side */}
       <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
         <span style={{ fontSize: 17, fontWeight: 500 }}>🌤 English</span>
-        <button className="btn-green" style={{ borderRadius: 30, fontSize: 18, padding: "13px 28px" }}>Menu</button>
+        <AnimatedButton showArrow={false}>Menu</AnimatedButton>
       </div>
     </header>
   );
@@ -781,7 +746,7 @@ function StatsSection() {
           <p className="about-body-text" style={{ fontSize: 22, lineHeight: 1.5, maxWidth: 480, marginBottom: 28, color: "rgba(0,0,0,0.8)" }}>
             Abu Dhabi Cycling Club unites riders of all levels with community rides and training programs.
           </p>
-          <button className="btn-green" onClick={() => navigate("/contact-us")}>Get In Touch <Arrow /></button>
+          <AnimatedButton onClick={() => navigate("/contact-us")}>Get In Touch</AnimatedButton>
         </div>
       </div>
     </section>
@@ -1067,7 +1032,7 @@ function ValuesSection() {
             ))}
           </motion.h2>
         </div>
-        <button className="btn-green" onClick={() => navigate("/user-communities")}>Discover the Community <Arrow /></button>
+        <AnimatedButton onClick={() => navigate("/user-communities")}>Discover the Community</AnimatedButton>
       </div>
       <motion.div
         className="about-values-grid"
@@ -1216,7 +1181,7 @@ function CoachesSection() {
           // <div key={i} className="about-coach-card" style={{ flex: 1, position: "relative", overflow: "hidden" }}>
           <motion.div
             key={i}
-            className="about-coach-card"
+            className="about-coach-card adcc-image-group"
             initial={{ opacity: 0, x: 150 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{
@@ -1228,18 +1193,17 @@ function CoachesSection() {
             style={{
               flex: 1,
               position: "relative",
-              overflow: "hidden"
+              overflow: "hidden",
             }}
           >
-            {/* <img src={c.img} alt={c.label} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> */}
-            <img
+            <AnimatedImage
+              bare
+              fill
               src={c.img}
               alt={c.label}
               style={{
                 width: "100%",
                 height: "100%",
-                objectFit: "cover",
-                display: "block",
                 position: "absolute",
                 inset: 0,
                 zIndex: 0,
@@ -1288,7 +1252,7 @@ function CoachesSection() {
         ))}
       </div>
       <div style={{ textAlign: "center", marginTop: 36 }}>
-        <button className="btn-green">Explore Coaches <Arrow /></button>
+        <AnimatedButton>Explore Coaches</AnimatedButton>
       </div>
     </section>
   );

@@ -481,13 +481,15 @@ export default function ChallengesPage() {
                 duration: 0.85,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="group overflow-hidden rounded-xl border border-[#cad8e6] bg-[#eef7ff] transition-all duration-300 hover:bg-[#435974] hover:text-white"
+              className="group challenge-card overflow-hidden rounded-xl border border-[#cad8e6] bg-[#eef7ff] transition-all duration-300 hover:bg-[#435974] hover:text-white"
             >
-              <img
-                src={item.image || CHALLENGE_FALLBACK_IMAGE}
-                alt={item.title}
-                className="h-[220px] w-full object-cover sm:h-[280px] lg:h-[330px]"
-              />
+              <div className="adcc-image overflow-hidden">
+                <img
+                  className="adcc-image__img h-[220px] w-full object-cover sm:h-[280px] lg:h-[330px]"
+                  src={item.image || CHALLENGE_FALLBACK_IMAGE}
+                  alt={item.title}
+                />
+              </div>
 
               <div className="p-5 sm:p-6 lg:p-8">
                 <h3 className="text-[21px] font-black uppercase sm:text-[24px]">

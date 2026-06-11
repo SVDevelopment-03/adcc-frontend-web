@@ -59,7 +59,7 @@ export default function StoreDetailPage() {
         {/* <section className="grid grid-cols-1 gap-16 lg:grid-cols-[574px_1fr]"> */}
         <section className="grid grid-cols-1 items-start gap-16 lg:grid-cols-[574px_1fr]">
           <div>
-            <div className="flex h-[638px] items-center justify-center rounded-2xl bg-[#435974]">
+            <div className="flex h-[538px] items-center justify-center rounded-2xl bg-[#435974]">
               <img
                 src="/img/image 306912.png"
                 alt="Colnago BE"
@@ -90,7 +90,7 @@ export default function StoreDetailPage() {
           {/* <div className="pt-8"> */}
           {/* <div className="flex h-full flex-col justify-between"> */}
           {/* <div className="-mt-2 flex h-full flex-col"> */}
-          <div className="flex min-h-[748px] flex-col">
+          <div className="flex h-[748px] flex-col">
             <div className="flex items-center gap-1 text-[#F58700]">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star key={star} size={26} fill="currentColor" />

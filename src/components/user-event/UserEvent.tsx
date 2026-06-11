@@ -6,7 +6,7 @@ import gsap from "gsap";
 const FontLoader = () => (
   <style>{`
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700&family=Bebas+Neue&display=swap');
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; }
     body { background: #EAF4FF; font-family: 'Outfit', sans-serif; color: #000; }
     .bebas { font-family: 'Bebas Kai','Bebas Neue', sans-serif; font-weight: 400; letter-spacing: 0.02em; }
     a { text-decoration: none; color: inherit; }
@@ -622,6 +622,7 @@ function EventCard({ event, index }: { event: EventApiResponse; index: number })
 
   return (
     <motion.div
+      className="event-card"
       initial={getInitialAnimation()}
       whileInView={{ opacity: 1, x: 0, y: 0 }}
       transition={{
@@ -633,7 +634,7 @@ function EventCard({ event, index }: { event: EventApiResponse; index: number })
       style={{ width: "100%", display: "flex", flexDirection: "column", gap: 0 }}
     >
       <div
-        className="event-card-image"
+        className="event-card-image adcc-image"
         style={{
           width: "100%",
           height: 260,
@@ -643,10 +644,7 @@ function EventCard({ event, index }: { event: EventApiResponse; index: number })
           background: "#ddd",
         }}
       >
-        {/* <img src={image} alt={event.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> */}
-        <motion.img
-          src={image}
-          alt={event.title}
+        <motion.div
           initial={{ opacity: 0, scale: 0.25 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{
@@ -655,13 +653,15 @@ function EventCard({ event, index }: { event: EventApiResponse; index: number })
             ease: "easeOut",
           }}
           viewport={{ once: true }}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            transformOrigin: "center",
-          }}
-        />
+          style={{ width: "100%", height: "100%", transformOrigin: "center" }}
+        >
+          <img
+            className="adcc-image__img"
+            src={image}
+            alt={event.title}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
+        </motion.div>
         <span
           style={{
             position: "absolute",
