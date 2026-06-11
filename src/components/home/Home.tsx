@@ -1801,101 +1801,20 @@ function AppSection() {
   }, []);
 
   return (
-    <section id="app" className="home-app-section" style={{ background: '#435974', width: '100%', padding: '80px 86px', display: 'flex', alignItems: 'flex-start', gap: 60, position: 'relative', overflow: 'hidden' }}>
+    <section id="app" className="home-app-section" style={{ background: '#435974', width: '100%', padding: '80px 86px', display: 'flex', alignItems: 'center', gap: 60, position: 'relative', overflow: 'hidden' }}>
       {/* Left text */}
-      <div className="home-app-copy" style={{ flexShrink: 0 }}>
+      <div className="home-app-copy" style={{ flexShrink: 0, position: 'relative', width: '70%' }}>
         {/* <h2 className="home-app-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 80, lineHeight: 1.007, textTransform: 'uppercase', color: '#fff', marginBottom: 32 }}>Everything You Need.<br />In One App.</h2> */}
-        <motion.h2
-          className="home-app-title overflow-hidden"
-          style={{
-            fontFamily: "'Bebas Neue', sans-serif",
-            fontSize: 80,
-            lineHeight: 1,
-            textTransform: "uppercase",
-            color: "#fff",
-            marginBottom: 32,
-          }}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={{
-            visible: {
-              transition: {
-                staggerChildren: 0.08,
-              },
-            },
-          }}
-        >
-          {["Everything", "You", "Need."].map((word) => (
-            <span
-              key={word}
-              className="inline-block overflow-hidden"
-              style={{ marginRight: "14px" }}
-            >
-              <motion.span
-                className="inline-block"
-                variants={{
-                  hidden: {
-                    y: "120%",
-                    opacity: 0,
-                  },
-                  visible: {
-                    y: "0%",
-                    opacity: 1,
-                  },
-                }}
-                transition={{
-                  duration: 0.7,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-              >
-                {word}
-              </motion.span>
-            </span>
-          ))}
-
-          <br />
-
-          {["In", "One", "App."].map((word) => (
-            <span
-              key={word}
-              className="inline-block overflow-hidden"
-              style={{ marginRight: "14px" }}
-            >
-              <motion.span
-                className="inline-block"
-                variants={{
-                  hidden: {
-                    y: "120%",
-                    opacity: 0,
-                  },
-                  visible: {
-                    y: "0%",
-                    opacity: 1,
-                  },
-                }}
-                transition={{
-                  duration: 0.7,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-              >
-                {word}
-              </motion.span>
-            </span>
-          ))}
-        </motion.h2>
-        {/* <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 16, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, marginBottom: 32 }}>Track your rides, discover routes, join challenges, and stay connected with the cycling community — all from one powerful app.</p> */}
-        <div style={{ marginBottom: 24 }}>
-          <motion.p
-            className="home-download-label overflow-hidden"
+        <div>
+          <motion.h2
+            className="home-app-title overflow-hidden"
             style={{
-              fontFamily: "'Outfit', sans-serif",
-              fontWeight: 700,
-              fontSize: 30,
-              color: "#fff",
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: 80,
+              lineHeight: 1,
               textTransform: "uppercase",
-              marginBottom: 23,
-              lineHeight: "30px",
+              color: "#fff",
+              marginBottom: 32,
             }}
             initial="hidden"
             whileInView="visible"
@@ -1908,11 +1827,11 @@ function AppSection() {
               },
             }}
           >
-            {["Download"].map((word) => (
+            {["Everything", "You", "Need."].map((word) => (
               <span
                 key={word}
                 className="inline-block overflow-hidden"
-                style={{ marginRight: "10px" }}
+                style={{ marginRight: "14px" }}
               >
                 <motion.span
                   className="inline-block"
@@ -1938,11 +1857,11 @@ function AppSection() {
 
             <br />
 
-            {["ADCC", "APP"].map((word) => (
+            {["In", "One", "App."].map((word) => (
               <span
                 key={word}
                 className="inline-block overflow-hidden"
-                style={{ marginRight: "10px" }}
+                style={{ marginRight: "14px" }}
               >
                 <motion.span
                   className="inline-block"
@@ -1965,102 +1884,184 @@ function AppSection() {
                 </motion.span>
               </span>
             ))}
-          </motion.p>
-
-          <motion.div
-            className="home-qr-box"
-            initial={{
-              opacity: 0,
-              x: 80,
-            }}
-            whileInView={{
-              opacity: 1,
-              x: "0%",
-            }}
-            transition={{
-              duration: 0.8,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-            viewport={{ once: true }}
-            style={{
-              width: 256,
-              height: 256,
-              background: "#fff",
-              borderRadius: 16,
-              padding: 12,
-              marginBottom: 40,
-            }}
-          >
-            <QRCodePlaceholder />
-          </motion.div>
-        </div>
-        {/* App store buttons */}
-        <motion.div
-          className="home-store-buttons"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={{
-            visible: {
-              transition: {
-                staggerChildren: 0.12,
-              },
-            },
-          }}
-          style={{
-            display: "flex",
-            gap: 12,
-            flexWrap: "wrap",
-          }}
-        >
-          {[0, 1].map((item) => (
-            <motion.div
-              key={item}
-              variants={{
-                hidden: {
-                  opacity: 0,
-                  translateY: 80,
-                },
-                visible: {
-                  opacity: 1,
-                  translateY: 0,
-                },
-              }}
-              transition={{
-                duration: 0.7,
-                ease: [0.22, 1, 0.36, 1],
-              }}
+          </motion.h2>
+          {/* <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 16, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, marginBottom: 32 }}>Track your rides, discover routes, join challenges, and stay connected with the cycling community — all from one powerful app.</p> */}
+          <div style={{ marginBottom: 24 }}>
+            <motion.p
+              className="home-download-label overflow-hidden"
               style={{
-                background: "#fff",
-                borderRadius: 100,
-                padding: "10px 20px",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                fontSize: 30,
+                color: "#fff",
+                textTransform: "uppercase",
+                marginBottom: 23,
+                lineHeight: "30px",
+              }}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={{
+                visible: {
+                  transition: {
+                    staggerChildren: 0.08,
+                  },
+                },
               }}
             >
-              {item === 0 ? <>Google Play content here</> : <>App Store content here</>}
-            </motion.div>
-          ))}
-        </motion.div>      
-      </div>
+              {["Download"].map((word) => (
+                <span
+                  key={word}
+                  className="inline-block overflow-hidden"
+                  style={{ marginRight: "10px" }}
+                >
+                  <motion.span
+                    className="inline-block"
+                    variants={{
+                      hidden: {
+                        y: "120%",
+                        opacity: 0,
+                      },
+                      visible: {
+                        y: "0%",
+                        opacity: 1,
+                      },
+                    }}
+                    transition={{
+                      duration: 0.7,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                  >
+                    {word}
+                  </motion.span>
+                </span>
+              ))}
 
-      {/* Phone mockup center */}
-      <div ref={phoneRef} className={`app-phone-stage home-phone-stage${phoneVisible ? ' is-visible' : ''}`} style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative', minHeight: 500 }}>
-        {/* Back phone */}
-        <div >
-          <img src="/images/mobile.png" alt="App" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} />
+              <br />
+
+              {["ADCC", "APP"].map((word) => (
+                <span
+                  key={word}
+                  className="inline-block overflow-hidden"
+                  style={{ marginRight: "10px" }}
+                >
+                  <motion.span
+                    className="inline-block"
+                    variants={{
+                      hidden: {
+                        y: "120%",
+                        opacity: 0,
+                      },
+                      visible: {
+                        y: "0%",
+                        opacity: 1,
+                      },
+                    }}
+                    transition={{
+                      duration: 0.7,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                  >
+                    {word}
+                  </motion.span>
+                </span>
+              ))}
+            </motion.p>
+
+            <motion.div
+              className="home-qr-box"
+              initial={{
+                opacity: 0,
+                x: 80,
+              }}
+              whileInView={{
+                opacity: 1,
+                x: "0%",
+              }}
+              transition={{
+                duration: 0.8,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              viewport={{ once: true }}
+              style={{
+                width: 256,
+                height: 256,
+                background: "#fff",
+                borderRadius: 16,
+                padding: 12,
+                marginBottom: 40,
+              }}
+            >
+              <QRCodePlaceholder />
+            </motion.div>
           </div>
-        {/* Front phone */}
+          {/* App store buttons */}
+          <motion.div
+            className="home-store-buttons"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={{
+              visible: {
+                transition: {
+                  staggerChildren: 0.12,
+                },
+              },
+            }}
+            style={{
+              display: "flex",
+              gap: 12,
+              flexWrap: "wrap",
+            }}
+          >
+            {[0, 1].map((item) => (
+              <motion.div
+                key={item}
+                variants={{
+                  hidden: {
+                    opacity: 0,
+                    translateY: 80,
+                  },
+                  visible: {
+                    opacity: 1,
+                    translateY: 0,
+                  },
+                }}
+                transition={{
+                  duration: 0.7,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                style={{
+                  background: "#fff",
+                  borderRadius: 100,
+                  padding: "10px 20px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                }}
+              >
+                {item === 0 ? <>Google Play content here</> : <>App Store content here</>}
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+        {/* Phone mockup center */}
+        <div ref={phoneRef} className={`app-phone-stage home-phone-stage${phoneVisible ? ' is-visible' : ''}`} style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'absolute', minHeight: 500, top: 70, right: 0, width: '60%', zIndex: 1 }}>
+          {/* Back phone */}
+          <div style={{ width: '100%', maxWidth: 560 }}>
+            <img src="/images/image%203066.png" alt="ADCC App" style={{ display: 'block', width: '100%', height: 'auto', objectFit: 'contain', opacity: 1 }} />
+          </div>
+          {/* Front phone */}
+        </div>
       </div>
 
       {/* Right features */}
-      <div className="home-feature-list" style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 36 }}>
+      <div className="home-feature-list" style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 80 }}>
         {features.map((f, i) => (
-          <div key={i} className="app-feature" style={{ display: 'flex', alignItems: 'center', gap: 16, cursor: 'default' }}>
+          <div key={i} className="app-feature" style={{ display: 'flex', alignItems: 'flex-start', gap: 16, cursor: 'default', flexDirection: 'column' }}>
             <div className="feature-icon" style={{ width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <img src={f.icon} alt={f.label.replace('\n', ' ')} style={{ width: 26, height: 26, objectFit: 'contain' }} />
+              <img src={f.icon} alt={f.label.replace('\n', ' ')} style={{ }} />
             </div>
             <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 16, color: '#fff', textTransform: 'uppercase', lineHeight: 1.2, whiteSpace: 'pre-line' }}>{f.label}</span>
           </div>
