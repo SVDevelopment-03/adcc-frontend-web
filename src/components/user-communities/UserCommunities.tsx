@@ -28,6 +28,10 @@ const FontLoader = () => (
   <style>{`
     body { background: #EAF4FF; font-family: 'Bebas Kai', sans-serif; color: #000; }
     .bebas { font-family: 'Bebas Kai', sans-serif; font-weight: 400; letter-spacing: 0; }
+    .communities-page .adcc-btn--arrow:hover .adcc-btn__arrow--enter,
+    .communities-page .adcc-btn--arrow:focus-visible .adcc-btn__arrow--enter {
+      inset-inline-start: calc(var(--adcc-btn-arrow-inset) - var(--adcc-btn-arrow-shift) + 15px);
+    }
   `}</style>
 );
 
@@ -279,7 +283,7 @@ export default function CommunitiesPage() {
 
   return (
     // <div className="min-h-screen bg-[#eaf4ff] text-black">
-    <div className="min-h-screen overflow-x-hidden bg-[#eaf4ff] text-black">
+    <div className="communities-page min-h-screen overflow-x-hidden bg-[#eaf4ff] text-black">
       <FontLoader />
 
       <header className="flex h-[78px] items-center justify-between bg-[#eaf4ff] px-4 sm:h-[96px] sm:px-6 md:px-10 lg:h-[134px] lg:px-20">

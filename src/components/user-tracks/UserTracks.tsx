@@ -89,6 +89,10 @@ const FontLoader = () => (
     .bebas { font-family: 'Bebas Kai', sans-serif; font-weight: 400; letter-spacing: 0.02em; }
     a { text-decoration: none; color: inherit; }
     select { appearance: none; -webkit-appearance: none; background: transparent; border: none; outline: none; cursor: pointer; font-family: 'Bebas Kai', sans-serif; font-size: 20px; color: #000; width: 100%; }
+    .tracks-page .adcc-btn--arrow:hover .adcc-btn__arrow--enter,
+    .tracks-page .adcc-btn--arrow:focus-visible .adcc-btn__arrow--enter {
+      inset-inline-start: calc(var(--adcc-btn-arrow-inset) - var(--adcc-btn-arrow-shift) + 15px);
+    }
 
     .tracks-journey-card {
       width: 482px;
@@ -1328,7 +1332,7 @@ export default function Tracks() {
   return (
     <>
       <FontLoader />
-      <div style={{ minWidth: 320, overflowX: "hidden" }}>
+      <div className="tracks-page" style={{ minWidth: 320, overflowX: "hidden" }}>
         <Navbar />
         <Hero />
         <ExploreIntro />

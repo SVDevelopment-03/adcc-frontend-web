@@ -219,11 +219,11 @@ function StoreButton({ type }: { type: 'google' | 'apple' }) {
       className="inline-flex h-[53px] w-[198px] flex-none items-center justify-center gap-[10px] rounded-[100px] bg-white px-[26px] py-0 text-black no-underline shadow-lg transition-opacity hover:opacity-90 sm:h-[57px] sm:w-[213px] sm:px-[34px]"
     >
       {type === 'google' ? <Play className="h-[27px] w-[27px] shrink-0 fill-[#34A853] text-[#34A853] sm:h-[31px] sm:w-[29px]" /> : <Apple className="h-[24px] w-[24px] shrink-0 sm:h-[26px] sm:w-[26px]" />}
-      <span className="flex min-w-0 flex-none flex-col items-start justify-center text-left">
+      <span className="flex min-w-0 flex-none flex-col items-start justify-center text-left font-['Outfit']">
         <span className="block whitespace-nowrap text-[8px] font-semibold uppercase leading-[1.05] text-black/60 sm:text-[9px]">
           {type === 'google' ? t('public.footer.getItOn') : t('public.footer.downloadOn')}
         </span>
-        <span className="block whitespace-nowrap text-[15px] font-bold leading-[1.1] sm:text-[16px]">
+        <span className="block whitespace-nowrap text-[15px] font-bold leading-[1.1] text-black sm:text-[16px]">
           {type === 'google' ? t('public.footer.googlePlay') : t('public.footer.appStore')}
         </span>
       </span>
@@ -289,7 +289,7 @@ function PublicFooter() {
         </div>
       </section>
 
-      <footer className="public-footer relative bg-[#EAF4FF] px-4! pt-12! pb-[25px]! sm:px-6! sm:pt-16! md:px-10! lg:px-16! lg:pt-20! xl:px-20! xl:pt-25!">
+      <footer className="public-footer relative bg-[#EAF4FF] px-4! pt-12! pb-[26px]! sm:px-6! sm:pt-16! md:px-10! lg:px-16! lg:pt-20! xl:px-20! xl:pt-25!">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(280px,1fr)_190px_minmax(280px,1fr)] lg:gap-12">
           <div className="sm:col-span-2 lg:col-span-1">
             <Logo compact />
@@ -383,12 +383,8 @@ function PublicFooter() {
           </div>
         </div>
 
-        <button type="button" aria-label={t('public.footer.cyclingShortcut')} className="mt-10 ml-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#019839] text-white shadow-lg transition-colors hover:bg-black md:absolute md:bottom-24 md:right-10 md:mt-0 md:h-12 md:w-12 lg:right-16 xl:right-20">
-          <Bike className="h-5 w-5 md:h-6 md:w-6" />
-        </button> 
-
         <div className="mt-10! border-t border-black/15 pt-[20px]! text-center sm:mt-14! md:mt-20!">
-          <span className="inline-block h-[23px] w-[319px] max-w-full text-[18px] font-normal leading-none text-black">
+          <span className="inline-block h-[23px] w-fit max-w-full whitespace-nowrap text-[clamp(14px,4.6vw,18px)] font-normal leading-none text-black">
             {t('public.footer.copyright')}
           </span>
         </div>

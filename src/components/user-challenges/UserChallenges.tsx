@@ -166,7 +166,18 @@ export default function ChallengesPage() {
 
   return (
     // <div className="min-h-screen bg-[#eaf4ff] text-black">
-    <div className="min-h-screen overflow-x-hidden bg-[#eaf4ff] text-black">
+    <div className="challenges-page min-h-screen overflow-x-hidden bg-[#eaf4ff] text-black">
+      <style>{`
+        .challenges-page {
+          width: 100%;
+          max-width: 100vw;
+          overflow-x: clip;
+        }
+        .challenges-page .adcc-btn--arrow:hover .adcc-btn__arrow--enter,
+        .challenges-page .adcc-btn--arrow:focus-visible .adcc-btn__arrow--enter {
+          inset-inline-start: calc(var(--adcc-btn-arrow-inset) - var(--adcc-btn-arrow-shift) + 15px);
+        }
+      `}</style>
       {/* Header */}
       <header className="flex h-[78px] items-center justify-between bg-[#eaf4ff] px-4 sm:h-[96px] sm:px-6 md:px-10 lg:h-[134px] lg:px-20">
         <div className="flex items-center gap-2">

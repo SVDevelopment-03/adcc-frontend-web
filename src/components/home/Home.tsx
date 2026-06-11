@@ -84,6 +84,10 @@ const CSS = `
   }
 
   .hover-green:hover { color: #019839 !important; }
+  .home-page .adcc-btn--arrow:hover .adcc-btn__arrow--enter,
+  .home-page .adcc-btn--arrow:focus-visible .adcc-btn__arrow--enter {
+    inset-inline-start: calc(var(--adcc-btn-arrow-inset) - var(--adcc-btn-arrow-shift) + 15px);
+  }
   .card-hover { transition: transform 0.25s, box-shadow 0.25s; }
   .card-hover:hover { transform: translateY(-6px); box-shadow: 0 12px 32px rgba(0,0,0,0.15) !important; }
   .store-card { transition: transform 0.2s; }
@@ -1509,7 +1513,7 @@ function CyclingIcon() {
 
 function ArrowRight({ color = '#019839', size = 16 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" >
       <path d="M3 8h10M9 4l4 4-4 4" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );

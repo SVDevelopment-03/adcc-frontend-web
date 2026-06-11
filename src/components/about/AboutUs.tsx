@@ -24,6 +24,11 @@ const FontLoader = () => (
 
     .bebas { font-family: 'Bebas Kai', sans-serif; font-weight: 400; letter-spacing: 0.02em; }
 
+    .about-page .adcc-btn--arrow:hover .adcc-btn__arrow--enter,
+    .about-page .adcc-btn--arrow:focus-visible .adcc-btn__arrow--enter {
+      inset-inline-start: calc(var(--adcc-btn-arrow-inset) - var(--adcc-btn-arrow-shift) + 15px);
+    }
+
     .journey-card {
       flex: 0 0 480px;
       width: 480px;
@@ -1369,7 +1374,7 @@ export default function AboutUs() {
   return (
     <>
       <FontLoader />
-      <div style={{ minWidth: 320, overflowX: "hidden" }}>
+      <div className="about-page" style={{ minWidth: 320, overflowX: "hidden" }}>
         <Navbar />
         <Hero />
         <StatsSection />
@@ -1377,8 +1382,6 @@ export default function AboutUs() {
         {/* <BlueBanner /> */}
         <ValuesSection />
         <CoachesSection />
-        <CTABanner />
-        <Footer />
       </div>
     </>
   );
