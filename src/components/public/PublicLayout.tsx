@@ -349,10 +349,36 @@ function PublicFooter() {
           <div>
             <h3 className="text-[22px] font-black uppercase sm:text-[24px]">{t('public.footer.contactUs')}</h3>
             <ul className="mt-5! space-y-3! text-[16px] leading-6 sm:mt-7! sm:space-y-4! sm:text-[18px]">
-              <li className="flex gap-3"><Phone className="mt-0.5 h-5 w-5 shrink-0" /> <span>+971 2 654 5645</span></li>
-              <li className="flex gap-3"><MessageCircle className="mt-0.5 h-5 w-5 shrink-0" /> <span>144226</span></li>
-              <li className="flex gap-3"><MapPin className="mt-0.5 h-5 w-5 shrink-0" /> <span>Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18.</span></li>
-              <li className="flex gap-3"><Mail className="mt-0.5 h-5 w-5 shrink-0" /> <span className="break-all">info@adcyclingclub.ae</span></li>
+              <li className="flex gap-3"> 
+                <Phone className="mt-0.5 h-5 w-5 shrink-0" />
+                <a
+                  href="tel:+97126545645"
+                  className="transition-colors hover:text-[#019839]"
+                >
+                  +971 2 654 5645 
+                </a>
+              </li>
+              {/* <li className="flex gap-3"><MessageCircle className="mt-0.5 h-5 w-5 shrink-0" /> <span>144226</span></li> */}
+              <li className="flex gap-3">
+                <MapPin className="mt-0.5 h-5 w-5 shrink-0" />
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=Abu%20Dhabi%2C%20Yas%20Island%2C%20Yas%20Marina%20Circuit%2C%20Villa%2018"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition-colors hover:text-[#019839]"
+                >
+                  Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18.
+                </a>
+              </li>
+              <li className="flex gap-3">
+                <Mail className="mt-0.5 h-5 w-5 shrink-0" />
+                <a
+                  href="mailto:info@adcyclingclub.ae"
+                  className="break-all transition-colors hover:text-[#019839]"
+                >
+                  info@adcyclingclub.ae
+                </a>
+              </li>
             </ul>
           </div>
         </div>
