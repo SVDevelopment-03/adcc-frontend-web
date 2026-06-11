@@ -181,8 +181,6 @@ const getFaqs = (event?: GrandPrixEvent | null) => {
 
 const FontLoader = () => (
   <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Bebas+Neue&display=swap');
-
     .grand-prix-page {
       --green: #019839;
       --blue-gray: #435974;
@@ -192,7 +190,7 @@ const FontLoader = () => (
       overflow-y: visible;
       background: #EAF4FF;
       color: #000;
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Bebas Kai', sans-serif;
     }
 
     .grand-prix-page * {
@@ -200,7 +198,7 @@ const FontLoader = () => (
     }
 
     .grand-prix-bebas {
-      font-family: 'Bebas Kai', 'Bebas Neue', sans-serif;
+      font-family: 'Bebas Kai', sans-serif;
       font-weight: 400;
       letter-spacing: 0;
     }
@@ -448,7 +446,7 @@ function ScheduleSection({
               />
             ))}
 
-            <div className="-ml-[29.16px] flex h-[58.33px] w-[58.33px] items-center justify-center rounded-full bg-white font-['Abel'] text-[20.83px] font-normal uppercase leading-[27px] text-black">
+            <div className="-ml-[29.16px] flex h-[58.33px] w-[58.33px] items-center justify-center rounded-full bg-white font-sans text-[20.83px] font-normal uppercase leading-[27px] text-black">
               +12k
             </div>
           </div>

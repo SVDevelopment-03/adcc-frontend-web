@@ -138,7 +138,7 @@ const CSS = `
     inset-inline-start: 105px;
     top: 64px;
     width: 162px;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Bebas Kai', sans-serif;
     font-size: 14.02px;
     line-height: 100.7%;
     text-transform: uppercase;
@@ -150,7 +150,7 @@ const CSS = `
     inset-inline-end: 40px;
     top: 57px;
     width: 106px;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Bebas Kai', sans-serif;
     font-size: 22px;
     line-height: 28px;
     color: #000;
@@ -175,7 +175,7 @@ const CSS = `
     inset-inline-start: 62px;
     top: 211px;
     width: 197px;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Bebas Kai', sans-serif;
     font-weight: 700;
     font-size: 31.1053px;
     line-height: 39px;
@@ -194,7 +194,7 @@ const CSS = `
     inset-inline-start: 62px;
     top: 344px;
     width: 222px;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Bebas Kai', sans-serif;
     font-size: 14.5177px;
     line-height: 18px;
     color: #000;
@@ -211,7 +211,7 @@ const CSS = `
     position: absolute;
     inset-inline-start: 62px;
     top: 502px;
-    font-family: 'Bebas Neue', 'Bebas Kai', sans-serif;
+    font-family: 'Bebas Kai', sans-serif;
     font-size: 42px;
     line-height: 100.7%;
     text-transform: uppercase;
@@ -335,7 +335,7 @@ const CSS = `
     // padding-right:40px
   }
   .journey-title {
-    font-family: 'Bebas Neue', sans-serif;
+    font-family: 'Bebas Kai', sans-serif;
     font-size: 72px;
     line-height: 1.01;
     text-transform: uppercase;
@@ -366,7 +366,7 @@ const CSS = `
     margin-bottom:128px;
   }
   .journey-text {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Bebas Kai', sans-serif;
     font-size: 24px;
     line-height: 30px;
     color: #000;
@@ -463,7 +463,7 @@ const CSS = `
     top: 30px;
     inset-inline-start: 25px;
     inset-inline-end: 56px;
-    font-family: 'Bebas Neue', sans-serif;
+    font-family: 'Bebas Kai', sans-serif;
     font-size: 26px;
     line-height: 29px;
     text-transform: uppercase;
@@ -1435,7 +1435,7 @@ function useHomePageStyles() {
   useEffect(() => {
     const fontLink = document.createElement('link');
     fontLink.rel = 'stylesheet';
-    fontLink.href = 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Bebas+Neue&display=swap';
+    fontLink.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap';
     fontLink.dataset.pageStyle = 'home';
 
     const styleEl = document.createElement('style');
@@ -1537,12 +1537,12 @@ function Header() {
       <div className="home-logo-wrap" style={{ width: 180, height: 75.6, flexShrink: 0 }}><ADCCLogo /></div>
       <nav className="home-main-nav" style={{ display: 'flex', alignItems: 'center', gap: 48, position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
         {navLinks.map(link => (
-          <a key={link.label} href={link.href} className="hover-green" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 500, fontSize: 20, lineHeight: '27px', color: link.active ? '#019839' : '#000', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'color 0.2s' }}>{link.label}</a>
+          <a key={link.label} href={link.href} className="hover-green" style={{ fontFamily: "'Bebas Kai', sans-serif", fontWeight: 500, fontSize: 20, lineHeight: '27px', color: link.active ? '#019839' : '#000', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'color 0.2s' }}>{link.label}</a>
         ))}
       </nav>
       <div className="home-header-actions" style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
         <CloudyIcon />
-        <span className="home-language" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 500, fontSize: 17, color: '#000', cursor: 'pointer', whiteSpace: 'nowrap' }}>English</span>
+        <span className="home-language" style={{ fontFamily: "'Bebas Kai', sans-serif", fontWeight: 500, fontSize: 17, color: '#000', cursor: 'pointer', whiteSpace: 'nowrap' }}>English</span>
         <AnimatedButton
           onClick={() => setMenuOpen(v => !v)}
           showArrow={false}
@@ -1570,7 +1570,7 @@ function HeroSection() {
         <motion.h1
           className="home-hero-title overflow-hidden"
           style={{
-            fontFamily: "'Bebas Neue', sans-serif",
+            fontFamily: "'Bebas Kai', sans-serif",
             fontWeight: 900,
             fontSize: 72,
             lineHeight: 1.1,
@@ -1681,7 +1681,7 @@ function StatsTicker() {
           <div key={groupIndex} style={{ minWidth: '100vw', display: 'flex', alignItems: 'stretch', flexShrink: 0 }}>
             {stats.map((s, i) => (
               <div className="home-ticker-item" key={`${groupIndex}-${i}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, padding: '0 36px', height: 100, flex: '1 0 auto', background: s.bg }}>
-                <span className="home-ticker-text" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 29, textTransform: 'uppercase', color: s.dark ? '#fff' : '#000' }}>{s.label}</span>
+                <span className="home-ticker-text" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 29, textTransform: 'uppercase', color: s.dark ? '#fff' : '#000' }}>{s.label}</span>
               </div>
             ))}
           </div>
@@ -1880,12 +1880,12 @@ function AppSection() {
     <section id="app" className="home-app-section" style={{ background: '#435974', width: '100%', padding: '80px 86px', display: 'flex', alignItems: 'center', gap: 60, position: 'relative', overflow: 'hidden' }}>
       {/* Left text */}
       <div className="home-app-copy" style={{ flexShrink: 0, position: 'relative', width: '70%' }}>
-        {/* <h2 className="home-app-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 80, lineHeight: 1.007, textTransform: 'uppercase', color: '#fff', marginBottom: 32 }}>Everything You Need.<br />In One App.</h2> */}
+        {/* <h2 className="home-app-title" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 80, lineHeight: 1.007, textTransform: 'uppercase', color: '#fff', marginBottom: 32 }}>Everything You Need.<br />In One App.</h2> */}
        <div>
         <motion.h2
           className="home-app-title overflow-hidden"
           style={{
-            fontFamily: "'Bebas Neue', sans-serif",
+            fontFamily: "'Bebas Kai', sans-serif",
             fontSize: 80,
             lineHeight: 1,
             textTransform: "uppercase",
@@ -1965,7 +1965,7 @@ function AppSection() {
           <motion.p
             className="home-download-label overflow-hidden"
             style={{
-              fontFamily: "'Outfit', sans-serif",
+              fontFamily: "'Bebas Kai', sans-serif",
               fontWeight: 700,
               fontSize: 30,
               color: "#fff",
@@ -2138,7 +2138,7 @@ function AppSection() {
             <div className="feature-icon" style={{ width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <img src={f.icon} alt={f.label.replace('\n', ' ')} style={{ }} />
             </div>
-            <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 16, color: '#fff', textTransform: 'uppercase', lineHeight: 1.2, whiteSpace: 'pre-line' }}>{f.label}</span>
+            <span style={{ fontFamily: "'Bebas Kai', sans-serif", fontWeight: 700, fontSize: 16, color: '#fff', textTransform: 'uppercase', lineHeight: 1.2, whiteSpace: 'pre-line' }}>{f.label}</span>
           </div>
         ))}
       </div>
@@ -2164,11 +2164,11 @@ function CommunitySection() {
   
   return (
     <section id="community" className="home-community-section" style={{ background: '#EAF4FF', padding: '125px 86px', textAlign: 'center' }}>
-      {/* <p className="home-community-eyebrow" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 28, color: '#000', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 16 }}>For the Cycling Community</p> */}
+      {/* <p className="home-community-eyebrow" style={{ fontFamily: "'Bebas Kai', sans-serif", fontWeight: 700, fontSize: 28, color: '#000', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 16 }}>For the Cycling Community</p> */}
       <motion.p
         className="home-community-eyebrow overflow-hidden"
         style={{
-          fontFamily: "'Outfit', sans-serif",
+          fontFamily: "'Bebas Kai', sans-serif",
           fontWeight: 700,
           fontSize: 28,
           color: "#000",
@@ -2213,7 +2213,7 @@ function CommunitySection() {
       <motion.h2
         className="home-community-title overflow-hidden"
         style={{
-          fontFamily: "'Bebas Neue', sans-serif",
+          fontFamily: "'Bebas Kai', sans-serif",
           fontSize: 74,
           color: "#000",
           textTransform: "uppercase",
@@ -2270,11 +2270,11 @@ function CommunitySection() {
           </React.Fragment>
         ))}
       </div>
-      {/* <p className="home-community-subtitle" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 28, color: '#000', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 28 }}>Everything you need to ride, track, and stay connected.</p> */}
+      {/* <p className="home-community-subtitle" style={{ fontFamily: "'Bebas Kai', sans-serif", fontWeight: 700, fontSize: 28, color: '#000', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 28 }}>Everything you need to ride, track, and stay connected.</p> */}
       <motion.p
         className="home-community-subtitle overflow-hidden"
         style={{
-          fontFamily: "'Outfit', sans-serif",
+          fontFamily: "'Bebas Kai', sans-serif",
           fontWeight: 700,
           fontSize: 28,
           color: "#000",
@@ -2375,11 +2375,11 @@ function ExplorePlatformSection() {
 
   return (
     <section id="platform" className="home-platform-section" style={{ background: '#EAF4FF', padding: '0 86px 80px' }}>
-      {/* <h2 className="home-section-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 72, color: '#000', textTransform: 'uppercase', textAlign: 'center', paddingTop: 35, marginBottom: 40, lineHeight: '72px' }}>Explore the Platform</h2> */}
+      {/* <h2 className="home-section-title" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 72, color: '#000', textTransform: 'uppercase', textAlign: 'center', paddingTop: 35, marginBottom: 40, lineHeight: '72px' }}>Explore the Platform</h2> */}
       <motion.h2
         className="home-section-title overflow-hidden"
         style={{
-          fontFamily: "'Bebas Neue', sans-serif",
+          fontFamily: "'Bebas Kai', sans-serif",
           fontSize: 72,
           color: "#000",
           textTransform: "uppercase",
@@ -2450,13 +2450,13 @@ function ExplorePlatformSection() {
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.75) 100%)' }} />
             {/* Tag */}
             <div style={{ position: 'absolute', top: 43, insetInlineStart: 32, background: '#435974', borderRadius: 20, padding: '5px 14px' }}>
-              <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 400, fontSize: 18, color: '#fff', textTransform: 'uppercase', letterSpacing: '1px' }}>{card.tag}</span>
+              <span style={{ fontFamily: "'Bebas Kai', sans-serif", fontWeight: 400, fontSize: 18, color: '#fff', textTransform: 'uppercase', letterSpacing: '1px' }}>{card.tag}</span>
             </div>
             {/* Bottom content */}
             <div className="home-platform-card-content" style={{ position: 'absolute', bottom: 24, insetInline: 32 }}>
-              <p className="home-platform-card-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 32, color: '#F6EFE7', lineHeight: 1.1, textTransform: 'uppercase', marginBottom: 12 }}>{card.title}</p>
+              <p className="home-platform-card-title" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 32, color: '#F6EFE7', lineHeight: 1.1, textTransform: 'uppercase', marginBottom: 12 }}>{card.title}</p>
               <div style={{ display: 'inline-flex', flexDirection: 'column' }}>
-                <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 22, color: '#F6EFE7', cursor: 'pointer' }}>{card.action}</span>
+                <span style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 22, color: '#F6EFE7', cursor: 'pointer' }}>{card.action}</span>
                 <div style={{ height: 3, background: '#435974', borderRadius: 2, marginTop: 2 }} />
               </div>
             </div>
@@ -2686,16 +2686,16 @@ function StoreSection() {
 
   return (
     <section id="store" className="home-store-section" style={{ background: '#EAF4FF', padding: '0 86px 80px' }}>
-      <h2 className="home-section-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 72, color: '#000', textTransform: 'uppercase', textAlign: 'center', marginBottom: 40 }}>{t('public.home.store.title')}</h2>
+      <h2 className="home-section-title" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 72, color: '#000', textTransform: 'uppercase', textAlign: 'center', marginBottom: 40 }}>{t('public.home.store.title')}</h2>
       <div ref={storeRailRef} className={`store-rail${storeCardsVisible ? ' is-visible' : ''}`}>
         {isLoading && (
-          <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, color: '#435974', padding: '36px 0' }}>{t('public.home.store.loading')}</div>
+          <div style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 20, color: '#435974', padding: '36px 0' }}>{t('public.home.store.loading')}</div>
         )}
         {!isLoading && loadError && (
-          <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, color: '#C12D32', padding: '36px 0' }}>{loadError}</div>
+          <div style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 20, color: '#C12D32', padding: '36px 0' }}>{loadError}</div>
         )}
         {!isLoading && !loadError && products.length === 0 && (
-          <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, color: '#435974', padding: '36px 0' }}>{t('public.home.store.empty')}</div>
+          <div style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 20, color: '#435974', padding: '36px 0' }}>{t('public.home.store.empty')}</div>
         )}
         {products.map((p, i) => (
           <div
@@ -2832,11 +2832,11 @@ function AboutSection() {
       </motion.div>
       {/* Right content */}
       <div className="home-about-content" style={{ flex: 1 }}>
-        {/* <h2 className="home-about-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 74, color: '#000', textTransform: 'uppercase', lineHeight: 1.01, marginBottom: 24 }}>About Abu Dhabi<br />Cycling Club</h2> */}
+        {/* <h2 className="home-about-title" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 74, color: '#000', textTransform: 'uppercase', lineHeight: 1.01, marginBottom: 24 }}>About Abu Dhabi<br />Cycling Club</h2> */}
         <motion.h2
           className="home-about-title overflow-hidden"
           style={{
-            fontFamily: "'Bebas Neue', sans-serif",
+            fontFamily: "'Bebas Kai', sans-serif",
             fontSize: 74,
             color: "#000",
             textTransform: "uppercase",
@@ -2915,19 +2915,19 @@ function AboutSection() {
             </>
           )}
         </motion.h2>
-        <p className="home-about-text" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, color: '#000', lineHeight: 1.6, marginBottom: 40, maxWidth: 600 }}>
+        <p className="home-about-text" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 20, color: '#000', lineHeight: 1.6, marginBottom: 40, maxWidth: 600 }}>
           {t('public.home.about.text')}
         </p>
         {/* Stats */}
         <div className="home-about-stats" style={{ display: 'flex', gap: 48, marginBottom: 40 }}>
           {stats.map((s, i) => (
             <div key={i}>
-              <div className="home-about-stat-number" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 50, color: '#000', lineHeight: 1 }}>
+              <div className="home-about-stat-number" style={{ fontFamily: "'Bebas Kai', sans-serif", fontWeight: 700, fontSize: 50, color: '#000', lineHeight: 1 }}>
                 <div ref={(el) => (statsRefs.current[i] = el)}>
                   {s.num}
                 </div>
               </div>
-              <div className="home-about-stat-label" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 22, color: '#444', marginTop: 4 }}>{s.label}</div>
+              <div className="home-about-stat-label" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 22, color: '#444', marginTop: 4 }}>{s.label}</div>
             </div>
           ))}
         </div>
@@ -2974,8 +2974,8 @@ function CTABanner() {
       <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(https://images.unsplash.com/photo-1508784411316-06c06401e69b?w=1440&q=80)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
       <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.55)' }} />
       <div className="home-cta-content" style={{ position: 'relative', zIndex: 1, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '0 86px' }}>
-        <h2 className="home-cta-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 88, color: '#fff', textTransform: 'uppercase', lineHeight: 1.0, marginBottom: 16 }}>{t('public.home.cta.title')}</h2>
-        <p className="home-cta-text" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 22, color: 'rgba(255,255,255,0.9)', marginBottom: 36 }}>{t('public.home.cta.subtitle')}</p>
+        <h2 className="home-cta-title" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 88, color: '#fff', textTransform: 'uppercase', lineHeight: 1.0, marginBottom: 16 }}>{t('public.home.cta.title')}</h2>
+        <p className="home-cta-text" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 22, color: 'rgba(255,255,255,0.9)', marginBottom: 36 }}>{t('public.home.cta.subtitle')}</p>
         {/* App store buttons */}
         <div className="home-cta-buttons" style={{ display: 'flex', gap: 20 }}>
           {[
@@ -2988,8 +2988,8 @@ function CTABanner() {
                 <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" fill="#000" />
               </svg>
               <div>
-                <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, color: '#555' }}>{btn.top}</div>
-                <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 18, color: '#000' }}>{btn.main}</div>
+                <div style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 10, color: '#555' }}>{btn.top}</div>
+                <div style={{ fontFamily: "'Bebas Kai', sans-serif", fontWeight: 700, fontSize: 18, color: '#000' }}>{btn.main}</div>
               </div>
             </div>
           ))}
@@ -3058,7 +3058,7 @@ function Footer() {
         {/* Logo + tagline + newsletter */}
         <div className="home-footer-brand" style={{ flexShrink: 0, width: 340 }}>
           <div style={{ marginBottom: 24 }}><ADCCLogo size={0.83} /></div>
-          <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 16, color: '#333', lineHeight: 1.6, marginBottom: 32 }}>
+          <p style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 16, color: '#333', lineHeight: 1.6, marginBottom: 32 }}>
             {t('public.footer.brandText')}
           </p>
           {/* Email signup */}
@@ -3074,7 +3074,7 @@ function Footer() {
                 if (e.key === 'Enter') handleEmailSubmit();
               }}
               placeholder={t('public.home.newsletter.placeholder')}
-              style={{ flex: 1, border: 'none', background: 'transparent', padding: '0 16px', fontFamily: "'Outfit', sans-serif", fontSize: 15, color: '#333', outline: 'none' }}
+              style={{ flex: 1, border: 'none', background: 'transparent', padding: '0 16px', fontFamily: "'Bebas Kai', sans-serif", fontSize: 15, color: '#333', outline: 'none' }}
             />
             <AnimatedButton
               disabled={isSubmittingEmail}
@@ -3088,7 +3088,7 @@ function Footer() {
             </AnimatedButton>
           </div>
           {emailMessage && (
-            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 13, color: emailMessageType === 'success' ? '#019839' : '#C12D32', marginTop: 8 }}>
+            <p style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 13, color: emailMessageType === 'success' ? '#019839' : '#C12D32', marginTop: 8 }}>
               {emailMessage}
             </p>
           )}
@@ -3097,30 +3097,30 @@ function Footer() {
         <div className="home-footer-links" style={{ flex: 1, display: 'flex', gap: 60 }}>
           {/* Quick links */}
           <div>
-            <h3 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 24, color: '#000', textTransform: 'uppercase', marginBottom: 24 }}>{t('public.home.footer.quickLinks')}</h3>
+            <h3 style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 24, color: '#000', textTransform: 'uppercase', marginBottom: 24 }}>{t('public.home.footer.quickLinks')}</h3>
             <ul style={{ listStyle: 'none' }}>
               {quickLinks.map(l => (
                 <li key={l} style={{ marginBottom: 14 }}>
-                  <a href="#" className="hover-green" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 17, color: '#000', textDecoration: 'none', transition: 'color 0.2s' }}>{l}</a>
+                  <a href="#" className="hover-green" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 17, color: '#000', textDecoration: 'none', transition: 'color 0.2s' }}>{l}</a>
                 </li>
               ))}
             </ul>
           </div>
           {/* Contact */}
           <div>
-            <h3 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 24, color: '#000', textTransform: 'uppercase', marginBottom: 24 }}>{t('public.home.footer.contactUs')}</h3>
+            <h3 style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 24, color: '#000', textTransform: 'uppercase', marginBottom: 24 }}>{t('public.home.footer.contactUs')}</h3>
             <ul style={{ listStyle: 'none' }}>
               {contactItems.map((c, i) => (
                 <li key={i} style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
                   <span style={{ fontSize: 18, flexShrink: 0, marginTop: 2 }}>{c.icon}</span>
-                  <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 16, color: '#000', lineHeight: 1.4 }}>{c.text}</span>
+                  <span style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 16, color: '#000', lineHeight: 1.4 }}>{c.text}</span>
                 </li>
               ))}
             </ul>
           </div>
           {/* Social */}
           <div>
-            <h3 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 24, color: '#000', textTransform: 'uppercase', marginBottom: 24 }}>{t('public.home.footer.followUs')}</h3>
+            <h3 style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 24, color: '#000', textTransform: 'uppercase', marginBottom: 24 }}>{t('public.home.footer.followUs')}</h3>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               {['📘', '📷', '🐦', '▶️'].map((icon, i) => (
                 <div key={i} style={{ width: 44, height: 44, background: '#EAF4FF', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 20, transition: 'background 0.2s' }}>{icon}</div>
@@ -3136,7 +3136,7 @@ function Footer() {
 
       {/* Divider + copyright */}
       <div className="home-footer-bottom" style={{ borderTop: '1px solid #D5D5D5', margin: '0 86px', padding: '20px 0', textAlign: 'center' }}>
-        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: 16, color: 'rgba(0,0,0,0.6)' }}>{t('public.home.footer.copyright')}</span>
+        <span style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 16, color: 'rgba(0,0,0,0.6)' }}>{t('public.home.footer.copyright')}</span>
       </div>
     </footer>
   );

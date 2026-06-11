@@ -273,7 +273,7 @@ function PublicFooter() {
   return (
     <>
       <section
-        className="relative flex min-h-[360px] items-center justify-center overflow-hidden bg-cover bg-center px-4 py-12 text-center text-white sm:min-h-[430px] sm:px-6 sm:py-16 lg:min-h-[502px]"
+        className="public-footer-cta relative flex min-h-[360px] items-center justify-center overflow-hidden bg-cover bg-center px-4 py-12 text-center text-white sm:min-h-[430px] sm:px-6 sm:py-16 lg:min-h-[502px]"
         style={{
           backgroundImage:
             " url('/images/footer-image.png')",
@@ -289,7 +289,7 @@ function PublicFooter() {
         </div>
       </section>
 
-      <footer className="relative bg-[#EAF4FF] px-4! pt-12! pb-[25px]! sm:px-6! sm:pt-16! md:px-10! lg:px-16! lg:pt-20! xl:px-20! xl:pt-25!">
+      <footer className="public-footer relative bg-[#EAF4FF] px-4! pt-12! pb-[25px]! sm:px-6! sm:pt-16! md:px-10! lg:px-16! lg:pt-20! xl:px-20! xl:pt-25!">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(280px,1fr)_190px_minmax(280px,1fr)] lg:gap-12">
           <div className="sm:col-span-2 lg:col-span-1">
             <Logo compact />
@@ -362,7 +362,7 @@ function PublicFooter() {
         </button> 
 
         <div className="mt-10! border-t border-black/15 pt-[20px]! text-center sm:mt-14! md:mt-20!">
-          <span className="inline-block h-[23px] w-[319px] max-w-full font-['Outfit'] text-[18px] font-normal leading-none text-black">
+          <span className="inline-block h-[23px] w-[319px] max-w-full text-[18px] font-normal leading-none text-black">
             {t('public.footer.copyright')}
           </span>
         </div>

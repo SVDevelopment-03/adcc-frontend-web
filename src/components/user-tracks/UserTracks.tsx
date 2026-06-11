@@ -84,12 +84,11 @@ const getPaginationItems = (page: number, totalPages: number): Array<number | st
 
 const FontLoader = () => (
   <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Bebas+Neue&display=swap');
     * { box-sizing: border-box; margin: 0; }
-    body { background: #EAF4FF; font-family: 'Outfit', sans-serif; color: #000; }
-    .bebas { font-family: 'Bebas Neue', sans-serif; font-weight: 400; letter-spacing: 0.02em; }
+    body { background: #EAF4FF; font-family: 'Bebas Kai', sans-serif; color: #000; }
+    .bebas { font-family: 'Bebas Kai', sans-serif; font-weight: 400; letter-spacing: 0.02em; }
     a { text-decoration: none; color: inherit; }
-    select { appearance: none; -webkit-appearance: none; background: transparent; border: none; outline: none; cursor: pointer; font-family: 'Outfit', sans-serif; font-size: 20px; color: #000; width: 100%; }
+    select { appearance: none; -webkit-appearance: none; background: transparent; border: none; outline: none; cursor: pointer; font-family: 'Bebas Kai', sans-serif; font-size: 20px; color: #000; width: 100%; }
 
     .tracks-journey-card {
       width: 482px;
@@ -477,7 +476,7 @@ function Navbar() {
         <button style={{
           background: "#000", color: "#fff", border: "none", borderRadius: 30,
           padding: "13px 28px", fontWeight: 700, fontSize: 18, cursor: "pointer",
-          fontFamily: "'Outfit',sans-serif"
+          fontFamily: "'Bebas Kai',sans-serif"
         }}>Menu</button>
       </div>
     </header>
@@ -746,7 +745,7 @@ function WhySection() {
           <button style={{
             background: "#019839", color: "#fff", border: "none", borderRadius: 30,
             padding: "13px 28px", fontWeight: 700, fontSize: 18, cursor: "pointer",
-            fontFamily: "'Outfit',sans-serif", display: "flex", alignItems: "center", gap: 10
+            fontFamily: "'Bebas Kai',sans-serif", display: "flex", alignItems: "center", gap: 10
           }}>Explore Tracks <span>→</span></button>
         </div>
 
@@ -868,7 +867,7 @@ function TrackCard({ track, index = 0 }: { track: PublicTrackCard; index?: numbe
               borderRadius: 5, padding: "10px 6px", textAlign: "center"
             }}>
               <div style={{ fontSize: 12, color: "#fff", opacity: 0.8, marginBottom: 4 }}>{s.label}</div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", fontFamily: "'Outfit',sans-serif" }}>{s.val}</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", fontFamily: "'Bebas Kai',sans-serif" }}>{s.val}</div>
             </div>
           ))}
         </div>
@@ -880,7 +879,7 @@ function TrackCard({ track, index = 0 }: { track: PublicTrackCard; index?: numbe
           border: isFeatured ? "none" : "1px solid rgba(0,0,0,0.5)",
           borderRadius: 30, cursor: "pointer",
           color: isFeatured ? "#435974" : "rgba(0,0,0,0.49)",
-          fontSize: 15, fontWeight: 700, fontFamily: "'Outfit',sans-serif",
+          fontSize: 15, fontWeight: 700, fontFamily: "'Bebas Kai',sans-serif",
           transition: "all .2s"
         }}>View Details</button>
       </div>
@@ -973,7 +972,7 @@ function TracksGrid() {
             padding: "0 16px 0 22px",
             gap: 8,
             cursor: "pointer",
-            fontFamily: "'Outfit',sans-serif",
+            fontFamily: "'Bebas Kai',sans-serif",
             fontSize: 20,
             color: "#000",
             textAlign: "left",
@@ -1019,7 +1018,7 @@ function TracksGrid() {
                   color: option.value === filters[key] ? "#019839" : "#000",
                   padding: "12px 18px",
                   textAlign: "left",
-                  fontFamily: "'Outfit',sans-serif",
+                  fontFamily: "'Bebas Kai',sans-serif",
                   fontSize: 16,
                   fontWeight: option.value === filters[key] ? 700 : 400,
                   cursor: "pointer",
@@ -1115,7 +1114,7 @@ function TracksGrid() {
             viewport={{ once: true }} onClick={() => { setActive(filters); setPage(1); }} style={{
             height: 60, padding: "0 32px", background: "#019839", color: "#fff",
             border: "none", borderRadius: 40, fontSize: 20, fontWeight: 700,
-            cursor: "pointer", fontFamily: "'Outfit',sans-serif"
+            cursor: "pointer", fontFamily: "'Bebas Kai',sans-serif"
           }}>Search</motion.button>
         </div>
       </div>
@@ -1151,7 +1150,7 @@ function TracksGrid() {
               background: isActive ? "#019839" : "transparent",
               color: isActive ? "#fff" : "#019839",
               fontSize: 18, fontWeight: 500, cursor: isDots ? "default" : "pointer",
-              fontFamily: "'Outfit',sans-serif", letterSpacing: isDots ? "0.2em" : 0,
+              fontFamily: "'Bebas Kai',sans-serif", letterSpacing: isDots ? "0.2em" : 0,
               display: "flex", alignItems: "center", justifyContent: "center"
             }}>{p}</button>
           );
@@ -1255,7 +1254,7 @@ function CTABanner() {
               style={{
                 background: "#fff", border: "none", borderRadius: 100,
                 padding: "14px 32px", fontWeight: 600, fontSize: 16, cursor: "pointer",
-                fontFamily: "'Outfit',sans-serif", textDecoration: "none", color: "#000",
+                fontFamily: "'Bebas Kai',sans-serif", textDecoration: "none", color: "#000",
               }}
             >
               {label}
@@ -1282,11 +1281,11 @@ function Footer() {
           <div className="track-newsletter" style={{ display: "flex", background: "#8DDF93", borderRadius: 8, overflow: "hidden", height: 56 }}>
             <input placeholder="Enter your email" style={{
               flex: 1, border: "none", background: "transparent",
-              padding: "0 18px", fontSize: 15, fontFamily: "'Outfit',sans-serif", outline: "none"
+              padding: "0 18px", fontSize: 15, fontFamily: "'Bebas Kai',sans-serif", outline: "none"
             }} />
             <button style={{
               background: "#019839", color: "#fff", border: "none",
-              padding: "0 22px", fontSize: 15, cursor: "pointer", fontFamily: "'Outfit',sans-serif"
+              padding: "0 22px", fontSize: 15, cursor: "pointer", fontFamily: "'Bebas Kai',sans-serif"
             }}>Submit</button>
           </div>
         </div>

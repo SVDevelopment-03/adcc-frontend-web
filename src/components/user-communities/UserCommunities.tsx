@@ -26,10 +26,8 @@ const navLinks = ["About Us", "Events", "Community", "Tracks"];
 
 const FontLoader = () => (
   <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Bebas+Neue&display=swap');
-
-    body { background: #EAF4FF; font-family: 'Outfit', sans-serif; color: #000; }
-    .bebas { font-family: 'Bebas Kai', 'Bebas Neue', sans-serif; font-weight: 400; letter-spacing: 0; }
+    body { background: #EAF4FF; font-family: 'Bebas Kai', sans-serif; color: #000; }
+    .bebas { font-family: 'Bebas Kai', sans-serif; font-weight: 400; letter-spacing: 0; }
   `}</style>
 );
 

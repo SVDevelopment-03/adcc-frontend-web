@@ -5,15 +5,9 @@ import { motion } from "framer-motion";
 import { AnimatedButton } from "../ui/AnimatedButton";
 import { AnimatedImage } from "../ui/AnimatedImage";
 
-// ─── Google Fonts ────────────────────────────────────────────────────────────
+// ─── Page styles ─────────────────────────────────────────────────────────────
 const FontLoader = () => (
   <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700&display=swap');
-    @import url('https://fonts.cdnfonts.com/css/satoshi');
-
-    /* Bebas Kai fallback via Bebas Neue */
-    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
-
     :root {
       --green:   #019839;
       --black:   #000000;
@@ -26,9 +20,9 @@ const FontLoader = () => (
 
     * { box-sizing: border-box; margin: 0; }
 
-    body { background: var(--bg); font-family: 'Outfit', sans-serif; color: var(--black); }
+    body { background: var(--bg); font-family: 'Bebas Kai', sans-serif; color: var(--black); }
 
-    .bebas { font-family: 'Bebas Neue', 'Bebas Kai', sans-serif; font-weight: 400; letter-spacing: 0.02em; }
+    .bebas { font-family: 'Bebas Kai', sans-serif; font-weight: 400; letter-spacing: 0.02em; }
 
     .journey-card {
       flex: 0 0 480px;
@@ -69,7 +63,7 @@ const FontLoader = () => (
       width: 113px;
       min-height: 23px;
       color: rgba(255, 255, 255, 0.6);
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Bebas Kai', sans-serif;
       font-size: 16px;
       font-weight: 500;
       line-height: 145%;
@@ -126,7 +120,7 @@ const FontLoader = () => (
       top: 10.5px;
       width: 145px;
       color: #000;
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Bebas Kai', sans-serif;
       font-size: 15px;
       font-weight: 500;
       line-height: 19px;
@@ -492,7 +486,7 @@ function Navbar() {
         {["About Us", "Events", "Community", "Tracks"].map((l) => (
           <a key={l} href="#"
             style={{
-              fontFamily: "'Outfit',sans-serif", fontWeight: 500, fontSize: 20,
+              fontFamily: "'Bebas Kai',sans-serif", fontWeight: 500, fontSize: 20,
               color: "#000", textDecoration: "none",
               borderBottom: l === "About Us" ? "2px solid #019839" : "2px solid transparent",
               paddingBottom: 2, transition: "border-color .2s"
@@ -575,7 +569,7 @@ function Hero() {
           style={{
             color: "rgba(255,255,255,0.8)",
             fontSize: 22,
-            fontFamily: "'Satoshi',sans-serif",
+            fontFamily: "'Bebas Kai',sans-serif",
           }}
         >
           {["Home", "/", "About", "us"].map((word, index) => (
@@ -739,7 +733,7 @@ function StatsSection() {
                 borderLeft: "2px solid #1F509A", paddingLeft: 20, paddingBottom: 36
               }}>
                 <div className="bebas about-stat-number" style={{ fontSize: 50, lineHeight: 1 }}>{s.val}</div>
-                <div className="about-stat-label" style={{ fontFamily: "'Satoshi',sans-serif", fontSize: 18, color: "#444", marginTop: 6, whiteSpace: "pre-line", lineHeight: 1.4 }}>{s.label}</div>
+                <div className="about-stat-label" style={{ fontFamily: "'Bebas Kai',sans-serif", fontSize: 18, color: "#444", marginTop: 6, whiteSpace: "pre-line", lineHeight: 1.4 }}>{s.label}</div>
               </div>
             ))}
           </div>
@@ -983,7 +977,7 @@ function ValuesSection() {
     <section className="about-section" style={{ background: "#EAF4FF", padding: "80px 82px" }}>
       <div className="about-values-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 40 }}>
         <div>
-          <p style={{fontFamily: "'Satoshi',sans-serif", fontSize: 15, fontWeight: 500, marginBottom: 8, color: "#000" }}>Our values</p>
+          <p style={{fontFamily: "'Bebas Kai',sans-serif", fontSize: 15, fontWeight: 500, marginBottom: 8, color: "#000" }}>Our values</p>
           <motion.h2
             className="bebas about-values-title overflow-hidden"
             style={{
@@ -1076,7 +1070,7 @@ function ValuesSection() {
           >
             <div
               style={{
-                fontFamily: "'Outfit',sans-serif",
+                fontFamily: "'Bebas Kai',sans-serif",
                 fontSize: 17,
                 fontWeight: 500,
                 color: "#fff",
@@ -1099,7 +1093,7 @@ function ValuesSection() {
 
             <p
               style={{
-                fontFamily: "'Satoshi',sans-serif",
+                fontFamily: "'Bebas Kai',sans-serif",
                 fontSize: 16,
                 color: "#fff",
                 lineHeight: 1.55,
@@ -1238,7 +1232,7 @@ function CoachesSection() {
                 fontSize: 26,
                 lineHeight: 1,
                 letterSpacing: 1,
-                fontFamily: "'Bebas Neue','Bebas Kai',sans-serif",
+                fontFamily: "'Bebas Kai',sans-serif",
                 zIndex: 5,
                 display: "block",
                 opacity: 1,
@@ -1277,14 +1271,14 @@ function CTABanner() {
           Start Your Ride Today
         </h2>
         {/* <p style={{ fontSize: 24, color: "#fff", marginTop: 16, marginBottom: 36, opacity: .95 }}> */}
-        <p className="about-cta-text" style={{ fontFamily: "'Satoshi',sans-serif", fontSize: 26, color: "#fff", marginTop: 16, marginBottom: 36, opacity: .95 }}>
+        <p className="about-cta-text" style={{ fontFamily: "'Bebas Kai',sans-serif", fontSize: 26, color: "#fff", marginTop: 16, marginBottom: 36, opacity: .95 }}>
           Download the ADCC app and join the cycling community.
         </p>
         <div className="about-cta-buttons" style={{ display: "flex", gap: 20 }}>
           {["Google Play", "App Store"].map(s => (
             <button key={s} style={{
               background: "#fff", border: "none", borderRadius: 100,
-              padding: "14px 32px", fontFamily: "'Outfit',sans-serif",
+              padding: "14px 32px", fontFamily: "'Bebas Kai',sans-serif",
               fontWeight: 600, fontSize: 16, cursor: "pointer",
               display: "flex", alignItems: "center", gap: 10
             }}>
@@ -1317,12 +1311,12 @@ function Footer() {
           }}>
             <input placeholder="Enter your email" style={{
               flex: 1, border: "none", background: "transparent",
-              padding: "0 18px", fontSize: 16, fontFamily: "'Outfit',sans-serif",
+              padding: "0 18px", fontSize: 16, fontFamily: "'Bebas Kai',sans-serif",
               outline: "none", color: "#333"
             }} />
             <button style={{
               background: "#019839", color: "#fff", border: "none",
-              padding: "0 24px", fontFamily: "'Outfit',sans-serif", fontSize: 16,
+              padding: "0 24px", fontFamily: "'Bebas Kai',sans-serif", fontSize: 16,
               cursor: "pointer", borderRadius: "0 8px 8px 0"
             }}>Submit</button>
           </div>
