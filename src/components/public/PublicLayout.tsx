@@ -8,6 +8,7 @@ import { AnimatedButton } from '../ui/AnimatedButton';
 import { HeaderWeather } from './HeaderWeather';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { APP_STORE_LINKS } from '../../config/appStoreLinks';
+import { subscribeToNewsletter } from '../../services/newsletterApi';
 
 interface PublicLayoutProps {
   children: React.ReactNode;
@@ -232,7 +233,42 @@ function StoreButton({ type }: { type: 'google' | 'apple' }) {
 
 function PublicFooter() {
   const [email, setEmail] = useState('');
+  const [emailMessage, setEmailMessage] = useState('');
+  const [emailMessageType, setEmailMessageType] = useState<'success' | 'error'>('success');
+  const [isSubmittingEmail, setIsSubmittingEmail] = useState(false);
   const { t } = useTranslation();
+
+  const handleNewsletterSubmit = async () => {
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!normalizedEmail) {
+      setEmailMessageType('error');
+      setEmailMessage(t('public.footer.emailRequired'));
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      setEmailMessageType('error');
+      setEmailMessage(t('public.footer.emailInvalid'));
+      return;
+    }
+
+    try {
+      setIsSubmittingEmail(true);
+      setEmailMessage('');
+      await subscribeToNewsletter(normalizedEmail, 'public-footer');
+      setEmail('');
+      setEmailMessageType('success');
+      setEmailMessage(t('public.footer.thanks'));
+    } catch (error) {
+      setEmailMessageType('error');
+      setEmailMessage(
+        error instanceof Error ? error.message : t('public.footer.subscribeError'),
+      );
+    } finally {
+      setIsSubmittingEmail(false);
+    }
+  };
 
   return (
     <>
@@ -262,15 +298,41 @@ function PublicFooter() {
             </p>
             <div className="mt-6! flex h-12 w-full max-w-[360px] overflow-hidden rounded-lg bg-[#8DDF93] p-1 max-[380px]:h-auto max-[380px]:flex-col sm:mt-7!">
               <input
+                type="email"
                 value={email}
-                onChange={(event) => setEmail(event.target.value)}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                  if (emailMessage) setEmailMessage('');
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') {
+                    event.preventDefault();
+                    void handleNewsletterSubmit();
+                  }
+                }}
                 placeholder={t('public.footer.emailPlaceholder')}
-                className="min-h-10 min-w-0 flex-1 bg-transparent px-4! text-[14px] outline-none placeholder:text-black/45"
+                disabled={isSubmittingEmail}
+                aria-label={t('public.footer.emailPlaceholder')}
+                className="min-h-10 min-w-0 flex-1 bg-transparent px-4! text-[14px] outline-none placeholder:text-black/45 disabled:opacity-60"
               />
-              <button type="button" onClick={() => setEmail('')} className="min-h-10 rounded-md bg-[#019839] px-5! text-[14px] font-medium text-white transition-colors hover:bg-black sm:min-w-[103px] sm:px-6!">
-                {t('public.footer.submit')}
+              <button
+                type="button"
+                onClick={() => void handleNewsletterSubmit()}
+                disabled={isSubmittingEmail}
+                className="min-h-10 rounded-md bg-[#019839] px-5! text-[14px] font-medium text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-70 sm:min-w-[103px] sm:px-6!"
+              >
+                {isSubmittingEmail ? t('public.footer.saving') : t('public.footer.submit')}
               </button>
             </div>
+            {emailMessage && (
+              <p
+                className={`mt-2! max-w-[360px] text-[13px] ${
+                  emailMessageType === 'success' ? 'text-[#019839]' : 'text-[#C12D32]'
+                }`}
+              >
+                {emailMessage}
+              </p>
+            )}
           </div>
 
           <div>
