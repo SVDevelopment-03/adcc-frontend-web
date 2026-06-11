@@ -279,9 +279,9 @@ function PublicFooter() {
           </div>
         </div>
 
-        <button type="button" aria-label="Cycling shortcut" className="mt-10 ml-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#019839] text-white shadow-lg transition-colors hover:bg-black md:absolute md:bottom-24 md:right-10 md:mt-0 md:h-12 md:w-12 lg:right-16 xl:right-20">
+        {/* <button type="button" aria-label="Cycling shortcut" className="mt-10 ml-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#019839] text-white shadow-lg transition-colors hover:bg-black md:absolute md:bottom-24 md:right-10 md:mt-0 md:h-12 md:w-12 lg:right-16 xl:right-20">
           <Bike className="h-5 w-5 md:h-6 md:w-6" />
-        </button>
+        </button> */}
 
         <div className="mt-10! border-t border-black/15 pt-[20px]! text-center sm:mt-14! md:mt-20!">
           <span className="inline-block h-[23px] w-[319px] max-w-full font-['Outfit'] text-[18px] font-normal leading-none text-black">
