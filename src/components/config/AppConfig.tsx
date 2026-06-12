@@ -74,9 +74,12 @@ export function AppConfig() {
           security: { ...defaultConfig.security, ...(remote as any).security },
           emailSettings: { ...defaultConfig.emailSettings, ...(remote as any).emailSettings },
         };
-        setConfig(mergedRemote);
-        setInitial(mergedRemote);
-        setSmtpProvider(deriveProvider((mergedRemote.emailSettings as any).smtpHost ?? ''));
+        const provider = deriveProvider((mergedRemote.emailSettings as any).smtpHost ?? '');
+        setSmtpProvider(provider);
+        // Apply correct port/secure for known providers in case DB has stale values
+        const corrected = applyProviderPreset(mergedRemote, provider);
+        setConfig(corrected);
+        setInitial(corrected);
         try {
           localStorage.setItem(storageKey, JSON.stringify(mergedRemote));
         } catch {
@@ -145,6 +148,20 @@ export function AppConfig() {
     outlook: { smtpHost: 'smtp-mail.outlook.com',   smtpPort: 587, smtpSecure: false },
     custom:  { smtpHost: '',                         smtpPort: 587, smtpSecure: false },
   } as const;
+
+  const applyProviderPreset = (cfg: AppConfigState, provider: 'gmail' | 'outlook' | 'custom'): AppConfigState => {
+    if (provider === 'custom') return cfg;
+    const preset = SMTP_PRESETS[provider];
+    return {
+      ...cfg,
+      emailSettings: {
+        ...cfg.emailSettings,
+        smtpHost: preset.smtpHost,
+        smtpPort: preset.smtpPort,
+        smtpSecure: preset.smtpSecure,
+      },
+    };
+  };
 
   const handleProviderChange = (provider: 'gmail' | 'outlook' | 'custom') => {
     setSmtpProvider(provider);
