@@ -267,6 +267,16 @@ export async function markStoreItemSold(itemId: string): Promise<StoreActionResp
  * Update a store item.
  * @throws Error with a clear message when the API request fails.
  */
+export async function deleteStoreItem(itemId: string): Promise<StoreActionResponse> {
+  try {
+    const { data } = await api.delete<StoreActionResponse>(`/v1/store/items/${itemId}`);
+    return data;
+  } catch (error) {
+    const message = getApiErrorMessage(error, 'Failed to delete store item');
+    throw new Error(message);
+  }
+}
+
 export async function updateStoreItem(
   itemId: string,
   payload: UpdateStoreItemPayload

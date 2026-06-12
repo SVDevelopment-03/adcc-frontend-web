@@ -212,6 +212,15 @@ export const moderateFeedPost = async (postId: string, data: ModerateFeedPostDat
   }
 };
 
+export const deleteFeedPost = async (postId: string): Promise<void> => {
+  if (!postId) throw new Error('Post id is required');
+  try {
+    await api.delete(`/v1/feed-posts/${postId}`);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to delete feed post'));
+  }
+};
+
 export const moderateFeedUserBan = async (userId: string, banFeedPost: boolean) => {
   if (!userId) throw new Error('User id is required');
 

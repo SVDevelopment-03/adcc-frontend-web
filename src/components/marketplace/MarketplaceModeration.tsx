@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { CheckCircle, XCircle, Star, AlertTriangle, Search, Eye, Ban } from 'lucide-react';
+import { CheckCircle, XCircle, Star, AlertTriangle, Search, Eye, Ban, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   approveStoreItem,
+  deleteStoreItem,
   getAdminStoreItems,
   getAdminStoreItemsCount,
   markStoreItemSold,
@@ -42,6 +43,7 @@ export function MarketplaceModeration() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionId, setActionId] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'pending' | 'approved' | 'reported' | 'sold'>('pending');
   const [searchTerm, setSearchTerm] = useState('');
   const [counts, setCounts] = useState({ pending: 0, approved: 0, reported: 0, sold: 0 });
@@ -157,6 +159,25 @@ export function MarketplaceModeration() {
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t('marketplace.toasts.featureFailed'));
+    } finally {
+      setActionId(null);
+    }
+  };
+
+  const handleDelete = async (itemId: string | undefined) => {
+    if (!itemId) return;
+    try {
+      setActionId(itemId);
+      const res = await deleteStoreItem(itemId);
+      if (res?.success) {
+        toast.success(res.message ?? 'Item deleted successfully');
+        setShowDeleteModal(null);
+        await Promise.all([fetchItems(), refreshCounts()]);
+      } else {
+        toast.error(res?.message ?? 'Failed to delete item');
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to delete item');
     } finally {
       setActionId(null);
     }
@@ -457,12 +478,58 @@ export function MarketplaceModeration() {
                           </button>
                         </>
                       ) : null}
+
+                      <button
+                        onClick={() => itemId && setShowDeleteModal(itemId)}
+                        disabled={actionId === itemId || !itemId}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-white text-xs transition-all hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
+                        style={{ backgroundColor: '#374151' }}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                        Delete
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
             );
           })}
+        </div>
+      ) : null}
+
+      {showDeleteModal ? (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowDeleteModal(null)}
+        >
+          <div
+            className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-xl mb-2" style={{ color: '#333' }}>Delete Item</h3>
+            <p className="text-sm mb-6" style={{ color: '#666' }}>
+              Are you sure you want to permanently delete this listing? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setShowDeleteModal(null)}
+                className="px-4 py-2 rounded-lg border border-gray-200"
+                style={{ color: '#666' }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => void handleDelete(showDeleteModal)}
+                disabled={actionId === showDeleteModal}
+                className="px-4 py-2 rounded-lg text-white"
+                style={{ backgroundColor: '#374151', opacity: actionId === showDeleteModal ? 0.6 : 1 }}
+              >
+                {actionId === showDeleteModal ? 'Deleting...' : 'Delete Item'}
+              </button>
+            </div>
+          </div>
         </div>
       ) : null}
     </div>

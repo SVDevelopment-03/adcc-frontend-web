@@ -20,6 +20,7 @@ import {
   getFeedPostsCount,
   moderateFeedPost,
   moderateFeedUserBan,
+  deleteFeedPost,
   FeedPostStatus,
 } from '../../services/feedPostsApi';
 
@@ -65,6 +66,8 @@ export function FeedModeration() {
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectionPostId, setRejectionPostId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletePostId, setDeletePostId] = useState<string | null>(null);
 
   const refreshCounts = async () => {
     setIsCountsLoading(true);
@@ -179,6 +182,29 @@ export function FeedModeration() {
       await refreshCounts();
     } catch (error: any) {
       toast.error(error?.response?.data?.message || error?.message || 'Failed to reject post');
+    }
+  };
+
+  const openDeleteModal = (postId: string) => {
+    setDeletePostId(postId);
+    setShowDeleteModal(true);
+  };
+
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false);
+    setDeletePostId(null);
+  };
+
+  const submitDelete = async () => {
+    if (!deletePostId) return;
+    try {
+      await deleteFeedPost(deletePostId);
+      toast.success('Post deleted');
+      closeDeleteModal();
+      await fetchPostsForTab(activeTab);
+      await refreshCounts();
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to delete post');
     }
   };
 
@@ -501,18 +527,36 @@ export function FeedModeration() {
                           <Ban className="w-4 h-4" />
                           <span>Ban User</span>
                         </button>
+                        <button
+                          onClick={() => openDeleteModal(postId)}
+                          className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm"
+                          style={{ backgroundColor: '#374151' }}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          <span>Delete</span>
+                        </button>
                       </>
                     ) : null}
 
                     {isApproved ? (
-                      <button
-                        onClick={() => openRejectModal(postId)}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm"
-                        style={{ backgroundColor: '#6B7280' }}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                        <span>Remove</span>
-                      </button>
+                      <>
+                        <button
+                          onClick={() => openRejectModal(postId)}
+                          className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm"
+                          style={{ backgroundColor: '#6B7280' }}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          <span>Remove</span>
+                        </button>
+                        <button
+                          onClick={() => openDeleteModal(postId)}
+                          className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm"
+                          style={{ backgroundColor: '#374151' }}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          <span>Delete</span>
+                        </button>
+                      </>
                     ) : null}
                   </div>
                 </div>
@@ -602,6 +646,42 @@ export function FeedModeration() {
                   Close
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {showDeleteModal ? (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={closeDeleteModal}
+        >
+          <div
+            className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-xl mb-2" style={{ color: '#333' }}>Delete Post</h3>
+            <p className="text-sm mb-6" style={{ color: '#666' }}>
+              Are you sure you want to permanently delete this post? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={closeDeleteModal}
+                className="px-4 py-2 rounded-lg border border-gray-200"
+                style={{ color: '#666' }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => void submitDelete()}
+                disabled={!deletePostId}
+                className="px-4 py-2 rounded-lg text-white"
+                style={{ backgroundColor: '#374151', opacity: deletePostId ? 1 : 0.6 }}
+              >
+                Delete Post
+              </button>
             </div>
           </div>
         </div>

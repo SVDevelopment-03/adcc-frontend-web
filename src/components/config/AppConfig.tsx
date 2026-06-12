@@ -51,6 +51,16 @@ export function AppConfig() {
   const [isTesting, setIsTesting] = useState(false);
   const [smtpTestResult, setSmtpTestResult] = useState<{ ok: boolean; message: string } | null>(null);
 
+  const deriveProvider = (host: string): 'gmail' | 'outlook' | 'custom' => {
+    if (host === 'smtp.gmail.com') return 'gmail';
+    if (host === 'smtp-mail.outlook.com') return 'outlook';
+    return 'custom';
+  };
+
+  const [smtpProvider, setSmtpProvider] = useState<'gmail' | 'outlook' | 'custom'>(() =>
+    deriveProvider(defaultConfig.emailSettings.smtpHost)
+  );
+
   useEffect(() => {
     const load = async () => {
       setIsLoading(true);
@@ -66,6 +76,7 @@ export function AppConfig() {
         };
         setConfig(mergedRemote);
         setInitial(mergedRemote);
+        setSmtpProvider(deriveProvider((mergedRemote.emailSettings as any).smtpHost ?? ''));
         try {
           localStorage.setItem(storageKey, JSON.stringify(mergedRemote));
         } catch {
@@ -128,6 +139,28 @@ export function AppConfig() {
     setConfig((prev) => ({ ...prev, notifications: { ...prev.notifications, [key]: !prev.notifications[key] } }));
   const toggleSecurity = (key: SecurityKey) => setConfig((prev) => ({ ...prev, security: { ...prev.security, [key]: !prev.security[key] } }));
   const toggleEmailEnabled = () => setConfig((prev) => ({ ...prev, emailSettings: { ...prev.emailSettings, enabled: !prev.emailSettings.enabled } }));
+
+  const SMTP_PRESETS = {
+    gmail:   { smtpHost: 'smtp.gmail.com',          smtpPort: 587, smtpSecure: false },
+    outlook: { smtpHost: 'smtp-mail.outlook.com',   smtpPort: 587, smtpSecure: false },
+    custom:  { smtpHost: '',                         smtpPort: 587, smtpSecure: false },
+  } as const;
+
+  const handleProviderChange = (provider: 'gmail' | 'outlook' | 'custom') => {
+    setSmtpProvider(provider);
+    const preset = SMTP_PRESETS[provider];
+    setConfig((prev) => ({
+      ...prev,
+      emailSettings: {
+        ...prev.emailSettings,
+        smtpHost: preset.smtpHost,
+        smtpPort: preset.smtpPort,
+        smtpSecure: preset.smtpSecure,
+        smtpPassword: '',
+      },
+    }));
+    setSmtpTestResult(null);
+  };
 
   const onTestSmtp = async () => {
     if (isTesting) return;
@@ -392,8 +425,48 @@ export function AppConfig() {
           </div>
 
           <p className="text-sm mb-4" style={{ color: '#666' }}>
-            Configure SMTP here or keep using environment variables. Leave the password blank to keep the current saved value.
+            Choose a provider preset or configure Custom SMTP. Leave the password blank to keep the current saved value.
           </p>
+
+          {/* Provider selector */}
+          <div className="flex gap-2 mb-5">
+            {([
+              { id: 'custom',  label: 'Custom SMTP' },
+              { id: 'gmail',   label: 'Gmail' },
+              { id: 'outlook', label: 'Outlook' },
+            ] as const).map(({ id, label }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => handleProviderChange(id)}
+                className="px-4 py-2 rounded-lg text-sm font-medium border transition-all"
+                style={{
+                  backgroundColor: smtpProvider === id ? '#C12D32' : '#fff',
+                  color: smtpProvider === id ? '#fff' : '#555',
+                  borderColor: smtpProvider === id ? '#C12D32' : '#d1d5db',
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* Gmail info banner */}
+          {smtpProvider === 'gmail' && (
+            <div className="mb-4 px-4 py-3 rounded-lg text-sm" style={{ backgroundColor: '#FFF9EF', border: '1px solid #ECC180', color: '#7a5a1e' }}>
+              <strong>Gmail requires an App Password.</strong> Your regular Gmail password will not work.
+              Enable 2-Step Verification on your Google account, then go to{' '}
+              <strong>Google Account → Security → App Passwords</strong> and generate a password for "Mail".
+            </div>
+          )}
+
+          {/* Outlook info banner */}
+          {smtpProvider === 'outlook' && (
+            <div className="mb-4 px-4 py-3 rounded-lg text-sm" style={{ backgroundColor: '#f0f7ff', border: '1px solid #bfdbfe', color: '#1e40af' }}>
+              <strong>Outlook SMTP:</strong> Use your full Outlook/Microsoft account email as the username and your account password.
+              If you have 2-step verification enabled, generate an App Password from your Microsoft account security settings.
+            </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -404,6 +477,8 @@ export function AppConfig() {
                 onChange={(e) => setField('emailSettings', { ...config.emailSettings, smtpHost: e.target.value })}
                 className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-white"
                 placeholder="smtp.example.com"
+                readOnly={smtpProvider !== 'custom'}
+                style={smtpProvider !== 'custom' ? { backgroundColor: '#f9fafb', color: '#6b7280' } : {}}
               />
             </div>
 
@@ -415,28 +490,34 @@ export function AppConfig() {
                 onChange={(e) => setField('emailSettings', { ...config.emailSettings, smtpPort: Number(e.target.value) || 587 })}
                 className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-white"
                 placeholder="587"
+                readOnly={smtpProvider !== 'custom'}
+                style={smtpProvider !== 'custom' ? { backgroundColor: '#f9fafb', color: '#6b7280' } : {}}
               />
             </div>
 
             <div>
-              <label className="block text-sm mb-2" style={{ color: '#666' }}>SMTP Username</label>
+              <label className="block text-sm mb-2" style={{ color: '#666' }}>
+                {smtpProvider === 'gmail' ? 'Gmail Address' : smtpProvider === 'outlook' ? 'Outlook Email Address' : 'SMTP Username'}
+              </label>
               <input
                 type="text"
                 value={config.emailSettings.smtpUser}
                 onChange={(e) => setField('emailSettings', { ...config.emailSettings, smtpUser: e.target.value })}
                 className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-white"
-                placeholder="smtp-user@example.com"
+                placeholder={smtpProvider === 'gmail' ? 'you@gmail.com' : smtpProvider === 'outlook' ? 'you@outlook.com' : 'smtp-user@example.com'}
               />
             </div>
 
             <div>
-              <label className="block text-sm mb-2" style={{ color: '#666' }}>SMTP Password</label>
+              <label className="block text-sm mb-2" style={{ color: '#666' }}>
+                {smtpProvider === 'gmail' ? 'App Password' : smtpProvider === 'outlook' ? 'Password / App Password' : 'SMTP Password'}
+              </label>
               <input
                 type="password"
                 value={config.emailSettings.smtpPassword}
                 onChange={(e) => setField('emailSettings', { ...config.emailSettings, smtpPassword: e.target.value })}
                 className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-white"
-                placeholder="Leave blank to keep current password"
+                placeholder={smtpProvider === 'gmail' ? 'Enter 16-character App Password' : 'Leave blank to keep current password'}
               />
             </div>
 
