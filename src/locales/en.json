@@ -2106,7 +2106,8 @@
     },
     "home": {
       "hero": {
-        "words": ["RIDE", "ABU", "DHABI", "START"],
+        "line1": "Ride Abu Dhabi Start",
+        "line2": "Your Cycling Journey",
         "downloadApp": "Download App",
         "exploreTracks": "Explore Tracks"
       },
@@ -2117,7 +2118,8 @@
         "distance": "1.5 Million+ KM Cycled"
       },
       "journey": {
-        "titleWords": ["Begin", "Your", "Cycling", "Journey"],
+        "titleLine1": "Begin Your",
+        "titleLine2": "Cycling Journey",
         "text": "Choose how you want to ride with ADCC. Discover routes, join challenges, and be part of a growing cycling community.",
         "exploreRoutes": "Explore all Routes",
         "cards": {
@@ -2138,19 +2140,19 @@
         }
       },
       "community": {
-        "eyebrowWords": ["For", "the", "Cycling", "Community"],
-        "titleWords": ["Join", "Abu", "Dhabi's", "Cycling", "Community"],
-        "subtitleWords": ["Everything", "you", "need", "to", "ride,", "track,", "and", "stay", "connected."],
+        "eyebrow": "For the Cycling Community",
+        "title": "Eat • Sleep • Bike • Repeat",
+        "subtitle": "Everything you need to ride, track, and stay connected.",
         "startRiding": "Start Riding",
         "icons": {
-          "events": "Events",
-          "tracks": "Tracks",
-          "challenges": "Challenges",
-          "community": "Community"
+          "eat": "Eat",
+          "sleep": "Sleep",
+          "bike": "Bike",
+          "repeat": "Repeat"
         }
       },
       "platform": {
-        "titleWords": ["Explore", "the", "Platform"],
+        "title": "Explore the Platform",
         "cards": {
           "events": {
             "tag": "EVENTS",
@@ -2171,12 +2173,20 @@
       },
       "store": {
         "title": "ADCC Store",
-        "loading": "Loading store products...",
-        "empty": "No store products available.",
         "officialMerchandise": "Official Merchandise",
         "communityMarketplace": "Community Marketplace",
         "viewStore": "View Store",
-        "exploreMarketplace": "Explore Marketplace"
+        "exploreMarketplace": "Explore Marketplace",
+        "products": {
+          "jersey": {
+            "title": "ADCC Performance Jersey",
+            "sub": "Lightweight • Breathable • Race Fit"
+          },
+          "marketplace": {
+            "title": "Pre-Owned Road Bike",
+            "sub": "Verified listings from ADCC riders"
+          }
+        }
       },
       "about": {
         "titleWords": ["About", "Abu", "Dhabi", "Cycling", "Club"],

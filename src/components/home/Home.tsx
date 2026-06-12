@@ -1,14 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getStoreItems, StoreItem } from '../../services/storeApi';
-import { subscribeToNewsletter } from '../../services/newsletterApi';
-import { motion } from "framer-motion";
-import gsap from "gsap";
-import useEmblaCarousel from 'embla-carousel-react';
+import { motion } from 'framer-motion';
 import { AnimatedButton } from '../ui/AnimatedButton';
 import { AnimatedImage } from '../ui/AnimatedImage';
 import { useTranslation } from 'react-i18next';
+import { subscribeToNewsletter } from '../../services/newsletterApi';
+import { HOME_STORE_FALLBACK_IMAGE, HOME_STORE_PRODUCTS } from '../../data/homeStoreProducts';
+import { Bike, CalendarDays, MapPin, Users } from 'lucide-react';
 
+const TICKER_ITEMS = [
+  { key: 'members' as const, Icon: Users, iconClass: 'home-ticker-icon--members', textClass: 'home-ticker-text--members', bg: '#D9E7F9', dark: false },
+  { key: 'loop' as const, Icon: MapPin, iconClass: 'home-ticker-icon--md', textClass: 'home-ticker-text--stat', bg: '#435974', dark: true },
+  { key: 'events' as const, Icon: CalendarDays, iconClass: 'home-ticker-icon--md', textClass: 'home-ticker-text--stat', bg: '#D9E7F9', dark: false },
+  { key: 'distance' as const, Icon: Bike, iconClass: 'home-ticker-icon--lg', textClass: 'home-ticker-text--stat', bg: '#435974', dark: true },
+];
 const CSS = `
   @keyframes ticker-group-left {
     0%   { transform: translateX(0); }
@@ -37,13 +42,11 @@ const CSS = `
   @keyframes imageExpand {
     from {
       opacity: 0;
-      transform: scaleX(0.2) scaleY(0.2);
       filter: blur(8px);
     }
 
     to {
       opacity: 1;
-      transform: scaleX(1) scaleY(1);
       filter: blur(0);
     }
   }
@@ -83,6 +86,139 @@ const CSS = `
     max-width: 100%;
   }
 
+  .home-hero {
+    position: relative;
+    width: 100%;
+    height: clamp(480px, 56.25vw, 806px);
+    max-height: 806px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .home-hero-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url('/img/DSC04620.jpg 1.png');
+    background-size: cover;
+    background-position: center 28%;
+    background-repeat: no-repeat;
+  }
+  .home-hero-content {
+    position: absolute;
+    inset-inline-start: clamp(24px, 5.97vw, 86px);
+    top: clamp(96px, 24.9%, 201px);
+    width: min(627px, calc(100% - 48px));
+    max-width: 627px;
+    z-index: 2;
+  }
+  .home-hero-title {
+    font-family: 'Bebas Kai', sans-serif;
+    font-weight: 400;
+    font-size: clamp(40px, 5vw, 72px);
+    line-height: 100.7%;
+    color: #000000;
+    text-transform: uppercase;
+    margin: 0 0 28px;
+    width: 100%;
+    max-width: 627px;
+  }
+  .home-hero-title-line {
+    display: block;
+    overflow: hidden;
+  }
+  .home-hero-actions {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .home-hero-download-btn {
+    --adcc-btn-color: #FFF9EF;
+    --adcc-btn-font-size: 18px;
+    --adcc-btn-min-height: 49px;
+    font-family: 'Satoshi', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 18px !important;
+    line-height: 125% !important;
+    color: #FFF9EF !important;
+    text-align: center;
+  }
+  .home-hero-download-btn .adcc-btn__label {
+    font-family: 'Satoshi', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 18px !important;
+    line-height: 125% !important;
+    text-align: center;
+    color: #FFF9EF !important;
+  }
+  .home-hero-download-btn svg path {
+    stroke: #FFF9EF;
+  }
+
+  .home-ticker {
+    width: 100%;
+    height: 100px;
+    overflow: hidden;
+    position: relative;
+  }
+  .home-ticker-track {
+    display: flex;
+    align-items: stretch;
+    width: max-content;
+    animation: ticker-group-left 28s linear infinite;
+  }
+  .home-ticker-track:hover {
+    animation-play-state: paused;
+  }
+  .home-ticker-item {
+    flex: 0 0 418px;
+    width: 418px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+  .home-ticker-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .home-ticker-icon--members {
+    width: 28.34px;
+    height: 24.04px;
+  }
+  .home-ticker-icon--md {
+    width: 32px;
+    height: 32px;
+  }
+  .home-ticker-icon--lg {
+    width: 40.36px;
+    height: 40.36px;
+  }
+  .home-ticker-text {
+    font-family: 'Bebas Kai', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 90.7%;
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .home-ticker-text--members {
+    font-size: 26.1574px;
+    color: #000000;
+  }
+  .home-ticker-text--stat {
+    font-size: 29.6901px;
+  }
+  .home-ticker-text--light {
+    color: #000000;
+  }
+  .home-ticker-text--dark {
+    color: #ffffff;
+  }
+
   .hover-green:hover { color: #019839 !important; }
   .home-page .adcc-btn--arrow:hover .adcc-btn__arrow--enter,
   .home-page .adcc-btn--arrow:focus-visible .adcc-btn__arrow--enter {
@@ -91,33 +227,34 @@ const CSS = `
   .card-hover { transition: transform 0.25s, box-shadow 0.25s; }
   .card-hover:hover { transform: translateY(-6px); box-shadow: 0 12px 32px rgba(0,0,0,0.15) !important; }
   .store-card { transition: transform 0.2s; }
-  .store-card:hover { transform: translateY(-4px); }
+  .store-card:hover { transform: none; }
   .store-rail {
     display: flex;
     gap: 20px;
+    justify-content: center;
+    max-width: 1268px;
+    margin: 0 auto;
     overflow-x: auto;
     padding-bottom: 8px;
     scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+  }
+  .store-rail::-webkit-scrollbar {
+    display: none;
   }
   .store-featured-card {
     flex: 0 0 624px;
     width: 624px;
     height: 583px;
+    min-width: 624px;
+    min-height: 583px;
     border-radius: 20px;
     background: #D8E5FB;
     position: relative;
     overflow: hidden;
     cursor: pointer;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-  }
-  .store-featured-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(circle at 72% 50%, rgba(255,255,255,0.56) 0 18%, rgba(255,255,255,0) 39%),
-      linear-gradient(90deg, rgba(255,255,255,0.34), rgba(255,255,255,0) 45%);
-    pointer-events: none;
+    scroll-snap-align: start;
   }
   .store-featured-icon {
     position: absolute;
@@ -142,7 +279,8 @@ const CSS = `
     inset-inline-start: 105px;
     top: 64px;
     width: 162px;
-    font-family: 'Bebas Kai', sans-serif;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
     font-size: 14.02px;
     line-height: 100.7%;
     text-transform: uppercase;
@@ -154,13 +292,74 @@ const CSS = `
     inset-inline-end: 40px;
     top: 57px;
     width: 106px;
-    font-family: 'Bebas Kai', sans-serif;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
     font-size: 22px;
     line-height: 28px;
     color: #000;
     border-bottom: 5px solid #019839;
     text-align: end;
     z-index: 2;
+  }
+  .store-featured-title {
+    position: absolute;
+    inset-inline-start: 62px;
+    top: 211px;
+    width: 197px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 31.1053px;
+    line-height: 39px;
+    color: #000;
+    z-index: 2;
+  }
+  .store-featured-sub {
+    position: absolute;
+    inset-inline-start: 62px;
+    top: 344px;
+    width: 222px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 14.5177px;
+    line-height: 18px;
+    color: #000;
+    z-index: 2;
+  }
+  .store-featured-price {
+    position: absolute;
+    inset-inline-start: 62px;
+    top: 502px;
+    font-family: 'Bebas Kai', sans-serif;
+    font-weight: 400;
+    font-size: 42px;
+    line-height: 100.7%;
+    text-transform: uppercase;
+    color: #435974;
+    z-index: 2;
+  }
+  .store-featured-product-media {
+    position: absolute;
+    inset-inline-end: 38px;
+    top: 96px;
+    width: 338px;
+    height: 390px;
+    border-radius: 18px;
+    overflow: hidden;
+    z-index: 1;
+  }
+  .store-featured-product {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center bottom;
+    display: block;
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+  @media (any-hover: hover) {
+    .store-featured-card:hover .store-featured-product {
+      transform: scale(1.08);
+    }
   }
   .store-featured-card.is-marketplace .store-featured-icon {
     top: 53px;
@@ -174,95 +373,30 @@ const CSS = `
     top: 59px;
     width: 202px;
   }
-  .store-featured-title {
-    position: absolute;
-    inset-inline-start: 62px;
-    top: 211px;
-    width: 197px;
-    font-family: 'Bebas Kai', sans-serif;
-    font-weight: 700;
-    font-size: 31.1053px;
-    line-height: 39px;
-    color: #000;
-    z-index: 2;
-  }
   .store-featured-card.is-marketplace .store-featured-title {
-    left: 50%;
+    inset-inline-start: 50%;
     top: 142px;
     width: 316px;
     transform: translateX(-50%);
     text-align: center;
   }
-  .store-featured-sub {
-    position: absolute;
-    inset-inline-start: 62px;
-    top: 344px;
-    width: 222px;
-    font-family: 'Bebas Kai', sans-serif;
-    font-size: 14.5177px;
-    line-height: 18px;
-    color: #000;
-    z-index: 2;
-  }
   .store-featured-card.is-marketplace .store-featured-sub {
-    left: 50%;
+    inset-inline-start: 50%;
     top: 190px;
     width: 215px;
     transform: translateX(-50%);
     text-align: center;
   }
-  .store-featured-price {
-    position: absolute;
-    inset-inline-start: 62px;
-    top: 502px;
-    font-family: 'Bebas Kai', sans-serif;
-    font-size: 42px;
-    line-height: 100.7%;
-    text-transform: uppercase;
-    color: #435974;
-    z-index: 2;
-  }
   .store-featured-card.is-marketplace .store-featured-price {
     inset-inline-start: 53px;
     top: 505px;
   }
-  .store-featured-product {
-    position: absolute;
-    inset-inline-end: 38px;
-    top: 96px;
-    width: 338px;
-    height: 390px;
-    object-fit: contain;
-    object-position: center bottom;
-    border-radius: 18px;
-    z-index: 1;
-  }
-  .store-featured-card.is-marketplace .store-featured-product {
-    inset-inline-start: 32px;
-    inset-inline-end: 33px;
+  .store-featured-card.is-marketplace .store-featured-product-media {
+    inset-inline: 32px 33px;
     top: 223px;
     width: calc(100% - 65px);
     height: 282px;
-    object-fit: contain;
     border-radius: 0;
-  }
-  .store-product-carousel {
-    overflow: hidden;
-  }
-  .store-product-carousel-track {
-    display: flex;
-    height: 100%;
-  }
-  .store-product-carousel-slide {
-    flex: 0 0 100%;
-    min-width: 0;
-    height: 100%;
-  }
-  .store-product-carousel-slide img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
   }
   .store-carousel-controls {
     position: absolute;
@@ -340,13 +474,18 @@ const CSS = `
   }
   .journey-title {
     font-family: 'Bebas Kai', sans-serif;
+    font-style: normal;
+    font-weight: 400;
     font-size: 72px;
-    line-height: 1.01;
+    line-height: 100.7%;
     text-transform: uppercase;
-    color: #000;
+    color: #000000;
     margin: 0;
-    
-   
+    max-width: 411px;
+  }
+  .journey-title-line {
+    display: block;
+    overflow: hidden;
   }
   .journey-rider {
     overflow: hidden;
@@ -370,18 +509,35 @@ const CSS = `
     margin-bottom:128px;
   }
   .journey-text {
-    font-family: 'Bebas Kai', sans-serif;
+    font-family: 'Outfit', sans-serif !important;
+    font-style: normal;
+    font-weight: 400;
     font-size: 24px;
     line-height: 30px;
-    color: #000;
+    color: #000000;
     margin: 0 0 23px;
-    max-width: 700px;
+    max-width: 684px;
     text-align: start;
-}
-.journey-button {
+    text-transform: none;
+  }
+  .journey-button {
     min-width: 247px;
     justify-content: center;
-}
+    --adcc-btn-color: #FFF9EF;
+    font-family: 'Satoshi', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 18px !important;
+    line-height: 125% !important;
+    color: #FFF9EF !important;
+  }
+  .journey-button .adcc-btn__label {
+    font-family: 'Satoshi', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 18px !important;
+    line-height: 125% !important;
+    text-align: center;
+    color: #FFF9EF !important;
+  }
   // .journey-button-icon {
   //   width: 28px;
   //   height: 28px;
@@ -392,6 +548,340 @@ const CSS = `
   //   justify-content: center;
   //   flex-shrink: 0;
   // }
+  .home-community-section {
+    background: #EAF4FF;
+    padding: 125px 86px;
+    text-align: center;
+  }
+  .home-community-eyebrow {
+    font-family: 'Bebas Kai', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 100.7%;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #000000;
+    margin: 0 auto 16px;
+    max-width: 886px;
+  }
+  .home-community-title {
+    font-family: 'Bebas Kai', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 73.7245px;
+    line-height: 100.7%;
+    text-align: center;
+    text-transform: uppercase;
+    color: #000000;
+    margin: 0 auto 48px;
+    max-width: 681px;
+  }
+  .home-community-subtitle {
+    font-family: 'Outfit', sans-serif !important;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 100.7%;
+    text-transform: uppercase;
+    color: #000000;
+    margin: 0 auto 28px;
+    max-width: 886px;
+  }
+  .home-community-start-btn {
+    --adcc-btn-color: #FFF9EF;
+    font-family: 'Satoshi', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 18px !important;
+    line-height: 125% !important;
+    color: #FFF9EF !important;
+  }
+  .home-community-start-btn .adcc-btn__label {
+    font-family: 'Satoshi', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 18px !important;
+    line-height: 125% !important;
+    text-align: center;
+    color: #FFF9EF !important;
+  }
+  .home-icon-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 56px;
+    max-width: 1200px;
+  }
+  .home-icon-row img {
+    width: 128px;
+    height: 128px;
+    object-fit: contain;
+    display: block;
+  }
+  .home-icon-divider {
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+  }
+  .home-icon-divider-line {
+    width: 50px;
+    height: 2px;
+    background: rgba(0, 0, 0, 0.25);
+  }
+  .home-icon-divider-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #000000;
+    margin: 0 4px;
+    flex-shrink: 0;
+  }
+
+  .home-platform-section {
+    background: #EAF4FF;
+    padding: 0 86px 80px;
+  }
+  .home-store-section {
+    background: #EAF4FF;
+    padding: 0 86px 80px;
+  }
+  .home-store-title {
+    font-family: 'Bebas Kai', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 72px;
+    line-height: 100.7%;
+    text-transform: uppercase;
+    text-align: center;
+    color: #000000;
+    margin: 0 auto 40px;
+  }
+  .home-about-section {
+    background: #EAF4FF;
+    padding: 60px 86px 80px;
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    overflow: hidden;
+    position: relative;
+    min-height: 599px;
+  }
+  .home-about-left-image {
+    flex-shrink: 0;
+    width: 396px;
+    height: 599px;
+    border-radius: 19.3123px;
+    overflow: hidden;
+  }
+  .home-about-left-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .home-about-content {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    z-index: 1;
+    padding-inline-end: min(280px, 24vw);
+  }
+  .home-about-title {
+    font-family: 'Bebas Kai', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 73.7245px;
+    line-height: 100.7%;
+    text-transform: uppercase;
+    color: #000000;
+    max-width: 508px;
+    margin: 0 0 24px;
+  }
+  .home-about-text {
+    font-family: 'Outfit', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 30px;
+    color: #000000;
+    max-width: 694px;
+    margin: 0 0 40px;
+    text-transform: none;
+  }
+  .home-about-stats {
+    display: flex;
+    gap: 80px;
+    margin-bottom: 40px;
+  }
+  .home-about-stat-number {
+    font-family: 'Outfit', sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 50.3529px;
+    line-height: 63px;
+    color: #000000;
+  }
+  .home-about-stat-label {
+    font-family: 'Outfit', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 30px;
+    color: #000000;
+    margin-top: 0;
+  }
+  .home-about-rider {
+    position: absolute;
+    bottom: -28px;
+    inset-inline-end: 86px;
+    width: 652px;
+    height: 431px;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .home-about-rider img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: right bottom;
+    display: block;
+    transform: rotate(-0.6deg);
+  }
+  .home-about-read-btn,
+  .home-about-read-btn .adcc-btn__label {
+    font-family: 'Satoshi', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 18px !important;
+    line-height: 125% !important;
+    color: #FFF9EF !important;
+  }
+  .home-platform-title {
+    font-family: 'Bebas Kai', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 72px;
+    line-height: 100.7%;
+    text-transform: uppercase;
+    text-align: center;
+    color: #000000;
+    padding-top: 35px;
+    margin: 0 auto 40px;
+    max-width: 551px;
+  }
+  .home-platform-cards {
+    display: flex;
+    gap: 0;
+    justify-content: center;
+    border-radius: 20px;
+    overflow: hidden;
+    max-width: 1268px;
+    margin: 0 auto;
+    height: 631px;
+  }
+  .home-platform-card {
+    flex: 0 0 422.67px;
+    width: 422.67px;
+    height: 631px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border-inline-start: 2px solid rgba(255, 255, 255, 0.3);
+  }
+  .home-platform-card:first-child {
+    border-inline-start: none;
+    border-radius: 20px 0 0 20px;
+  }
+  .home-platform-card:last-child {
+    border-radius: 0 20px 20px 0;
+  }
+  .home-platform-card .adcc-image__img,
+  .home-platform-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+  .home-platform-card-media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+  @media (any-hover: hover) {
+    .home-platform-card:hover .home-platform-card-image,
+    .journey-card:hover .journey-card-image .adcc-image__img {
+      transform: scale(1.08);
+    }
+  }
+  .home-platform-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(179.32deg, rgba(0, 0, 0, 0) 66.52%, rgba(0, 0, 0, 0.7) 80.39%);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .home-platform-card-tag {
+    position: absolute;
+    top: 43px;
+    inset-inline-start: 32px;
+    background: #435974;
+    border-radius: 18.6px;
+    padding: 6px 14px;
+    z-index: 2;
+  }
+  .home-platform-card-tag span {
+    font-family: 'Outfit', sans-serif !important;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18.6068px;
+    line-height: 100.7%;
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+  .home-platform-card-content {
+    position: absolute;
+    bottom: 37px;
+    inset-inline: 32px;
+    z-index: 2;
+  }
+  .home-platform-card-title {
+    font-family: 'Bebas Kai', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 32px;
+    line-height: 100.7%;
+    text-transform: uppercase;
+    color: #F6EFE7;
+    margin: 0 0 12px;
+  }
+  .home-platform-card-action {
+    font-family: 'Outfit', sans-serif !important;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 28px;
+    color: #F6EFE7;
+    display: inline-block;
+    border-bottom: 3px solid #435974;
+    padding-bottom: 2px;
+  }
+  .platform-cards.is-visible .home-platform-card .adcc-image__img {
+    opacity: 1;
+  }
+
+  @media (max-width: 1310px) and (min-width: 1025px) {
+    .home-platform-cards {
+      justify-content: flex-start;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+    .home-platform-card {
+      scroll-snap-align: start;
+    }
+  }
+
   .journey-cards {
     min-width: 0;
     display: flex;
@@ -400,6 +890,7 @@ const CSS = `
     padding-bottom: 8px;
     scrollbar-width: none;
   }
+
   .journey-card {
     flex: 0 0 267px;
     padding:30px 25px 25px;
@@ -445,7 +936,6 @@ const CSS = `
   }
   .store-rail.is-visible .store-animated-card:nth-child(1) { animation-delay: 0.08s; }
   .store-rail.is-visible .store-animated-card:nth-child(2) { animation-delay: 0.24s; }
-  .store-rail.is-visible .store-animated-card:nth-child(3) { animation-delay: 0.40s; }
   .about-left-image {
     opacity: 0;
     transform: scale(0.9);
@@ -461,6 +951,15 @@ const CSS = `
   }
   .about-section.is-visible .about-right-image {
     animation: aboutRightSlideIn 1.15s cubic-bezier(0.2, 0.8, 0.2, 1) 0.18s both;
+  }
+  @media (max-width: 1310px) {
+    .home-about-rider {
+      width: min(520px, 42vw);
+      height: auto;
+      aspect-ratio: 652 / 431;
+      inset-inline-end: 32px;
+      bottom: -20px;
+    }
   }
   .journey-card-label {
     position: absolute;
@@ -505,6 +1004,8 @@ const CSS = `
     height: 100%;
     object-fit: cover;
     display: block;
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
   }
 
   .home-about-content {
@@ -520,12 +1021,6 @@ const CSS = `
   .app-feature {
     flex-direction: row;
   }
-  [dir="rtl"] .store-featured-card::before {
-    background:
-      radial-gradient(circle at 28% 50%, rgba(255,255,255,0.56) 0 18%, rgba(255,255,255,0) 39%),
-      linear-gradient(270deg, rgba(255,255,255,0.34), rgba(255,255,255,0) 45%);
-  }
-  /* Keep store cards anchored from the left; Arabic labels stay RTL inside each card */
   [dir="rtl"] .store-rail {
     direction: ltr;
     justify-content: flex-start;
@@ -533,22 +1028,18 @@ const CSS = `
   [dir="rtl"] .store-featured-card {
     direction: rtl;
   }
-  [dir="rtl"] .home-store-section .home-section-title {
+  [dir="rtl"] .home-store-section .home-store-title {
     direction: rtl;
   }
-  [dir="rtl"] .store-featured-product {
-    object-fit: contain;
-    object-position: center bottom;
-  }
-  [dir="rtl"] .store-featured-card:not(.is-marketplace) .store-featured-product {
+  [dir="rtl"] .store-featured-product-media {
     inset-inline-end: 24px;
-    width: min(320px, 48%);
+    width: min(338px, 48%);
     max-width: calc(100% - 280px);
   }
   /* Preserve English visual layout: photo left, text center, rider right */
   [dir="rtl"] .home-about-section {
     direction: ltr;
-    overflow: visible;
+    overflow: hidden;
   }
   [dir="rtl"] .home-about-content,
   [dir="rtl"] .home-about-title,
@@ -556,11 +1047,17 @@ const CSS = `
   [dir="rtl"] .home-about-stats {
     direction: rtl;
   }
-  [dir="rtl"] .home-about-left-image,
+  [dir="rtl"] .home-about-left-image {
+    direction: ltr;
+  }
   [dir="rtl"] .home-about-rider {
     direction: ltr;
   }
-  [dir="rtl"] .home-about-rider img,
+  [dir="rtl"] .home-about-rider img {
+    object-fit: contain;
+    object-position: right bottom;
+    transform: rotate(0.6deg);
+  }
   [dir="rtl"] .home-about-left-image img {
     object-fit: cover;
     object-position: center;
@@ -571,9 +1068,20 @@ const CSS = `
     margin-inline-end: 14px;
   }
   [dir="rtl"] .home-hero-content {
+    inset-inline-start: clamp(24px, 5.97vw, 86px) !important;
+    inset-inline-end: auto !important;
     left: auto !important;
     right: auto !important;
-    inset-inline-start: 86px !important;
+  }
+  [dir="rtl"] .journey-title {
+    text-transform: none;
+  }
+  [dir="rtl"] .home-community-title,
+  [dir="rtl"] .home-community-eyebrow {
+    text-transform: none;
+  }
+  [dir="rtl"] .home-hero-title {
+    text-transform: none;
   }
   [dir="rtl"] .home-floating-bike {
     left: auto !important;
@@ -665,7 +1173,9 @@ const CSS = `
     }
     .journey-title {
       font-size: 48px;
+      line-height: 100.7%;
       margin-bottom: 18px;
+      max-width: 320px;
     }
     .journey-rider {
       width: min(100%, 360px);
@@ -681,6 +1191,7 @@ const CSS = `
       padding-top: 0;
     }
     .journey-text {
+      font-family: 'Outfit', sans-serif !important;
       max-width: 520px;
       margin: 0 0 18px;
       padding-inline-end: 24px;
@@ -692,75 +1203,20 @@ const CSS = `
       flex-basis: 168px;
       height: 270px;
     }
-    .journey-button {
-      font-size: 14px;
-      padding: 10px 16px;
+    .journey-button,
+    .journey-button .adcc-btn__label {
+      font-size: 18px !important;
+      line-height: 125% !important;
+    }
+    .store-rail {
+      justify-content: flex-start !important;
     }
     .store-featured-card {
-      flex-basis: min(624px, calc(100vw - 48px));
-      width: min(624px, calc(100vw - 48px));
-      height: 520px;
-    }
-    .store-featured-icon {
-      inset-inline-start: 28px;
-      top: 30px;
-    }
-    .store-featured-type {
-      inset-inline-start: 80px;
-      top: 43px;
-      font-size: 12px;
-    }
-    .store-featured-action {
-      inset-inline-end: 28px;
-      top: 36px;
-      font-size: 18px;
-      line-height: 24px;
-      border-bottom-width: 4px;
-    }
-    .store-featured-title {
-      inset-inline-start: 30px;
-      top: 160px;
-      width: 190px;
-      font-size: 28px;
-      line-height: 35px;
-    }
-    .store-featured-sub {
-      inset-inline-start: 30px;
-      top: 280px;
-      width: 220px;
-    }
-    .store-featured-price {
-      inset-inline-start: 30px;
-      top: 440px;
-      font-size: 38px;
-    }
-    .store-featured-product {
-      inset-inline-end: 16px;
-      top: 120px;
-      width: min(300px, 52%);
-      max-width: calc(100% - 250px);
-      height: 300px;
-      object-fit: contain;
-    }
-    .store-featured-card.is-marketplace .store-featured-action {
-      width: 172px;
-    }
-    .store-featured-card.is-marketplace .store-featured-title {
-      top: 136px;
-      width: 300px;
-    }
-    .store-featured-card.is-marketplace .store-featured-sub {
-      top: 184px;
-    }
-    .store-featured-card.is-marketplace .store-featured-product {
-      inset-inline: 28px;
-      top: 220px;
-      width: calc(100% - 56px);
-      height: 220px;
-    }
-    .store-featured-card.is-marketplace .store-featured-price {
-      inset-inline-start: 30px;
-      top: 440px;
+      flex: 0 0 624px !important;
+      width: 624px !important;
+      height: 583px !important;
+      min-width: 624px !important;
+      min-height: 583px !important;
     }
   }
 
@@ -792,21 +1248,23 @@ const CSS = `
       font-size: 15px !important;
     }
     .home-hero {
-      height: 640px !important;
+      height: clamp(440px, 58vw, 640px) !important;
+      max-height: 640px !important;
     }
     .home-hero-bg {
-      background-position: 62% top !important;
+      background-position: 62% 28% !important;
     }
     .home-hero-content {
-      left: 32px !important;
-      right: 24px !important;
-      bottom: 260px !important;
-      max-width: 430px !important;
+      inset-inline-start: 32px !important;
+      top: clamp(88px, 22%, 160px) !important;
+      width: min(520px, calc(100% - 56px)) !important;
+      max-width: 520px !important;
     }
     .home-hero-title {
-      font-size: 56px !important;
-      line-height: 1.02 !important;
+      font-size: clamp(44px, 7vw, 56px) !important;
+      line-height: 100.7% !important;
       margin-bottom: 20px !important;
+      max-width: 520px !important;
     }
     .home-floating-bike {
       right: 24px !important;
@@ -814,15 +1272,11 @@ const CSS = `
       width: 52px !important;
       height: 52px !important;
     }
-    .home-ticker {
-      height: 78px !important;
+    .home-ticker-text--members {
+      font-size: 24px !important;
     }
-    .home-ticker-item {
-      height: 78px !important;
-      padding: 0 24px !important;
-    }
-    .home-ticker-text {
-      font-size: 23px !important;
+    .home-ticker-text--stat {
+      font-size: 26px !important;
     }
     .journey-section {
       display: flex !important;
@@ -906,8 +1360,14 @@ const CSS = `
       font-size: 22px !important;
     }
     .home-community-title {
-      font-size: 56px !important;
+      font-size: clamp(44px, 8vw, 56px) !important;
+      line-height: 100.7% !important;
       margin-bottom: 36px !important;
+      max-width: 100% !important;
+    }
+    .home-icon-row img {
+      width: 104px !important;
+      height: 104px !important;
     }
     .home-icon-row {
       flex-wrap: wrap !important;
@@ -921,18 +1381,29 @@ const CSS = `
       padding-left: 32px !important;
       padding-right: 32px !important;
     }
-    .home-section-title {
-      font-size: 56px !important;
-      line-height: 1 !important;
+    .home-platform-title {
+      font-size: clamp(44px, 8vw, 56px) !important;
+      line-height: 100.7% !important;
+      max-width: 100% !important;
+    }
+    .home-store-title {
+      font-size: clamp(44px, 8vw, 56px) !important;
+      line-height: 100.7% !important;
     }
     .home-platform-cards {
       height: auto !important;
       flex-direction: column !important;
+      overflow: visible !important;
+      max-width: 100% !important;
     }
     .home-platform-card {
       flex: none !important;
-      height: 360px !important;
+      width: 100% !important;
+      max-width: 422.67px !important;
+      height: 520px !important;
+      margin: 0 auto !important;
       border-inline-start: none !important;
+      border-radius: 20px !important;
       border-top: 2px solid rgba(255,255,255,0.3) !important;
       opacity: 1 !important;
       transform: none !important;
@@ -940,23 +1411,44 @@ const CSS = `
     .home-platform-card:first-child {
       border-top: none !important;
     }
+    .home-section-title {
+      font-size: 56px !important;
+      line-height: 1 !important;
+    }
     .home-about-section {
       padding: 56px 32px 70px !important;
       flex-wrap: wrap !important;
       gap: 34px !important;
     }
     .home-about-left-image {
-      width: min(100%, 340px) !important;
-      height: 440px !important;
-    }
-    .home-about-content {
-      flex: 1 1 420px !important;
+      width: min(100%, 396px) !important;
+      height: auto !important;
+      aspect-ratio: 396 / 599;
     }
     .home-about-title {
-      font-size: 58px !important;
+      font-size: clamp(44px, 8vw, 58px) !important;
+      max-width: 100% !important;
+    }
+    .home-about-text {
+      font-size: 20px !important;
+      line-height: 28px !important;
+      max-width: 100% !important;
+    }
+    .home-about-stats {
+      gap: 40px !important;
+    }
+    .home-about-stat-number {
+      font-size: 42px !important;
+      line-height: 52px !important;
+    }
+    .home-about-stat-label {
+      font-size: 20px !important;
     }
     .home-about-rider {
       display: none !important;
+    }
+    .home-about-content {
+      padding-inline-end: 0 !important;
     }
     .store-animated-card {
       opacity: 1 !important;
@@ -1006,21 +1498,23 @@ const CSS = `
       font-size: 14px !important;
     }
     .home-hero {
-      height: 560px !important;
+      height: clamp(400px, 72vw, 560px) !important;
+      max-height: 560px !important;
     }
     .home-hero-bg {
-      background-position: 70% top !important;
+      background-position: 70% 30% !important;
     }
     .home-hero-content {
-      left: 18px !important;
-      right: 18px !important;
-      bottom: 235px !important;
-      max-width: 300px !important;
+      inset-inline-start: 18px !important;
+      top: clamp(72px, 18%, 120px) !important;
+      width: min(340px, calc(100% - 36px)) !important;
+      max-width: 340px !important;
     }
     .home-hero-title {
-      font-size: 40px !important;
-      line-height: 1.04 !important;
+      font-size: clamp(36px, 10vw, 40px) !important;
+      line-height: 100.7% !important;
       letter-spacing: 0 !important;
+      max-width: 340px !important;
     }
     .home-hero-actions {
       gap: 10px !important;
@@ -1028,20 +1522,23 @@ const CSS = `
     .home-hero-actions button {
       height: 40px !important;
       padding: 0 16px !important;
+    }
+    .home-hero-actions button:not(.home-hero-download-btn) {
       font-size: 14px !important;
+    }
+    .home-hero-download-btn,
+    .home-hero-download-btn .adcc-btn__label {
+      font-size: 18px !important;
+      line-height: 125% !important;
     }
     .home-floating-bike {
       display: none !important;
     }
-    .home-ticker {
-      height: 64px !important;
+    .home-ticker-text--members {
+      font-size: 22px !important;
     }
-    .home-ticker-item {
-      height: 64px !important;
-      padding: 0 18px !important;
-    }
-    .home-ticker-text {
-      font-size: 19px !important;
+    .home-ticker-text--stat {
+      font-size: 24px !important;
     }
     .journey-section {
       padding: 42px 18px !important;
@@ -1052,12 +1549,14 @@ const CSS = `
     }
     .journey-title {
       font-size: 42px !important;
-      line-height: 1 !important;
+      line-height: 100.7% !important;
+      max-width: 100% !important;
     }
     .journey-rider {
       display: none !important;
     }
     .journey-text {
+      font-family: 'Outfit', sans-serif !important;
       font-size: 17px !important;
       line-height: 24px !important;
     }
@@ -1125,15 +1624,19 @@ const CSS = `
     .home-community-section {
       padding: 60px 18px !important;
     }
-    .home-community-eyebrow,
-    .home-community-subtitle {
+    .home-community-eyebrow {
       font-size: 18px !important;
-      line-height: 24px !important;
+      line-height: 100.7% !important;
+    }
+    .home-community-subtitle {
+      font-size: 22px !important;
+      line-height: 100.7% !important;
     }
     .home-community-title {
-      font-size: 42px !important;
-      line-height: 1 !important;
+      font-size: clamp(36px, 10vw, 42px) !important;
+      line-height: 100.7% !important;
       margin-bottom: 30px !important;
+      max-width: 100% !important;
     }
     .home-icon-row {
       display: grid !important;
@@ -1142,8 +1645,8 @@ const CSS = `
       margin-bottom: 34px !important;
     }
     .home-icon-row img {
-      width: 56px !important;
-      height: 56px !important;
+      width: 88px !important;
+      height: 88px !important;
     }
     .home-platform-section,
     .home-store-section {
@@ -1169,66 +1672,20 @@ const CSS = `
     }
     .store-rail {
       gap: 14px !important;
+      justify-content: flex-start !important;
     }
     .store-featured-card {
-      flex-basis: calc(100vw - 36px) !important;
-      width: calc(100vw - 36px) !important;
-      height: 470px !important;
+      flex: 0 0 624px !important;
+      width: 624px !important;
+      height: 583px !important;
+      min-width: 624px !important;
+      min-height: 583px !important;
     }
-    .store-featured-product {
+    .store-featured-product-media {
       inset-inline-end: 18px !important;
-      inset-inline-start: auto !important;
-      top: 178px !important;
-      width: min(320px, calc(100% - 240px)) !important;
-      max-width: calc(100% - 36px) !important;
-      height: 188px !important;
-      object-fit: contain !important;
-    }
-    .store-featured-title {
-      top: 118px !important;
-      width: calc(100% - 60px) !important;
-      font-size: 25px !important;
-      line-height: 30px !important;
-    }
-    .store-featured-sub {
-      display: none !important;
-    }
-    .store-featured-price {
-      top: 392px !important;
-      font-size: 34px !important;
-    }
-    .store-featured-card.is-marketplace .store-featured-action {
-      width: 156px !important;
-    }
-    .store-featured-card.is-marketplace .store-featured-title {
-      top: 116px !important;
-      width: calc(100% - 60px) !important;
-      font-size: 25px !important;
-      line-height: 30px !important;
-    }
-    .store-featured-card.is-marketplace .store-featured-sub {
-      display: block !important;
-      top: 150px !important;
-      width: calc(100% - 60px) !important;
-    }
-    .store-featured-card.is-marketplace .store-featured-product {
-      inset-inline: 18px !important;
-      top: 190px !important;
-      width: calc(100% - 36px) !important;
-      height: 180px !important;
-    }
-    .store-featured-card.is-marketplace .store-featured-price {
-      inset-inline-start: 30px !important;
-      top: 392px !important;
-    }
-    .store-carousel-controls {
-      inset-inline-end: 24px !important;
-      bottom: 38px !important;
-      gap: 10px !important;
-    }
-    .store-carousel-button {
-      width: 32px !important;
-      height: 32px !important;
+      top: 96px !important;
+      width: 338px !important;
+      height: 390px !important;
     }
     .store-compact-card {
       flex-basis: min(300px, calc(100vw - 36px)) !important;
@@ -1240,15 +1697,16 @@ const CSS = `
     }
     .home-about-left-image {
       width: 100% !important;
-      height: 330px !important;
+      height: auto !important;
+      aspect-ratio: 396 / 599;
     }
     .home-about-title {
       font-size: 42px !important;
-      line-height: 1 !important;
+      line-height: 100.7% !important;
     }
     .home-about-text {
-      font-size: 17px !important;
-      line-height: 27px !important;
+      font-size: 18px !important;
+      line-height: 26px !important;
     }
     .home-about-stats {
       gap: 24px !important;
@@ -1256,9 +1714,10 @@ const CSS = `
     }
     .home-about-stat-number {
       font-size: 38px !important;
+      line-height: 48px !important;
     }
     .home-about-stat-label {
-      font-size: 17px !important;
+      font-size: 18px !important;
     }
     .home-cta {
       height: auto !important;
@@ -1308,7 +1767,12 @@ const CSS = `
       font-size: 36px !important;
     }
     .home-hero-content {
-      max-width: 270px !important;
+      width: min(300px, calc(100% - 36px)) !important;
+      max-width: 300px !important;
+    }
+    .home-hero-title {
+      font-size: 36px !important;
+      max-width: 300px !important;
     }
     .home-feature-list {
       grid-template-columns: 1fr !important;
@@ -1342,85 +1806,34 @@ const CSS = `
     .home-icon-row {
       gap: 16px !important;
     }
+    .home-platform-title {
+      font-size: 42px !important;
+      line-height: 100.7% !important;
+      padding-top: 24px !important;
+      margin-bottom: 28px !important;
+    }
+    .home-store-title {
+      font-size: 42px !important;
+      line-height: 100.7% !important;
+      margin-bottom: 28px !important;
+    }
     .home-platform-card {
-      height: 290px !important;
+      height: 420px !important;
     }
     .home-platform-card-title {
-      font-size: 22px !important;
+      font-size: 26px !important;
+      line-height: 100.7% !important;
     }
-    .store-featured-icon {
-      inset-inline-start: 20px !important;
-      top: 24px !important;
-    }
-    .store-featured-type {
-      inset-inline-start: 68px !important;
-      top: 36px !important;
-      width: 130px !important;
-    }
-    .store-featured-action {
-      inset-inline-end: 20px !important;
-      top: 30px !important;
-      font-size: 16px !important;
-      width: auto !important;
-      max-width: 140px !important;
-    }
-    .store-featured-title {
-      inset-inline-start: 20px !important;
-      top: 104px !important;
-      width: calc(100% - 40px) !important;
-      font-size: 22px !important;
-      line-height: 27px !important;
-    }
-    .store-featured-product {
-      inset-inline: 20px !important;
-      top: 172px !important;
-      width: calc(100% - 40px) !important;
-      height: 170px !important;
-    }
-    .store-featured-price {
-      inset-inline-start: 20px !important;
-      top: 384px !important;
-      font-size: 30px !important;
-    }
-    .store-featured-card.is-marketplace .store-featured-type {
-      width: 122px !important;
-    }
-    .store-featured-card.is-marketplace .store-featured-action {
-      width: 126px !important;
-      font-size: 14px !important;
-    }
-    .store-featured-card.is-marketplace .store-featured-title {
-      top: 100px !important;
-      width: calc(100% - 40px) !important;
-      font-size: 22px !important;
-      line-height: 27px !important;
-    }
-    .store-featured-card.is-marketplace .store-featured-sub {
-      top: 136px !important;
-      width: calc(100% - 40px) !important;
-      font-size: 12px !important;
-    }
-    .store-featured-card.is-marketplace .store-featured-product {
-      inset-inline: 20px !important;
-      top: 182px !important;
-      width: calc(100% - 40px) !important;
-      height: 160px !important;
-    }
-    .store-featured-card.is-marketplace .store-featured-price {
-      inset-inline-start: 20px !important;
-      top: 384px !important;
-    }
-    .store-carousel-controls {
-      inset-inline-end: 20px !important;
-      bottom: 26px !important;
-      gap: 8px !important;
-    }
-    .store-carousel-button {
-      width: 30px !important;
-      height: 30px !important;
+    .home-platform-card-action {
+      font-size: 18px !important;
+      line-height: 24px !important;
     }
     .store-featured-card {
-      height: 440px !important;
+      flex: 0 0 624px !important;
+      width: 624px !important;
+      height: 583px !important;
+      min-width: 624px !important;
+      min-height: 583px !important;
     }
     .home-about-left-image {
       height: 290px !important;
@@ -1564,98 +1977,48 @@ function Header() {
 function HeroSection() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const heroWords = t('public.home.hero.words', { returnObjects: true }) as string[];
+  const line1 = t('public.home.hero.line1');
+  const line2 = t('public.home.hero.line2');
+
+  const lineVariants = {
+    hidden: { y: '120%', opacity: 0 },
+    visible: { y: '0%', opacity: 1 },
+  };
 
   return (
-    <section className="home-hero" style={{ position: 'relative', width: '100%', height: 806, overflow: 'hidden', flexShrink: 0 }}>
-      <div className="home-hero-bg" style={{ position: 'absolute', inset: 0, backgroundImage: 'url(/images/hero.png)', backgroundSize: 'cover', backgroundPosition: 'center top' }} />
-      <div style={{ position: 'absolute', inset: 0, }} />
-      <div className="home-hero-content" style={{ position: 'absolute', left: 86, bottom: 360, maxWidth: 520 }}>
+    <section className="home-hero">
+      <div className="home-hero-bg" aria-hidden />
+      <div className="home-hero-content">
         <motion.h1
-          className="home-hero-title overflow-hidden"
-          style={{
-            fontFamily: "'Bebas Kai', sans-serif",
-            fontWeight: 900,
-            fontSize: 72,
-            lineHeight: 1.1,
-            color: "#000000",
-            textTransform: "uppercase",
-            letterSpacing: "-0.5px",
-            marginBottom: 28,
-          }}
+          className="home-hero-title"
           initial="hidden"
           animate="visible"
           variants={{
             visible: {
-              transition: {
-                staggerChildren: 0.08,
-              },
+              transition: { staggerChildren: 0.12 },
             },
           }}
         >
-          {heroWords.map((word, index) => (
-            <span
-              key={word}
-              className="inline-block overflow-hidden"
-              style={{ marginRight: "14px" }}
-            >
+          {[line1, line2].map((line, lineIndex) => (
+            <span key={line} className="home-hero-title-line">
               <motion.span
                 className="inline-block"
-                variants={{
-                  hidden: {
-                    y: "120%",
-                    opacity: 0,
-                  },
-                  visible: {
-                    y: "0%",
-                    opacity: 1,
-                  },
-                }}
+                variants={lineVariants}
                 transition={{
                   duration: 0.7,
+                  delay: lineIndex * 0.08,
                   ease: [0.22, 1, 0.36, 1],
                 }}
               >
-                {word}
-              </motion.span>
-            </span>
-          ))}
-
-          <br />
-
-          {["YOUR", "CYCLING", "JOURNEY"].map((word, index) => (
-            <span
-              key={word}
-              className="inline-block overflow-hidden"
-              style={{ marginRight: "14px" }}
-            >
-              <motion.span
-                className="inline-block"
-                variants={{
-                  hidden: {
-                    y: "120%",
-                    opacity: 0,
-                  },
-                  visible: {
-                    y: "0%",
-                    opacity: 1,
-                  },
-                }}
-                transition={{
-                  duration: 0.7,
-                  delay: 0.32 + index * 0.02,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-              >
-                {word}
+                {line}
               </motion.span>
             </span>
           ))}
         </motion.h1>
-        <div className="home-hero-actions" style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-          <AnimatedButton showArrow={false} size="sm">
+        <div className="home-hero-actions">
+          <AnimatedButton showArrow={false} size="default" className="home-hero-download-btn">
             {t('public.home.hero.downloadApp')}{' '}
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /><path d="M3 13h10" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" /></svg>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v8M5 7l3 3 3-3" stroke="#FFF9EF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /><path d="M3 13h10" stroke="#FFF9EF" strokeWidth="1.8" strokeLinecap="round" /></svg>
           </AnimatedButton>
           <AnimatedButton variant="outline" size="sm" onClick={() => navigate('/user-tracks')}>
             {t('public.home.hero.exploreTracks')}
@@ -1669,24 +2032,44 @@ function HeroSection() {
 /* ─── STATS TICKER ───────────────────────────────────────────────────────────*/
 function StatsTicker() {
   const { t } = useTranslation();
-  const stats = [
-    { label: t('public.home.stats.members'), bg: "#D9E7F9", dark: false },
-    { label: t('public.home.stats.loop'), bg: "#435974", dark: true },
-    { label: t('public.home.stats.events'), bg: "#D9E7F9", dark: false },
-    { label: t('public.home.stats.distance'), bg: "#435974", dark: true },
-  ];
+
+  const renderItem = (
+    item: (typeof TICKER_ITEMS)[number],
+    itemKey: string,
+  ) => {
+    const { Icon } = item;
+    const iconColor = item.dark ? '#ffffff' : '#000000';
+
+    return (
+      <div
+        className="home-ticker-item"
+        key={itemKey}
+        style={{ background: item.bg }}
+      >
+        <span className={`home-ticker-icon ${item.iconClass}`}>
+          <Icon
+            color={iconColor}
+            strokeWidth={2}
+            aria-hidden
+            className="h-full w-full"
+          />
+        </span>
+        <span
+          className={`home-ticker-text ${item.textClass} ${
+            item.dark ? 'home-ticker-text--dark' : 'home-ticker-text--light'
+          }`}
+        >
+          {t(`public.home.stats.${item.key}`)}
+        </span>
+      </div>
+    );
+  };
+
   return (
-    <div className="home-ticker" style={{ width: '100%', height: 100, overflow: 'hidden', display: 'flex' }}>
-      <div style={{ display: 'flex', alignItems: 'stretch', animation: 'ticker-group-left 18s linear infinite', whiteSpace: 'nowrap' }}>
-        {[0, 1].map((groupIndex) => (
-          <div key={groupIndex} style={{ minWidth: '100vw', display: 'flex', alignItems: 'stretch', flexShrink: 0 }}>
-            {stats.map((s, i) => (
-              <div className="home-ticker-item" key={`${groupIndex}-${i}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, padding: '0 36px', height: 100, flex: '1 0 auto', background: s.bg }}>
-                <span className="home-ticker-text" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 29, textTransform: 'uppercase', color: s.dark ? '#fff' : '#000' }}>{s.label}</span>
-              </div>
-            ))}
-          </div>
-        ))}
+    <div className="home-ticker" aria-label={t('public.home.stats.members')}>
+      <div className="home-ticker-track">
+        {TICKER_ITEMS.map((item, index) => renderItem(item, `ticker-a-${index}`))}
+        {TICKER_ITEMS.map((item, index) => renderItem(item, `ticker-b-${index}`))}
       </div>
     </div>
   );
@@ -1727,7 +2110,8 @@ function CyclingJourneySection() {
   const textRef = useRef<HTMLParagraphElement | null>(null);
   const cardsRef = useRef<HTMLDivElement | null>(null);
   const [cardsVisible, setCardsVisible] = useState(false);
-  const titleWords = t('public.home.journey.titleWords', { returnObjects: true }) as string[];
+  const titleLine1 = t('public.home.journey.titleLine1');
+  const titleLine2 = t('public.home.journey.titleLine2');
   const journeyText = t('public.home.journey.text');
   const cards = [
     { label: t('public.home.journey.cards.tracks'), bg: "#777777", img: "/images/journey-1.png", to:"/user-tracks" },
@@ -1758,37 +2142,33 @@ function CyclingJourneySection() {
     <section className="journey-section">
       <div className="journey-copy">
         <motion.h2
-          className="journey-title overflow-hidden"
+          className="journey-title"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={{
             visible: {
               transition: {
-                staggerChildren: 0.08,
+                staggerChildren: 0.12,
               },
             },
           }}
         >
-          {titleWords.map((word, index) => (
-            <span
-              key={`${word}-${index}`}
-              className="inline-block overflow-hidden"
-              style={{ marginRight: "14px" }}
-            >
+          {[titleLine1, titleLine2].map((line, lineIndex) => (
+            <span key={line} className="journey-title-line">
               <motion.span
                 className="inline-block"
                 variants={{
-                  hidden: { y: "120%", opacity: 0 },
-                  visible: { y: "0%", opacity: 1 },
+                  hidden: { y: '120%', opacity: 0 },
+                  visible: { y: '0%', opacity: 1 },
                 }}
                 transition={{
                   duration: 0.7,
-                  delay: index * 0.08,
+                  delay: lineIndex * 0.08,
                   ease: [0.22, 1, 0.36, 1],
                 }}
               >
-                {word}
+                {line}
               </motion.span>
             </span>
           ))}
@@ -1818,7 +2198,7 @@ function CyclingJourneySection() {
               {/* <div className="journey-card-image">
                 <img src={card.img} alt={card.label.replace('\n', ' ')} />
               </div> */}
-              <div className="journey-card-image adcc-image adcc-image--fill">
+              <div className="journey-card-image adcc-image adcc-image--fill adcc-image--strong">
                 <img
                   className="adcc-image__img"
                   src={card.img}
@@ -1828,7 +2208,6 @@ function CyclingJourneySection() {
                       ? `imageExpand 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards`
                       : "none",
                     animationDelay: `${i * 0.18}s`,
-                    transformOrigin: "center",
                     opacity: 0,
                   }}
                 />
@@ -2152,177 +2531,75 @@ function AppSection() {
 function CommunitySection() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const eyebrowWords = t('public.home.community.eyebrowWords', { returnObjects: true }) as string[];
-  const titleWords = t('public.home.community.titleWords', { returnObjects: true }) as string[];
-  const subtitleWords = t('public.home.community.subtitleWords', { returnObjects: true }) as string[];
 
   const icons = [
-    { icon: '/images/vegetabl.gif', label: t('public.home.community.icons.events') },
-    { icon: '/images/moon-night.gif', label: t('public.home.community.icons.tracks') },
-    { icon: '/images/cycling.gif', label: t('public.home.community.icons.challenges') },
-    { icon: '/images/sync.gif', label: t('public.home.community.icons.community') },
+    { icon: '/images/vegetabl.gif', label: t('public.home.community.icons.eat') },
+    { icon: '/images/moon-night.gif', label: t('public.home.community.icons.sleep') },
+    { icon: '/images/cycling.gif', label: t('public.home.community.icons.bike') },
+    { icon: '/images/sync.gif', label: t('public.home.community.icons.repeat') },
   ];
-  
+
+  const lineVariants = {
+    hidden: { y: '120%', opacity: 0 },
+    visible: { y: '0%', opacity: 1 },
+  };
+
   return (
-    <section id="community" className="home-community-section" style={{ background: '#EAF4FF', padding: '125px 86px', textAlign: 'center' }}>
-      {/* <p className="home-community-eyebrow" style={{ fontFamily: "'Bebas Kai', sans-serif", fontWeight: 700, fontSize: 28, color: '#000', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 16 }}>For the Cycling Community</p> */}
+    <section id="community" className="home-community-section">
       <motion.p
-        className="home-community-eyebrow overflow-hidden"
-        style={{
-          fontFamily: "'Bebas Kai', sans-serif",
-          fontWeight: 700,
-          fontSize: 28,
-          color: "#000",
-          textTransform: "uppercase",
-          letterSpacing: "2px",
-          marginBottom: 16,
-        }}
+        className="home-community-eyebrow"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
-        variants={{
-          visible: {
-            transition: {
-              staggerChildren: 0.08,
-            },
-          },
-        }}
+        variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
       >
-        {eyebrowWords.map((word, index) => (
-          <span
-            key={`${word}-${index}`}
-            className="inline-block overflow-hidden"
-            style={{ marginRight: "12px" }}
-          >
-            <motion.span
-              className="inline-block"
-              variants={{
-                hidden: { y: "120%", opacity: 0 },
-                visible: { y: "0%", opacity: 1 },
-              }}
-              transition={{
-                duration: 0.7,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-            >
-              {word}
-            </motion.span>
-          </span>
-        ))}
+        <motion.span className="inline-block" variants={lineVariants} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
+          {t('public.home.community.eyebrow')}
+        </motion.span>
       </motion.p>
 
       <motion.h2
-        className="home-community-title overflow-hidden"
-        style={{
-          fontFamily: "'Bebas Kai', sans-serif",
-          fontSize: 74,
-          color: "#000",
-          textTransform: "uppercase",
-          letterSpacing: "-0.5px",
-          marginBottom: 48,
-        }}
+        className="home-community-title"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
-        variants={{
-          visible: {
-            transition: {
-              staggerChildren: 0.08,
-            },
-          },
-        }}
+        variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
       >
-        {titleWords.map((word, index) => (
-          <span
-            key={`${word}-${index}`}
-            className="inline-block overflow-hidden"
-            style={{ marginRight: "12px" }}
-          >
-            <motion.span
-              className="inline-block"
-              variants={{
-                hidden: { y: "120%", opacity: 0 },
-                visible: { y: "0%", opacity: 1 },
-              }}
-              transition={{
-                duration: 0.7,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-            >
-              {word}
-            </motion.span>
-          </span>
-        ))}
+        <motion.span className="inline-block" variants={lineVariants} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
+          {t('public.home.community.title')}
+        </motion.span>
       </motion.h2>
-      {/* Icon row */}
-      <div className="home-icon-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: 56 }}>
+
+      <div className="home-icon-row">
         {icons.map((ic, i) => (
-          <React.Fragment key={i}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-              <img src={ic.icon} alt={ic.label} style={{ width: 64, height: 64, objectFit: 'contain', display: 'block' }} />
+          <React.Fragment key={ic.label}>
+            <div className="home-icon-item">
+              <img src={ic.icon} alt={ic.label} />
             </div>
             {i < icons.length - 1 && (
-              <div className="home-icon-divider" style={{ display: 'flex', alignItems: 'center', padding: '0 24px',}}>
-                <div style={{ width: 50, height: 2, background: '#000' }} />
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#000', margin: '0 4px' }} />
-                <div style={{ width: 50, height: 2, background: '#000' }} />
+              <div className="home-icon-divider" aria-hidden>
+                <div className="home-icon-divider-line" />
+                <div className="home-icon-divider-dot" />
+                <div className="home-icon-divider-line" />
               </div>
             )}
           </React.Fragment>
         ))}
       </div>
-      {/* <p className="home-community-subtitle" style={{ fontFamily: "'Bebas Kai', sans-serif", fontWeight: 700, fontSize: 28, color: '#000', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 28 }}>Everything you need to ride, track, and stay connected.</p> */}
+
       <motion.p
-        className="home-community-subtitle overflow-hidden"
-        style={{
-          fontFamily: "'Bebas Kai', sans-serif",
-          fontWeight: 700,
-          fontSize: 28,
-          color: "#000",
-          textTransform: "uppercase",
-          letterSpacing: "1px",
-          marginBottom: 28,
-        }}
+        className="home-community-subtitle"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
-        variants={{
-          visible: {
-            transition: {
-              staggerChildren: 0.08,
-            },
-          },
-        }}
+        variants={{ visible: { transition: { staggerChildren: 0.06 } } }}
       >
-        {subtitleWords.map((word, index) => (
-          <span
-            key={`${word}-${index}`}
-            className="inline-block overflow-hidden"
-            style={{ marginRight: "10px" }}
-          >
-            <motion.span
-              className="inline-block"
-              variants={{
-                hidden: {
-                  y: "120%",
-                  opacity: 0,
-                },
-                visible: {
-                  y: "0%",
-                  opacity: 1,
-                },
-              }}
-              transition={{
-                duration: 0.7,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-            >
-              {word}
-            </motion.span>
-          </span>
-        ))}
+        <motion.span className="inline-block" variants={lineVariants} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
+          {t('public.home.community.subtitle')}
+        </motion.span>
       </motion.p>
-      <AnimatedButton onClick={() => navigate("/login")}>
+
+      <AnimatedButton className="home-community-start-btn" onClick={() => navigate('/login')}>
         {t('public.home.community.startRiding')}
       </AnimatedButton>
     </section>
@@ -2335,7 +2612,6 @@ function ExplorePlatformSection() {
   const { t } = useTranslation();
   const cardsRef = useRef<HTMLDivElement | null>(null);
   const [cardsVisible, setCardsVisible] = useState(false);
-  const titleWords = t('public.home.platform.titleWords', { returnObjects: true }) as string[];
   const cards = [
     {
       tag: t('public.home.platform.cards.events.tag'),
@@ -2375,91 +2651,55 @@ function ExplorePlatformSection() {
   }, []);
 
   return (
-    <section id="platform" className="home-platform-section" style={{ background: '#EAF4FF', padding: '0 86px 80px' }}>
-      {/* <h2 className="home-section-title" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 72, color: '#000', textTransform: 'uppercase', textAlign: 'center', paddingTop: 35, marginBottom: 40, lineHeight: '72px' }}>Explore the Platform</h2> */}
+    <section id="platform" className="home-platform-section">
       <motion.h2
-        className="home-section-title overflow-hidden"
-        style={{
-          fontFamily: "'Bebas Kai', sans-serif",
-          fontSize: 72,
-          color: "#000",
-          textTransform: "uppercase",
-          textAlign: "center",
-          paddingTop: 35,
-          marginBottom: 40,
-          lineHeight: "72px",
-        }}
+        className="home-platform-title"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         variants={{
-          visible: {
-            transition: {
-              staggerChildren: 0.08,
-            },
-          },
+          visible: { transition: { staggerChildren: 0.1 } },
         }}
       >
-        {titleWords.map((word, index) => (
-          <span
-            key={`${word}-${index}`}
-            className="inline-block overflow-hidden"
-            style={{ marginRight: "14px" }}
-          >
-            <motion.span
-              className="inline-block"
-              variants={{
-                hidden: {
-                  y: "120%",
-                  opacity: 0,
-                },
-                visible: {
-                  y: "0%",
-                  opacity: 1,
-                },
-              }}
-              transition={{
-                duration: 0.7,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-            >
-              {word}
-            </motion.span>
-          </span>
-        ))}
+        <motion.span
+          className="inline-block"
+          variants={{
+            hidden: { y: '120%', opacity: 0 },
+            visible: { y: '0%', opacity: 1 },
+          }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {t('public.home.platform.title')}
+        </motion.span>
       </motion.h2>
-      <div ref={cardsRef} className={`platform-cards home-platform-cards${cardsVisible ? ' is-visible' : ''}`} style={{ display: 'flex', gap: 0, borderRadius: 20, overflow: 'hidden', height: 480 }}>
+      <div ref={cardsRef} className={`platform-cards home-platform-cards${cardsVisible ? ' is-visible' : ''}`}>
         {cards.map((card, i) => (
-          <div key={i} onClick={() => navigate(card.to)} className="card-hover platform-card home-platform-card" style={{ flex: 1, position: 'relative', overflow: 'hidden', cursor: 'pointer', borderInlineStart: i > 0 ? '2px solid rgba(255,255,255,0.3)' : 'none' }}>
-            {/* <img src={card.img} alt={card.title} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s' }} /> */}
-            <img
-              className="adcc-image__img"
-              src={card.img}
-              alt={card.title}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                animation: cardsVisible
-                  ? `imageExpand 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards`
-                  : "none",
-                animationDelay: `${i * 0.18}s`,
-                transformOrigin: "center",
-                opacity: 0,
-              }}
-            />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.75) 100%)' }} />
-            {/* Tag */}
-            <div style={{ position: 'absolute', top: 43, insetInlineStart: 32, background: '#435974', borderRadius: 20, padding: '5px 14px' }}>
-              <span style={{ fontFamily: "'Bebas Kai', sans-serif", fontWeight: 400, fontSize: 18, color: '#fff', textTransform: 'uppercase', letterSpacing: '1px' }}>{card.tag}</span>
+          <div
+            key={card.to}
+            onClick={() => navigate(card.to)}
+            className="card-hover platform-card home-platform-card"
+          >
+            <div className="home-platform-card-media adcc-image adcc-image--fill adcc-image--strong">
+              <img
+                className="adcc-image__img home-platform-card-image"
+                src={card.img}
+                alt={card.title}
+                style={{
+                  animation: cardsVisible
+                    ? `imageExpand 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards`
+                    : 'none',
+                  animationDelay: `${i * 0.18}s`,
+                  opacity: 0,
+                }}
+              />
             </div>
-            {/* Bottom content */}
-            <div className="home-platform-card-content" style={{ position: 'absolute', bottom: 24, insetInline: 32 }}>
-              <p className="home-platform-card-title" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 32, color: '#F6EFE7', lineHeight: 1.1, textTransform: 'uppercase', marginBottom: 12 }}>{card.title}</p>
-              <div style={{ display: 'inline-flex', flexDirection: 'column' }}>
-                <span style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 22, color: '#F6EFE7', cursor: 'pointer' }}>{card.action}</span>
-                <div style={{ height: 3, background: '#435974', borderRadius: 2, marginTop: 2 }} />
-              </div>
+            <div className="home-platform-card-overlay" aria-hidden />
+            <div className="home-platform-card-tag">
+              <span>{card.tag}</span>
+            </div>
+            <div className="home-platform-card-content">
+              <p className="home-platform-card-title">{card.title}</p>
+              <span className="home-platform-card-action">{card.action}</span>
             </div>
           </div>
         ))}
@@ -2469,114 +2709,32 @@ function ExplorePlatformSection() {
 }
 
 /* ─── ADCC STORE ─────────────────────────────────────────────────────────────*/
-type StoreCardProduct = {
-  id: string;
-  type: string;
-  action: string;
-  title: string;
-  sub: string;
-  price: string;
-  img: string;
+function StoreMarketplaceCarousel({
+  images,
+  title,
+  fallbackImage,
+}: {
   images: string[];
-};
-
-const STORE_FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&q=80';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
-const STORE_FALLBACK_PRODUCTS: StoreCardProduct[] = [
-  {
-    id: 'store-fallback-official-merchandise',
-    type: 'Official Merchandise',
-    action: 'View Store',
-    title: 'ADCC Performance Jersey',
-    sub: 'Lightweight • Breathable • Race Fit',
-    price: 'AED 220',
-    img: '/img/image 297012.png',
-    images: ['/img/image 297012.png'],
-  },
-  {
-    id: 'store-fallback-community-marketplace',
-    type: 'Community Marketplace',
-    action: 'Explore Marketplace',
-    title: 'Pre-Owned Road Bike',
-    sub: 'Verified listings from ADCC riders',
-    price: 'AED 1,500',
-    img: '/img/image 2970.png',
-    images: ['/img/image 2970.png', '/img/image 2970 (1).png'],
-  },
-];
-
-function formatStorePrice(item: StoreItem) {
-  const currency = item.currency || 'AED';
-  const price = Number.isFinite(Number(item.price)) ? Number(item.price).toLocaleString() : item.price;
-  return `${currency} ${price}`;
-}
-
-function getStoreImage(item: StoreItem) {
-  const image = item.coverImage || item.photos?.[0] || '';
-  const trimmedImage = image.trim();
-
-  if (!trimmedImage) return STORE_FALLBACK_IMAGE;
-  if (/^(https?:|data:|blob:)/i.test(trimmedImage)) return trimmedImage;
-
-  return new URL(trimmedImage.replace(/^\/+/, ''), `${API_BASE_URL}/`).toString();
-}
-
-function getStoreImages(item: StoreItem) {
-  const images = [item.coverImage, ...(item.photos || [])]
-    .filter((image): image is string => Boolean(image?.trim()))
-    .map((image) => {
-      const trimmedImage = image.trim();
-      if (/^(https?:|data:|blob:)/i.test(trimmedImage)) return trimmedImage;
-      return new URL(trimmedImage.replace(/^\/+/, ''), `${API_BASE_URL}/`).toString();
-    });
-
-  return Array.from(new Set(images));
-}
-
-function getStoreSubText(item: StoreItem) {
-  const details = [item.condition, item.city].filter(Boolean);
-  if (details.length) return details.join(' • ');
-  return item.description || 'Available from ADCC store';
-}
-
-function StoreProductImageCarousel({ images, title }: { images: string[]; title: string }) {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: images.length > 1, align: 'start' });
-
-  useEffect(() => {
-    emblaApi?.reInit();
-    emblaApi?.scrollTo(0, true);
-  }, [emblaApi, images]);
-
-  useEffect(() => {
-    if (!emblaApi || images.length <= 1) return undefined;
-
-    const intervalId = window.setInterval(() => {
-      emblaApi.scrollNext();
-    }, 3000);
-
-    return () => window.clearInterval(intervalId);
-  }, [emblaApi, images.length]);
+  title: string;
+  fallbackImage: string;
+}) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const slides = images.length ? images : [fallbackImage];
 
   return (
     <>
-      <div className="store-featured-product store-product-carousel" ref={emblaRef}>
-        <div className="store-product-carousel-track">
-          {images.map((image, index) => (
-            <div className="store-product-carousel-slide adcc-image" key={`${image}-${index}`}>
-              <img
-                className="adcc-image__img"
-                src={image}
-                alt={title}
-                onError={(event) => {
-                  event.currentTarget.onerror = null;
-                  event.currentTarget.src = STORE_FALLBACK_IMAGE;
-                }}
-              />
-            </div>
-          ))}
-        </div>
+      <div className="store-featured-product-media">
+        <img
+          className="store-featured-product adcc-image__img"
+          src={slides[activeIndex]}
+          alt={title}
+          onError={(event) => {
+            event.currentTarget.onerror = null;
+            event.currentTarget.src = fallbackImage;
+          }}
+        />
       </div>
-      {images.length > 1 && (
+      {slides.length > 1 && (
         <div className="store-carousel-controls">
           <button
             type="button"
@@ -2584,7 +2742,7 @@ function StoreProductImageCarousel({ images, title }: { images: string[]; title:
             aria-label="Previous product image"
             onClick={(event) => {
               event.stopPropagation();
-              emblaApi?.scrollPrev();
+              setActiveIndex((index) => (index === 0 ? slides.length - 1 : index - 1));
             }}
           >
             ‹
@@ -2595,7 +2753,7 @@ function StoreProductImageCarousel({ images, title }: { images: string[]; title:
             aria-label="Next product image"
             onClick={(event) => {
               event.stopPropagation();
-              emblaApi?.scrollNext();
+              setActiveIndex((index) => (index === slides.length - 1 ? 0 : index + 1));
             }}
           >
             ›
@@ -2611,65 +2769,6 @@ function StoreSection() {
   const { t } = useTranslation();
   const storeRailRef = useRef<HTMLDivElement | null>(null);
   const [storeCardsVisible, setStoreCardsVisible] = useState(false);
-  const [products, setProducts] = useState<StoreCardProduct[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState('');
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadStoreProducts() {
-      try {
-        setIsLoading(true);
-        setLoadError('');
-        const items = await getStoreItems({ status: 'Approved', limit: 8 });
-        if (!isMounted) return;
-
-        const apiProducts = items.slice(0, 8).map((item, index) => ({
-            id: item.id || item._id || item.title,
-            type: index === 0 ? t('public.home.store.officialMerchandise') : t('public.home.store.communityMarketplace'),
-            action: index === 0 ? t('public.home.store.viewStore') : t('public.home.store.exploreMarketplace'),
-            title: item.title,
-            sub: getStoreSubText(item),
-            price: formatStorePrice(item),
-            img: getStoreImage(item),
-            images: getStoreImages(item),
-          }));
-        const officialProduct = apiProducts[0] || {
-          ...STORE_FALLBACK_PRODUCTS[0],
-          type: t('public.home.store.officialMerchandise'),
-          action: t('public.home.store.viewStore'),
-        };
-        const marketplaceProducts = [
-          ...apiProducts.slice(1).map((item) => ({
-            ...item,
-            type: t('public.home.store.communityMarketplace'),
-            action: t('public.home.store.exploreMarketplace'),
-          })),
-          ...(apiProducts.length < 2
-            ? STORE_FALLBACK_PRODUCTS.slice(1).map((item) => ({
-                ...item,
-                type: t('public.home.store.communityMarketplace'),
-                action: t('public.home.store.exploreMarketplace'),
-              }))
-            : []),
-        ];
-
-        setProducts([officialProduct, marketplaceProducts[0]].filter(Boolean).slice(0, 2));
-      } catch (error) {
-        if (!isMounted) return;
-        setLoadError(error instanceof Error ? error.message : 'Failed to load store products');
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
-    }
-
-    loadStoreProducts();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [t]);
 
   useEffect(() => {
     const railEl = storeRailRef.current;
@@ -2686,45 +2785,42 @@ function StoreSection() {
   }, []);
 
   return (
-    <section id="store" className="home-store-section" style={{ background: '#EAF4FF', padding: '0 86px 80px' }}>
-      <h2 className="home-section-title" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 72, color: '#000', textTransform: 'uppercase', textAlign: 'center', marginBottom: 40 }}>{t('public.home.store.title')}</h2>
+    <section id="store" className="home-store-section">
+      <h2 className="home-store-title">{t('public.home.store.title')}</h2>
       <div ref={storeRailRef} className={`store-rail${storeCardsVisible ? ' is-visible' : ''}`}>
-        {isLoading && (
-          <div style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 20, color: '#435974', padding: '36px 0' }}>{t('public.home.store.loading')}</div>
-        )}
-        {!isLoading && loadError && (
-          <div style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 20, color: '#C12D32', padding: '36px 0' }}>{loadError}</div>
-        )}
-        {!isLoading && !loadError && products.length === 0 && (
-          <div style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 20, color: '#435974', padding: '36px 0' }}>{t('public.home.store.empty')}</div>
-        )}
-        {products.map((p, i) => (
+        {HOME_STORE_PRODUCTS.map((product) => (
           <div
-            key={p.id}
+            key={product.id}
             onClick={() => navigate('/user-adcc-store')}
-            className={`store-card store-featured-card store-animated-card${i === 1 ? ' is-marketplace' : ''}`}
+            className={`store-card store-featured-card store-animated-card${product.variant === 'marketplace' ? ' is-marketplace' : ''}`}
           >
             <div className="store-featured-icon">
               <img src="/images/users.png" alt="" />
             </div>
-            <span className="store-featured-type">{p.type}</span>
-            <span className="store-featured-action">{p.action}</span>
-            <h3 className="store-featured-title">{p.title}</h3>
-            <p className="store-featured-sub">{p.sub}</p>
-            {i === 1 ? (
-              <StoreProductImageCarousel images={p.images.length ? p.images : [p.img]} title={p.title} />
-            ) : (
-              <img
-                className="store-featured-product adcc-image__img"
-                src={p.img}
-                alt={p.title}
-                onError={(event) => {
-                  event.currentTarget.onerror = null;
-                  event.currentTarget.src = STORE_FALLBACK_IMAGE;
-                }}
+            <span className="store-featured-type">{t(product.typeKey)}</span>
+            <span className="store-featured-action">{t(product.actionKey)}</span>
+            <h3 className="store-featured-title">{t(product.titleKey)}</h3>
+            <p className="store-featured-sub">{t(product.subKey)}</p>
+            {product.variant === 'marketplace' ? (
+              <StoreMarketplaceCarousel
+                images={product.images ?? [product.img]}
+                title={t(product.titleKey)}
+                fallbackImage={HOME_STORE_FALLBACK_IMAGE}
               />
+            ) : (
+              <div className="store-featured-product-media">
+                <img
+                  className="store-featured-product adcc-image__img"
+                  src={product.img}
+                  alt={t(product.titleKey)}
+                  onError={(event) => {
+                    event.currentTarget.onerror = null;
+                    event.currentTarget.src = HOME_STORE_FALLBACK_IMAGE;
+                  }}
+                />
+              </div>
             )}
-            <span className="store-featured-price">{p.price}</span>
+            {/* <span className="store-featured-price">{product.price}</span> */}
           </div>
         ))}
       </div>
@@ -2805,45 +2901,32 @@ function AboutSection() {
   }, []);
 
   return (
-    <section ref={aboutRef} id="about" className={`about-section home-about-section${aboutVisible ? ' is-visible' : ''}`} style={{ background: '#EAF4FF', padding: '60px 86px 80px', display: 'flex', gap: 60, alignItems: 'center' }}>
-      {/* Left image */}
+    <section ref={aboutRef} id="about" className={`about-section home-about-section${aboutVisible ? ' is-visible' : ''}`}>
       <motion.div
-        className="home-about-left-image adcc-image-group"
+        className="home-about-left-image about-left-image adcc-image-group"
         initial={{ opacity: 0, x: -300 }}
         whileInView={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
         viewport={{ once: true }}
-        style={{
-          flexShrink: 0,
-          width: 380,
-          height: 560,
-          borderRadius: 20,
-          overflow: 'hidden',
-          boxShadow: '0 8px 40px rgba(0,0,0,0.12)'
-        }}
       >
         <AnimatedImage
           bare
           fill
           zoom="subtle"
-          src="https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=600&q=80"
-          alt="ADCC Cyclists"
+          src="/img/event - F1.png"
+          alt="ADCC cyclists"
           style={{ width: '100%', height: '100%' }}
+          onError={(event) => {
+            const img = event.currentTarget as HTMLImageElement;
+            if (img.src.includes('journey-2.png')) return;
+            img.onerror = null;
+            img.src = '/images/journey-2.png';
+          }}
         />
       </motion.div>
-      {/* Right content */}
-      <div className="home-about-content" style={{ flex: 1 }}>
-        {/* <h2 className="home-about-title" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 74, color: '#000', textTransform: 'uppercase', lineHeight: 1.01, marginBottom: 24 }}>About Abu Dhabi<br />Cycling Club</h2> */}
+      <div className="home-about-content">
         <motion.h2
           className="home-about-title overflow-hidden"
-          style={{
-            fontFamily: "'Bebas Kai', sans-serif",
-            fontSize: 74,
-            color: "#000",
-            textTransform: "uppercase",
-            lineHeight: 1.0,
-            marginBottom: 24,
-          }}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
@@ -2859,24 +2942,15 @@ function AboutSection() {
             <span
               key={`${word}-${index}`}
               className="inline-block overflow-hidden"
-              style={{ marginRight: "14px" }}
+              style={{ marginRight: '14px' }}
             >
               <motion.span
                 className="inline-block"
                 variants={{
-                  hidden: {
-                    y: "120%",
-                    opacity: 0,
-                  },
-                  visible: {
-                    y: "0%",
-                    opacity: 1,
-                  },
+                  hidden: { y: '120%', opacity: 0 },
+                  visible: { y: '0%', opacity: 1 },
                 }}
-                transition={{
-                  duration: 0.7,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
               >
                 {word}
               </motion.span>
@@ -2890,24 +2964,15 @@ function AboutSection() {
                 <span
                   key={`${word}-${index + 3}`}
                   className="inline-block overflow-hidden"
-                  style={{ marginRight: "14px" }}
+                  style={{ marginRight: '14px' }}
                 >
                   <motion.span
                     className="inline-block"
                     variants={{
-                      hidden: {
-                        y: "120%",
-                        opacity: 0,
-                      },
-                      visible: {
-                        y: "0%",
-                        opacity: 1,
-                      },
+                      hidden: { y: '120%', opacity: 0 },
+                      visible: { y: '0%', opacity: 1 },
                     }}
-                    transition={{
-                      duration: 0.7,
-                      ease: [0.22, 1, 0.36, 1],
-                    }}
+                    transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
                   >
                     {word}
                   </motion.span>
@@ -2916,52 +2981,37 @@ function AboutSection() {
             </>
           )}
         </motion.h2>
-        <p className="home-about-text" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 20, color: '#000', lineHeight: 1.6, marginBottom: 40, maxWidth: 600 }}>
-          {t('public.home.about.text')}
-        </p>
-        {/* Stats */}
-        <div className="home-about-stats" style={{ display: 'flex', gap: 48, marginBottom: 40 }}>
+        <p className="home-about-text">{t('public.home.about.text')}</p>
+        <div className="home-about-stats">
           {stats.map((s, i) => (
             <div key={i}>
-              <div className="home-about-stat-number" style={{ fontFamily: "'Bebas Kai', sans-serif", fontWeight: 700, fontSize: 50, color: '#000', lineHeight: 1 }}>
-                <div ref={(el) => (statsRefs.current[i] = el)}>
-                  {s.num}
-                </div>
+              <div className="home-about-stat-number">
+                <div ref={(el) => (statsRefs.current[i] = el)}>{s.num}</div>
               </div>
-              <div className="home-about-stat-label" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 22, color: '#444', marginTop: 4 }}>{s.label}</div>
+              <div className="home-about-stat-label">{s.label}</div>
             </div>
           ))}
         </div>
-        <AnimatedButton onClick={() => navigate('/communities-abu-dhabi-cycling-community')}>
+        <AnimatedButton className="home-about-read-btn" onClick={() => navigate('/communities-abu-dhabi-cycling-community')}>
           {t('public.home.about.readMore')}
         </AnimatedButton>
       </div>
-      {/* Decorative rider image */}
-    <motion.div
-      className="home-about-rider adcc-image-group"
-      initial={{ opacity: 0, x: 150 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      transition={{
-        duration: 0.8,
-        ease: "easeOut",
-      }}
-      viewport={{ once: true }}
-      style={{
-        flexShrink: 0,
-        width: 280,
-        height: 340,
-        overflow: 'hidden'
-      }}
-    >
-      <AnimatedImage
-        bare
-        fill
-        zoom="subtle"
-        src="/images/right-cycle.png"
-        alt="Rider"
-        style={{ width: '100%', height: '100%' }}
-      />
-    </motion.div>
+      <motion.div
+        className="home-about-rider about-right-image adcc-image-group"
+        initial={{ opacity: 0, x: 150 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+        viewport={{ once: true }}
+      >
+        <AnimatedImage
+          bare
+          fill
+          zoom="subtle"
+          src="/images/right-cycle.png"
+          alt="Rider"
+          style={{ width: '100%', height: '100%' }}
+        />
+      </motion.div>
     </section>
   );
 }

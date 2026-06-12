@@ -9,43 +9,98 @@
 :root {
   --font-bebas-kai: 'Bebas Kai', sans-serif;
   --font-satoshi: 'Satoshi', sans-serif;
-  --font-site: var(--font-bebas-kai);
 }
 
-html {
-  font-family: var(--font-site);
+/* Public website typography only — admin/login keep default UI fonts */
+.public-layout {
+  font-family: var(--font-bebas-kai);
 }
 
-html[dir='rtl'] {
+html[dir='rtl'] .public-layout {
   font-family: var(--font-bebas-kai), 'Noto Sans Arabic', sans-serif;
 }
 
-body,
-#root {
-  font-family: var(--font-site) !important;
-}
-
-/* Form controls inherit site font */
-select,
-input,
-textarea,
-button {
+.public-layout select,
+.public-layout input,
+.public-layout textarea,
+.public-layout button {
   font-family: inherit;
 }
 
-/* Override legacy inline font-family declarations across pages */
-[style*="font-family"]:not([style*="Noto Sans Arabic"]) {
+.public-layout [style*="font-family"]:not([style*="Noto Sans Arabic"]) {
   font-family: var(--font-bebas-kai) !important;
 }
 
-html[dir='rtl'] [style*="font-family"]:not([style*="Noto Sans Arabic"]) {
+html[dir='rtl'] .public-layout [style*="font-family"]:not([style*="Noto Sans Arabic"]) {
   font-family: var(--font-bebas-kai), 'Noto Sans Arabic', sans-serif !important;
 }
 
-.bebas,
-.font-bebas-kai,
-.grand-prix-bebas {
+.public-layout .bebas,
+.public-layout .font-bebas-kai,
+.public-layout .grand-prix-bebas {
   font-family: var(--font-bebas-kai) !important;
+}
+
+.public-layout .adcc-btn {
+  font-family: var(--font-bebas-kai);
+  font-weight: 700;
+}
+
+.public-layout .journey-text {
+  font-family: 'Outfit', sans-serif !important;
+  text-transform: none !important;
+}
+
+.public-layout .journey-button,
+.public-layout .journey-button .adcc-btn__label {
+  font-family: var(--font-satoshi) !important;
+  color: #FFF9EF !important;
+}
+
+.public-layout .home-community-subtitle {
+  font-family: 'Outfit', sans-serif !important;
+  text-transform: uppercase !important;
+}
+
+.public-layout .home-community-start-btn,
+.public-layout .home-community-start-btn .adcc-btn__label {
+  font-family: var(--font-satoshi) !important;
+  color: #FFF9EF !important;
+}
+
+.public-layout .home-platform-card-tag span,
+.public-layout .home-platform-card-action {
+  font-family: 'Outfit', sans-serif !important;
+}
+
+.public-layout .store-featured-type,
+.public-layout .store-featured-action,
+.public-layout .store-featured-title,
+.public-layout .store-featured-sub {
+  font-family: 'Outfit', sans-serif !important;
+  text-transform: none !important;
+}
+
+.public-layout .store-featured-type {
+  text-transform: uppercase !important;
+}
+
+.public-layout .store-featured-price {
+  font-family: var(--font-bebas-kai) !important;
+  text-transform: uppercase !important;
+}
+
+.public-layout .home-about-text,
+.public-layout .home-about-stat-number,
+.public-layout .home-about-stat-label {
+  font-family: 'Outfit', sans-serif !important;
+  text-transform: none !important;
+}
+
+.public-layout .home-about-read-btn,
+.public-layout .home-about-read-btn .adcc-btn__label {
+  font-family: var(--font-satoshi) !important;
+  color: #FFF9EF !important;
 }
 
 /* Preserve readable Arabic in admin form fields */
