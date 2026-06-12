@@ -1,0 +1,73 @@
+@layer components {
+  /* Phenomenon-style image hover: smooth zoom inside overflow-hidden frame */
+  .adcc-image {
+    --adcc-image-scale: 1.05;
+    overflow: hidden;
+    display: block;
+    position: relative;
+  }
+
+  .adcc-image--subtle {
+    --adcc-image-scale: 1.03;
+  }
+
+  .adcc-image--strong {
+    --adcc-image-scale: 1.1;
+  }
+
+  .adcc-image--fill {
+    width: 100%;
+    height: 100%;
+  }
+
+  .adcc-image__img {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+    will-change: transform;
+  }
+
+  .adcc-image--fill .adcc-image__img,
+  .adcc-image-group--fill .adcc-image__img,
+  .adcc-image__img--fill {
+    height: 100%;
+  }
+
+  .adcc-image__img--contain {
+    object-fit: contain;
+  }
+
+  @media (any-hover: hover) {
+    .adcc-image:hover .adcc-image__img,
+    .adcc-image:focus-within .adcc-image__img,
+    .adcc-image-group:hover .adcc-image__img,
+    .adcc-image-group:focus-within .adcc-image__img,
+    .card-hover:hover .adcc-image__img,
+    .journey-card:hover .adcc-image__img,
+    .platform-card:hover .adcc-image__img,
+    .home-platform-card:hover .adcc-image__img,
+    .store-featured-card:hover .adcc-image__img,
+    .store-compact-card:hover .adcc-image__img,
+    .about-coach-card:hover .adcc-image__img,
+    .track-card:hover .adcc-image__img,
+    .event-card:hover .adcc-image__img,
+    .challenge-card:hover .adcc-image__img {
+      transform: scale(var(--adcc-image-scale, 1.05));
+    }
+
+    .adcc-image--subtle:hover .adcc-image__img,
+    .adcc-image--subtle:focus-within .adcc-image__img,
+    .adcc-image-group--subtle:hover .adcc-image__img {
+      transform: scale(1.03);
+    }
+
+    .adcc-image--strong:hover .adcc-image__img,
+    .adcc-image--strong:focus-within .adcc-image__img,
+    .adcc-image-group--strong:hover .adcc-image__img {
+      transform: scale(1.1);
+    }
+  }
+}

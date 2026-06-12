@@ -2,16 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getPublicStats } from "../../services/publicStatsApi";
 import { motion } from "framer-motion";
+import { AnimatedButton } from "../ui/AnimatedButton";
+import { AnimatedImage } from "../ui/AnimatedImage";
 
-// ─── Google Fonts ────────────────────────────────────────────────────────────
+// ─── Page styles ─────────────────────────────────────────────────────────────
 const FontLoader = () => (
   <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700&display=swap');
-    @import url('https://fonts.cdnfonts.com/css/satoshi');
-
-    /* Bebas Kai fallback via Bebas Neue */
-    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
-
     :root {
       --green:   #019839;
       --black:   #000000;
@@ -22,21 +18,16 @@ const FontLoader = () => (
       --blue-dark: #013282;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; }
 
-    body { background: var(--bg); font-family: 'Outfit', sans-serif; color: var(--black); }
+    body { background: var(--bg); font-family: 'Bebas Kai', sans-serif; color: var(--black); }
 
-    .bebas { font-family: 'Bebas Neue', 'Bebas Kai', sans-serif; font-weight: 400; letter-spacing: 0.02em; }
+    .bebas { font-family: 'Bebas Kai', sans-serif; font-weight: 400; letter-spacing: 0.02em; }
 
-    .btn-green {
-      display: inline-flex; align-items: center; gap: 10px;
-      background: var(--green); color: var(--cream);
-      border: none; border-radius: 30px; cursor: pointer;
-      font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 18px;
-      padding: 13px 28px; transition: opacity .2s;
+    .about-page .adcc-btn--arrow:hover .adcc-btn__arrow--enter,
+    .about-page .adcc-btn--arrow:focus-visible .adcc-btn__arrow--enter {
+      inset-inline-start: calc(var(--adcc-btn-arrow-inset) - var(--adcc-btn-arrow-shift) + 15px);
     }
-    .btn-green:hover { opacity: .88; }
-    .btn-green svg { transform: rotate(180deg); }
 
     .journey-card {
       flex: 0 0 480px;
@@ -77,7 +68,7 @@ const FontLoader = () => (
       width: 113px;
       min-height: 23px;
       color: rgba(255, 255, 255, 0.6);
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Bebas Kai', sans-serif;
       font-size: 16px;
       font-weight: 500;
       line-height: 145%;
@@ -134,7 +125,7 @@ const FontLoader = () => (
       top: 10.5px;
       width: 145px;
       color: #000;
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Bebas Kai', sans-serif;
       font-size: 15px;
       font-weight: 500;
       line-height: 19px;
@@ -146,24 +137,8 @@ const FontLoader = () => (
       left: 20px;
       top: 275px;
       width: 223px;
-      height: 49px;
-      border: 0;
-      border-radius: 30px;
-      background: #019839;
-      color: #FFF9EF;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 23px;
-      font-family: 'Outfit', sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-      line-height: 125%;
-      cursor: pointer;
       z-index: 3;
     }
-
-    .journey-card__button svg { transform: rotate(180deg); }
 
     @media (max-width: 1220px) {
       .mission-content {
@@ -372,12 +347,6 @@ const FontLoader = () => (
       .about-values-grid {
         grid-template-columns: 1fr !important;
       }
-      .btn-green {
-        width: 100% !important;
-        justify-content: center !important;
-        padding-left: 18px !important;
-        padding-right: 18px !important;
-      }
       .journey-card {
         height: 330px !important;
       }
@@ -418,12 +387,6 @@ const FontLoader = () => (
   `}</style>
 );
 
-// ─── Arrow icon ───────────────────────────────────────────────────────────────
-const Arrow = ({ color = "#fff" }) => (
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <path d="M4 10H16M16 10L10 4M16 10L10 16" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
 
 function JourneyCard() {
   const navigate = useNavigate();
@@ -492,12 +455,13 @@ function JourneyCard() {
         <span className="journey-card__community-text">+5k in the Community</span>
       </div>
 
-      <button
+      <AnimatedButton
         className="journey-card__button"
         onClick={() => navigate("/contact-us")}
+        fullWidth
       >
-        Get In Touch <Arrow />
-      </button>
+        Get In Touch
+      </AnimatedButton>
 
     </div>
   );
@@ -527,7 +491,7 @@ function Navbar() {
         {["About Us", "Events", "Community", "Tracks"].map((l) => (
           <a key={l} href="#"
             style={{
-              fontFamily: "'Outfit',sans-serif", fontWeight: 500, fontSize: 20,
+              fontFamily: "'Bebas Kai',sans-serif", fontWeight: 500, fontSize: 20,
               color: "#000", textDecoration: "none",
               borderBottom: l === "About Us" ? "2px solid #019839" : "2px solid transparent",
               paddingBottom: 2, transition: "border-color .2s"
@@ -539,7 +503,7 @@ function Navbar() {
       {/* Right side */}
       <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
         <span style={{ fontSize: 17, fontWeight: 500 }}>🌤 English</span>
-        <button className="btn-green" style={{ borderRadius: 30, fontSize: 18, padding: "13px 28px" }}>Menu</button>
+        <AnimatedButton showArrow={false}>Menu</AnimatedButton>
       </div>
     </header>
   );
@@ -610,7 +574,7 @@ function Hero() {
           style={{
             color: "rgba(255,255,255,0.8)",
             fontSize: 22,
-            fontFamily: "'Satoshi',sans-serif",
+            fontFamily: "'Bebas Kai',sans-serif",
           }}
         >
           {["Home", "/", "About", "us"].map((word, index) => (
@@ -774,14 +738,14 @@ function StatsSection() {
                 borderLeft: "2px solid #1F509A", paddingLeft: 20, paddingBottom: 36
               }}>
                 <div className="bebas about-stat-number" style={{ fontSize: 50, lineHeight: 1 }}>{s.val}</div>
-                <div className="about-stat-label" style={{ fontFamily: "'Satoshi',sans-serif", fontSize: 18, color: "#444", marginTop: 6, whiteSpace: "pre-line", lineHeight: 1.4 }}>{s.label}</div>
+                <div className="about-stat-label" style={{ fontFamily: "'Bebas Kai',sans-serif", fontSize: 18, color: "#444", marginTop: 6, whiteSpace: "pre-line", lineHeight: 1.4 }}>{s.label}</div>
               </div>
             ))}
           </div>
           <p className="about-body-text" style={{ fontSize: 22, lineHeight: 1.5, maxWidth: 480, marginBottom: 28, color: "rgba(0,0,0,0.8)" }}>
             Abu Dhabi Cycling Club unites riders of all levels with community rides and training programs.
           </p>
-          <button className="btn-green" onClick={() => navigate("/contact-us")}>Get In Touch <Arrow /></button>
+          <AnimatedButton onClick={() => navigate("/contact-us")}>Get In Touch</AnimatedButton>
         </div>
       </div>
     </section>
@@ -1018,7 +982,7 @@ function ValuesSection() {
     <section className="about-section" style={{ background: "#EAF4FF", padding: "80px 82px" }}>
       <div className="about-values-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 40 }}>
         <div>
-          <p style={{fontFamily: "'Satoshi',sans-serif", fontSize: 15, fontWeight: 500, marginBottom: 8, color: "#000" }}>Our values</p>
+          <p style={{fontFamily: "'Bebas Kai',sans-serif", fontSize: 15, fontWeight: 500, marginBottom: 8, color: "#000" }}>Our values</p>
           <motion.h2
             className="bebas about-values-title overflow-hidden"
             style={{
@@ -1067,7 +1031,7 @@ function ValuesSection() {
             ))}
           </motion.h2>
         </div>
-        <button className="btn-green" onClick={() => navigate("/user-communities")}>Discover the Community <Arrow /></button>
+        <AnimatedButton onClick={() => navigate("/user-communities")}>Discover the Community</AnimatedButton>
       </div>
       <motion.div
         className="about-values-grid"
@@ -1111,7 +1075,7 @@ function ValuesSection() {
           >
             <div
               style={{
-                fontFamily: "'Outfit',sans-serif",
+                fontFamily: "'Bebas Kai',sans-serif",
                 fontSize: 17,
                 fontWeight: 500,
                 color: "#fff",
@@ -1134,7 +1098,7 @@ function ValuesSection() {
 
             <p
               style={{
-                fontFamily: "'Satoshi',sans-serif",
+                fontFamily: "'Bebas Kai',sans-serif",
                 fontSize: 16,
                 color: "#fff",
                 lineHeight: 1.55,
@@ -1216,7 +1180,7 @@ function CoachesSection() {
           // <div key={i} className="about-coach-card" style={{ flex: 1, position: "relative", overflow: "hidden" }}>
           <motion.div
             key={i}
-            className="about-coach-card"
+            className="about-coach-card adcc-image-group"
             initial={{ opacity: 0, x: 150 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{
@@ -1228,18 +1192,17 @@ function CoachesSection() {
             style={{
               flex: 1,
               position: "relative",
-              overflow: "hidden"
+              overflow: "hidden",
             }}
           >
-            {/* <img src={c.img} alt={c.label} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> */}
-            <img
+            <AnimatedImage
+              bare
+              fill
               src={c.img}
               alt={c.label}
               style={{
                 width: "100%",
                 height: "100%",
-                objectFit: "cover",
-                display: "block",
                 position: "absolute",
                 inset: 0,
                 zIndex: 0,
@@ -1274,7 +1237,7 @@ function CoachesSection() {
                 fontSize: 26,
                 lineHeight: 1,
                 letterSpacing: 1,
-                fontFamily: "'Bebas Neue','Bebas Kai',sans-serif",
+                fontFamily: "'Bebas Kai',sans-serif",
                 zIndex: 5,
                 display: "block",
                 opacity: 1,
@@ -1288,7 +1251,7 @@ function CoachesSection() {
         ))}
       </div>
       <div style={{ textAlign: "center", marginTop: 36 }}>
-        <button className="btn-green">Explore Coaches <Arrow /></button>
+        <AnimatedButton>Explore Coaches</AnimatedButton>
       </div>
     </section>
   );
@@ -1313,14 +1276,14 @@ function CTABanner() {
           Start Your Ride Today
         </h2>
         {/* <p style={{ fontSize: 24, color: "#fff", marginTop: 16, marginBottom: 36, opacity: .95 }}> */}
-        <p className="about-cta-text" style={{ fontFamily: "'Satoshi',sans-serif", fontSize: 26, color: "#fff", marginTop: 16, marginBottom: 36, opacity: .95 }}>
+        <p className="about-cta-text" style={{ fontFamily: "'Bebas Kai',sans-serif", fontSize: 26, color: "#fff", marginTop: 16, marginBottom: 36, opacity: .95 }}>
           Download the ADCC app and join the cycling community.
         </p>
         <div className="about-cta-buttons" style={{ display: "flex", gap: 20 }}>
           {["Google Play", "App Store"].map(s => (
             <button key={s} style={{
               background: "#fff", border: "none", borderRadius: 100,
-              padding: "14px 32px", fontFamily: "'Outfit',sans-serif",
+              padding: "14px 32px", fontFamily: "'Bebas Kai',sans-serif",
               fontWeight: 600, fontSize: 16, cursor: "pointer",
               display: "flex", alignItems: "center", gap: 10
             }}>
@@ -1353,12 +1316,12 @@ function Footer() {
           }}>
             <input placeholder="Enter your email" style={{
               flex: 1, border: "none", background: "transparent",
-              padding: "0 18px", fontSize: 16, fontFamily: "'Outfit',sans-serif",
+              padding: "0 18px", fontSize: 16, fontFamily: "'Bebas Kai',sans-serif",
               outline: "none", color: "#333"
             }} />
             <button style={{
               background: "#019839", color: "#fff", border: "none",
-              padding: "0 24px", fontFamily: "'Outfit',sans-serif", fontSize: 16,
+              padding: "0 24px", fontFamily: "'Bebas Kai',sans-serif", fontSize: 16,
               cursor: "pointer", borderRadius: "0 8px 8px 0"
             }}>Submit</button>
           </div>
@@ -1411,7 +1374,7 @@ export default function AboutUs() {
   return (
     <>
       <FontLoader />
-      <div style={{ minWidth: 320, overflowX: "hidden" }}>
+      <div className="about-page" style={{ minWidth: 320, overflowX: "hidden" }}>
         <Navbar />
         <Hero />
         <StatsSection />
@@ -1419,8 +1382,6 @@ export default function AboutUs() {
         {/* <BlueBanner /> */}
         <ValuesSection />
         <CoachesSection />
-        <CTABanner />
-        <Footer />
       </div>
     </>
   );

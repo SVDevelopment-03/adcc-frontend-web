@@ -1,8 +1,13 @@
 /* Tailwind CSS v4 - processed by @tailwindcss/vite */
 @import "tailwindcss";
 
+/* Site fonts (Bebas Kai) */
+@import "./styles/fonts.css";
+
 /* Project theme, base styles, and custom utilities */
 @import "./styles/globals.css";
+@import "./styles/animated-button.css";
+@import "./styles/animated-image.css";
 
 /* Custom utility for horizontal scroll areas */
 .scroller {

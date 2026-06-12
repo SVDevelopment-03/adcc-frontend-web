@@ -56,6 +56,12 @@ export function LocaleProvider({ children }: LocaleProviderProps) {
   }, []);
 
   useEffect(() => {
+    if (i18n.language !== locale) {
+      void i18n.changeLanguage(locale);
+    }
+  }, [locale]);
+
+  useEffect(() => {
     const root = document.documentElement;
     if (locale === 'ar') {
       root.dir = 'rtl';

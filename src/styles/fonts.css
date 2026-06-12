@@ -1,0 +1,73 @@
+@font-face {
+  font-family: 'Bebas Kai';
+  src: url('/fonts/BebasKai.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-bebas-kai: 'Bebas Kai', sans-serif;
+  --font-satoshi: 'Satoshi', sans-serif;
+  --font-site: var(--font-bebas-kai);
+}
+
+html {
+  font-family: var(--font-site);
+}
+
+html[dir='rtl'] {
+  font-family: var(--font-bebas-kai), 'Noto Sans Arabic', sans-serif;
+}
+
+body,
+#root {
+  font-family: var(--font-site) !important;
+}
+
+/* Form controls inherit site font */
+select,
+input,
+textarea,
+button {
+  font-family: inherit;
+}
+
+/* Override legacy inline font-family declarations across pages */
+[style*="font-family"]:not([style*="Noto Sans Arabic"]) {
+  font-family: var(--font-bebas-kai) !important;
+}
+
+html[dir='rtl'] [style*="font-family"]:not([style*="Noto Sans Arabic"]) {
+  font-family: var(--font-bebas-kai), 'Noto Sans Arabic', sans-serif !important;
+}
+
+.bebas,
+.font-bebas-kai,
+.grand-prix-bebas {
+  font-family: var(--font-bebas-kai) !important;
+}
+
+/* Preserve readable Arabic in admin form fields */
+[style*="Noto Sans Arabic"] {
+  font-family: 'Noto Sans Arabic', 'Segoe UI', sans-serif !important;
+}
+
+/* Header & footer use Satoshi */
+.public-header,
+.public-header *,
+.public-footer-cta,
+.public-footer-cta *,
+.public-footer,
+.public-footer * {
+  font-family: var(--font-satoshi) !important;
+}
+
+html[dir='rtl'] .public-header,
+html[dir='rtl'] .public-header *,
+html[dir='rtl'] .public-footer-cta,
+html[dir='rtl'] .public-footer-cta *,
+html[dir='rtl'] .public-footer,
+html[dir='rtl'] .public-footer * {
+  font-family: var(--font-satoshi), 'Noto Sans Arabic', sans-serif !important;
+}

@@ -5,12 +5,15 @@ import gsap from "gsap";
 
 const FontLoader = () => (
   <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700&family=Bebas+Neue&display=swap');
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #EAF4FF; font-family: 'Outfit', sans-serif; color: #000; }
-    .bebas { font-family: 'Bebas Kai','Bebas Neue', sans-serif; font-weight: 400; letter-spacing: 0.02em; }
+    * { box-sizing: border-box; margin: 0; }
+    body { background: #EAF4FF; font-family: 'Bebas Kai', sans-serif; color: #000; }
+    .bebas { font-family: 'Bebas Kai', sans-serif; font-weight: 400; letter-spacing: 0.02em; }
     a { text-decoration: none; color: inherit; }
-    select { appearance: none; -webkit-appearance: none; background: transparent; border: none; outline: none; cursor: pointer; font-family: 'Outfit', sans-serif; font-size: 18px; color: #000; width: 100%; padding-right: 28px; }
+    select { appearance: none; -webkit-appearance: none; background: transparent; border: none; outline: none; cursor: pointer; font-family: 'Bebas Kai', sans-serif; font-size: 18px; color: #000; width: 100%; padding-right: 28px; }
+    .event-page .adcc-btn--arrow:hover .adcc-btn__arrow--enter,
+    .event-page .adcc-btn--arrow:focus-visible .adcc-btn__arrow--enter {
+      inset-inline-start: calc(var(--adcc-btn-arrow-inset) - var(--adcc-btn-arrow-shift) + 15px);
+    }
 
     @media (max-width: 768px) {
       .event-local-nav {
@@ -462,7 +465,7 @@ function FilterBar({
             padding: "0 20px 0 28px",
             gap: 10,
             cursor: "pointer",
-            fontFamily: "'Outfit', sans-serif",
+            fontFamily: "'Bebas Kai', sans-serif",
             fontSize: 18,
             color: "#000",
             textAlign: "left",
@@ -526,7 +529,7 @@ function FilterBar({
                   color: option === selected ? "#019839" : "#000",
                   padding: "12px 18px",
                   textAlign: "left",
-                  fontFamily: "'Outfit', sans-serif",
+                  fontFamily: "'Bebas Kai', sans-serif",
                   fontSize: 16,
                   fontWeight: option === selected ? 700 : 400,
                   cursor: "pointer",
@@ -564,7 +567,7 @@ function FilterBar({
         style={{
           width: 156, height: 66, background: "#019839", color: "#fff",
           border: "none", borderRadius: 40, fontSize: 20, fontWeight: 700,
-          cursor: "pointer", fontFamily: "'Satoshi',sans-serif", transition: "opacity .2s"
+          cursor: "pointer", fontFamily: "'Bebas Kai',sans-serif", transition: "opacity .2s"
         }}
       >
         {loading ? "Loading..." : "Search"}
@@ -622,6 +625,7 @@ function EventCard({ event, index }: { event: EventApiResponse; index: number })
 
   return (
     <motion.div
+      className="event-card"
       initial={getInitialAnimation()}
       whileInView={{ opacity: 1, x: 0, y: 0 }}
       transition={{
@@ -633,7 +637,7 @@ function EventCard({ event, index }: { event: EventApiResponse; index: number })
       style={{ width: "100%", display: "flex", flexDirection: "column", gap: 0 }}
     >
       <div
-        className="event-card-image"
+        className="event-card-image adcc-image"
         style={{
           width: "100%",
           height: 260,
@@ -643,10 +647,7 @@ function EventCard({ event, index }: { event: EventApiResponse; index: number })
           background: "#ddd",
         }}
       >
-        {/* <img src={image} alt={event.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> */}
-        <motion.img
-          src={image}
-          alt={event.title}
+        <motion.div
           initial={{ opacity: 0, scale: 0.25 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{
@@ -655,13 +656,15 @@ function EventCard({ event, index }: { event: EventApiResponse; index: number })
             ease: "easeOut",
           }}
           viewport={{ once: true }}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            transformOrigin: "center",
-          }}
-        />
+          style={{ width: "100%", height: "100%", transformOrigin: "center" }}
+        >
+          <img
+            className="adcc-image__img"
+            src={image}
+            alt={event.title}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
+        </motion.div>
         <span
           style={{
             position: "absolute",
@@ -672,7 +675,7 @@ function EventCard({ event, index }: { event: EventApiResponse; index: number })
             borderRadius: 30,
             padding: "9px 18px",
             color: "#fff",
-            fontFamily: "'Satoshi',sans-serif",
+            fontFamily: "'Bebas Kai',sans-serif",
             fontSize: 15,
             fontWeight: 500,
           }}
@@ -705,7 +708,7 @@ function EventCard({ event, index }: { event: EventApiResponse; index: number })
             fontSize: 16,
             fontWeight: 700,
             cursor: "pointer",
-            fontFamily: "'Satoshi',sans-serif",
+            fontFamily: "'Bebas Kai',sans-serif",
             transition: "all .2s",
           }}
           onMouseEnter={(e) => {
@@ -826,7 +829,7 @@ function Pagination({ page, total, setPage }: { page: number; total: number; set
             background: isActive ? "#019839" : "transparent",
             color: isActive ? "#fff" : "#019839",
             fontSize: 18, fontWeight: 500, cursor: isDots ? "default" : "pointer",
-            fontFamily: "'Satoshi',sans-serif",
+            fontFamily: "'Bebas Kai',sans-serif",
             letterSpacing: isDots ? "0.2em" : 0,
             display: "flex", alignItems: "center", justifyContent: "center"
           }}>{p}</button>
@@ -892,7 +895,7 @@ function CTABanner() {
             <button key={s} style={{
               background: "#fff", border: "none", borderRadius: 100,
               padding: "14px 32px", fontWeight: 600, fontSize: 16, cursor: "pointer",
-              fontFamily: "'Satoshi',sans-serif", display: "flex", alignItems: "center", gap: 10
+              fontFamily: "'Bebas Kai',sans-serif", display: "flex", alignItems: "center", gap: 10
             }}>{s}</button>
           ))}
         </div>
@@ -916,11 +919,11 @@ function Footer() {
           <div className="event-newsletter" style={{ display: "flex", background: "#8DDF93", borderRadius: 8, overflow: "hidden", width: 340, height: 56 }}>
             <input placeholder="Enter your email" style={{
               flex: 1, border: "none", background: "transparent",
-              padding: "0 18px", fontSize: 15, fontFamily: "'Satoshi',sans-serif", outline: "none"
+              padding: "0 18px", fontSize: 15, fontFamily: "'Bebas Kai',sans-serif", outline: "none"
             }} />
             <button style={{
               background: "#019839", color: "#fff", border: "none",
-              padding: "0 22px", fontSize: 15, cursor: "pointer", fontFamily: "'Outfit',sans-serif"
+              padding: "0 22px", fontSize: 15, cursor: "pointer", fontFamily: "'Bebas Kai',sans-serif"
             }}>Submit</button>
           </div>
         </div>
@@ -964,13 +967,11 @@ export default function Events() {
   return (
     <>
       <FontLoader />
-      <div style={{ minWidth: 320, overflowX: "hidden" }}>
+      <div className="event-page" style={{ minWidth: 320, overflowX: "hidden" }}>
         <Navbar />
         <Hero />
         <SectionHeader />
         <EventsGrid />
-        {/* <CTABanner /> */}
-        {/* <Footer /> */}
       </div>
     </>
   );

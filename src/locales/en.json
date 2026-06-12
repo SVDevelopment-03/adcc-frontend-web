@@ -2054,5 +2054,191 @@
   "member":{
     "member-managaement": "Member Management",
     "view-manage-community-members": "View and manage community members"
+  },
+  "public": {
+    "language": {
+      "english": "English",
+      "arabic": "Arabic",
+      "select": "Select language"
+    },
+    "weather": {
+      "loading": "Loading Abu Dhabi weather",
+      "unavailable": "Weather unavailable",
+      "city": "Abu Dhabi",
+      "tooltip": "{{city}}: {{temp}}°C",
+      "temp": "{{temp}}°C"
+    },
+    "nav": {
+      "home": "Home",
+      "aboutUs": "About Us",
+      "events": "Events",
+      "community": "Community",
+      "challenges": "Challenges",
+      "tracks": "Tracks"
+    },
+    "auth": {
+      "menu": "Menu",
+      "login": "Login",
+      "logout": "Logout",
+      "toggleMenu": "Toggle navigation menu"
+    },
+    "footer": {
+      "ctaTitle": "Start Your Ride Today",
+      "ctaSubtitle": "Download the ADCC app and join the cycling community.",
+      "getItOn": "Get it on",
+      "downloadOn": "Download on the",
+      "googlePlay": "Google Play",
+      "appStore": "App Store",
+      "brandText": "From weekend warriors to elite athletes, we unite cyclists who share a passion for riding. ADCC is where your cycling journey thrives...",
+      "emailPlaceholder": "Enter your email",
+      "submit": "Submit",
+      "saving": "Saving...",
+      "emailRequired": "Please enter your email address.",
+      "emailInvalid": "Please enter a valid email address.",
+      "thanks": "Thanks for subscribing.",
+      "subscribeError": "Failed to subscribe.",
+      "quickLinks": "Quick Links",
+      "contactUs": "Contact Us",
+      "rides": "Rides",
+      "cyclistsCorner": "Cyclist's Corner",
+      "copyright": "Copyright 2026. Abu Dhabi Cycling Club",
+      "cyclingShortcut": "Cycling shortcut"
+    },
+    "home": {
+      "hero": {
+        "words": ["RIDE", "ABU", "DHABI", "START"],
+        "downloadApp": "Download App",
+        "exploreTracks": "Explore Tracks"
+      },
+      "stats": {
+        "members": "35,000+ Active Members",
+        "loop": "100KM Signature Loop",
+        "events": "250+ Events Hosted Annually",
+        "distance": "1.5 Million+ KM Cycled"
+      },
+      "journey": {
+        "titleWords": ["Begin", "Your", "Cycling", "Journey"],
+        "text": "Choose how you want to ride with ADCC. Discover routes, join challenges, and be part of a growing cycling community.",
+        "exploreRoutes": "Explore all Routes",
+        "cards": {
+          "tracks": "Find Cycling\nTracks",
+          "events": "Discover\nEvents",
+          "challenges": "Join Active\nChallenges",
+          "community": "Connect With\nRiders"
+        }
+      },
+      "app": {
+        "titleWords": ["Everything", "You", "Need.", "In", "One", "App."],
+        "downloadLabelWords": ["Download", "the", "App"],
+        "features": {
+          "track": "Track Performance\nand Rides",
+          "challenges": "Join Official\nChallenges",
+          "connect": "Connect With\nRiders",
+          "routes": "Discover Cycling\nRoutes"
+        }
+      },
+      "community": {
+        "eyebrowWords": ["For", "the", "Cycling", "Community"],
+        "titleWords": ["Join", "Abu", "Dhabi's", "Cycling", "Community"],
+        "subtitleWords": ["Everything", "you", "need", "to", "ride,", "track,", "and", "stay", "connected."],
+        "startRiding": "Start Riding",
+        "icons": {
+          "events": "Events",
+          "tracks": "Tracks",
+          "challenges": "Challenges",
+          "community": "Community"
+        }
+      },
+      "platform": {
+        "titleWords": ["Explore", "the", "Platform"],
+        "cards": {
+          "events": {
+            "tag": "EVENTS",
+            "title": "Join upcoming rides and cycling events across the city",
+            "action": "View Events"
+          },
+          "challenges": {
+            "tag": "CHALLENGES",
+            "title": "Push your limits with official ADCC challenges",
+            "action": "View Challenges"
+          },
+          "tracks": {
+            "tag": "TRACKS",
+            "title": "Discover curated cycling routes across Abu Dhabi",
+            "action": "Explore Tracks"
+          }
+        }
+      },
+      "store": {
+        "title": "ADCC Store",
+        "loading": "Loading store products...",
+        "empty": "No store products available.",
+        "officialMerchandise": "Official Merchandise",
+        "communityMarketplace": "Community Marketplace",
+        "viewStore": "View Store",
+        "exploreMarketplace": "Explore Marketplace"
+      },
+      "about": {
+        "titleWords": ["About", "Abu", "Dhabi", "Cycling", "Club"],
+        "text": "At Abu Dhabi Cycling Club, every ride is a step toward building a stronger, healthier, and more connected society. We are the heart of the UAE's cycling movement uniting enthusiasts, athletes, and families through the shared joy of cycling.",
+        "stats": {
+          "riders": "Riders",
+          "events": "Events",
+          "years": "Years"
+        },
+        "readMore": "Read More"
+      },
+      "cta": {
+        "title": "Start Your Ride Today",
+        "subtitle": "Download the ADCC app and join the cycling community."
+      },
+      "footer": {
+        "quickLinks": "Quick Links",
+        "contactUs": "Contact Us",
+        "followUs": "Follow Us",
+        "copyright": "Copyright 2026. Abu Dhabi Cycling Club"
+      },
+      "newsletter": {
+        "placeholder": "Enter your email",
+        "submit": "Submit",
+        "saving": "Saving...",
+        "emailRequired": "Please enter your email address.",
+        "emailInvalid": "Please enter a valid email address.",
+        "thanks": "Thanks for subscribing.",
+        "subscribeError": "Failed to subscribe."
+      }
+    },
+    "tracks": {
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "subtitle": "Got questions before hitting the road? We've got you covered.",
+        "items": [
+          {
+            "q": "01. Do I need to be an experienced cyclist to join ADCC rides?",
+            "a": "Not at all! ADCC welcomes riders of all experience levels. We have beginner-friendly rides as well as advanced training sessions to suit everyone."
+          },
+          {
+            "q": "02. Are there specific tracks for beginners or families?",
+            "a": "Yes! We have several easy, flat tracks such as Corniche Seafront and Saadiyat Island Loop that are perfect for beginners and family outings."
+          },
+          {
+            "q": "03. What gear do I need to bring for a group ride?",
+            "a": "A road-worthy bike, a helmet, water, and appropriate cycling attire. We recommend lights for early morning or evening rides."
+          },
+          {
+            "q": "04. Can I participate in races without being a professional?",
+            "a": "Absolutely. Many of our races have categories for recreational riders. Check individual event details for age and skill category breakdowns."
+          },
+          {
+            "q": "05. How do I track my performance or join challenges?",
+            "a": "Download the ADCC app to log your rides, join challenges, and track your progress alongside thousands of community members."
+          },
+          {
+            "q": "06. Are there any women-only rides or training sessions?",
+            "a": "Yes! ADCC organises regular women-only rides and training sessions. Check our events calendar for upcoming sessions."
+          }
+        ]
+      }
+    }
   }
 }
