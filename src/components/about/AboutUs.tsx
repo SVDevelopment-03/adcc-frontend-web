@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getPublicStats } from "../../services/publicStatsApi";
 import { motion } from "framer-motion";
 import { AnimatedButton } from "../ui/AnimatedButton";
 import { AnimatedImage } from "../ui/AnimatedImage";
+import { AnimatedWords, PublicPageHero, useWordList } from "../public/publicPageHelpers";
 
 // ─── Page styles ─────────────────────────────────────────────────────────────
 const FontLoader = () => (
@@ -390,6 +392,8 @@ const FontLoader = () => (
 
 function JourneyCard() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const titleWords = useWordList("public.common.journeyCard.title");
 
   const avatarBackgrounds = [
     "linear-gradient(135deg, #f7c59f 0%, #7aa7ff 100%)",
@@ -402,7 +406,7 @@ function JourneyCard() {
     <div className="journey-card">
       <motion.img
         src="/img/image 2991.png"
-        alt="ADCC cyclist"
+        alt={t("public.common.journeyCard.riderAlt")}
         className="journey-card__image"
         initial={{ opacity: 0, x: 200 }}
         whileInView={{ opacity: 1, x: 0 }}
@@ -413,8 +417,7 @@ function JourneyCard() {
         viewport={{ once: true }}
       />
 
-      <p className="journey-card__eyebrow">New to Cycling?</p>
-      {/* <h3 className="bebas journey-card__title">Start Your Journey with ADCC</h3> */}
+      <p className="journey-card__eyebrow">{t("public.common.journeyCard.eyebrow")}</p>
 
       <h3
         className="bebas journey-card__title"
@@ -424,7 +427,7 @@ function JourneyCard() {
           gap: "10px",
         }}
       >
-        {["Start", "Your", "Journey", "with", "ADCC"].map((word, index) => (
+        {titleWords.map((word, index) => (
           <motion.span
             key={`${word}-${index}`}
             initial={{ opacity: 0, y: 80 }}
@@ -443,7 +446,7 @@ function JourneyCard() {
         ))}
       </h3>
 
-      <div className="journey-card__community" aria-label="+5k in the Community">
+      <div className="journey-card__community" aria-label={t("public.common.journeyCard.community")}>
         {avatarBackgrounds.map((background, index) => (
           <span
             key={index}
@@ -452,7 +455,7 @@ function JourneyCard() {
           />
         ))}
         <span className="journey-card__avatar" />
-        <span className="journey-card__community-text">+5k in the Community</span>
+        <span className="journey-card__community-text">{t("public.common.journeyCard.community")}</span>
       </div>
 
       <AnimatedButton
@@ -460,158 +463,34 @@ function JourneyCard() {
         onClick={() => navigate("/contact-us")}
         fullWidth
       >
-        Get In Touch
+        {t("public.common.journeyCard.cta")}
       </AnimatedButton>
 
     </div>
   );
 }
 
-// ─── NAVBAR ──────────────────────────────────────────────────────────────────
-function Navbar() {
-  return (
-    <header className="about-local-nav" style={{
-      position: "sticky", top: 0, zIndex: 100,
-      width: "100%", height: 134,
-      background: "#EAF4FF",
-      display: "flex", alignItems: "center",
-      justifyContent: "space-between",
-      padding: "0 82px",
-      borderBottom: "1px solid rgba(0,0,0,0.06)"
-    }}>
-      {/* Logo */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <span className="bebas" style={{ fontSize: 28, lineHeight: 1, letterSpacing: 2 }}>ABU<span style={{ color: var_green }}>◉</span>DHABI</span>
-        <span style={{ fontSize: 11, letterSpacing: 3, color: "#333", textTransform: "uppercase", fontWeight: 500 }}>CYCLING CLUB</span>
-        <div style={{ height: 3, background: var_green, borderRadius: 2, marginTop: 2 }} />
-      </div>
-
-      {/* Nav links */}
-      <nav style={{ display: "flex", gap: 48, alignItems: "center" }}>
-        {["About Us", "Events", "Community", "Tracks"].map((l) => (
-          <a key={l} href="#"
-            style={{
-              fontFamily: "'Bebas Kai',sans-serif", fontWeight: 500, fontSize: 20,
-              color: "#000", textDecoration: "none",
-              borderBottom: l === "About Us" ? "2px solid #019839" : "2px solid transparent",
-              paddingBottom: 2, transition: "border-color .2s"
-            }}
-          >{l}</a>
-        ))}
-      </nav>
-
-      {/* Right side */}
-      <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-        <span style={{ fontSize: 17, fontWeight: 500 }}>🌤 English</span>
-        <AnimatedButton showArrow={false}>Menu</AnimatedButton>
-      </div>
-    </header>
-  );
-}
-
 // ─── HERO ─────────────────────────────────────────────────────────────────────
 function Hero() {
+  const { t } = useTranslation();
+  const titleWords = t("public.about.hero.titleWords", { returnObjects: true }) as string[];
+  const breadcrumb = t("public.about.hero.breadcrumb", { returnObjects: true }) as string[];
+
   return (
-    <section className="about-hero" style={{ position: "relative", width: "100%", height: 640, overflow: "hidden" }}>
-      {/* bg image gradient overlay */}
-      <div className="about-hero-bg" style={{
-        position: "absolute", inset: 0,
-        background: "linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,0.45) 100%)",
-        // backgroundImage: "linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,0.45) 100%), url('https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?w=1440&q=80')",
-        backgroundImage: "linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,0.45) 100%), url('/img/Frame 2147226602.png')",
-        backgroundSize: "cover", backgroundPosition: "center top"
-      }} />
-      <div className="about-hero-content" style={{ position: "absolute", bottom: 90, left: 82 }}>
-        <motion.h1
-          className="bebas about-hero-title overflow-hidden"
-          style={{
-            fontSize: 70,
-            color: "#fff",
-            lineHeight: 1,
-            marginTop: 8,
-            textTransform: "uppercase",
-          }}
-          initial="hidden"
-          animate="visible"
-          variants={{
-            visible: {
-              transition: {
-                staggerChildren: 0.08,
-              },
-            },
-          }}
-        >
-          {["About", "Us"].map((word, index) => (
-            <span
-              key={word}
-              className="inline-block overflow-hidden"
-              style={{ marginRight: "16px" }}
-            >
-              <motion.span
-                className="inline-block"
-                variants={{
-                  hidden: {
-                    y: "120%",
-                    opacity: 0,
-                  },
-                  visible: {
-                    y: "0%",
-                    opacity: 1,
-                  },
-                }}
-                transition={{
-                  duration: 0.7,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-              >
-                {word}
-              </motion.span>
-            </span>
-          ))}
-        </motion.h1>
-        <p
-          className="about-hero-breadcrumb overflow-hidden"
-          style={{
-            color: "rgba(255,255,255,0.8)",
-            fontSize: 22,
-            fontFamily: "'Bebas Kai',sans-serif",
-          }}
-        >
-          {["Home", "/", "About", "us"].map((word, index) => (
-            <span
-              key={`${word}-${index}`}
-              className="inline-block overflow-hidden"
-              style={{ marginRight: "8px" }}
-            >
-              <motion.span
-                className="inline-block"
-                initial={{
-                  y: "120%",
-                  opacity: 0,
-                }}
-                animate={{
-                  y: "0%",
-                  opacity: 1,
-                }}
-                transition={{
-                  duration: 0.7,
-                  delay: index * 0.08,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-              >
-                {word}
-              </motion.span>
-            </span>
-          ))}
-        </p>
-      </div>
-    </section>
+    <PublicPageHero
+      titleWords={titleWords}
+      breadcrumb={breadcrumb}
+      backgroundImage="/img/Frame 2147226602.png"
+      classPrefix="about"
+    />
   );
 }
 
 // ─── STATS + INTRO ────────────────────────────────────────────────────────────
 function StatsSection() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const titleWords = useWordList("public.about.stats.titleWords");
   const [activeMembers, setActiveMembers] = useState<number | null>(null);
   const [organizedEvents, setOrganizedEvents] = useState<number | null>(null);
 
@@ -634,17 +513,17 @@ function StatsSection() {
   }, []);
 
   const stats = [
-    { val: formatPublicStat(activeMembers, "5K+"),  label: "Active Riders &\nMembers" },
-    { val: formatPublicStat(organizedEvents, "100+"), label: "Cycling Events\nOrganized" },
-    { val: "20+",  label: "Community Rides\nMonthly" },
-    { val: "2017", label: "Established in\nAbu Dhabi" },
+    { val: formatPublicStat(activeMembers, "5K+"), label: t("public.about.stats.activeMembers") },
+    { val: formatPublicStat(organizedEvents, "100+"), label: t("public.about.stats.eventsOrganized") },
+    { val: "20+", label: t("public.about.stats.communityRides") },
+    { val: "2017", label: t("public.about.stats.established") },
   ];
   return (
     <section className="about-section" style={{ background: "#EAF4FF", padding: "80px 82px" }}>
       <div className="about-stats-wrap" style={{ display: "flex", gap: 64, alignItems: "flex-start" }}>
         {/* Headline */}
         <div className="about-stats-left" style={{ flex: "0 0 520px" }}>
-          <motion.h2
+          <h2
             className="bebas about-stats-title overflow-hidden"
             style={{
               fontSize: 50,
@@ -652,59 +531,9 @@ function StatsSection() {
               textTransform: "uppercase",
               maxWidth: 500,
             }}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={{
-              visible: {
-                transition: {
-                  staggerChildren: 0.06,
-                },
-              },
-            }}
           >
-            {[
-              "We",
-              "are",
-              "cyclists",
-              "committed",
-              "to",
-              "pushing",
-              "limits",
-              "and",
-              "inspiring",
-              "a",
-              "stronger",
-              "cycling",
-              "community.",
-            ].map((word, index) => (
-              <span
-                key={`${word}-${index}`}
-                className="inline-block overflow-hidden"
-                style={{ marginRight: "12px" }}
-              >
-                <motion.span
-                  className="inline-block"
-                  variants={{
-                    hidden: {
-                      y: "120%",
-                      opacity: 0,
-                    },
-                    visible: {
-                      y: "0%",
-                      opacity: 1,
-                    },
-                  }}
-                  transition={{
-                    duration: 0.7,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                >
-                  {word}
-                </motion.span>
-              </span>
-            ))}
-          </motion.h2>
+            <AnimatedWords words={titleWords} gap={12} />
+          </h2>
           {/* small cycling photo */}
           <motion.div
             className="about-stats-photo"
@@ -743,9 +572,9 @@ function StatsSection() {
             ))}
           </div>
           <p className="about-body-text" style={{ fontSize: 22, lineHeight: 1.5, maxWidth: 480, marginBottom: 28, color: "rgba(0,0,0,0.8)" }}>
-            Abu Dhabi Cycling Club unites riders of all levels with community rides and training programs.
+            {t("public.about.stats.body")}
           </p>
-          <AnimatedButton onClick={() => navigate("/contact-us")}>Get In Touch</AnimatedButton>
+          <AnimatedButton onClick={() => navigate("/contact-us")}>{t("public.common.getInTouch")}</AnimatedButton>
         </div>
       </div>
     </section>
@@ -763,6 +592,9 @@ function formatPublicStat(value: number | null, fallback: string) {
 
 // ─── MISSION / VISION + JOURNEY CARD ─────────────────────────────────────────
 function MissionSection() {
+  const { t } = useTranslation();
+  const titleWords = useWordList("public.about.mission.titleWords");
+
   return (
     // <section style={{ background: "#EAF4FF", padding: "0 82px 80px" }}>
     <section
@@ -779,7 +611,7 @@ function MissionSection() {
       {/* Headline row */}
       <div className="about-mission-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 40 }}>
         <div>
-          <motion.h2
+          <h2
             className="bebas about-mission-title overflow-hidden"
             style={{
               fontSize: 50,
@@ -787,48 +619,12 @@ function MissionSection() {
               maxWidth: 480,
               textTransform: "capitalize",
             }}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={{
-              visible: {
-                transition: {
-                  staggerChildren: 0.07,
-                },
-              },
-            }}
           >
-            {["Driving", "the", "Future", "of", "Cycling", "in", "Abu", "Dhabi"].map((word, index) => (
-              <span
-                key={`${word}-${index}`}
-                className="inline-block overflow-hidden"
-                style={{ marginRight: "12px" }}
-              >
-                <motion.span
-                  className="inline-block"
-                  variants={{
-                    hidden: {
-                      y: "120%",
-                      opacity: 0,
-                    },
-                    visible: {
-                      y: "0%",
-                      opacity: 1,
-                    },
-                  }}
-                  transition={{
-                    duration: 0.7,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                >
-                  {word}
-                </motion.span>
-              </span>
-            ))}
-          </motion.h2>
+            <AnimatedWords words={titleWords} gap={12} />
+          </h2>
         </div>
         <p className="about-mission-intro" style={{ maxWidth: 430, fontSize: 22, fontWeight: 500, lineHeight: 1.5, color: "rgba(0,0,0,0.8)", paddingTop: 8 }}>
-          At Abu Dhabi Cycling Club, our mission is to inspire riders, develop athletes, and build a thriving cycling culture across the emirate.
+          {t("public.about.mission.intro")}
         </p>
       </div>
 
@@ -879,7 +675,7 @@ function MissionSection() {
               className="bebas"
               style={{ fontSize: 20, marginBottom: 10 }}
             >
-              01. Our Mission
+              {t("public.about.mission.heading")}
             </div>
 
             <p
@@ -889,10 +685,7 @@ function MissionSection() {
                 lineHeight: 1.6,
               }}
             >
-              To promote cycling as a healthy lifestyle and competitive
-              sport by creating opportunities for riders to train,
-              participate in events, and connect with the cycling
-              community across Abu Dhabi.
+              {t("public.about.mission.body")}
             </p>
           </motion.div>
 
@@ -922,7 +715,7 @@ function MissionSection() {
               className="bebas"
               style={{ fontSize: 20, marginBottom: 10 }}
             >
-              02. Our Vision
+              {t("public.about.mission.visionHeading")}
             </div>
 
             <p
@@ -932,10 +725,7 @@ function MissionSection() {
                 lineHeight: 1.6,
               }}
             >
-              To become the leading cycling club in the UAE, known
-              for excellence, inclusivity, and producing
-              championship-level athletes who represent Abu Dhabi
-              on the world stage.
+              {t("public.about.mission.visionBody")}
             </p>
           </motion.div>
         </motion.div>
@@ -972,18 +762,21 @@ function MissionSection() {
 // ─── VALUES ───────────────────────────────────────────────────────────────────
 function ValuesSection() {
   const navigate = useNavigate();
-  const values = [
-    { num: "//001", title: "Community",  bg: "#323232", text: "Cycling unites people. Our rides and events welcome riders of all levels." },
-    { num: "//001", title: "Excellence", bg: "#777777", text: "We help cyclists enhance endurance, speed, and performance." },
-    { num: "//001", title: "Inclusivity",bg: "#777777", text: "Cycling is a lifestyle that inspires dedication and love for the ride." },
-    { num: "//001", title: "Achievement",bg: "#777777", text: "We promote cycling as a healthy activity that encourages active lifestyles." },
-  ];
+  const { t } = useTranslation();
+  const titleWords = useWordList("public.about.values.titleWords");
+  const valueKeys = ["community", "excellence", "inclusivity", "achievement"] as const;
+  const values = valueKeys.map((key) => ({
+    num: "//001",
+    title: t(`public.about.values.items.${key}.title`),
+    bg: key === "community" ? "#323232" : "#777777",
+    text: t(`public.about.values.items.${key}.text`),
+  }));
   return (
     <section className="about-section" style={{ background: "#EAF4FF", padding: "80px 82px" }}>
       <div className="about-values-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 40 }}>
         <div>
-          <p style={{fontFamily: "'Bebas Kai',sans-serif", fontSize: 15, fontWeight: 500, marginBottom: 8, color: "#000" }}>Our values</p>
-          <motion.h2
+          <p style={{fontFamily: "'Bebas Kai',sans-serif", fontSize: 15, fontWeight: 500, marginBottom: 8, color: "#000" }}>{t("public.about.values.eyebrow")}</p>
+          <h2
             className="bebas about-values-title overflow-hidden"
             style={{
               fontSize: 50,
@@ -991,47 +784,11 @@ function ValuesSection() {
               maxWidth: 480,
               textTransform: "capitalize",
             }}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={{
-              visible: {
-                transition: {
-                  staggerChildren: 0.07,
-                },
-              },
-            }}
           >
-            {["The", "Principles", "That", "Drive", "Our", "Cycling", "Community"].map((word, index) => (
-              <span
-                key={`${word}-${index}`}
-                className="inline-block overflow-hidden"
-                style={{ marginRight: "12px" }}
-              >
-                <motion.span
-                  className="inline-block"
-                  variants={{
-                    hidden: {
-                      y: "120%",
-                      opacity: 0,
-                    },
-                    visible: {
-                      y: "0%",
-                      opacity: 1,
-                    },
-                  }}
-                  transition={{
-                    duration: 0.7,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                >
-                  {word}
-                </motion.span>
-              </span>
-            ))}
-          </motion.h2>
+            <AnimatedWords words={titleWords} gap={12} />
+          </h2>
         </div>
-        <AnimatedButton onClick={() => navigate("/user-communities")}>Discover the Community</AnimatedButton>
+        <AnimatedButton onClick={() => navigate("/user-communities")}>{t("public.about.values.discoverCommunity")}</AnimatedButton>
       </div>
       <motion.div
         className="about-values-grid"
@@ -1116,14 +873,16 @@ function ValuesSection() {
 
 // ─── COACHES ─────────────────────────────────────────────────────────────────
 function CoachesSection() {
+  const { t } = useTranslation();
+  const titleWords = useWordList("public.about.coaches.titleWords");
   const cards = [
-    { label: "Club Players",   img: "/img/image 2998.png" },
-    { label: "Club Coaches",   img: "/img/image 2999.png" },
-    { label: "Club Mechanics", img: "/img/image 2997.png" },
+    { label: t("public.about.coaches.players"), img: "/img/image 2998.png" },
+    { label: t("public.about.coaches.coaches"), img: "/img/image 2999.png" },
+    { label: t("public.about.coaches.mechanics"), img: "/img/image 2997.png" },
   ];
   return (
     <section className="about-section about-coaches-section" style={{ background: "#EAF4FF", padding: "0 82px 80px" }}>
-      <motion.h2
+      <h2
         className="bebas about-coaches-title overflow-hidden"
         style={{
           fontSize: 50,
@@ -1133,45 +892,9 @@ function CoachesSection() {
           margin: "0 auto 40px",
           textTransform: "capitalize",
         }}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={{
-          visible: {
-            transition: {
-              staggerChildren: 0.07,
-            },
-          },
-        }}
       >
-        {["Meet", "the", "Coaches", "Driving", "Abu", "Dhabi's", "Cycling", "Community"].map((word, index) => (
-          <span
-            key={`${word}-${index}`}
-            className="inline-block overflow-hidden"
-            style={{ marginRight: "12px" }}
-          >
-            <motion.span
-              className="inline-block"
-              variants={{
-                hidden: {
-                  y: "120%",
-                  opacity: 0,
-                },
-                visible: {
-                  y: "0%",
-                  opacity: 1,
-                },
-              }}
-              transition={{
-                duration: 0.7,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-            >
-              {word}
-            </motion.span>
-          </span>
-        ))}
-      </motion.h2>
+        <AnimatedWords words={titleWords} gap={12} />
+      </h2>
       <div className="about-coaches-grid" style={{
         display: "flex", borderRadius: 16, overflow: "hidden",
         height: 488, background: "#fff"
@@ -1251,7 +974,7 @@ function CoachesSection() {
         ))}
       </div>
       <div style={{ textAlign: "center", marginTop: 36 }}>
-        <AnimatedButton>Explore Coaches</AnimatedButton>
+        <AnimatedButton>{t("public.about.coaches.explore")}</AnimatedButton>
       </div>
     </section>
   );
@@ -1366,16 +1089,12 @@ function Footer() {
   );
 }
 
-// ─── Hack: CSS variable in JSX ────────────────────────────────────────────────
-const var_green = "#019839";
-
 // ─── APP ──────────────────────────────────────────────────────────────────────
 export default function AboutUs() {
   return (
     <>
       <FontLoader />
       <div className="about-page" style={{ minWidth: 320, overflowX: "hidden" }}>
-        <Navbar />
         <Hero />
         <StatsSection />
         <MissionSection />

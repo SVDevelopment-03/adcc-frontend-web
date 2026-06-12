@@ -1,0 +1,253 @@
+{
+  "common": {
+    "breadcrumbHome": "Home",
+    "breadcrumbSeparator": "/",
+    "search": "Search",
+    "loading": "Loading...",
+    "loadingEvents": "Loading events...",
+    "loadingTracks": "Loading tracks...",
+    "loadingChallenges": "Loading challenges...",
+    "viewDetails": "View Details",
+    "getInTouch": "Get In Touch",
+    "prev": "Prev",
+    "next": "Next",
+    "showingResults": "Showing {{shown}} of {{total}} results",
+    "showingCount": "Showing {{count}} results",
+    "showingActiveChallenges": "Showing {{count}} active challenges",
+    "loadErrorEvents": "Events could not be loaded right now.",
+    "loadErrorChallenges": "Unable to load challenges right now.",
+    "loadErrorCommunities": "Failed to load communities.",
+    "loadErrorTracks": "Unable to load tracks right now.",
+    "noTracksFiltered": "No tracks found for the selected filters.",
+    "noCommunities": "No communities found. Try adjusting your search or filters.",
+    "dateTBA": "Date TBA",
+    "distanceTBA": "Distance TBA",
+    "participants": "{{formattedCount}} participants",
+    "members": "{{formattedCount}} members",
+    "eventsCount": "{{formattedCount}} events",
+    "joinChallenge": "Join The Challenge",
+    "exploreTracks": "Explore Tracks",
+    "exploreTracksArrow": "Explore Tracks →",
+    "searchCommunities": "Search Communities",
+    "prevPage": "Previous page",
+    "nextPage": "Next page",
+    "untitledTrack": "Untitled Track",
+    "na": "N/A",
+    "eventFallback": "Event",
+    "communityFallback": "Community",
+    "filters": {
+      "allCities": "All Cities",
+      "allCategories": "All Categories",
+      "allLevels": "All Levels",
+      "allTypes": "All Types",
+      "status": "Status",
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "journeyCard": {
+      "eyebrow": "New to Cycling?",
+      "title": "Start Your Journey with ADCC",
+      "community": "+5k in the Community",
+      "cta": "Get In Touch",
+      "riderAlt": "ADCC cyclist"
+    },
+    "stats": {
+      "distance": "Distance",
+      "elevation": "Elevation",
+      "level": "Level"
+    },
+    "challengeDays": {
+      "completed": "Completed",
+      "ended": "Ended",
+      "endsToday": "Ends today",
+      "daysLeft": "{{count}} day left",
+      "daysLeft_other": "{{count}} days left"
+    }
+  },
+  "about": {
+    "hero": {
+      "titleWords": ["About", "Us"],
+      "breadcrumb": ["Home", "/", "About Us"]
+    },
+    "stats": {
+      "titleWords": ["We", "are", "cyclists", "committed", "to", "pushing", "limits", "and", "inspiring", "a", "stronger", "cycling", "community."],
+      "activeMembers": "Active Riders &\nMembers",
+      "eventsOrganized": "Cycling Events\nOrganized",
+      "communityRides": "Community Rides\nMonthly",
+      "established": "Established in\nAbu Dhabi",
+      "body": "Abu Dhabi Cycling Club unites riders of all levels with community rides and training programs."
+    },
+    "mission": {
+      "titleWords": ["Driving", "the", "Future", "of", "Cycling", "in", "Abu", "Dhabi"],
+      "intro": "At Abu Dhabi Cycling Club, our mission is to inspire riders, develop athletes, and build a thriving cycling culture across the emirate.",
+      "heading": "01. Our Mission",
+      "body": "To promote cycling as a healthy lifestyle and competitive sport by creating opportunities for riders to train, participate in events, and connect with the cycling community across Abu Dhabi.",
+      "visionHeading": "02. Our Vision",
+      "visionBody": "To become the leading cycling club in the UAE, known for excellence, inclusivity, and producing championship-level athletes who represent Abu Dhabi on the world stage."
+    },
+    "values": {
+      "eyebrow": "Our values",
+      "titleWords": ["The", "Principles", "That", "Drive", "Our", "Cycling", "Community"],
+      "discoverCommunity": "Discover the Community",
+      "items": {
+        "community": {
+          "title": "Community",
+          "text": "Cycling unites people. Our rides and events welcome riders of all levels."
+        },
+        "excellence": {
+          "title": "Excellence",
+          "text": "We help cyclists enhance endurance, speed, and performance."
+        },
+        "inclusivity": {
+          "title": "Inclusivity",
+          "text": "Cycling is a lifestyle that inspires dedication and love for the ride."
+        },
+        "achievement": {
+          "title": "Achievement",
+          "text": "We promote cycling as a healthy activity that encourages active lifestyles."
+        }
+      }
+    },
+    "coaches": {
+      "titleWords": ["Meet", "Our", "Coaching", "Team"],
+      "players": "Club Players",
+      "coaches": "Club Coaches",
+      "mechanics": "Club Mechanics",
+      "explore": "Explore Coaches"
+    }
+  },
+  "events": {
+    "hero": {
+      "titleWords": ["Events"],
+      "breadcrumb": ["Home", "/", "Events"]
+    },
+    "intro": {
+      "titleWords": ["Join", "the", "Most", "Exciting", "Cycling", "Events", "in", "Abu", "Dhabi"],
+      "body": "Explore races, community rides, and challenges by Abu Dhabi Cycling Club. Find events for your location and skill."
+    }
+  },
+  "tracks": {
+    "hero": {
+      "titleWords": ["Tracks"],
+      "breadcrumb": ["Home", "/", "Tracks"]
+    },
+    "intro": {
+      "titleWords": ["Explore", "Abu", "Dhabi's", "Premier", "Cycling", "Tracks"],
+      "body": "From scenic coastal rides to high-performance cycling circuits, Abu Dhabi offers world-class tracks designed for every rider. Whether you're training for endurance, improving speed, or enjoying a casual ride, discover routes that match your level and ambition."
+    },
+    "why": {
+      "title": "Why Use ADCC Tracks?",
+      "features": {
+        "infrastructure": {
+          "title": "Top Infrastructure",
+          "desc": "Ride on well-designed cycling tracks with smooth surfaces and clear markings."
+        },
+        "routes": {
+          "title": "Curated Routes",
+          "desc": "Discover hand-picked routes for every skill level across Abu Dhabi."
+        },
+        "community": {
+          "title": "Community Rides",
+          "desc": "Join group rides and connect with fellow cyclists on every route."
+        },
+        "performance": {
+          "title": "Performance Tracking",
+          "desc": "Log rides and monitor your progress with the ADCC app."
+        }
+      }
+    }
+  },
+  "challenges": {
+    "hero": {
+      "titleWords": ["Challenges"],
+      "breadcrumb": ["Home", "/", "Challenges"]
+    },
+    "intro": {
+      "titleWords": ["Push", "Your", "Limits", "with", "ADCC", "Challenges", "in", "Abu", "Dhabi"],
+      "body": "Abu Dhabi Cycling Club provides exciting opportunities for endurance rides and competitive challenges. Whether chasing distance, speed, or competing, our challenges keep you motivated."
+    },
+    "stats": {
+      "riders": "Challenge Riders",
+      "active": "Active Challenges",
+      "upcoming": "Upcoming Challenges",
+      "completed": "Completed Challenges"
+    },
+    "tabs": {
+      "active": "Active",
+      "upcoming": "Upcoming",
+      "completed": "Completed"
+    },
+    "listTitleWords": ["Cycling", "Challenges"],
+    "showingUpcoming": "Showing {{count}} upcoming challenges",
+    "showingCompleted": "Showing {{count}} completed challenges",
+    "noActive": "No active challenges found.",
+    "noUpcoming": "No upcoming challenges found.",
+    "noCompleted": "No completed challenges found.",
+    "flagAlt": "ADCC Flag",
+    "descriptionFallback": "{{type}} challenge: complete {{target}} {{unit}}"
+  },
+  "communities": {
+    "hero": {
+      "titleWords": ["Communities"],
+      "breadcrumb": ["Home", "/", "Communities"]
+    },
+    "intro": {
+      "titleWords": ["Connect", "with", "Abu", "Dhabi's", "Cycling", "Community"],
+      "body": "Join groups of riders who share your passion. From training clubs to social rides, find your place in the ADCC community."
+    },
+    "types": {
+      "all": "All Types",
+      "training": "Training Groups",
+      "social": "Social Rides",
+      "corporate": "Corporate Teams",
+      "youth": "Youth Programs",
+      "women": "Women's Groups",
+      "racing": "Racing Teams",
+      "charity": "Charity Rides",
+      "other": "Other",
+      "familyRides": "Family Rides",
+      "racingPerformance": "Racing & Performance",
+      "sheRides": "Women (SheRides)",
+      "youthCycling": "Youth Cycling",
+      "weekendSocial": "Weekend Social",
+      "nightRiders": "Night Riders",
+      "mtbTrail": "MTB/Trail",
+      "trainingClinics": "Training & Clinics"
+    },
+    "explore": {
+      "titleWords": ["Explore", "Communities"]
+    },
+    "imageAlt": "Cycling community"
+  },
+  "contact": {
+    "hero": {
+      "titleWords": ["Contact", "Us"],
+      "breadcrumb": ["Home", "/", "Contact Us"]
+    },
+    "intro": {
+      "title": "We're Here to Help You Ride Better",
+      "body": "Have a question about membership, events, or training? Reach out and our team will get back to you."
+    },
+    "info": {
+      "email": "Email",
+      "telephone": "Telephone",
+      "location": "Location"
+    },
+    "form": {
+      "title": "Get In Touch",
+      "description": "Fill in the form and we'll respond as soon as possible.",
+      "firstName": "First Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "message": "Message",
+      "firstNamePlaceholder": "Your first name",
+      "emailPlaceholder": "you@example.com",
+      "phonePlaceholder": "+971",
+      "messagePlaceholder": "How can we help?",
+      "privacy": "I agree to the privacy policy.",
+      "submit": "Send Enquiry"
+    },
+    "imageAlt": "Cycling group"
+  }
+}

@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from '../../contexts/LocaleContext';
 import { subscribeToNewsletter } from '../../services/newsletterApi';
 import { HOME_STORE_FALLBACK_IMAGE, HOME_STORE_PRODUCTS } from '../../data/homeStoreProducts';
+import { AppStoreButton } from '../public/AppStoreButton';
 import { Bike, CalendarDays, MapPin, Users } from 'lucide-react';
 
 const TICKER_ITEMS = [
@@ -2061,6 +2062,7 @@ function scrambleText(
 function CyclingJourneySection() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { locale } = useLocale();
   const textRef = useRef<HTMLParagraphElement | null>(null);
   const cardsRef = useRef<HTMLDivElement | null>(null);
   const [cardsVisible, setCardsVisible] = useState(false);
@@ -2079,7 +2081,11 @@ function CyclingJourneySection() {
     if (!cardsEl) return;
 
     if (textRef.current) {
-      scrambleText(textRef.current, journeyText);
+      if (locale === 'ar') {
+        textRef.current.textContent = journeyText;
+      } else {
+        scrambleText(textRef.current, journeyText);
+      }
     }
 
     const observer = new IntersectionObserver(
@@ -2090,7 +2096,7 @@ function CyclingJourneySection() {
     observer.observe(cardsEl);
 
     return () => observer.disconnect();
-  }, [journeyText]);
+  }, [journeyText, locale]);
   
   return (
     <section className="journey-section">
@@ -2137,7 +2143,7 @@ function CyclingJourneySection() {
           }}
           viewport={{ once: true }}
         >
-          <img src="/images/journey.png" alt="ADCC cyclist" />
+          <img src="/images/journey.png" alt={t('public.home.journey.riderAlt')} />
         </motion.div>
       </div>
       <div className="journey-content">
@@ -2190,6 +2196,9 @@ function AppSection() {
   const { t } = useTranslation();
   const { isRtl } = useLocale();
   const appTitleWords = t('public.home.app.titleWords', { returnObjects: true }) as string[];
+  const downloadLabelWords = t('public.home.app.downloadLabelWords', { returnObjects: true }) as string[];
+  const downloadLine1 = downloadLabelWords.slice(0, 1);
+  const downloadLine2 = downloadLabelWords.slice(1);
   const features = [
     { icon: '/images/icon-1.png', label: t('public.home.app.features.track') },
     { icon: '/images/icon-2.png', label: t('public.home.app.features.challenges') },
@@ -2317,7 +2326,7 @@ function AppSection() {
               },
             }}
           >
-            {["Download"].map((word) => (
+            {downloadLine1.map((word) => (
                 <span
                   key={word}
                   className="home-word-gap-sm inline-block overflow-hidden"
@@ -2346,9 +2355,9 @@ function AppSection() {
 
               <br />
 
-              {["ADCC", "APP"].map((word) => (
+              {downloadLine2.map((word, index) => (
                 <span
-                  key={word}
+                  key={`${word}-${index}`}
                   className="home-word-gap-sm inline-block overflow-hidden"
                 >
                   <motion.span
@@ -2402,61 +2411,23 @@ function AppSection() {
             </motion.div>
           </div>
           {/* App store buttons */}
-          <motion.div
+          <div
             className="home-store-buttons"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={{
-              visible: {
-                transition: {
-                  staggerChildren: 0.12,
-                },
-              },
-            }}
             style={{
               display: "flex",
               gap: 12,
               flexWrap: "wrap",
             }}
           >
-            {[0, 1].map((item) => (
-              <motion.div
-                key={item}
-                variants={{
-                  hidden: {
-                    opacity: 0,
-                    translateY: 80,
-                  },
-                  visible: {
-                    opacity: 1,
-                    translateY: 0,
-                  },
-                }}
-                transition={{
-                  duration: 0.7,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                style={{
-                  background: "#fff",
-                  borderRadius: 100,
-                  padding: "10px 20px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                }}
-              >
-                {item === 0 ? <>Google Play content here</> : <>App Store content here</>}
-              </motion.div>
-            ))}
-          </motion.div>
+            <AppStoreButton type="google" />
+            <AppStoreButton type="apple" />
+          </div>
         </div>
         {/* Phone mockup center */}
         <div ref={phoneRef} className={`app-phone-stage home-phone-stage${phoneVisible ? ' is-visible' : ''}`}>
           {/* Back phone */}
           <div style={{ width: '100%', maxWidth: 560 }}>
-            <img src="/images/image%203066.png" alt="ADCC App" style={{ display: 'block', width: '100%', height: 'auto', objectFit: 'contain', opacity: 1 }} />
+            <img src="/images/image%203066.png" alt={t('public.home.app.phoneAlt')} style={{ display: 'block', width: '100%', height: 'auto', objectFit: 'contain', opacity: 1 }} />
           </div>
           {/* Front phone */}
         </div>
@@ -2669,6 +2640,7 @@ function StoreMarketplaceCarousel({
   title: string;
   fallbackImage: string;
 }) {
+  const { t } = useTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
   const slides = images.length ? images : [fallbackImage];
 
@@ -2690,7 +2662,7 @@ function StoreMarketplaceCarousel({
           <button
             type="button"
             className="store-carousel-button"
-            aria-label="Previous product image"
+            aria-label={t('public.home.store.previousImage')}
             onClick={(event) => {
               event.stopPropagation();
               setActiveIndex((index) => (index === 0 ? slides.length - 1 : index - 1));
@@ -2701,7 +2673,7 @@ function StoreMarketplaceCarousel({
           <button
             type="button"
             className="store-carousel-button"
-            aria-label="Next product image"
+            aria-label={t('public.home.store.nextImage')}
             onClick={(event) => {
               event.stopPropagation();
               setActiveIndex((index) => (index === slides.length - 1 ? 0 : index + 1));
@@ -2771,7 +2743,7 @@ function StoreSection() {
                 />
               </div>
             )}
-            {/* <span className="store-featured-price">{product.price}</span> */}
+            {/* <span className="store-featured-price">{t(product.priceKey)}</span> */}
           </div>
         ))}
       </div>
@@ -2866,7 +2838,7 @@ function AboutSection() {
           fill
           zoom="subtle"
           src="/img/event - F1.png"
-          alt="ADCC cyclists"
+          alt={t('public.home.about.cyclistsAlt')}
           style={{ width: '100%', height: '100%' }}
           onError={(event) => {
             const img = event.currentTarget as HTMLImageElement;
@@ -2958,7 +2930,7 @@ function AboutSection() {
           fill
           zoom="subtle"
           src="/images/right-cycle.png"
-          alt="Rider"
+          alt={t('public.home.about.riderAlt')}
           style={{ width: '100%', height: '100%' }}
         />
       </motion.div>

@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
 import { getTracksPageEn, UAE_CITIES, type Track } from "../../services/trackService";
 import { motion } from "framer-motion";
 import { APP_STORE_LINKS } from "../../config/appStoreLinks";
+import { AnimatedWords, PublicPageHero, useWordList } from "../public/publicPageHelpers";
 
 type PublicTrackCard = {
   id: string;
@@ -31,16 +32,6 @@ type FilterOption = {
 const TRACK_FALLBACK_IMAGE = "/img/paolo-candelo-8tXukRrs7yk-unsplash 1.png";
 const PAGE_SIZE = 6;
 const ALL_FILTER_VALUE = "all";
-const CITY_FILTER_OPTIONS: FilterOption[] = [
-  { value: ALL_FILTER_VALUE, label: "All Cities" },
-  ...UAE_CITIES.map((city) => ({ value: city, label: city })),
-];
-const LEVEL_FILTER_OPTIONS: FilterOption[] = [
-  { value: ALL_FILTER_VALUE, label: "All Levels" },
-  { value: "easy", label: "Easy" },
-  { value: "medium", label: "Medium" },
-  { value: "hard", label: "Hard" },
-];
 
 const titleCase = (value?: string | null) =>
   (value || "")
@@ -53,21 +44,21 @@ const getTrackId = (track: Track) => String(track.id || (track as any)._id || tr
 const getTrackImage = (track: Track) =>
   track.image || track.coverImage || track.galleryImages?.[0] || TRACK_FALLBACK_IMAGE;
 
-const formatDistance = (distance?: number | string) => {
-  if (distance === undefined || distance === null || distance === "") return "N/A";
+const formatDistance = (distance: number | string | undefined, naLabel: string) => {
+  if (distance === undefined || distance === null || distance === "") return naLabel;
   const numeric = Number(distance);
   return Number.isFinite(numeric) ? `${numeric} km` : String(distance);
 };
 
-const normalizeTrack = (track: Track): PublicTrackCard => ({
+const normalizeTrack = (track: Track, t: (key: string) => string): PublicTrackCard => ({
   id: getTrackId(track),
-  name: track.title || (track as any).name || "Untitled Track",
+  name: track.title || (track as any).name || t("public.common.untitledTrack"),
   city: track.city || "UAE",
   difficulty: track.difficulty || "all",
   location: [track.area, track.city].filter(Boolean).join(", ") || track.city || "UAE",
-  distance: formatDistance(track.distance),
-  elevation: track.elevation ? String(track.elevation) : "N/A",
-  level: titleCase(track.difficulty) || "All Levels",
+  distance: formatDistance(track.distance, t("public.common.na")),
+  elevation: track.elevation ? String(track.elevation) : t("public.common.na"),
+  level: titleCase(track.difficulty) || t("public.common.filters.allLevels"),
   featured: Boolean((track as any).featured || (track as any).isFeatured),
   img: getTrackImage(track),
 });
@@ -419,6 +410,7 @@ const FontLoader = () => (
 );
 
 function TracksJourneyCard() {
+  const { t } = useTranslation();
   const avatarBackgrounds = [
     "linear-gradient(135deg, #f7c59f 0%, #7aa7ff 100%)",
     "linear-gradient(135deg, #f58b8b 0%, #ffe08a 100%)",
@@ -430,12 +422,12 @@ function TracksJourneyCard() {
     <div className="tracks-journey-card">
       <img
         src="/img/image 2991.png"
-        alt="ADCC cyclist"
+        alt={t("public.common.journeyCard.riderAlt")}
         className="tracks-journey-card__image"
       />
-      <p className="tracks-journey-card__eyebrow">New to Cycling?</p>
-      <h3 className="bebas tracks-journey-card__title">Start Your Journey with ADCC</h3>
-      <div className="tracks-journey-card__community" aria-label="+5k in the Community">
+      <p className="tracks-journey-card__eyebrow">{t("public.common.journeyCard.eyebrow")}</p>
+      <h3 className="bebas tracks-journey-card__title">{t("public.common.journeyCard.title")}</h3>
+      <div className="tracks-journey-card__community" aria-label={t("public.common.journeyCard.community")}>
         {avatarBackgrounds.map((background, index) => (
           <span
             key={index}
@@ -444,132 +436,38 @@ function TracksJourneyCard() {
           />
         ))}
         <span className="tracks-journey-card__avatar" />
-        <span className="tracks-journey-card__community-text">+5k in the Community</span>
+        <span className="tracks-journey-card__community-text">{t("public.common.journeyCard.community")}</span>
       </div>
     </div>
   );
 }
 
-// ── Navbar ────────────────────────────────────────────────────────────────────
-function Navbar() {
-  return (
-    <header className="track-local-nav" style={{
-      position: "sticky", top: 0, zIndex: 100,
-      width: "100%", height: 134, background: "#EAF4FF",
-      display: "flex", alignItems: "center", justifyContent: "space-between",
-      padding: "0 82px", borderBottom: "1px solid rgba(0,0,0,0.06)"
-    }}>
-      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <span className="bebas" style={{ fontSize: 26, lineHeight: 1, letterSpacing: 2 }}>
-          ABU<span style={{ color: "#019839" }}>◉</span>DHABI
-        </span>
-        <span style={{ fontSize: 10, letterSpacing: 3, color: "#333", textTransform: "uppercase", fontWeight: 500 }}>CYCLING CLUB</span>
-        <div style={{ height: 3, background: "#019839", borderRadius: 2, marginTop: 2 }} />
-      </div>
-      <nav style={{ display: "flex", gap: 48 }}>
-        {["About Us", "Events", "Community", "Tracks"].map(l => (
-          <a key={l} href="#" style={{
-            fontWeight: 500, fontSize: 20, color: "#000",
-            borderBottom: l === "Tracks" ? "2px solid #019839" : "2px solid transparent",
-            paddingBottom: 2
-          }}>{l}</a>
-        ))}
-      </nav>
-      <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-        <span style={{ fontSize: 17, fontWeight: 500 }}>🌤 English</span>
-        <button style={{
-          background: "#000", color: "#fff", border: "none", borderRadius: 30,
-          padding: "13px 28px", fontWeight: 700, fontSize: 18, cursor: "pointer",
-          fontFamily: "'Bebas Kai',sans-serif"
-        }}>Menu</button>
-      </div>
-    </header>
-  );
-}
-
 // ── Hero ──────────────────────────────────────────────────────────────────────
 function Hero() {
-  return (
-    <section className="track-hero" style={{ position: "relative", width: "100%", height: 640, overflow: "hidden" }}>
-      <div className="track-hero-bg" style={{
-        position: "absolute", inset: 0,
-        backgroundImage: "linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url('/img/pexels-krizz59-12838 1.png')",
-        backgroundSize: "cover", backgroundPosition: "center"
-      }} />
-      <div className="track-hero-content" style={{ position: "absolute", bottom: 90, left: 82 }}>
-        <p
-          className="track-hero-breadcrumb overflow-hidden"
-          style={{ color: "rgba(255,255,255,0.8)", fontSize: 22 }}
-        >
-          {["Home", "/", "Tracks"].map((word, index) => (
-            <span
-              key={`${word}-${index}`}
-              className="mr-2 inline-block overflow-hidden"
-            >
-              <motion.span
-                className="inline-block"
-                initial={{
-                  y: "120%",
-                  opacity: 0,
-                }}
-                animate={{
-                  y: "0%",
-                  opacity: 1,
-                }}
-                transition={{
-                  duration: 0.7,
-                  delay: index * 0.08,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-              >
-                {word}
-              </motion.span>
-            </span>
-          ))}
-        </p>
+  const { t } = useTranslation();
+  const titleWords = t("public.tracks.hero.titleWords", { returnObjects: true }) as string[];
+  const breadcrumb = t("public.tracks.hero.breadcrumb", { returnObjects: true }) as string[];
 
-        <h1
-          className="bebas track-hero-title"
-          style={{
-            fontSize: 70,
-            color: "#fff",
-            lineHeight: 1,
-            marginTop: 8,
-            textTransform: "uppercase"
-          }}
-        >
-          {["Tracks"].map((word, index) => (
-            <motion.span
-              key={word}
-              initial={{ opacity: 0, y: 100 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.45,
-                delay: 0.3 + index * 0.12,
-              }}
-              style={{
-                display: "inline-block",
-                marginRight: "14px",
-              }}
-            >
-              {word}
-            </motion.span>
-          ))}
-        </h1>
-      </div>
-    </section>
+  return (
+    <PublicPageHero
+      titleWords={titleWords}
+      breadcrumb={breadcrumb}
+      backgroundImage="/img/pexels-krizz59-12838 1.png"
+      classPrefix="track"
+    />
   );
 }
 
 // ── Explore Intro ─────────────────────────────────────────────────────────────
 function ExploreIntro() {
+  const { t } = useTranslation();
+  const titleWords = useWordList("public.tracks.intro.titleWords");
+
   return (
     <section className="track-section" style={{ background: "#EAF4FF", padding: "80px 82px" }}>
-      {/* <div style={{ display: "flex", gap: 48, alignItems: "flex-start" }}> */}
       <div className="track-intro-wrap" style={{ display: "flex", gap: 48, alignItems: "flex-start", overflow: "visible" }}>
-        {/* Left: heading + green card */}
         <div className="track-intro-left" style={{ flex: "0 0 480px" }}>
-          <motion.h2
+          <h2
             className="bebas track-intro-title overflow-hidden"
             style={{
               fontSize: 60,
@@ -577,39 +475,9 @@ function ExploreIntro() {
               textTransform: "capitalize",
               marginBottom: 64,
             }}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={{
-              visible: {
-                transition: {
-                  staggerChildren: 0.08,
-                },
-              },
-            }}
           >
-            {["Explore", "Abu", "Dhabi's", "Premier", "Cycling", "Tracks"].map((word, index) => (
-              <span
-                key={`${word}-${index}`}
-                className="inline-block overflow-hidden"
-                style={{ marginRight: "12px" }}
-              >
-                <motion.span
-                  className="inline-block"
-                  variants={{
-                    hidden: { y: "120%", opacity: 0 },
-                    visible: { y: "0%", opacity: 1 },
-                  }}
-                  transition={{
-                    duration: 0.7,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                >
-                  {word}
-                </motion.span>
-              </span>
-            ))}
-          </motion.h2>
+            <AnimatedWords words={titleWords} gap={12} />
+          </h2>
          <motion.div
           className="track-journey-offset"
           initial={{ opacity: 0, y: 120 }}
@@ -665,7 +533,7 @@ function ExploreIntro() {
             </div> */}
           {/* </div> */}
           <p className="track-intro-text" style={{ fontSize: 22, lineHeight: 1.55, color: "#000" }}>
-            From scenic coastal rides to high-performance cycling circuits, Abu Dhabi offers world-class tracks designed for every rider. Whether you're training for endurance, improving speed, or enjoying a casual ride, discover routes that match your level and ambition.
+            {t("public.tracks.intro.body")}
           </p>
         </div>
       </div>
@@ -675,12 +543,15 @@ function ExploreIntro() {
 
 // ── Why ADCC Tracks ───────────────────────────────────────────────────────────
 function WhySection() {
-  const features = [
-    { num: "//001", title: "Top Infrastructure",      desc: "Ride on well-designed cycling tracks with smooth surfaces and clear markings." },
-    { num: "//002", title: "Safe & Dedicated Routes", desc: "Enjoy cycling in a safe environment with dedicated tracks away from traffic, ensuring a secure ride." },
-    { num: "//003", title: "Built for All Levels",    desc: "Whether you're a beginner or a competitive cyclist, our tracks are designed to support every level of rider." },
-    { num: "//004", title: "Performance Training",    desc: "Great for endurance rides, speed training, and workouts to boost your cycling." },
-  ];
+  const { t } = useTranslation();
+  const titleWords = useWordList("public.tracks.why.title");
+  const featureKeys = ["infrastructure", "routes", "community", "performance"] as const;
+  const features = featureKeys.map((key, index) => ({
+    num: `//00${index + 1}`,
+    title: t(`public.tracks.why.features.${key}.title`),
+    desc: t(`public.tracks.why.features.${key}.desc`),
+  }));
+
   return (
     <section className="track-section" style={{
       backgroundImage: "url('/img/image 3517.png')",
@@ -699,7 +570,7 @@ function WhySection() {
       <div style={{ position: "relative", zIndex: 2 }}>
         {/* header row */}
         <div className="track-why-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 48 }}>
-          <motion.h2
+          <h2
             className="bebas track-why-title overflow-hidden"
             style={{
               fontSize: 50,
@@ -707,50 +578,14 @@ function WhySection() {
               lineHeight: 1.2,
               maxWidth: 300,
             }}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={{
-              visible: {
-                transition: {
-                  staggerChildren: 0.08,
-                },
-              },
-            }}
           >
-            {["Why", "Use", "ADCC", "Tracks?"].map((word, index) => (
-              <span
-                key={`${word}-${index}`}
-                className="inline-block overflow-hidden"
-                style={{ marginRight: "12px" }}
-              >
-                <motion.span
-                  className="inline-block"
-                  variants={{
-                    hidden: {
-                      y: "120%",
-                      opacity: 0,
-                    },
-                    visible: {
-                      y: "0%",
-                      opacity: 1,
-                    },
-                  }}
-                  transition={{
-                    duration: 0.7,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                >
-                  {word}
-                </motion.span>
-              </span>
-            ))}
-          </motion.h2>
+            <AnimatedWords words={titleWords} gap={12} />
+          </h2>
           <button style={{
             background: "#019839", color: "#fff", border: "none", borderRadius: 30,
             padding: "13px 28px", fontWeight: 700, fontSize: 18, cursor: "pointer",
             fontFamily: "'Bebas Kai',sans-serif", display: "flex", alignItems: "center", gap: 10
-          }}>Explore Tracks <span>→</span></button>
+          }}>{t("public.common.exploreTracksArrow")}</button>
         </div>
 
         <div className="track-why-content" style={{ display: "flex", gap: 24, alignItems: "stretch" }}>
@@ -808,6 +643,7 @@ function WhySection() {
 
 // ── Track card ────────────────────────────────────────────────────────────────
 function TrackCard({ track, index = 0 }: { track: PublicTrackCard; index?: number }) {
+  const { t } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
   const isFeatured = track.featured || isHovered;
   // const cardBg = isFeatured ? "#435974" : "#fff";
@@ -861,9 +697,9 @@ function TrackCard({ track, index = 0 }: { track: PublicTrackCard; index?: numbe
         {/* stats row */}
         <div className="track-stat-row" style={{ display: "flex", gap: 6, marginBottom: 20 }}>
           {[
-            { label: "Distance", val: track.distance },
-            { label: "Elevation", val: track.elevation },
-            { label: "Level", val: track.level },
+            { label: t("public.common.stats.distance"), val: track.distance },
+            { label: t("public.common.stats.elevation"), val: track.elevation },
+            { label: t("public.common.stats.level"), val: track.level },
           ].map((s, i) => (
             <div key={i} style={{
               flex: 1, background: statBg,
@@ -885,7 +721,7 @@ function TrackCard({ track, index = 0 }: { track: PublicTrackCard; index?: numbe
           color: isFeatured ? "#435974" : "rgba(0,0,0,0.49)",
           fontSize: 15, fontWeight: 700, fontFamily: "'Bebas Kai',sans-serif",
           transition: "all .2s"
-        }}>View Details</button>
+        }}>{t("public.common.viewDetails")}</button>
       </div>
     </motion.div>
   );
@@ -893,6 +729,7 @@ function TrackCard({ track, index = 0 }: { track: PublicTrackCard; index?: numbe
 
 // ── Tracks grid ───────────────────────────────────────────────────────────────
 function TracksGrid() {
+  const { t, i18n } = useTranslation();
   const [filters, setFilters] = useState<TrackFilters>({ city: ALL_FILTER_VALUE, level: ALL_FILTER_VALUE });
   const [openDropdown, setOpenDropdown] = useState<keyof TrackFilters | null>(null);
   const [active, setActive] = useState(filters);
@@ -902,6 +739,24 @@ function TracksGrid() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const cityFilterOptions = useMemo<FilterOption[]>(
+    () => [
+      { value: ALL_FILTER_VALUE, label: t("public.common.filters.allCities") },
+      ...UAE_CITIES.map((city) => ({ value: city, label: city })),
+    ],
+    [t, i18n.language],
+  );
+
+  const levelFilterOptions = useMemo<FilterOption[]>(
+    () => [
+      { value: ALL_FILTER_VALUE, label: t("public.common.filters.allLevels") },
+      { value: "easy", label: t("public.common.filters.easy") },
+      { value: "medium", label: t("public.common.filters.medium") },
+      { value: "hard", label: t("public.common.filters.hard") },
+    ],
+    [t, i18n.language],
+  );
 
   useEffect(() => {
     let mounted = true;
@@ -919,7 +774,7 @@ function TracksGrid() {
         });
 
         if (mounted) {
-          setTracks(response.tracks.map(normalizeTrack));
+          setTracks(response.tracks.map((track) => normalizeTrack(track, t)));
           setTotalResults(response.pagination.total);
           setTotalPages(Math.max(1, response.pagination.pages || 1));
         }
@@ -929,7 +784,7 @@ function TracksGrid() {
           setTracks([]);
           setTotalResults(0);
           setTotalPages(1);
-          setError("Unable to load tracks right now.");
+          setError(t("public.common.loadErrorTracks"));
         }
       } finally {
         if (mounted) setLoading(false);
@@ -941,7 +796,7 @@ function TracksGrid() {
     return () => {
       mounted = false;
     };
-  }, [active, page]);
+  }, [active, page, t]);
 
   const ChevronDown = ({ open = false }: { open?: boolean }) => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, transform: open ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>
@@ -950,8 +805,8 @@ function TracksGrid() {
   );
 
   const filterControls: Array<{ key: keyof TrackFilters; options: FilterOption[] }> = [
-    { key: "city", options: CITY_FILTER_OPTIONS },
-    { key: "level", options: LEVEL_FILTER_OPTIONS },
+    { key: "city", options: cityFilterOptions },
+    { key: "level", options: levelFilterOptions },
   ];
   const paginationItems = getPaginationItems(page, totalPages);
 
@@ -1119,12 +974,14 @@ function TracksGrid() {
             height: 60, padding: "0 32px", background: "#019839", color: "#fff",
             border: "none", borderRadius: 40, fontSize: 20, fontWeight: 700,
             cursor: "pointer", fontFamily: "'Bebas Kai',sans-serif"
-          }}>Search</motion.button>
+          }}>{t("public.common.search")}</motion.button>
         </div>
       </div>
 
       <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 24 }}>
-        {loading ? "Loading tracks..." : `Showing ${totalResults} results`}
+        {loading
+          ? t("public.common.loadingTracks")
+          : t("public.common.showingCount", { count: totalResults })}
       </p>
 
       <div className="track-cards-grid" style={{ display: "flex", flexWrap: "wrap", gap: "48px 28px" }}>
@@ -1137,7 +994,7 @@ function TracksGrid() {
 
       {!loading && !error && tracks.length === 0 && (
         <p style={{ fontSize: 17, color: "rgba(0,0,0,0.7)", padding: "32px 0 8px" }}>
-          No tracks found for the selected filters.
+          {t("public.common.noTracksFiltered")}
         </p>
       )}
 
@@ -1333,7 +1190,6 @@ export default function Tracks() {
     <>
       <FontLoader />
       <div className="tracks-page" style={{ minWidth: 320, overflowX: "hidden" }}>
-        <Navbar />
         <Hero />
         <ExploreIntro />
         <WhySection />

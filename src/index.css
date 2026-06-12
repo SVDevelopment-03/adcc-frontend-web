@@ -4,6 +4,7 @@
 /* Site fonts (Bebas Kai) */
 @import "./styles/fonts.css";
 @import "./styles/public-rtl.css";
+@import "./styles/public-spacing.css";
 
 /* Project theme, base styles, and custom utilities */
 @import "./styles/globals.css";

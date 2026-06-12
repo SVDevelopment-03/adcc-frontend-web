@@ -42,12 +42,63 @@ html[dir='rtl'] .home-hero-content {
 
 html[dir='rtl'] .home-hero-title,
 html[dir='rtl'] .journey-title,
+html[dir='rtl'] .home-app-title,
 html[dir='rtl'] .home-community-title,
 html[dir='rtl'] .home-community-eyebrow,
 html[dir='rtl'] .home-about-title,
 html[dir='rtl'] .home-store-title,
 html[dir='rtl'] .home-platform-title {
   text-transform: none;
+}
+
+html[dir='rtl'] .home-download-label,
+html[dir='rtl'] .home-feature-list span {
+  text-transform: none;
+}
+
+/* Public route pages */
+html[dir='rtl'] .about-page,
+html[dir='rtl'] .event-page,
+html[dir='rtl'] .tracks-page,
+html[dir='rtl'] .challenges-page,
+html[dir='rtl'] .communities-page,
+html[dir='rtl'] .contact-page {
+  direction: rtl;
+  text-align: start;
+}
+
+html[dir='rtl'] .about-page [class*='-title'],
+html[dir='rtl'] .event-page [class*='-title'],
+html[dir='rtl'] .tracks-page [class*='-title'],
+html[dir='rtl'] .challenges-page h1,
+html[dir='rtl'] .challenges-page h2,
+html[dir='rtl'] .communities-page h1,
+html[dir='rtl'] .communities-page h2,
+html[dir='rtl'] .contact-page h1,
+html[dir='rtl'] .contact-page h2,
+html[dir='rtl'] .contact-page .contact-intro-title {
+  text-transform: none;
+}
+
+html[dir='rtl'] .communities-page-hero-content,
+html[dir='rtl'] .challenges-page-hero-content {
+  inset-inline-start: 82px;
+  inset-inline-end: auto;
+  left: auto !important;
+  right: auto !important;
+}
+
+html[dir='rtl'] .about-hero-content,
+html[dir='rtl'] .event-hero-content,
+html[dir='rtl'] .track-hero-content {
+  inset-inline-start: 82px;
+  inset-inline-end: auto;
+  left: auto !important;
+  right: auto !important;
+}
+
+.public-word-gap {
+  margin-inline-end: 12px;
 }
 
 /* Stats ticker */

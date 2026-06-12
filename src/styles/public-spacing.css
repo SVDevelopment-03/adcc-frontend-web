@@ -1,0 +1,459 @@
+/**
+ * Public route spacing — overrides inline styles with logical padding/margin.
+ * Uses !important so it wins over component inline styles.
+ */
+
+/* ─── Public layout header ─── */
+.public-header {
+  padding-inline: 86px !important;
+  padding-block: 8px !important;
+}
+
+/* ─── Hero content (all public routes) ─── */
+.about-hero-content,
+.event-hero-content,
+.track-hero-content,
+.about-page-hero-content,
+.event-page-hero-content,
+.track-page-hero-content,
+.challenges-page-hero-content,
+.communities-page-hero-content,
+.contact-page-hero-content,
+[class*='-page-hero-content'] {
+  inset-inline-start: 82px !important;
+  inset-inline-end: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: 90px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+[class*='-hero-title'] {
+  margin-block-start: 8px !important;
+  margin-block-end: 0 !important;
+}
+
+[class*='-hero-breadcrumb'] {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* ─── About page ─── */
+.about-page .about-section {
+  padding-block: 80px !important;
+  padding-inline: 82px !important;
+}
+
+.about-page .about-coaches-section {
+  padding-block: 0 80px !important;
+  padding-inline: 82px !important;
+}
+
+.about-page .about-stats-wrap {
+  gap: 64px !important;
+}
+
+.about-page .about-mission-head,
+.about-page .about-values-head {
+  gap: 40px !important;
+  margin-block-end: 40px !important;
+}
+
+.about-page .about-stats-grid > div {
+  border-inline-start: 2px solid #1f509a !important;
+  border-left: none !important;
+  padding-inline-start: 20px !important;
+  padding-inline-end: 0 !important;
+  padding-left: 0 !important;
+  padding-bottom: 36px !important;
+}
+
+.about-page .about-body-text {
+  margin-block-end: 28px !important;
+}
+
+.about-page .about-stat-label {
+  margin-block-start: 6px !important;
+}
+
+.about-page .about-stats-photo {
+  margin-block-start: 32px !important;
+}
+
+.about-page .about-mission-intro {
+  padding-block-start: 8px !important;
+}
+
+.about-page .about-mission-card-stack {
+  gap: 20px !important;
+}
+
+.about-page .about-values-grid {
+  gap: 24px !important;
+}
+
+.about-page .about-coaches-section > div:first-child {
+  margin-block-end: 40px !important;
+}
+
+/* ─── Events page ─── */
+.event-page .event-section-header {
+  padding-block: 64px 40px !important;
+  padding-inline: 82px !important;
+}
+
+.event-page .event-filter-bar {
+  padding-block: 0 24px !important;
+  padding-inline: 82px !important;
+  gap: 18px !important;
+}
+
+.event-page .event-grid-wrap {
+  padding-inline: 82px !important;
+  padding-block: 0 !important;
+}
+
+.event-page .event-grid-wrap > p {
+  margin-block-end: 20px !important;
+}
+
+.event-page .event-pagination {
+  padding-block: 48px 64px !important;
+  padding-inline: 0 !important;
+  gap: 16px !important;
+}
+
+.event-page .event-card-meta {
+  margin-block-end: 20px !important;
+  gap: 8px 12px !important;
+}
+
+.event-page select,
+.tracks-page select {
+  padding-inline-end: 28px !important;
+  padding-inline-start: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* ─── Tracks page ─── */
+.tracks-page .track-section {
+  padding-block: 80px !important;
+  padding-inline: 82px !important;
+}
+
+.tracks-page .track-intro-wrap {
+  gap: 48px !important;
+}
+
+.tracks-page .track-intro-title {
+  margin-block-end: 64px !important;
+}
+
+.tracks-page .track-journey-offset {
+  padding-block-start: 90px !important;
+}
+
+.tracks-page .track-video {
+  margin-block-end: 28px !important;
+}
+
+.tracks-page .track-why-section {
+  padding-block: 80px !important;
+  padding-inline: 82px !important;
+}
+
+.tracks-page .track-why-head {
+  margin-block-end: 48px !important;
+  gap: 24px !important;
+}
+
+.tracks-page .track-filters-wrap,
+.tracks-page .tracks-grid-wrap {
+  padding-inline: 82px !important;
+}
+
+.tracks-page .tracks-grid-wrap {
+  padding-block: 0 64px !important;
+}
+
+.tracks-page .track-faq-section {
+  padding-block: 80px 64px !important;
+  padding-inline: 82px !important;
+}
+
+/* ─── Challenges & Communities (Tailwind sections) ─── */
+.challenges-page > section,
+.communities-page > section {
+  padding-inline: 16px !important;
+}
+
+.contact-page > section {
+  padding-inline: 40px !important;
+  padding-block: 112px !important;
+}
+
+/* ─── Home page ─── */
+.home-page .home-hero-content {
+  inset-inline-start: clamp(24px, 5.97vw, 86px) !important;
+  left: auto !important;
+  right: auto !important;
+  padding: 0 !important;
+}
+
+.home-page .journey-section {
+  padding-inline-start: 86px !important;
+  padding-inline-end: 0 !important;
+}
+
+.home-page .home-community-section {
+  padding-block: 125px !important;
+  padding-inline: 86px !important;
+}
+
+.home-page .home-platform-section,
+.home-page .home-store-section {
+  padding-block: 0 80px !important;
+  padding-inline: 86px !important;
+}
+
+.home-page .home-about-section {
+  padding-block: 60px 80px !important;
+  padding-inline: 86px !important;
+  gap: 60px !important;
+}
+
+.home-page .home-about-content {
+  padding-inline-end: min(280px, 24vw) !important;
+}
+
+.home-page .home-app-section {
+  padding-block: 80px !important;
+  padding-inline: 86px !important;
+  gap: 60px !important;
+}
+
+.home-page .home-hero-actions {
+  gap: 16px !important;
+}
+
+.home-page .home-hero-title {
+  margin-block-end: 28px !important;
+}
+
+/* ─── Public layout footer ─── */
+.public-footer {
+  padding-inline: 86px !important;
+  padding-block-start: 60px !important;
+  padding-block-end: 26px !important;
+}
+
+.public-footer-cta .relative.z-10 {
+  padding-inline: 24px !important;
+}
+
+.public-footer > div:first-of-type {
+  gap: 60px !important;
+}
+
+.public-footer h3 + ul {
+  margin-block-start: 20px !important;
+}
+
+.public-footer-copyright {
+  padding-block-start: 20px !important;
+  margin-block-start: 40px !important;
+}
+
+/* ─── Word animation gaps ─── */
+.public-word-gap {
+  margin-inline-end: 12px !important;
+  margin-inline-start: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* ─── RTL spacing adjustments ─── */
+html[dir='rtl'] .about-page .about-section,
+html[dir='rtl'] .event-page .event-section-header,
+html[dir='rtl'] .event-page .event-filter-bar,
+html[dir='rtl'] .event-page .event-grid-wrap,
+html[dir='rtl'] .tracks-page .track-section,
+html[dir='rtl'] .tracks-page .track-why-section,
+html[dir='rtl'] .tracks-page .track-faq-section,
+html[dir='rtl'] .tracks-page .track-filters-wrap,
+html[dir='rtl'] .tracks-page .tracks-grid-wrap {
+  text-align: start !important;
+}
+
+html[dir='rtl'] .home-page .home-about-content {
+  padding-inline-start: min(280px, 24vw) !important;
+  padding-inline-end: 0 !important;
+}
+
+html[dir='rtl'] .home-page .journey-section {
+  padding-inline-start: 86px !important;
+  padding-inline-end: 0 !important;
+}
+
+html[dir='rtl'] .event-page select,
+html[dir='rtl'] .tracks-page select {
+  padding-inline-start: 16px !important;
+  padding-inline-end: 28px !important;
+  text-align: start !important;
+}
+
+html[dir='rtl'] .challenges-page .text-left,
+html[dir='rtl'] .communities-page .text-left {
+  text-align: start !important;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 1024px) {
+  .public-header {
+    padding-inline: 32px !important;
+  }
+
+  [class*='-page-hero-content'],
+  .about-hero-content,
+  .event-hero-content,
+  .track-hero-content {
+    inset-inline-start: 32px !important;
+    bottom: 60px !important;
+  }
+
+  .about-page .about-section,
+  .about-page .about-coaches-section,
+  .event-page .event-section-header,
+  .event-page .event-filter-bar,
+  .event-page .event-grid-wrap,
+  .tracks-page .track-section,
+  .tracks-page .track-why-section,
+  .tracks-page .track-faq-section,
+  .tracks-page .track-filters-wrap,
+  .tracks-page .tracks-grid-wrap {
+    padding-inline: 32px !important;
+  }
+
+  .home-page .home-community-section,
+  .home-page .home-platform-section,
+  .home-page .home-store-section,
+  .home-page .home-about-section,
+  .home-page .home-app-section {
+    padding-inline: 32px !important;
+  }
+
+  .home-page .journey-section {
+    padding-inline: 32px !important;
+  }
+
+  .public-footer {
+    padding-inline: 32px !important;
+  }
+
+  .challenges-page > section,
+  .communities-page > section {
+    padding-inline: 24px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .public-header {
+    padding-inline: 18px !important;
+  }
+
+  [class*='-page-hero-content'],
+  .about-hero-content,
+  .event-hero-content,
+  .track-hero-content {
+    inset-inline-start: 18px !important;
+    inset-inline-end: 18px !important;
+    bottom: 42px !important;
+  }
+
+  .about-page .about-section,
+  .about-page .about-coaches-section,
+  .event-page .event-section-header,
+  .event-page .event-filter-bar,
+  .event-page .event-grid-wrap,
+  .tracks-page .track-section,
+  .tracks-page .track-why-section,
+  .tracks-page .track-faq-section,
+  .tracks-page .track-filters-wrap,
+  .tracks-page .tracks-grid-wrap {
+    padding-inline: 18px !important;
+    padding-block: 48px !important;
+  }
+
+  .event-page .event-section-header {
+    padding-block: 48px 28px !important;
+  }
+
+  .about-page .about-stats-wrap,
+  .about-page .about-mission-head,
+  .about-page .about-values-head {
+    gap: 26px !important;
+  }
+
+  .home-page .home-community-section,
+  .home-page .home-platform-section,
+  .home-page .home-store-section,
+  .home-page .home-about-section,
+  .home-page .home-app-section,
+  .home-page .journey-section {
+    padding-inline: 18px !important;
+  }
+
+  .home-page .home-about-content {
+    padding-inline: 0 !important;
+  }
+
+  .public-footer {
+    padding-inline: 18px !important;
+    padding-block-start: 48px !important;
+  }
+
+  .contact-page > section {
+    padding-inline: 18px !important;
+    padding-block: 64px !important;
+  }
+
+  .challenges-page > section,
+  .communities-page > section {
+    padding-inline: 16px !important;
+  }
+}
+
+@media (min-width: 640px) {
+  .challenges-page > section,
+  .communities-page > section {
+    padding-inline: 24px !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .challenges-page > section,
+  .communities-page > section {
+    padding-inline: 40px !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .challenges-page > section,
+  .communities-page > section {
+    padding-inline: 64px !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .challenges-page > section,
+  .communities-page > section {
+    padding-inline: 80px !important;
+  }
+}
+
+@media (min-width: 1536px) {
+  .challenges-page > section,
+  .communities-page > section {
+    padding-inline: 96px !important;
+  }
+}

@@ -7,7 +7,7 @@ export type HomeStoreProduct = {
   actionKey: string;
   titleKey: string;
   subKey: string;
-  price: string;
+  priceKey: string;
   img: string;
   images?: string[];
 };
@@ -20,7 +20,7 @@ export const HOME_STORE_PRODUCTS: HomeStoreProduct[] = [
     actionKey: 'public.home.store.viewStore',
     titleKey: 'public.home.store.products.jersey.title',
     subKey: 'public.home.store.products.jersey.sub',
-    price: 'AED 220',
+    priceKey: 'public.home.store.products.jersey.price',
     img: '/img/image 297012.png',
   },
   {
@@ -30,7 +30,7 @@ export const HOME_STORE_PRODUCTS: HomeStoreProduct[] = [
     actionKey: 'public.home.store.exploreMarketplace',
     titleKey: 'public.home.store.products.marketplace.title',
     subKey: 'public.home.store.products.marketplace.sub',
-    price: 'AED 1,500',
+    priceKey: 'public.home.store.products.marketplace.price',
     img: '/img/image 2970.png',
     images: ['/img/image 2970.png', '/img/image 2970 (1).png'],
   },

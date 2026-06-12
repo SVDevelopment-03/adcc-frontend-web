@@ -2122,6 +2122,7 @@
         "titleLine2": "Cycling Journey",
         "text": "Choose how you want to ride with ADCC. Discover routes, join challenges, and be part of a growing cycling community.",
         "exploreRoutes": "Explore all Routes",
+        "riderAlt": "ADCC cyclist",
         "cards": {
           "tracks": "Find Cycling\nTracks",
           "events": "Discover\nEvents",
@@ -2132,6 +2133,7 @@
       "app": {
         "titleWords": ["Everything", "You", "Need.", "In", "One", "App."],
         "downloadLabelWords": ["Download", "the", "App"],
+        "phoneAlt": "ADCC mobile app",
         "features": {
           "track": "Track Performance\nand Rides",
           "challenges": "Join Official\nChallenges",
@@ -2177,14 +2179,18 @@
         "communityMarketplace": "Community Marketplace",
         "viewStore": "View Store",
         "exploreMarketplace": "Explore Marketplace",
+        "previousImage": "Previous product image",
+        "nextImage": "Next product image",
         "products": {
           "jersey": {
             "title": "ADCC Performance Jersey",
-            "sub": "Lightweight • Breathable • Race Fit"
+            "sub": "Lightweight • Breathable • Race Fit",
+            "price": "AED 220"
           },
           "marketplace": {
             "title": "Pre-Owned Road Bike",
-            "sub": "Verified listings from ADCC riders"
+            "sub": "Verified listings from ADCC riders",
+            "price": "AED 1,500"
           }
         }
       },
@@ -2196,7 +2202,9 @@
           "events": "Events",
           "years": "Years"
         },
-        "readMore": "Read More"
+        "readMore": "Read More",
+        "cyclistsAlt": "ADCC cyclists",
+        "riderAlt": "Cyclist"
       },
       "cta": {
         "title": "Start Your Ride Today",

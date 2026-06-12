@@ -1,7 +1,9 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { EventApiResponse, GetEventsParams, getEventsPage } from "../../services/eventsApi";
 import { motion } from "framer-motion";
-import gsap from "gsap";
+import i18n from "../../i18n";
+import { AnimatedWords, PublicPageHero, useWordList } from "../public/publicPageHelpers";
 
 const FontLoader = () => (
   <style>{`
@@ -179,199 +181,43 @@ const FontLoader = () => (
   `}</style>
 );
 
-// ── Navbar ────────────────────────────────────────────────────────────────────
-function Navbar() {
-  return (
-    <header className="event-local-nav" style={{
-      position: "sticky", top: 0, zIndex: 100,
-      width: "100%", height: 134, background: "#EAF4FF",
-      display: "flex", alignItems: "center", justifyContent: "space-between",
-      padding: "0 82px", borderBottom: "1px solid rgba(0,0,0,0.06)"
-    }}>
-      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <span className="bebas" style={{ fontSize: 26, lineHeight: 1, letterSpacing: 2 }}>
-          ABU<span style={{ color: "#019839" }}>◉</span>DHABI
-        </span>
-        <span style={{ fontSize: 10, letterSpacing: 3, color: "#333", textTransform: "uppercase", fontWeight: 500 }}>CYCLING CLUB</span>
-        <div style={{ height: 3, background: "#019839", borderRadius: 2, marginTop: 2 }} />
-      </div>
-      <nav style={{ display: "flex", gap: 48, alignItems: "center" }}>
-        {["About Us", "Events", "Community", "Tracks"].map((l) => (
-          <a key={l} href="#" style={{
-            fontWeight: 500, fontSize: 20, color: "#000",
-            borderBottom: l === "Events" ? "2px solid #019839" : "2px solid transparent",
-            paddingBottom: 2, transition: "border-color .2s"
-          }}>{l}</a>
-        ))}
-      </nav>
-      <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-        <span style={{ fontSize: 17, fontWeight: 500 }}>🌤 English</span>
-        <button style={{
-          background: "#000", color: "#fff", border: "none", borderRadius: 30,
-          padding: "13px 28px", fontWeight: 700, fontSize: 18, cursor: "pointer"
-        }}>Menu</button>
-      </div>
-    </header>
-  );
-}
-
 // ── Hero ──────────────────────────────────────────────────────────────────────
 function Hero() {
+  const { t } = useTranslation();
+  const titleWords = t("public.events.hero.titleWords", { returnObjects: true }) as string[];
+  const breadcrumb = t("public.events.hero.breadcrumb", { returnObjects: true }) as string[];
+
   return (
-    <section className="event-hero" style={{ position: "relative", width: "100%", height: 640, overflow: "hidden" }}>
-      <div className="event-hero-bg" style={{
-        position: "absolute", inset: 0,
-        backgroundImage: "linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url('/img/pexels-jonathanborba-19431221 1.png')",
-        backgroundSize: "cover", backgroundPosition: "center"
-      }} />
-      <div
-        className="event-hero-content"
-        style={{
-          position: "absolute",
-          bottom: 90,
-          left: 82
-        }}
-      >
-        <p
-          className="event-hero-breadcrumb overflow-hidden"
-          style={{
-            color: "rgba(255,255,255,0.8)",
-            fontSize: 22,
-          }}
-        >
-          {["Home", "/", "Events"].map((word, index) => (
-            <span
-              key={`${word}-${index}`}
-              className="inline-block overflow-hidden"
-              style={{ marginRight: "8px" }}
-            >
-              <motion.span
-                className="inline-block"
-                initial={{
-                  y: "120%",
-                  opacity: 0,
-                }}
-                animate={{
-                  y: "0%",
-                  opacity: 1,
-                }}
-                transition={{
-                  duration: 0.7,
-                  delay: index * 0.08,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-              >
-                {word}
-              </motion.span>
-            </span>
-          ))}
-        </p>
-        <motion.h1
-          className="bebas event-hero-title overflow-hidden"
-          style={{
-            fontSize: 70,
-            color: "#fff",
-            lineHeight: 1,
-            marginTop: 8,
-            textTransform: "uppercase",
-          }}
-          initial="hidden"
-          animate="visible"
-          variants={{
-            visible: {
-              transition: {
-                staggerChildren: 0.08,
-              },
-            },
-          }}
-        >
-          {["Events"].map((word, index) => (
-            <span
-              key={word}
-              className="inline-block overflow-hidden"
-              style={{ marginRight: "14px" }}
-            >
-              <motion.span
-                className="inline-block"
-                variants={{
-                  hidden: {
-                    y: "120%",
-                    opacity: 0,
-                  },
-                  visible: {
-                    y: "0%",
-                    opacity: 1,
-                  },
-                }}
-                transition={{
-                  duration: 0.7,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-              >
-                {word}
-              </motion.span>
-            </span>
-          ))}
-        </motion.h1>
-      </div>
-    </section>
+    <PublicPageHero
+      titleWords={titleWords}
+      breadcrumb={breadcrumb}
+      backgroundImage="/img/pexels-jonathanborba-19431221 1.png"
+      classPrefix="event"
+    />
   );
 }
 
 // ── Section header ────────────────────────────────────────────────────────────
 function SectionHeader() {
+  const { t } = useTranslation();
+  const titleWords = useWordList("public.events.intro.titleWords");
+
   return (
     <section className="event-section-header" style={{ background: "#EAF4FF", padding: "64px 82px 40px", textAlign: "center" }}>
-     <motion.h2
-      className="bebas event-section-title overflow-hidden"
-      style={{
-        fontSize: 50,
-        lineHeight: 1.2,
-        textTransform: "capitalize",
-        maxWidth: 560,
-        margin: "0 auto 16px",
-      }}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true }}
-      variants={{
-        visible: {
-          transition: {
-            staggerChildren: 0.08,
-          },
-        },
-      }}
-    >
-      {["Join", "the", "Most", "Exciting", "Cycling", "Events", "in", "Abu", "Dhabi"].map((word, index) => (
-        <span
-          key={`${word}-${index}`}
-          className="inline-block overflow-hidden"
-          style={{ marginRight: "12px" }}
-        >
-          <motion.span
-            className="inline-block"
-            variants={{
-              hidden: {
-                y: "120%",
-                opacity: 0,
-              },
-              visible: {
-                y: "0%",
-                opacity: 1,
-              },
-            }}
-            transition={{
-              duration: 0.7,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-          >
-            {word}
-          </motion.span>
-        </span>
-      ))}
-    </motion.h2>
+      <h2
+        className="bebas event-section-title overflow-hidden"
+        style={{
+          fontSize: 50,
+          lineHeight: 1.2,
+          textTransform: "capitalize",
+          maxWidth: 560,
+          margin: "0 auto 16px",
+        }}
+      >
+        <AnimatedWords words={titleWords} gap={12} />
+      </h2>
       <p className="event-section-copy" style={{ fontSize: 16, fontWeight: 500, color: "rgba(0,0,0,0.6)", maxWidth: 444, margin: "0 auto", lineHeight: 1.6 }}>
-        Explore races, community rides, and challenges by Abu Dhabi Cycling Club. Find events for your location and skill.
+        {t("public.events.intro.body")}
       </p>
     </section>
   );
@@ -385,12 +231,16 @@ interface EventFilters {
   status: string;
 }
 
+const ALL_FILTER_VALUE = "__all__";
+
 const DEFAULT_FILTERS: EventFilters = {
-  city: "All Cities",
-  category: "All Categories",
-  level: "All Levels",
-  status: "Status",
+  city: ALL_FILTER_VALUE,
+  category: ALL_FILTER_VALUE,
+  level: ALL_FILTER_VALUE,
+  status: ALL_FILTER_VALUE,
 };
+
+type FilterOption = { value: string; label: string };
 
 function FilterBar({
   filters,
@@ -403,23 +253,65 @@ function FilterBar({
   onSearch: () => void;
   loading: boolean;
 }) {
+  const { t } = useTranslation();
   const [openDropdown, setOpenDropdown] = useState<keyof EventFilters | null>(null);
+
+  const dropdowns = useMemo<Array<{ key: keyof EventFilters; options: FilterOption[] }>>(() => [
+    {
+      key: "city",
+      options: [
+        { value: ALL_FILTER_VALUE, label: t("public.common.filters.allCities") },
+        { value: "Abu Dhabi", label: "Abu Dhabi" },
+        { value: "Dubai", label: "Dubai" },
+        { value: "Sharjah", label: "Sharjah" },
+        { value: "Al Ain", label: "Al Ain" },
+      ],
+    },
+    {
+      key: "category",
+      options: [
+        { value: ALL_FILTER_VALUE, label: t("public.common.filters.allCategories") },
+        { value: "Race", label: "Race" },
+        { value: "Community Ride", label: "Community Ride" },
+        { value: "Training & Clinics", label: "Training & Clinics" },
+        { value: "Awareness Rides", label: "Awareness Rides" },
+        { value: "Family & Kids", label: "Family & Kids" },
+        { value: "Corporate Events", label: "Corporate Events" },
+        { value: "National Events", label: "National Events" },
+      ],
+    },
+    {
+      key: "level",
+      options: [
+        { value: ALL_FILTER_VALUE, label: t("public.common.filters.allLevels") },
+        { value: "beginner", label: "beginner" },
+        { value: "intermediate", label: "intermediate" },
+        { value: "advanced", label: "advanced" },
+        { value: "all", label: "all" },
+      ],
+    },
+    {
+      key: "status",
+      options: [
+        { value: ALL_FILTER_VALUE, label: t("public.common.filters.status") },
+        { value: "Upcoming", label: "Upcoming" },
+        { value: "Ongoing", label: "Ongoing" },
+        { value: "Completed", label: "Completed" },
+      ],
+    },
+  ], [t]);
+
   const ChevronDown = ({ open = false }: { open?: boolean }) => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, transform: open ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>
       <path d="M6 9l6 6 6-6" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );
 
-  const dropdowns: Array<{ key: keyof EventFilters; label: string; options: string[] }> = [
-    { key: "city", label: "All Cities", options: ["All Cities", "Abu Dhabi", "Dubai", "Sharjah", "Al Ain"] },
-    { key: "category", label: "All Categories", options: ["All Categories", "Race", "Community Ride", "Training & Clinics", "Awareness Rides", "Family & Kids", "Corporate Events", "National Events"] },
-    { key: "level", label: "All Levels", options: ["All Levels", "beginner", "intermediate", "advanced", "all"] },
-    { key: "status", label: "Status", options: ["Status", "Upcoming", "Ongoing", "Completed"] },
-  ];
-
-  const renderDropdown = (filter: { key: keyof EventFilters; label: string; options: string[] }) => {
+  const renderDropdown = (filter: { key: keyof EventFilters; options: FilterOption[] }) => {
     const isOpen = openDropdown === filter.key;
-    const selected = filters[filter.key] || filter.label;
+    const selected = filter.options.find((option) => option.value === filters[filter.key])?.label
+      || filter.options[0]?.label
+      || "";
 
     return (
       // <div key={filter.key} className="event-filter-field" style={{ position: "relative", width: 260 }}>
@@ -512,12 +404,12 @@ function FilterBar({
           >
             {filter.options.map((option) => (
               <button
-                key={option}
+                key={option.value}
                 type="button"
                 onClick={() => {
                   setFilters((previous) => ({
                     ...previous,
-                    [filter.key]: option,
+                    [filter.key]: option.value,
                   }));
                   setOpenDropdown(null);
                 }}
@@ -525,13 +417,13 @@ function FilterBar({
                   display: "block",
                   width: "100%",
                   border: 0,
-                  background: option === selected ? "#EAF4FF" : "#fff",
-                  color: option === selected ? "#019839" : "#000",
+                  background: option.value === filters[filter.key] ? "#EAF4FF" : "#fff",
+                  color: option.value === filters[filter.key] ? "#019839" : "#000",
                   padding: "12px 18px",
                   textAlign: "left",
                   fontFamily: "'Bebas Kai', sans-serif",
                   fontSize: 16,
-                  fontWeight: option === selected ? 700 : 400,
+                  fontWeight: option.value === filters[filter.key] ? 700 : 400,
                   cursor: "pointer",
                 }}
               >
@@ -543,7 +435,7 @@ function FilterBar({
                     whiteSpace: "nowrap",
                   }}
                 >
-                  {option}
+                  {option.label}
                 </span>
               </button>
             ))}
@@ -570,7 +462,7 @@ function FilterBar({
           cursor: "pointer", fontFamily: "'Bebas Kai',sans-serif", transition: "opacity .2s"
         }}
       >
-        {loading ? "Loading..." : "Search"}
+        {loading ? t("public.common.loading") : t("public.common.search")}
       </motion.button>
     </div>
   );
@@ -578,6 +470,7 @@ function FilterBar({
 
 // ── Event card ────────────────────────────────────────────────────────────────
 function EventCard({ event, index }: { event: EventApiResponse; index: number }) {
+  const { t } = useTranslation();
   const [columns, setColumns] = useState(3);
 
   useEffect(() => {
@@ -614,7 +507,7 @@ function EventCard({ event, index }: { event: EventApiResponse; index: number })
       : { opacity: 0, x: 180 };
   };
 
-  const tag = event.category || "Event";
+  const tag = event.category || t("public.common.eventFallback");
   const image =
     event.eventImage ||
     event.mainImage ||
@@ -690,10 +583,10 @@ function EventCard({ event, index }: { event: EventApiResponse; index: number })
         </h3>
 
         <div className="event-card-meta" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 12px", marginBottom: 20 }}>
-          <Meta icon="📅" text={formatEventDate(event.eventDate)} />
-          <Meta icon="⚡" text={typeof event.distance === "number" ? `${event.distance} km` : "Distance TBA"} />
-          <Meta icon="👥" text={`${participants} participants`} />
-          <Meta icon="📍" text={event.city || event.address || "Location TBA"} />
+          <Meta icon="📅" text={formatEventDate(event.eventDate, t("public.common.dateTBA"))} />
+          <Meta icon="⚡" text={typeof event.distance === "number" ? `${event.distance} km` : t("public.common.distanceTBA")} />
+          <Meta icon="👥" text={t("public.common.participants", { count: participants })} />
+          <Meta icon="📍" text={event.city || event.address || "—"} />
         </div>
 
         <button
@@ -720,7 +613,7 @@ function EventCard({ event, index }: { event: EventApiResponse; index: number })
             e.currentTarget.style.color = "#019839";
           }}
         >
-          View Details
+          {t("public.common.viewDetails")}
         </button>
       </div>
     </motion.div>
@@ -740,6 +633,7 @@ function Meta({ icon, text }: { icon: string; text: string }) {
 const PAGE_SIZE = 6;
 
 function EventsGrid() {
+  const { t } = useTranslation();
   const [filters, setFilters] = useState<EventFilters>(DEFAULT_FILTERS);
   const [page, setPage] = useState(1);
   const [activeFilters, setActiveFilters] = useState<EventFilters>(DEFAULT_FILTERS);
@@ -751,10 +645,10 @@ function EventsGrid() {
 
   const queryParams = useMemo<GetEventsParams>(() => {
     const params: GetEventsParams = { page, limit: PAGE_SIZE };
-    if (activeFilters.city !== "All Cities") params.city = activeFilters.city;
-    if (activeFilters.category !== "All Categories") params.category = activeFilters.category;
-    if (activeFilters.level !== "All Levels") params.level = activeFilters.level;
-    if (activeFilters.status !== "Status") params.status = activeFilters.status;
+    if (activeFilters.city !== ALL_FILTER_VALUE) params.city = activeFilters.city;
+    if (activeFilters.category !== ALL_FILTER_VALUE) params.category = activeFilters.category;
+    if (activeFilters.level !== ALL_FILTER_VALUE) params.level = activeFilters.level;
+    if (activeFilters.status !== ALL_FILTER_VALUE) params.status = activeFilters.status;
     return params;
   }, [activeFilters, page]);
 
@@ -776,7 +670,7 @@ function EventsGrid() {
         setEvents([]);
         setTotalResults(0);
         setTotalPages(1);
-        setError("Events could not be loaded right now.");
+        setError(t("public.common.loadErrorEvents"));
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -792,7 +686,9 @@ function EventsGrid() {
       <FilterBar filters={filters} setFilters={setFilters} loading={loading} onSearch={() => { setActiveFilters(filters); setPage(1); }} />
       <div className="event-grid-wrap" style={{ padding: "0 82px" }}>
         <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 20 }}>
-          {loading ? "Loading events..." : `Showing ${events.length} of ${totalResults} results`}
+          {loading
+            ? t("public.common.loadingEvents")
+            : t("public.common.showingResults", { shown: events.length, total: totalResults })}
         </p>
         {error && <p style={{ fontSize: 16, color: "#C12D32", marginBottom: 20 }}>{error}</p>}
         {/* <div style={{ display: "flex", flexWrap: "wrap", gap: "48px 28px" }}> */}
@@ -805,7 +701,7 @@ function EventsGrid() {
             rowGap: 48,
           }}
         >
-          {events.map(e => <EventCard key={e._id || e.id || e.slug || e.title} event={e} />)}
+          {events.map((e, index) => <EventCard key={e._id || e.id || e.slug || e.title} event={e} index={index} />)}
         </div>
         <Pagination page={page} total={totalPages} setPage={setPage} />
       </div>
@@ -859,11 +755,11 @@ function buildPagination(page: number, total: number): Array<number | string> {
   return result;
 }
 
-function formatEventDate(value?: string) {
-  if (!value) return "Date TBA";
+function formatEventDate(value: string | undefined, fallback: string) {
+  if (!value) return fallback;
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Date TBA";
-  return date.toLocaleDateString("en-US", {
+  if (Number.isNaN(date.getTime())) return fallback;
+  return date.toLocaleDateString(i18n.language, {
     month: "long",
     day: "numeric",
     year: "numeric",
@@ -968,7 +864,6 @@ export default function Events() {
     <>
       <FontLoader />
       <div className="event-page" style={{ minWidth: 320, overflowX: "hidden" }}>
-        <Navbar />
         <Hero />
         <SectionHeader />
         <EventsGrid />
