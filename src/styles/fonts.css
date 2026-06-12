@@ -18,6 +18,7 @@
 
 html[dir='rtl'] .public-layout {
   font-family: var(--font-bebas-kai), 'Noto Sans Arabic', sans-serif;
+  text-transform: none;
 }
 
 .public-layout select,

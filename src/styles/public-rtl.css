@@ -1,0 +1,212 @@
+/* Public site RTL alignment */
+
+html[dir='rtl'] .public-layout,
+html[dir='rtl'] .home-page {
+  text-align: start;
+}
+
+html[dir='rtl'] .public-header {
+  direction: rtl;
+}
+
+html[dir='rtl'] .public-header .group > div[class*='absolute'] {
+  inset-inline-end: 0;
+  inset-inline-start: auto;
+}
+
+html[dir='rtl'] .public-footer-cta {
+  text-align: center;
+}
+
+html[dir='rtl'] .public-footer {
+  direction: rtl;
+}
+
+html[dir='rtl'] .public-footer-store-btn > span {
+  text-align: start;
+  align-items: flex-start;
+}
+
+html[dir='rtl'] .public-footer ul {
+  padding-inline-start: 0;
+}
+
+html[dir='rtl'] .public-footer li {
+  text-align: start;
+}
+
+/* Hero */
+html[dir='rtl'] .home-hero-content {
+  text-align: start;
+}
+
+html[dir='rtl'] .home-hero-title,
+html[dir='rtl'] .journey-title,
+html[dir='rtl'] .home-community-title,
+html[dir='rtl'] .home-community-eyebrow,
+html[dir='rtl'] .home-about-title,
+html[dir='rtl'] .home-store-title,
+html[dir='rtl'] .home-platform-title {
+  text-transform: none;
+}
+
+/* Stats ticker */
+@keyframes ticker-group-rtl {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(50%);
+  }
+}
+
+html[dir='rtl'] .home-ticker-track {
+  animation-name: ticker-group-rtl;
+}
+
+/* Journey */
+html[dir='rtl'] .journey-section {
+  direction: rtl;
+}
+
+html[dir='rtl'] .journey-copy,
+html[dir='rtl'] .journey-text,
+html[dir='rtl'] .journey-title,
+html[dir='rtl'] .journey-card-label {
+  text-align: start;
+}
+
+html[dir='rtl'] .journey-cards {
+  direction: rtl;
+}
+
+/* App section */
+html[dir='rtl'] .home-app-section {
+  direction: rtl;
+}
+
+html[dir='rtl'] .home-app-copy {
+  text-align: start;
+}
+
+html[dir='rtl'] .home-phone-stage {
+  inset-inline-end: 0 !important;
+  inset-inline-start: auto !important;
+  right: auto !important;
+  left: auto !important;
+}
+
+html[dir='rtl'] .home-word-gap {
+  margin-inline-end: 14px;
+  margin-inline-start: 0;
+}
+
+/* Community / platform / store sections */
+html[dir='rtl'] .home-community-section,
+html[dir='rtl'] .home-platform-section,
+html[dir='rtl'] .home-store-section {
+  direction: rtl;
+}
+
+html[dir='rtl'] .home-platform-card-content,
+html[dir='rtl'] .home-platform-card-title,
+html[dir='rtl'] .home-platform-card-action {
+  text-align: start;
+}
+
+html[dir='rtl'] .home-platform-card:first-child {
+  border-radius: 0 20px 20px 0;
+}
+
+html[dir='rtl'] .home-platform-card:last-child {
+  border-radius: 20px 0 0 20px;
+}
+
+html[dir='rtl'] .store-rail {
+  direction: rtl;
+}
+
+html[dir='rtl'] .store-featured-card {
+  direction: rtl;
+  text-align: start;
+}
+
+html[dir='rtl'] .store-featured-type,
+html[dir='rtl'] .store-featured-title,
+html[dir='rtl'] .store-featured-sub {
+  text-align: start;
+}
+
+html[dir='rtl'] .store-featured-action {
+  text-align: end;
+}
+
+html[dir='rtl'] .store-featured-card.is-marketplace .store-featured-title,
+html[dir='rtl'] .store-featured-card.is-marketplace .store-featured-sub {
+  text-align: center;
+}
+
+html[dir='rtl'] .store-carousel-button svg {
+  transform: scaleX(-1);
+}
+
+/* About */
+html[dir='rtl'] .home-about-section {
+  direction: rtl;
+}
+
+html[dir='rtl'] .home-about-content,
+html[dir='rtl'] .home-about-text,
+html[dir='rtl'] .home-about-stat-label,
+html[dir='rtl'] .home-about-stat-number {
+  text-align: start;
+}
+
+html[dir='rtl'] .home-about-rider img {
+  object-position: left bottom;
+  transform: rotate(0.6deg);
+}
+
+@keyframes aboutSlideInRtl {
+  from {
+    opacity: 0;
+    transform: translateX(-120px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+html[dir='rtl'] .about-section.is-visible .about-right-image {
+  animation-name: aboutSlideInRtl;
+}
+
+html[dir='rtl'] .home-floating-bike {
+  inset-inline-end: 40px !important;
+  inset-inline-start: auto !important;
+  left: auto !important;
+  right: auto !important;
+}
+
+@media (max-width: 1024px) {
+  html[dir='rtl'] .home-floating-bike {
+    inset-inline-end: 24px !important;
+  }
+
+  html[dir='rtl'] .home-platform-section,
+  html[dir='rtl'] .home-store-section {
+    padding-inline: 32px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  html[dir='rtl'] .home-floating-bike {
+    inset-inline-end: 16px !important;
+  }
+
+  html[dir='rtl'] .home-platform-section,
+  html[dir='rtl'] .home-store-section {
+    padding-inline: 18px !important;
+  }
+}

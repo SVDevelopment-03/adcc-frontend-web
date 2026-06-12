@@ -147,17 +147,17 @@ function PublicHeader() {
           >
             {t('public.auth.menu')}
           </AnimatedButton>
-          <div className="invisible absolute right-0 top-full z-[120] w-[220px] translate-y-2 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
+          <div className="invisible absolute end-0 top-full z-[120] w-[220px] translate-y-2 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
             <div className="overflow-hidden rounded-xl border border-black/10 bg-white p-3 shadow-[0_18px_45px_rgba(0,0,0,0.16)]">
               <button
                 type="button"
                 onClick={handleAuthAction}
-                className={`public-auth-button flex min-h-12 w-full items-center gap-4 rounded-lg px-7 py-3.5 text-[16px] font-semibold text-black transition-colors hover:bg-black hover:text-white focus:bg-black focus:text-white focus:outline-none ${isRtl ? 'flex-row-reverse text-right' : 'text-left'}`}
+                className={`public-auth-button flex min-h-12 w-full items-center gap-4 rounded-lg px-7 py-3.5 text-[16px] font-semibold text-start text-black transition-colors hover:bg-black hover:text-white focus:bg-black focus:text-white focus:outline-none ${isRtl ? 'flex-row-reverse' : ''}`}
               >
                 {isAuthenticated ? (
-                  <LogOut className={`h-5 w-5 ${isRtl ? 'mr-0 ml-5' : 'ml-5'}`} />
+                  <LogOut className="h-5 w-5 shrink-0" />
                 ) : (
-                  <LogIn className={`h-5 w-5 ${isRtl ? 'mr-0 ml-5' : '!ml-5'}`} />
+                  <LogIn className="h-5 w-5 shrink-0" />
                 )}
                 <span>{isAuthenticated ? t('public.auth.logout') : t('public.auth.login')}</span>
               </button>
@@ -193,12 +193,12 @@ function PublicHeader() {
                 setMenuOpen(false);
                 void handleAuthAction();
               }}
-              className={`public-auth-button mt-3 flex items-center gap-3 rounded-md bg-[#019839] py-3.5 text-[16px] font-bold text-white transition-colors hover:bg-black ${isRtl ? 'flex-row-reverse pl-5 pr-7' : 'pl-7 pr-5'}`}
+              className={`public-auth-button mt-3 flex items-center gap-3 rounded-md bg-[#019839] py-3.5 ps-7 pe-5 text-[16px] font-bold text-white transition-colors hover:bg-black ${isRtl ? 'flex-row-reverse' : ''}`}
             >
               {isAuthenticated ? (
-                <LogOut className={`h-5 w-5 ${isRtl ? 'mr-0 ml-5' : 'ml-5'}`} />
+                <LogOut className="h-5 w-5 shrink-0" />
               ) : (
-                <LogIn className={`h-5 w-5 ${isRtl ? 'mr-0 ml-5' : 'ml-5'}`} />
+                <LogIn className="h-5 w-5 shrink-0" />
               )}
               <span>{isAuthenticated ? t('public.auth.logout') : t('public.auth.login')}</span>
             </button>
@@ -219,7 +219,7 @@ function StoreButton({ type }: { type: 'google' | 'apple' }) {
       className="inline-flex h-[53px] w-[198px] flex-none items-center justify-center gap-[10px] rounded-[100px] bg-white px-[26px] py-0 text-black no-underline shadow-lg transition-opacity hover:opacity-90 sm:h-[57px] sm:w-[213px] sm:px-[34px]"
     >
       {type === 'google' ? <Play className="h-[27px] w-[27px] shrink-0 fill-[#34A853] text-[#34A853] sm:h-[31px] sm:w-[29px]" /> : <Apple className="h-[24px] w-[24px] shrink-0 sm:h-[26px] sm:w-[26px]" />}
-      <span className="flex min-w-0 flex-none flex-col items-start justify-center text-left font-['Outfit']">
+      <span className="flex min-w-0 flex-none flex-col items-start justify-center text-start">
         <span className="block whitespace-nowrap text-[8px] font-semibold uppercase leading-[1.05] text-black/60 sm:text-[9px]">
           {type === 'google' ? t('public.footer.getItOn') : t('public.footer.downloadOn')}
         </span>

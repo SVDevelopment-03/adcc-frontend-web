@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { AnimatedButton } from '../ui/AnimatedButton';
 import { AnimatedImage } from '../ui/AnimatedImage';
 import { useTranslation } from 'react-i18next';
+import { useLocale } from '../../contexts/LocaleContext';
 import { subscribeToNewsletter } from '../../services/newsletterApi';
 import { HOME_STORE_FALLBACK_IMAGE, HOME_STORE_PRODUCTS } from '../../data/homeStoreProducts';
 import { Bike, CalendarDays, MapPin, Users } from 'lucide-react';
@@ -1021,72 +1022,26 @@ const CSS = `
   .app-feature {
     flex-direction: row;
   }
-  [dir="rtl"] .store-rail {
-    direction: ltr;
-    justify-content: flex-start;
-  }
-  [dir="rtl"] .store-featured-card {
-    direction: rtl;
-  }
-  [dir="rtl"] .home-store-section .home-store-title {
-    direction: rtl;
-  }
-  [dir="rtl"] .store-featured-product-media {
-    inset-inline-end: 24px;
-    width: min(338px, 48%);
-    max-width: calc(100% - 280px);
-  }
-  /* Preserve English visual layout: photo left, text center, rider right */
-  [dir="rtl"] .home-about-section {
-    direction: ltr;
-    overflow: hidden;
-  }
-  [dir="rtl"] .home-about-content,
-  [dir="rtl"] .home-about-title,
-  [dir="rtl"] .home-about-text,
-  [dir="rtl"] .home-about-stats {
-    direction: rtl;
-  }
-  [dir="rtl"] .home-about-left-image {
-    direction: ltr;
-  }
-  [dir="rtl"] .home-about-rider {
-    direction: ltr;
-  }
-  [dir="rtl"] .home-about-rider img {
-    object-fit: contain;
-    object-position: right bottom;
-    transform: rotate(0.6deg);
-  }
-  [dir="rtl"] .home-about-left-image img {
-    object-fit: cover;
-    object-position: center;
-  }
   .home-word-gap {
     display: inline-block;
     overflow: hidden;
     margin-inline-end: 14px;
   }
-  [dir="rtl"] .home-hero-content {
-    inset-inline-start: clamp(24px, 5.97vw, 86px) !important;
-    inset-inline-end: auto !important;
-    left: auto !important;
-    right: auto !important;
+  .home-word-gap-sm {
+    display: inline-block;
+    overflow: hidden;
+    margin-inline-end: 10px;
   }
-  [dir="rtl"] .journey-title {
-    text-transform: none;
-  }
-  [dir="rtl"] .home-community-title,
-  [dir="rtl"] .home-community-eyebrow {
-    text-transform: none;
-  }
-  [dir="rtl"] .home-hero-title {
-    text-transform: none;
-  }
-  [dir="rtl"] .home-floating-bike {
-    left: auto !important;
-    right: auto !important;
-    inset-inline-end: 40px !important;
+  .home-phone-stage {
+    position: absolute;
+    top: 70px;
+    inset-inline-end: 0;
+    width: 60%;
+    min-height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
   }
   [dir="rtl"] .home-platform-card {
     border-inline-start: 2px solid rgba(255,255,255,0.3) !important;
@@ -1100,7 +1055,6 @@ const CSS = `
     left: auto !important;
     right: auto !important;
   }
-
   [dir="rtl"] .store-featured-action {
     width: auto;
     max-width: 220px;
@@ -2234,6 +2188,7 @@ function AppSection() {
   const phoneRef = useRef<HTMLDivElement | null>(null);
   const [phoneVisible, setPhoneVisible] = useState(false);
   const { t } = useTranslation();
+  const { isRtl } = useLocale();
   const appTitleWords = t('public.home.app.titleWords', { returnObjects: true }) as string[];
   const features = [
     { icon: '/images/icon-1.png', label: t('public.home.app.features.track') },
@@ -2286,8 +2241,7 @@ function AppSection() {
           {appTitleWords.slice(0, 3).map((word, index) => (
             <span
               key={`${word}-${index}`}
-              className="inline-block overflow-hidden"
-              style={{ marginRight: "14px" }}
+              className="home-word-gap inline-block overflow-hidden"
             >
               <motion.span
                 className="inline-block"
@@ -2316,8 +2270,7 @@ function AppSection() {
           {appTitleWords.slice(3).map((word, index) => (
             <span
               key={`${word}-${index}`}
-              className="inline-block overflow-hidden"
-              style={{ marginRight: "14px" }}
+              className="home-word-gap inline-block overflow-hidden"
             >
               <motion.span
                 className="inline-block"
@@ -2367,8 +2320,7 @@ function AppSection() {
             {["Download"].map((word) => (
                 <span
                   key={word}
-                  className="inline-block overflow-hidden"
-                  style={{ marginRight: "10px" }}
+                  className="home-word-gap-sm inline-block overflow-hidden"
                 >
                   <motion.span
                     className="inline-block"
@@ -2397,8 +2349,7 @@ function AppSection() {
               {["ADCC", "APP"].map((word) => (
                 <span
                   key={word}
-                  className="inline-block overflow-hidden"
-                  style={{ marginRight: "10px" }}
+                  className="home-word-gap-sm inline-block overflow-hidden"
                 >
                   <motion.span
                     className="inline-block"
@@ -2427,7 +2378,7 @@ function AppSection() {
               className="home-qr-box"
               initial={{
                 opacity: 0,
-                x: 80,
+                x: isRtl ? -80 : 80,
               }}
               whileInView={{
                 opacity: 1,
@@ -2502,7 +2453,7 @@ function AppSection() {
           </motion.div>
         </div>
         {/* Phone mockup center */}
-        <div ref={phoneRef} className={`app-phone-stage home-phone-stage${phoneVisible ? ' is-visible' : ''}`} style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'absolute', minHeight: 500, top: 70, right: 0, width: '60%', zIndex: 1 }}>
+        <div ref={phoneRef} className={`app-phone-stage home-phone-stage${phoneVisible ? ' is-visible' : ''}`}>
           {/* Back phone */}
           <div style={{ width: '100%', maxWidth: 560 }}>
             <img src="/images/image%203066.png" alt="ADCC App" style={{ display: 'block', width: '100%', height: 'auto', objectFit: 'contain', opacity: 1 }} />
@@ -2860,6 +2811,7 @@ function scrambleNumber(
 function AboutSection() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { isRtl } = useLocale();
   const hasAnimatedStats = useRef(false);
   const aboutRef = useRef<HTMLElement | null>(null);
   const statsRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -2904,7 +2856,7 @@ function AboutSection() {
     <section ref={aboutRef} id="about" className={`about-section home-about-section${aboutVisible ? ' is-visible' : ''}`}>
       <motion.div
         className="home-about-left-image about-left-image adcc-image-group"
-        initial={{ opacity: 0, x: -300 }}
+        initial={{ opacity: 0, x: isRtl ? 300 : -300 }}
         whileInView={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
         viewport={{ once: true }}
@@ -2941,8 +2893,7 @@ function AboutSection() {
           {titleWords.slice(0, 3).map((word, index) => (
             <span
               key={`${word}-${index}`}
-              className="inline-block overflow-hidden"
-              style={{ marginRight: '14px' }}
+              className="home-word-gap inline-block overflow-hidden"
             >
               <motion.span
                 className="inline-block"
@@ -2963,8 +2914,7 @@ function AboutSection() {
               {titleWords.slice(3).map((word, index) => (
                 <span
                   key={`${word}-${index + 3}`}
-                  className="inline-block overflow-hidden"
-                  style={{ marginRight: '14px' }}
+                  className="home-word-gap inline-block overflow-hidden"
                 >
                   <motion.span
                     className="inline-block"
@@ -3199,7 +3149,6 @@ export function Home() {
 
   return (
     <div className="home-page" style={{ minHeight: '100vh', background: '#EAF4FF', display: 'flex', flexDirection: 'column' }}>
-      <Header />
       <HeroSection />
       <StatsTicker />
       <CyclingJourneySection />
