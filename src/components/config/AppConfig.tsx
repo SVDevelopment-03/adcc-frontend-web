@@ -141,7 +141,7 @@ export function AppConfig() {
   const toggleEmailEnabled = () => setConfig((prev) => ({ ...prev, emailSettings: { ...prev.emailSettings, enabled: !prev.emailSettings.enabled } }));
 
   const SMTP_PRESETS = {
-    gmail:   { smtpHost: 'smtp.gmail.com',          smtpPort: 587, smtpSecure: false },
+    gmail:   { smtpHost: 'smtp.gmail.com',          smtpPort: 465, smtpSecure: true  },
     outlook: { smtpHost: 'smtp-mail.outlook.com',   smtpPort: 587, smtpSecure: false },
     custom:  { smtpHost: '',                         smtpPort: 587, smtpSecure: false },
   } as const;
@@ -453,10 +453,9 @@ export function AppConfig() {
 
           {/* Gmail info banner */}
           {smtpProvider === 'gmail' && (
-            <div className="mb-4 px-4 py-3 rounded-lg text-sm" style={{ backgroundColor: '#FFF9EF', border: '1px solid #ECC180', color: '#7a5a1e' }}>
-              <strong>Gmail requires an App Password.</strong> Your regular Gmail password will not work.
-              Enable 2-Step Verification on your Google account, then go to{' '}
-              <strong>Google Account → Security → App Passwords</strong> and generate a password for "Mail".
+            <div className="mb-4 px-4 py-3 rounded-lg text-sm space-y-1" style={{ backgroundColor: '#FFF9EF', border: '1px solid #ECC180', color: '#7a5a1e' }}>
+              <div><strong>Uses port 465 (SSL) — required on cloud hosting platforms</strong> that block port 587.</div>
+              <div><strong>Gmail requires an App Password.</strong> Your regular Gmail password will not work. Enable 2-Step Verification, then go to <strong>Google Account → Security → App Passwords</strong> and generate a password for "Mail".</div>
             </div>
           )}
 
