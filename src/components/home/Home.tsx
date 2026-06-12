@@ -1662,9 +1662,6 @@ function HeroSection() {
           </AnimatedButton>
         </div>
       </div>
-      <div className="home-floating-bike" style={{ position: 'absolute', right: 40, bottom: 60, width: 60, height: 60, background: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.15)', cursor: 'pointer' }}>
-        <CyclingIcon />
-      </div>
     </section>
   );
 }
