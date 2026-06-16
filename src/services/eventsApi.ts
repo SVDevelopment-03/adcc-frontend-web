@@ -243,7 +243,17 @@ export const createEvent = async (
       });
     }
 
-    
+    const rewards = eventData.rewards ?? {
+      points: Number(eventData.rewardPoints ?? 0),
+      badgeName: eventData.rewardBadge ?? '',
+    };
+    if (rewards && (rewards.points !== undefined || rewards.badgeName !== undefined)) {
+      formData.append('rewards', JSON.stringify(rewards));
+    }
+
+    if (eventData.badgeImage instanceof File) {
+      formData.append('badgeImage', eventData.badgeImage);
+    }
 
     // Do not set Content-Type: axios sets multipart/form-data with boundary for FormData
     const response = await api.post("/v1/events", formData);
@@ -264,6 +274,7 @@ export const createEvent = async (
 export interface EventUpdateImageFiles {
   mainImage?: File;
   eventImage?: File;
+  badgeImage?: File;
   galleryImages?: File[];
 }
 
@@ -327,8 +338,12 @@ export const updateEvent = async (
     append('maxAge', d.maxAge);
     if (d.eligibility != null) append('eligibility', d.eligibility);
 
+    if (d.rewards !== undefined) {
+      formData.append('rewards', JSON.stringify(d.rewards));
+    }
     if (imageFiles?.mainImage instanceof File) formData.append('mainImage', imageFiles.mainImage);
     if (imageFiles?.eventImage instanceof File) formData.append('eventImage', imageFiles.eventImage);
+    if (imageFiles?.badgeImage instanceof File) formData.append('badgeImage', imageFiles.badgeImage);
     if (imageFiles?.galleryImages?.length) {
       imageFiles.galleryImages.forEach((file) => formData.append('galleryImages', file));
     }
