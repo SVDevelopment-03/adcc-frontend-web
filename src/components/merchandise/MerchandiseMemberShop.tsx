@@ -25,25 +25,6 @@ interface MemberShopProps {
 
 type ShopView = 'browse' | 'detail' | 'cart' | 'checkout' | 'confirmation' | 'history';
 
-const ORDER_HISTORY: Order[] = [
-  {
-    id: 'member-o1',
-    orderNumber: 'ADCC-2024-001100',
-    userId: 'member1',
-    userName: 'You',
-    userAvatar: 'https://i.pravatar.cc/150?img=20',
-    userEmail: 'member@adcc.ae',
-    items: [
-      { productId: 'p1', productName: 'ADCC Race Jersey 2024', productImage: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=200', size: 'M', color: 'Red/Gold', price: 320, quantity: 1 },
-    ],
-    subtotal: 320, shipping: 0, total: 320,
-    status: 'delivered',
-    shippingAddress: { name: 'Member User', line1: 'Villa 10, Khalifa City', city: 'Abu Dhabi', emirate: 'Abu Dhabi', phone: '+971501111111' },
-    paymentMethod: 'Credit Card', paymentLast4: '4242',
-    trackingNumber: 'AE111222333',
-    createdAt: '2024-02-10T10:00:00Z', updatedAt: '2024-02-15T14:00:00Z',
-  },
-];
 
 const statusColors: Record<string, { color: string; bg: string }> = {
   pending: { color: '#F59E0B', bg: '#FFFBEB' },
@@ -67,17 +48,17 @@ export function MerchandiseMemberShop({ products, categories, orders, setOrders 
   const [activeCategory, setActiveCategory] = useState('all');
   const [activeSubcat, setActiveSubcat] = useState('all');
   const [sortBy, setSortBy] = useState<'newest' | 'price-asc' | 'price-desc' | 'popular'>('newest');
-  const [memberOrders, setMemberOrders] = useState<Order[]>(ORDER_HISTORY);
+  const [memberOrders, setMemberOrders] = useState<Order[]>([]);
   const [confirmedOrder, setConfirmedOrder] = useState<Order | null>(null);
   const [showFilterPanel, setShowFilterPanel] = useState(false);
 
   const [checkoutForm, setCheckoutForm] = useState({
-    name: 'Ahmed Al Mansoori',
-    email: 'ahmed@adcc.ae',
-    phone: '+971501234567',
-    line1: 'Villa 23, Al Reem Island',
-    city: 'Abu Dhabi',
-    emirate: 'Abu Dhabi',
+    name: '',
+    email: '',
+    phone: '',
+    line1: '',
+    city: '',
+    emirate: '',
     paymentMethod: 'card',
     cardNumber: '',
     cardExpiry: '',
@@ -730,9 +711,9 @@ export function MerchandiseMemberShop({ products, categories, orders, setOrders 
             <h3 className="text-lg mb-4" style={{ color: '#333' }}>Contact Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
-                { label: 'Full Name', key: 'name', placeholder: 'Ahmed Al Mansoori' },
-                { label: 'Email', key: 'email', placeholder: 'ahmed@example.com' },
-                { label: 'Phone', key: 'phone', placeholder: '+971 50 123 4567' },
+                { label: 'Full Name', key: 'name', placeholder: 'Enter full name' },
+                { label: 'Email', key: 'email', placeholder: 'Enter email address' },
+                { label: 'Phone', key: 'phone', placeholder: 'Enter phone number' },
               ].map(f => (
                 <div key={f.key}>
                   <label className="block text-sm mb-1" style={{ color: '#666' }}>{f.label}</label>
@@ -814,7 +795,7 @@ export function MerchandiseMemberShop({ products, categories, orders, setOrders 
                   <input
                     value={checkoutForm.cardName}
                     onChange={e => setCheckoutForm(prev => ({ ...prev, cardName: e.target.value }))}
-                    placeholder="Ahmed Al Mansoori"
+                    placeholder="Name on card"
                     className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-red-600"
                   />
                 </div>
