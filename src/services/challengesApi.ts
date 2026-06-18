@@ -23,6 +23,7 @@ export interface Challenge {
   createdBy?: string;
   communities?: string[];
   communityNames?: string[];
+  rules?: string[];
 }
 
 /** Raw API challenge (may have _id and Date objects) */
@@ -46,6 +47,7 @@ interface ChallengeApiRaw {
   image?: string;
   createdBy?: string | { _id?: unknown };
   communities?: (string | { _id?: unknown; name?: string; title?: string })[];
+  rules?: string[];
 }
 
 interface GetChallengesResponse {
@@ -111,6 +113,7 @@ function normalizeChallenge(raw: ChallengeApiRaw): Challenge {
       : raw.createdBy as string | undefined,
     communities: normalizeCommunityIds(raw.communities),
     communityNames: normalizeCommunityNames(raw.communities),
+    rules: Array.isArray(raw.rules) ? raw.rules.map(String) : [],
   };
 }
 
@@ -213,6 +216,9 @@ function buildChallengeFormData(payload: Partial<Challenge>, imageFile?: File): 
   if (payload.featured !== undefined) fd.append('featured', String(payload.featured));
   if (payload.communities && payload.communities.length > 0) {
     fd.append('communities', JSON.stringify(payload.communities));
+  }
+  if (payload.rules && payload.rules.length > 0) {
+    fd.append('rules', JSON.stringify(payload.rules));
   }
   if (imageFile) {
     fd.append('image', imageFile);
