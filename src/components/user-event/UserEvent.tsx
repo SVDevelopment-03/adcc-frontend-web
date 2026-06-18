@@ -737,7 +737,7 @@ function EventCard({
                 height={18}
               />
             }
-            text={t("public.common.participants", { count: participants })}
+            text={t("public.common.participants", { formattedCount: participants })}
           />
           <Meta
             icon={
