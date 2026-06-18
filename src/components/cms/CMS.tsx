@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import axios, { AxiosError } from 'axios';
-import { Edit, GripVertical, LayoutGrid, FileText, Globe } from 'lucide-react';
+import { Edit, GripVertical, LayoutGrid, FileText, Globe, ImageIcon, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../../services/api';
 import { useTranslation } from 'react-i18next';
@@ -127,6 +127,27 @@ export const deleteContentSetting = async (key: string): Promise<void> => {
   }
 };
 
+const createContentSettingWithImage = async (params: {
+  group: string;
+  key: string;
+  label: string;
+  title: string;
+  imageFile?: File;
+}): Promise<void> => {
+  const formData = new FormData();
+  formData.append('group', params.group);
+  formData.append('key', params.key);
+  formData.append('label', params.label);
+  formData.append('title', params.title);
+  if (params.imageFile) formData.append('image', params.imageFile);
+  await api.post('/v1/settings/content', formData);
+};
+
+const APP_BANNER_CONFIGS = [
+  { key: 'app_banner_home_screen', label: 'Home Screen Banner', translationKey: 'homeScreenBanner' },
+  { key: 'app_banner_merchandise_offer', label: 'Merchandise Offer Banner', translationKey: 'merchandiseOfferBanner' },
+] as const;
+
 interface ItemFormState {
   title: string;
   description: string;
@@ -153,7 +174,11 @@ export function CMS() {
   const [allItems, setAllItems] = useState<ContentSetting[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'homepage' | 'static'>('homepage');
+  const [activeTab, setActiveTab] = useState<'homepage' | 'static' | 'appBanner'>('homepage');
+  const [bannerFiles, setBannerFiles] = useState<Record<string, File | null>>({});
+  const [bannerPreviews, setBannerPreviews] = useState<Record<string, string>>({});
+  const [savingBanners, setSavingBanners] = useState<Record<string, boolean>>({});
+  const bannerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const [selectedItem, setSelectedItem] = useState<ContentSetting | null>(null);
   const [editForm, setEditForm] = useState<ItemFormState>({
@@ -199,6 +224,56 @@ export function CMS() {
   const staticItems = useMemo(() => {
     return allItems.filter((item) => !isHomepageGroup(item.group) && isStaticGroup(item.group));
   }, [allItems, isHomepageGroup, isStaticGroup]);
+
+  const appBannerItems = useMemo(() => {
+    return allItems.filter((item) => {
+      const g = String(item.group || '').toLowerCase();
+      return g === 'app_banner' || g === 'app-banner';
+    });
+  }, [allItems]);
+
+  const handleBannerFileChange = (bannerKey: string, file: File | null) => {
+    setBannerFiles((prev) => ({ ...prev, [bannerKey]: file }));
+    if (bannerPreviews[bannerKey]) {
+      URL.revokeObjectURL(bannerPreviews[bannerKey]);
+    }
+    if (file) {
+      setBannerPreviews((prev) => ({ ...prev, [bannerKey]: URL.createObjectURL(file) }));
+    } else {
+      setBannerPreviews((prev) => { const next = { ...prev }; delete next[bannerKey]; return next; });
+    }
+  };
+
+  const handleBannerSave = async (bannerKey: string, bannerLabel: string) => {
+    const file = bannerFiles[bannerKey];
+    if (!file) return;
+
+    setSavingBanners((prev) => ({ ...prev, [bannerKey]: true }));
+    try {
+      const existing = appBannerItems.find((item) => item.key === bannerKey);
+      if (existing) {
+        await updateContentSetting(bannerKey, { imageFile: file });
+      } else {
+        await createContentSettingWithImage({
+          group: 'app_banner',
+          key: bannerKey,
+          label: bannerLabel,
+          title: bannerLabel,
+          imageFile: file,
+        });
+      }
+      toast.success(t('cms.appBanner.uploadSuccess'));
+      setBannerFiles((prev) => ({ ...prev, [bannerKey]: null }));
+      if (bannerPreviews[bannerKey]) URL.revokeObjectURL(bannerPreviews[bannerKey]);
+      setBannerPreviews((prev) => { const next = { ...prev }; delete next[bannerKey]; return next; });
+      if (bannerInputRefs.current[bannerKey]) bannerInputRefs.current[bannerKey]!.value = '';
+      await fetchAllGroupsSettings();
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, t('cms.appBanner.uploadError')));
+    } finally {
+      setSavingBanners((prev) => ({ ...prev, [bannerKey]: false }));
+    }
+  };
 
   const cmsStats = useMemo(() => {
     const homepageSections = homepageItems.length;
@@ -374,7 +449,7 @@ export function CMS() {
           {/* Tabs */}
           <div className="border-b border-gray-200">
             <div className="flex gap-6">
-              {(['homepage', 'static'] as const).map((tab) => (
+              {(['homepage', 'static', 'appBanner'] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -384,14 +459,86 @@ export function CMS() {
                     borderBottom: activeTab === tab ? '2px solid #C12D32' : '2px solid transparent',
                   }}
                 >
-                  {tab === 'homepage' ? t('cms.tabs.homepageSections') : t('cms.tabs.staticPages')}
+                  {tab === 'homepage'
+                    ? t('cms.tabs.homepageSections')
+                    : tab === 'static'
+                    ? t('cms.tabs.staticPages')
+                    : t('cms.tabs.appBanner')}
                 </button>
               ))}
             </div>
           </div>
 
           {/* Tab Content */}
-          {activeTab === 'homepage' ? (
+          {activeTab === 'appBanner' ? (
+            <div className="p-6 rounded-2xl shadow-sm bg-white">
+              <h2 className="text-xl mb-6" style={{ color: '#333' }}>{t('cms.tabs.appBanner')}</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {APP_BANNER_CONFIGS.map((config) => {
+                  const existing = appBannerItems.find((item) => item.key === config.key);
+                  const previewUrl = bannerPreviews[config.key] || existing?.image || '';
+                  const selectedFile = bannerFiles[config.key];
+                  const isSaving = savingBanners[config.key] ?? false;
+
+                  return (
+                    <div key={config.key} className="rounded-xl border p-5 space-y-4" style={{ borderColor: '#E5DDD4' }}>
+                      <div className="flex items-center gap-2">
+                        <ImageIcon className="w-5 h-5" style={{ color: '#C12D32' }} />
+                        <h3 className="text-sm font-medium" style={{ color: '#333' }}>
+                          {t(`cms.appBanner.${config.translationKey}`)}
+                        </h3>
+                      </div>
+
+                      <div
+                        className="w-full rounded-lg overflow-hidden flex items-center justify-center"
+                        style={{ backgroundColor: '#F3EEE7', minHeight: '160px' }}
+                      >
+                        {previewUrl ? (
+                          <img
+                            src={previewUrl}
+                            alt={config.label}
+                            className="w-full object-cover"
+                            style={{ maxHeight: '200px' }}
+                          />
+                        ) : (
+                          <div className="flex flex-col items-center gap-2 py-8">
+                            <ImageIcon className="w-10 h-10" style={{ color: '#CCC' }} />
+                            <span className="text-xs" style={{ color: '#999' }}>
+                              {t('cms.appBanner.noBanner')}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="block text-xs font-medium" style={{ color: '#666' }}>
+                          {t('cms.appBanner.uploadBanner')}
+                        </label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          ref={(el) => { bannerInputRefs.current[config.key] = el; }}
+                          onChange={(e) => handleBannerFileChange(config.key, e.target.files?.[0] ?? null)}
+                          className="w-full border rounded-lg px-3 py-2 text-sm"
+                          style={{ borderColor: '#E5DDD4' }}
+                        />
+                      </div>
+
+                      <button
+                        onClick={() => handleBannerSave(config.key, config.label)}
+                        disabled={!selectedFile || isSaving}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-white text-sm disabled:opacity-50 transition-opacity"
+                        style={{ backgroundColor: '#C12D32' }}
+                      >
+                        <Upload className="w-4 h-4" />
+                        {isSaving ? t('cms.saving') : t('cms.appBanner.saveBanner')}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : activeTab === 'homepage' ? (
             <div className="p-6 rounded-2xl shadow-sm bg-white">
               <h2 className="text-xl mb-6" style={{ color: '#333' }}>{t('cms.tabs.homepageSections')}</h2>
               {homepageItems.length === 0 ? (

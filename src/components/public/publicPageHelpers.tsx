@@ -1,16 +1,17 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 const lineVariants = {
-  hidden: { y: '120%', opacity: 0 },
-  visible: { y: '0%', opacity: 1 },
+  hidden: { y: "120%", opacity: 0 },
+  visible: { y: "0%", opacity: 1 },
 };
 
 export function useWordList(key: string): string[] {
   const { t } = useTranslation();
   const value = t(key, { returnObjects: true });
   if (Array.isArray(value)) return value as string[];
-  if (typeof value === 'string' && value !== key) return value.split(/\s+/).filter(Boolean);
+  if (typeof value === "string" && value !== key)
+    return value.split(/\s+/).filter(Boolean);
   return [key];
 }
 
@@ -18,7 +19,7 @@ export function AnimatedWords({
   words,
   gap = 12,
   stagger = 0.07,
-  className = '',
+  className = "",
 }: {
   words: string[];
   gap?: number;
@@ -32,14 +33,19 @@ export function AnimatedWords({
       whileInView="visible"
       viewport={{ once: true }}
       variants={{ visible: { transition: { staggerChildren: stagger } } }}
+      style={{ display: "flex", flexWrap: "wrap", columnGap: gap, rowGap: 0 }}
     >
       {words.map((word, index) => (
         <span
           key={`${word}-${index}`}
-          className="inline-block overflow-hidden public-word-gap"
-          style={{ marginInlineEnd: gap }}
+          className="overflow-hidden"
+          style={{ display: "block" }}
         >
-          <motion.span className="inline-block" variants={lineVariants} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
+          <motion.span
+            className="inline-block"
+            variants={lineVariants}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
             {word}
           </motion.span>
         </span>
@@ -60,7 +66,7 @@ export function HeroAnimatedWords({
   return (
     <motion.span
       initial="hidden"
-      animate={animate ? 'visible' : undefined}
+      animate={animate ? "visible" : undefined}
       variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
     >
       {words.map((word, index) => (
@@ -86,7 +92,7 @@ export function PublicPageHero({
   titleWords,
   breadcrumb,
   backgroundImage,
-  classPrefix = 'public-page',
+  classPrefix = "public-page",
 }: {
   titleWords: string[];
   breadcrumb: string[];
@@ -94,34 +100,44 @@ export function PublicPageHero({
   classPrefix?: string;
 }) {
   return (
-    <section className={`${classPrefix}-hero`} style={{ position: 'relative', width: '100%', height: 640, overflow: 'hidden' }}>
+    <section
+      className={`${classPrefix}-hero`}
+      style={{
+        position: "relative",
+        width: "100%",
+        height: 640,
+        overflow: "hidden",
+      }}
+    >
       <div
         className={`${classPrefix}-hero-bg`}
         style={{
-          position: 'absolute',
+          position: "absolute",
           inset: 0,
           backgroundImage: `linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url('${backgroundImage}')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
         aria-hidden
       />
-      <div
-        className={`${classPrefix}-hero-content`}
-        style={{ position: 'absolute', bottom: 90, insetInlineStart: 82 }}
-      >
-        <p
-          className={`${classPrefix}-hero-breadcrumb overflow-hidden bebas`}
-          style={{ color: 'rgba(255,255,255,0.8)', fontSize: 22 }}
-        >
-          <HeroAnimatedWords words={breadcrumb} gap={8} />
-        </p>
+      <div className={`${classPrefix}-hero-content public-hero-content-pos`}>
         <h1
           className={`bebas ${classPrefix}-hero-title overflow-hidden`}
-          style={{ fontSize: 70, color: '#fff', lineHeight: 1, marginTop: 8 }}
+          style={{
+            fontSize: 70,
+            color: "#fff",
+            lineHeight: 1,
+            marginBottom: 8,
+          }}
         >
           <HeroAnimatedWords words={titleWords} />
         </h1>
+        <p
+          className={`${classPrefix}-hero-breadcrumb overflow-hidden`}
+          style={{ color: "rgba(255,255,255,0.8)", fontSize: 22 }}
+        >
+          <HeroAnimatedWords words={breadcrumb} gap={8} />
+        </p>
       </div>
     </section>
   );

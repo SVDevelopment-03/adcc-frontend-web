@@ -15,7 +15,11 @@ import {
 const PAGE_SIZE = 4;
 const CHALLENGE_FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1541625602330-2277a4c46182?q=80&w=1200&auto=format&fit=crop";
-const statusTabs: Array<Challenge["status"]> = ["Active", "Upcoming", "Completed"];
+const statusTabs: Array<Challenge["status"]> = [
+  "Active",
+  "Upcoming",
+  "Completed",
+];
 
 const STATUS_TAB_KEYS: Record<Challenge["status"], string> = {
   Active: "active",
@@ -36,7 +40,9 @@ export default function ChallengesPage() {
   const heroBreadcrumb = useWordList("public.challenges.hero.breadcrumb");
   const introTitleWords = useWordList("public.challenges.intro.titleWords");
   const listTitleWords = useWordList("public.challenges.listTitleWords");
-  const faqs = t("public.tracks.faq.items", { returnObjects: true }) as FaqItem[];
+  const faqs = t("public.tracks.faq.items", {
+    returnObjects: true,
+  }) as FaqItem[];
 
   const [status, setStatus] = useState<Challenge["status"]>("Active");
   const [page, setPage] = useState(1);
@@ -58,9 +64,12 @@ export default function ChallengesPage() {
     today.setHours(0, 0, 0, 0);
     const endDate = new Date(challenge.endDate);
     endDate.setHours(0, 0, 0, 0);
-    const diffDays = Math.ceil((endDate.getTime() - today.getTime()) / 86400000);
+    const diffDays = Math.ceil(
+      (endDate.getTime() - today.getTime()) / 86400000,
+    );
 
-    if (challenge.status === "Completed") return t("public.common.challengeDays.completed");
+    if (challenge.status === "Completed")
+      return t("public.common.challengeDays.completed");
     if (!Number.isFinite(diffDays)) return t("public.common.dateTBA");
     if (diffDays < 0) return t("public.common.challengeDays.ended");
     if (diffDays === 0) return t("public.common.challengeDays.endsToday");
@@ -78,7 +87,9 @@ export default function ChallengesPage() {
 
   const getShowingText = () => {
     if (status === "Active") {
-      return t("public.common.showingActiveChallenges", { count: totalResults });
+      return t("public.common.showingActiveChallenges", {
+        count: totalResults,
+      });
     }
     if (status === "Upcoming") {
       return t("public.challenges.showingUpcoming", { count: totalResults });
@@ -135,12 +146,13 @@ export default function ChallengesPage() {
 
     const loadStats = async () => {
       try {
-        const [active, upcoming, completed, publicChallenges] = await Promise.all([
-          getChallengesPage({ status: "Active", page: 1, limit: 1 }),
-          getChallengesPage({ status: "Upcoming", page: 1, limit: 1 }),
-          getChallengesPage({ status: "Completed", page: 1, limit: 1 }),
-          getChallengesPage({ page: 1, limit: 100 }),
-        ]);
+        const [active, upcoming, completed, publicChallenges] =
+          await Promise.all([
+            getChallengesPage({ status: "Active", page: 1, limit: 1 }),
+            getChallengesPage({ status: "Upcoming", page: 1, limit: 1 }),
+            getChallengesPage({ status: "Completed", page: 1, limit: 1 }),
+            getChallengesPage({ page: 1, limit: 100 }),
+          ]);
         const riders = publicChallenges.challenges.reduce(
           (sum, challenge) => sum + (challenge.participants || 0),
           0,
@@ -148,10 +160,23 @@ export default function ChallengesPage() {
 
         if (mounted) {
           setStats([
-            { value: formatNumber(riders, i18n.language), labelKey: "riders", active: true },
-            { value: formatNumber(active.pagination.total, i18n.language), labelKey: "active" },
-            { value: formatNumber(upcoming.pagination.total, i18n.language), labelKey: "upcoming" },
-            { value: formatNumber(completed.pagination.total, i18n.language), labelKey: "completed" },
+            {
+              value: formatNumber(riders, i18n.language),
+              labelKey: "riders",
+              active: true,
+            },
+            {
+              value: formatNumber(active.pagination.total, i18n.language),
+              labelKey: "active",
+            },
+            {
+              value: formatNumber(upcoming.pagination.total, i18n.language),
+              labelKey: "upcoming",
+            },
+            {
+              value: formatNumber(completed.pagination.total, i18n.language),
+              labelKey: "completed",
+            },
           ]);
         }
       } catch (err) {
@@ -173,6 +198,21 @@ export default function ChallengesPage() {
   return (
     <div className="challenges-page min-h-screen overflow-x-hidden bg-[#eaf4ff] text-black">
       <style>{`
+
+.font-satoshi, h3.font-satoshi{
+font-family: 'Satoshi', sans-serif !important;
+}
+
+.font-bebas{
+    font-family: var(--font-bebas-kai) !important;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+.justify-center{
+justify-content: center !important;}
+
+
         .challenges-page {
           width: 100%;
           max-width: 100vw;
@@ -213,7 +253,7 @@ export default function ChallengesPage() {
           <AnimatedWords
             words={introTitleWords}
             gap={12}
-            className="max-w-[620px] text-[32px] font-black uppercase leading-tight sm:text-[38px] lg:text-[44px]"
+            className="font-bebas max-w-[500px] text-[32px] font-black uppercase leading-tight sm:text-[38px] lg:text-[52px]"
           />
           <p className="mt-5 max-w-[560px] text-[15px] leading-relaxed sm:mt-8 sm:text-[17px]">
             {t("public.challenges.intro.body")}
@@ -232,26 +272,36 @@ export default function ChallengesPage() {
                 ease: "easeOut",
               }}
               viewport={{ once: true }}
-              className={`rounded-xl border p-5 sm:p-6 lg:p-8 ${
-                item.active
-                  ? "bg-[#49637f] text-white"
-                  : "border-[#d7e3ef] bg-[#edf6ff]"
-              }`}
+              className="
+        rounded-xl border border-[#d7e3ef]
+        bg-[#edf6ff]
+        p-5 sm:p-6 lg:p-8
+        transition-all duration-300
+        hover:bg-[#435974]
+        hover:text-white
+        cursor-pointer
+      "
             >
-              <Users size={32} />
-              <h3 className="mt-4 text-[24px] font-black sm:text-[28px]">{item.value}</h3>
-              <p className="mt-1 text-[14px] sm:text-[16px]">
-                {t(`public.challenges.stats.${item.labelKey}`)}
-              </p>
+              <div className="flex items-center gap-4">
+                <Users size={32} className="shrink-0" />
+
+                <div>
+                  <h3 className="font-satoshi text-[24px] font-black sm:text-[28px]">
+                    {item.value}
+                  </h3>
+
+                  <p className="mt-1 text-[14px] sm:text-[16px]">
+                    {t(`public.challenges.stats.${item.labelKey}`)}
+                  </p>
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>
       </section>
 
       <section className="w-full px-4 pb-16 sm:px-6 md:px-10 lg:px-16 lg:pb-28 xl:px-20 2xl:px-24">
-        <motion.img
-          src="/img/SSYouTube.online_Falcon_daman.png"
-          alt={t("public.challenges.flagAlt")}
+        <motion.video
           initial={{ opacity: 0, y: 120 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{
@@ -259,8 +309,15 @@ export default function ChallengesPage() {
             ease: "easeOut",
           }}
           viewport={{ once: true }}
-          className="h-[220px] w-full rounded-xl object-cover sm:h-[320px] lg:h-[465px]"
-        />
+          className="h-[220px] w-full rounded-xl object-cover sm:h-[400px] lg:h-[550px]"
+          autoPlay
+          muted
+          loop
+          playsInline
+        >
+          <source src="/img/videos/video.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </motion.video>
       </section>
 
       <section className="w-full px-4 pb-16 sm:px-6 md:px-10 lg:px-16 lg:pb-28 xl:px-20 2xl:px-24">
@@ -268,7 +325,7 @@ export default function ChallengesPage() {
           <AnimatedWords
             words={listTitleWords}
             gap={16}
-            className="text-[30px] font-black uppercase sm:text-[36px]"
+            className="font-bebas text-[30px] font-black uppercase sm:text-[42px]"
           />
           <motion.div
             initial="hidden"
@@ -369,7 +426,7 @@ export default function ChallengesPage() {
               </div>
 
               <div className="p-5 sm:p-6 lg:p-8">
-                <h3 className="text-[21px] font-black uppercase sm:text-[24px]">
+                <h3 className="text-[21px]  uppercase sm:text-[24px]">
                   {item.title}
                 </h3>
 
@@ -386,7 +443,10 @@ export default function ChallengesPage() {
                     <p className="flex items-center gap-2">
                       <Users size={16} />{" "}
                       {t("public.common.participants", {
-                        formattedCount: formatNumber(item.participants ?? 0, i18n.language),
+                        formattedCount: formatNumber(
+                          item.participants ?? 0,
+                          i18n.language,
+                        ),
                       })}
                     </p>
 
@@ -424,7 +484,12 @@ export default function ChallengesPage() {
               {t("public.common.prev")}
             </button>
             {Array.from({ length: totalPages }, (_, index) => index + 1)
-              .filter((item) => item === 1 || item === totalPages || Math.abs(item - page) <= 1)
+              .filter(
+                (item) =>
+                  item === 1 ||
+                  item === totalPages ||
+                  Math.abs(item - page) <= 1,
+              )
               .map((item, index, visiblePages) => (
                 <span key={item} className="flex items-center gap-2 sm:gap-3">
                   {index > 0 && item - visiblePages[index - 1] > 1 && (
@@ -443,7 +508,9 @@ export default function ChallengesPage() {
                 </span>
               ))}
             <button
-              onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+              onClick={() =>
+                setPage((current) => Math.min(totalPages, current + 1))
+              }
               disabled={page === totalPages}
               className="rounded-full border border-[#cad8e6] px-4 py-2 text-[13px] font-semibold disabled:cursor-not-allowed disabled:opacity-40 sm:px-5 sm:py-3 sm:text-[14px]"
             >
@@ -457,9 +524,9 @@ export default function ChallengesPage() {
         <AnimatedWords
           words={t("public.tracks.faq.title").split(/\s+/).filter(Boolean)}
           gap={12}
-          className="text-[30px] font-black uppercase sm:text-[34px]"
+          className="font-bebas justify-center text-[30px] font-black uppercase sm:text-[42px]"
         />
-        <p className="mt-4 text-[15px]">{t("public.tracks.faq.subtitle")}</p>
+        <p className="mt-4 text-[16px]">{t("public.tracks.faq.subtitle")}</p>
 
         <motion.div
           initial="hidden"

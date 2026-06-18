@@ -1,20 +1,51 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { AnimatedButton } from '../ui/AnimatedButton';
-import { AnimatedImage } from '../ui/AnimatedImage';
-import { useTranslation } from 'react-i18next';
-import { useLocale } from '../../contexts/LocaleContext';
-import { subscribeToNewsletter } from '../../services/newsletterApi';
-import { HOME_STORE_FALLBACK_IMAGE, HOME_STORE_PRODUCTS } from '../../data/homeStoreProducts';
-import { AppStoreButton } from '../public/AppStoreButton';
-import { Bike, CalendarDays, MapPin, Users } from 'lucide-react';
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { AnimatedButton } from "../ui/AnimatedButton";
+import { AnimatedImage } from "../ui/AnimatedImage";
+import { useTranslation } from "react-i18next";
+import { useLocale } from "../../contexts/LocaleContext";
+import { subscribeToNewsletter } from "../../services/newsletterApi";
+import {
+  HOME_STORE_FALLBACK_IMAGE,
+  HOME_STORE_PRODUCTS,
+} from "../../data/homeStoreProducts";
+import { AppStoreButton } from "../public/AppStoreButton";
+import { Bike, CalendarDays, MapPin, Users } from "lucide-react";
 
 const TICKER_ITEMS = [
-  { key: 'members' as const, Icon: Users, iconClass: 'home-ticker-icon--members', textClass: 'home-ticker-text--members', bg: '#D9E7F9', dark: false },
-  { key: 'loop' as const, Icon: MapPin, iconClass: 'home-ticker-icon--md', textClass: 'home-ticker-text--stat', bg: '#435974', dark: true },
-  { key: 'events' as const, Icon: CalendarDays, iconClass: 'home-ticker-icon--md', textClass: 'home-ticker-text--stat', bg: '#D9E7F9', dark: false },
-  { key: 'distance' as const, Icon: Bike, iconClass: 'home-ticker-icon--lg', textClass: 'home-ticker-text--stat', bg: '#435974', dark: true },
+  {
+    key: "members" as const,
+    Icon: Users,
+    iconClass: "home-ticker-icon--members",
+    textClass: "home-ticker-text--members",
+    bg: "#D9E7F9",
+    dark: false,
+  },
+  {
+    key: "loop" as const,
+    Icon: MapPin,
+    iconClass: "home-ticker-icon--md",
+    textClass: "home-ticker-text--stat",
+    bg: "#435974",
+    dark: true,
+  },
+  {
+    key: "events" as const,
+    Icon: CalendarDays,
+    iconClass: "home-ticker-icon--md",
+    textClass: "home-ticker-text--stat",
+    bg: "#D9E7F9",
+    dark: false,
+  },
+  {
+    key: "distance" as const,
+    Icon: Bike,
+    iconClass: "home-ticker-icon--lg",
+    textClass: "home-ticker-text--stat",
+    bg: "#435974",
+    dark: true,
+  },
 ];
 const CSS = `
   @keyframes ticker-group-left {
@@ -91,10 +122,12 @@ const CSS = `
   .home-hero {
     position: relative;
     width: 100%;
-    height: clamp(480px, 56.25vw, 806px);
-    max-height: 806px;
+    height: calc(100vh - 112px);
+    min-height: 480px;
+    max-height: none;
     overflow: hidden;
     flex-shrink: 0;
+    padding-inline-start:86px;
   }
   .home-hero-bg {
     position: absolute;
@@ -106,7 +139,7 @@ const CSS = `
   }
   .home-hero-content {
     position: absolute;
-    inset-inline-start: clamp(24px, 5.97vw, 86px);
+    inset-inline-start: 88px;
     top: clamp(96px, 24.9%, 201px);
     width: min(627px, calc(100% - 48px));
     max-width: 627px;
@@ -153,6 +186,69 @@ const CSS = `
   }
   .home-hero-download-btn svg path {
     stroke: #FFF9EF;
+  }
+.font-satoshi
+{
+font-family: var(--font-satoshi) !important;}
+
+
+
+  .hero-explore-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    min-height: 44px;
+    padding: 0 22px;
+    border: 2px solid #019839;
+    border-radius: 30px;
+    background: transparent;
+    color: #019839;
+    cursor: pointer;
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 125%;
+    outline: none;
+    transition: color 0.3s ease;
+    white-space: nowrap;
+  }
+  .hero-explore-btn:hover,
+  .hero-explore-btn:focus-visible {
+    color: #fff;
+  }
+  .hero-explore-btn-inner {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 1;
+  }
+  .hero-explore-btn-inner::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    padding-top: 300%;
+    border-radius: 50%;
+    background: #019839;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.8s ease;
+    z-index: -1;
+  }
+  .hero-explore-btn:hover .hero-explore-btn-inner::before,
+  .hero-explore-btn:focus-visible .hero-explore-btn-inner::before {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .hero-explore-btn-icon {
+    flex-shrink: 0;
+    transition: filter 0.3s ease;
+  }
+  .hero-explore-btn:hover .hero-explore-btn-icon,
+  .hero-explore-btn:focus-visible .hero-explore-btn-icon {
+    filter: brightness(0) invert(1);
   }
 
   .home-ticker {
@@ -299,9 +395,22 @@ const CSS = `
     font-size: 22px;
     line-height: 28px;
     color: #000;
-    border-bottom: 5px solid #019839;
     text-align: end;
     z-index: 2;
+    padding-bottom: 4px;
+  }
+  .store-featured-action::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 4px;
+    background: #019839;
+    transition: width 0.35s ease;
+  }
+  .store-featured-card:hover .store-featured-action::after {
+    width: 100%;
   }
   .store-featured-title {
     position: absolute;
@@ -556,15 +665,15 @@ const CSS = `
     text-align: center;
   }
   .home-community-eyebrow {
-    font-family: 'Bebas Kai', sans-serif;
+    font-family: 'Satoshi', sans-serif;
     font-style: normal;
-    font-weight: 400;
-    font-size: 28px;
+    font-weight: 700;
+    font-size: 24px;
     line-height: 100.7%;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 0px;
     color: #000000;
-    margin: 0 auto 16px;
+    margin: 0 auto 20px;
     max-width: 886px;
   }
   .home-community-title {
@@ -734,7 +843,7 @@ const CSS = `
   .home-about-rider {
     position: absolute;
     bottom: -28px;
-    inset-inline-end: 86px;
+    inset-inline-end: 0;
     width: 652px;
     height: 431px;
     pointer-events: none;
@@ -865,8 +974,21 @@ const CSS = `
     line-height: 28px;
     color: #F6EFE7;
     display: inline-block;
-    border-bottom: 3px solid #435974;
-    padding-bottom: 2px;
+    position: relative;
+    padding-bottom: 4px;
+  }
+  .home-platform-card-action::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background: #F6EFE7;
+    transition: width 0.35s ease;
+  }
+  .home-platform-card:hover .home-platform-card-action::after {
+    width: 100%;
   }
   .platform-cards.is-visible .home-platform-card .adcc-image__img {
     opacity: 1;
@@ -959,7 +1081,7 @@ const CSS = `
       width: min(520px, 42vw);
       height: auto;
       aspect-ratio: 652 / 431;
-      inset-inline-end: 32px;
+      inset-inline-end: 0;
       bottom: -20px;
     }
   }
@@ -1034,15 +1156,12 @@ const CSS = `
     margin-inline-end: 10px;
   }
   .home-phone-stage {
-    position: absolute;
-    top: 70px;
-    inset-inline-end: 0;
-    width: 60%;
+    position: relative;
+    width: 100%;
     min-height: 500px;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1;
   }
   [dir="rtl"] .home-platform-card {
     border-inline-start: 2px solid rgba(255,255,255,0.3) !important;
@@ -1203,14 +1322,15 @@ const CSS = `
       font-size: 15px !important;
     }
     .home-hero {
-      height: clamp(440px, 58vw, 640px) !important;
-      max-height: 640px !important;
+      height: calc(100vh - 96px) !important;
+      min-height: 440px !important;
+      max-height: none !important;
     }
     .home-hero-bg {
       background-position: 62% 28% !important;
     }
     .home-hero-content {
-      inset-inline-start: 32px !important;
+      inset-inline-start: 56px !important;
       top: clamp(88px, 22%, 160px) !important;
       width: min(520px, calc(100% - 56px)) !important;
       max-width: 520px !important;
@@ -1284,18 +1404,19 @@ const CSS = `
     }
     .home-app-copy {
       flex: 1 1 280px !important;
+      width: 100% !important;
     }
     .home-app-title {
       font-size: 58px !important;
     }
     .home-qr-box {
-      width: 190px !important;
-      height: 190px !important;
+      width: 160px !important;
+      height: 160px !important;
     }
     .home-phone-stage {
-      order: 3 !important;
+      order: 1 !important;
       flex: 1 1 100% !important;
-      min-height: 360px !important;
+      min-height: 300px !important;
       width: 100% !important;
     }
     .home-phone-stage img {
@@ -1303,7 +1424,9 @@ const CSS = `
       height: auto !important;
     }
     .home-feature-list {
-      flex: 1 1 260px !important;
+      flex: 1 1 100% !important;
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
       gap: 22px !important;
       min-width: 0 !important;
     }
@@ -1453,14 +1576,15 @@ const CSS = `
       font-size: 14px !important;
     }
     .home-hero {
-      height: clamp(400px, 72vw, 560px) !important;
-      max-height: 560px !important;
+      height: calc(100vh - 80px) !important;
+      min-height: 400px !important;
+      max-height: none !important;
     }
     .home-hero-bg {
       background-position: 70% 30% !important;
     }
     .home-hero-content {
-      inset-inline-start: 18px !important;
+      inset-inline-start: 20px !important;
       top: clamp(72px, 18%, 120px) !important;
       width: min(340px, calc(100% - 36px)) !important;
       max-width: 340px !important;
@@ -1544,9 +1668,9 @@ const CSS = `
       line-height: 24px !important;
     }
     .home-qr-box {
-      width: 156px !important;
-      height: 156px !important;
-      margin-bottom: 24px !important;
+      width: 140px !important;
+      height: 140px !important;
+      margin-bottom: 20px !important;
     }
     .home-store-buttons {
       flex-direction: column !important;
@@ -1557,10 +1681,11 @@ const CSS = `
       width: 100% !important;
     }
     .home-phone-stage {
-      min-height: 280px !important;
+      min-height: 240px !important;
+      order: 0 !important;
     }
     .home-phone-stage img {
-      max-height: 300px !important;
+      max-height: 280px !important;
       object-fit: contain !important;
     }
     .home-feature-list {
@@ -1805,14 +1930,15 @@ const CSS = `
 
 function useHomePageStyles() {
   useEffect(() => {
-    const fontLink = document.createElement('link');
-    fontLink.rel = 'stylesheet';
-    fontLink.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap';
-    fontLink.dataset.pageStyle = 'home';
+    const fontLink = document.createElement("link");
+    fontLink.rel = "stylesheet";
+    fontLink.href =
+      "https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap";
+    fontLink.dataset.pageStyle = "home";
 
-    const styleEl = document.createElement('style');
+    const styleEl = document.createElement("style");
     styleEl.textContent = CSS;
-    styleEl.dataset.pageStyle = 'home';
+    styleEl.dataset.pageStyle = "home";
 
     document.head.appendChild(fontLink);
     document.head.appendChild(styleEl);
@@ -1827,26 +1953,133 @@ function useHomePageStyles() {
 /* ─── SVG Assets ─────────────────────────────────────────────────────────────*/
 
 function ADCCLogo({ size = 1, light = false }) {
-  const color = light ? '#ffffff' : '#000000';
-  const subColor = light ? 'rgba(255,255,255,0.7)' : '#333';
+  const color = light ? "#ffffff" : "#000000";
+  const subColor = light ? "rgba(255,255,255,0.7)" : "#333";
   return (
-    <svg width={180 * size} height={75.6 * size} viewBox="0 0 180 76" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <text x="0" y="52" fontFamily="'Arial Black', sans-serif" fontWeight="900" fontSize="46" fill={color} letterSpacing="-1">AB</text>
-      <circle cx="102" cy="34" r="16" fill="none" stroke={color} strokeWidth="3.5" />
+    <svg
+      width={180 * size}
+      height={75.6 * size}
+      viewBox="0 0 180 76"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <text
+        x="0"
+        y="52"
+        fontFamily="'Arial Black', sans-serif"
+        fontWeight="900"
+        fontSize="46"
+        fill={color}
+        letterSpacing="-1"
+      >
+        AB
+      </text>
+      <circle
+        cx="102"
+        cy="34"
+        r="16"
+        fill="none"
+        stroke={color}
+        strokeWidth="3.5"
+      />
       <circle cx="102" cy="34" r="4.5" fill={color} />
-      <line x1="102" y1="18" x2="102" y2="50" stroke={color} strokeWidth="1.5" />
+      <line
+        x1="102"
+        y1="18"
+        x2="102"
+        y2="50"
+        stroke={color}
+        strokeWidth="1.5"
+      />
       <line x1="86" y1="34" x2="118" y2="34" stroke={color} strokeWidth="1.5" />
-      <line x1="90.7" y1="22.7" x2="113.3" y2="45.3" stroke={color} strokeWidth="1.2" />
-      <line x1="113.3" y1="22.7" x2="90.7" y2="45.3" stroke={color} strokeWidth="1.2" />
-      <circle cx="138" cy="34" r="16" fill="none" stroke={color} strokeWidth="3.5" />
+      <line
+        x1="90.7"
+        y1="22.7"
+        x2="113.3"
+        y2="45.3"
+        stroke={color}
+        strokeWidth="1.2"
+      />
+      <line
+        x1="113.3"
+        y1="22.7"
+        x2="90.7"
+        y2="45.3"
+        stroke={color}
+        strokeWidth="1.2"
+      />
+      <circle
+        cx="138"
+        cy="34"
+        r="16"
+        fill="none"
+        stroke={color}
+        strokeWidth="3.5"
+      />
       <circle cx="138" cy="34" r="4.5" fill={color} />
-      <line x1="138" y1="18" x2="138" y2="50" stroke={color} strokeWidth="1.5" />
-      <line x1="122" y1="34" x2="154" y2="34" stroke={color} strokeWidth="1.5" />
-      <line x1="126.7" y1="22.7" x2="149.3" y2="45.3" stroke={color} strokeWidth="1.2" />
-      <line x1="149.3" y1="22.7" x2="126.7" y2="45.3" stroke={color} strokeWidth="1.2" />
-      <text x="92" y="52" fontFamily="'Arial Black', sans-serif" fontWeight="900" fontSize="46" fill={color} letterSpacing="-1">HABI</text>
-      <text x="6" y="70" fontFamily="Arial, sans-serif" fontSize="10" fill={subColor} letterSpacing="1.5">AD CYCLING CLUB</text>
-      <text x="88" y="70" fontFamily="Arial, sans-serif" fontSize="9" fill={subColor} letterSpacing="0.5">نادي أبوظبي للدراجات</text>
+      <line
+        x1="138"
+        y1="18"
+        x2="138"
+        y2="50"
+        stroke={color}
+        strokeWidth="1.5"
+      />
+      <line
+        x1="122"
+        y1="34"
+        x2="154"
+        y2="34"
+        stroke={color}
+        strokeWidth="1.5"
+      />
+      <line
+        x1="126.7"
+        y1="22.7"
+        x2="149.3"
+        y2="45.3"
+        stroke={color}
+        strokeWidth="1.2"
+      />
+      <line
+        x1="149.3"
+        y1="22.7"
+        x2="126.7"
+        y2="45.3"
+        stroke={color}
+        strokeWidth="1.2"
+      />
+      <text
+        x="92"
+        y="52"
+        fontFamily="'Arial Black', sans-serif"
+        fontWeight="900"
+        fontSize="46"
+        fill={color}
+        letterSpacing="-1"
+      >
+        HABI
+      </text>
+      <text
+        x="6"
+        y="70"
+        fontFamily="Arial, sans-serif"
+        fontSize="10"
+        fill={subColor}
+        letterSpacing="1.5"
+      >
+        AD CYCLING CLUB
+      </text>
+      <text
+        x="88"
+        y="70"
+        fontFamily="Arial, sans-serif"
+        fontSize="9"
+        fill={subColor}
+        letterSpacing="0.5"
+      >
+        نادي أبوظبي للدراجات
+      </text>
     </svg>
   );
 }
@@ -1855,13 +2088,66 @@ function CloudyIcon() {
   return (
     <svg width="37" height="37" viewBox="0 0 37 37" fill="none">
       <circle cx="15" cy="13" r="5" fill="#F5A623" />
-      <line x1="15" y1="5" x2="15" y2="8" stroke="#F5A623" strokeWidth="1.8" strokeLinecap="round" />
-      <line x1="15" y1="18" x2="15" y2="21" stroke="#F5A623" strokeWidth="1.8" strokeLinecap="round" />
-      <line x1="7" y1="13" x2="10" y2="13" stroke="#F5A623" strokeWidth="1.8" strokeLinecap="round" />
-      <line x1="20" y1="13" x2="23" y2="13" stroke="#F5A623" strokeWidth="1.8" strokeLinecap="round" />
-      <line x1="9.5" y1="7.5" x2="11.6" y2="9.6" stroke="#F5A623" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="20.5" y1="7.5" x2="18.4" y2="9.6" stroke="#F5A623" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M13 26 Q13 21 19 21 Q20 16 26 18 Q32 18 32 24 Q32 30 22 30 Q10 30 10 26 Q10 22 15 22 Q13 24 13 26Z" fill="white" stroke="#b0bec5" strokeWidth="1.2" />
+      <line
+        x1="15"
+        y1="5"
+        x2="15"
+        y2="8"
+        stroke="#F5A623"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <line
+        x1="15"
+        y1="18"
+        x2="15"
+        y2="21"
+        stroke="#F5A623"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <line
+        x1="7"
+        y1="13"
+        x2="10"
+        y2="13"
+        stroke="#F5A623"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <line
+        x1="20"
+        y1="13"
+        x2="23"
+        y2="13"
+        stroke="#F5A623"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <line
+        x1="9.5"
+        y1="7.5"
+        x2="11.6"
+        y2="9.6"
+        stroke="#F5A623"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <line
+        x1="20.5"
+        y1="7.5"
+        x2="18.4"
+        y2="9.6"
+        stroke="#F5A623"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M13 26 Q13 21 19 21 Q20 16 26 18 Q32 18 32 24 Q32 30 22 30 Q10 30 10 26 Q10 22 15 22 Q13 24 13 26Z"
+        fill="white"
+        stroke="#b0bec5"
+        strokeWidth="1.2"
+      />
     </svg>
   );
 }
@@ -1869,57 +2155,158 @@ function CloudyIcon() {
 function CyclingIcon() {
   return (
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-      <circle cx="8" cy="22" r="5" fill="none" stroke="#019839" strokeWidth="2" />
-      <circle cx="24" cy="22" r="5" fill="none" stroke="#019839" strokeWidth="2" />
+      <circle
+        cx="8"
+        cy="22"
+        r="5"
+        fill="none"
+        stroke="#019839"
+        strokeWidth="2"
+      />
+      <circle
+        cx="24"
+        cy="22"
+        r="5"
+        fill="none"
+        stroke="#019839"
+        strokeWidth="2"
+      />
       <circle cx="19" cy="10" r="2" fill="#019839" />
-      <path d="M19 12 L16 18 L8 22" stroke="#019839" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      <path d="M19 12 L24 22" stroke="#019839" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-      <path d="M13 18 L24 18" stroke="#019839" strokeWidth="1.5" strokeLinecap="round" />
+      <path
+        d="M19 12 L16 18 L8 22"
+        stroke="#019839"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+      <path
+        d="M19 12 L24 22"
+        stroke="#019839"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        fill="none"
+      />
+      <path
+        d="M13 18 L24 18"
+        stroke="#019839"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
 
-function ArrowRight({ color = '#019839', size = 16 }) {
+function ArrowRight({ color = "#019839", size = 16 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" >
-      <path d="M3 8h10M9 4l4 4-4 4" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
+      <path
+        d="M3 8h10M9 4l4 4-4 4"
+        stroke={color}
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
 /* ─── QR Code placeholder ───────────────────────────────────────────────────*/
 function QRCodePlaceholder() {
-  return (
-   <img src="/images/barcode.png" className=""/>
-  );
+  return <img src="/images/barcode.png" className="" />;
 }
 
 /* ─── HEADER ─────────────────────────────────────────────────────────────────*/
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const navLinks = [
-    { label: 'About Us', href: '#about' },
-    { label: 'Events', href: '/user-event' },
-    { label: 'Community', href: '#community', active: true },
-    { label: 'Challenges', href: '/user-challenges' },
-    { label: 'Tracks', href: '#platform' },
+    { label: "About Us", href: "#about" },
+    { label: "Events", href: "/user-event" },
+    { label: "Community", href: "#community", active: true },
+    { label: "Challenges", href: "/user-challenges" },
+    { label: "Tracks", href: "#platform" },
   ];
   return (
-    <header className="home-header" style={{ width: '100%', height: 134, background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 86px', flexShrink: 0, position: 'relative', zIndex: 10 }}>
-      <div className="home-logo-wrap" style={{ width: 180, height: 75.6, flexShrink: 0 }}><ADCCLogo /></div>
-      <nav className="home-main-nav" style={{ display: 'flex', alignItems: 'center', gap: 48, position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
-        {navLinks.map(link => (
-          <a key={link.label} href={link.href} className="hover-green" style={{ fontFamily: "'Bebas Kai', sans-serif", fontWeight: 500, fontSize: 20, lineHeight: '27px', color: link.active ? '#019839' : '#000', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'color 0.2s' }}>{link.label}</a>
+    <header
+      className="home-header"
+      style={{
+        width: "100%",
+        height: 134,
+        background: "#ffffff",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "0 86px",
+        flexShrink: 0,
+        position: "relative",
+        zIndex: 10,
+      }}
+    >
+      <div
+        className="home-logo-wrap"
+        style={{ width: 180, height: 75.6, flexShrink: 0 }}
+      >
+        <ADCCLogo />
+      </div>
+      <nav
+        className="home-main-nav"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 48,
+          position: "absolute",
+          left: "50%",
+          transform: "translateX(-50%)",
+        }}
+      >
+        {navLinks.map((link) => (
+          <a
+            key={link.label}
+            href={link.href}
+            className="hover-green"
+            style={{
+              fontFamily: "'Bebas Kai', sans-serif",
+              fontWeight: 500,
+              fontSize: 20,
+              lineHeight: "27px",
+              color: link.active ? "#019839" : "#000",
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+              transition: "color 0.2s",
+            }}
+          >
+            {link.label}
+          </a>
         ))}
       </nav>
-      <div className="home-header-actions" style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
+      <div
+        className="home-header-actions"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 16,
+          flexShrink: 0,
+        }}
+      >
         <CloudyIcon />
-        <span className="home-language" style={{ fontFamily: "'Bebas Kai', sans-serif", fontWeight: 500, fontSize: 17, color: '#000', cursor: 'pointer', whiteSpace: 'nowrap' }}>English</span>
+        <span
+          className="home-language"
+          style={{
+            fontFamily: "'Bebas Kai', sans-serif",
+            fontWeight: 500,
+            fontSize: 17,
+            color: "#000",
+            cursor: "pointer",
+            whiteSpace: "nowrap",
+          }}
+        >
+          English
+        </span>
         <AnimatedButton
-          onClick={() => setMenuOpen(v => !v)}
+          onClick={() => setMenuOpen((v) => !v)}
           showArrow={false}
           className="home-menu-button w-[101px]"
-          style={{ background: menuOpen ? '#017a2e' : undefined }}
+          style={{ background: menuOpen ? "#017a2e" : undefined }}
         >
           Menu
         </AnimatedButton>
@@ -1932,12 +2319,12 @@ function Header() {
 function HeroSection() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const line1 = t('public.home.hero.line1');
-  const line2 = t('public.home.hero.line2');
+  const line1 = t("public.home.hero.line1");
+  const line2 = t("public.home.hero.line2");
 
   const lineVariants = {
-    hidden: { y: '120%', opacity: 0 },
-    visible: { y: '0%', opacity: 1 },
+    hidden: { y: "120%", opacity: 0 },
+    visible: { y: "0%", opacity: 1 },
   };
 
   return (
@@ -1971,13 +2358,41 @@ function HeroSection() {
           ))}
         </motion.h1>
         <div className="home-hero-actions">
-          <AnimatedButton showArrow={false} size="default" className="home-hero-download-btn">
-            {t('public.home.hero.downloadApp')}{' '}
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v8M5 7l3 3 3-3" stroke="#FFF9EF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /><path d="M3 13h10" stroke="#FFF9EF" strokeWidth="1.8" strokeLinecap="round" /></svg>
+          <AnimatedButton
+            showArrow={false}
+            size="default"
+            className="home-hero-download-btn"
+          >
+            {t("public.home.hero.downloadApp")}{" "}
+            <img
+              src="/img/download-gif.gif"
+              alt=""
+              aria-hidden="true"
+              style={{
+                width: 20,
+                height: 20,
+                display: "inline-block",
+                verticalAlign: "middle",
+              }}
+            />
           </AnimatedButton>
-          <AnimatedButton variant="outline" size="sm" onClick={() => navigate('/user-tracks')}>
-            {t('public.home.hero.exploreTracks')}
-          </AnimatedButton>
+          <button
+            className="hero-explore-btn"
+            onClick={() => navigate("/user-tracks")}
+          >
+            <span className="hero-explore-btn-inner">
+              {t("public.home.hero.exploreTracks")}
+
+              <img
+                src="/img/explore.svg"
+                alt=""
+                aria-hidden="true"
+                width={28}
+                height={28}
+                className="hero-explore-btn-icon"
+              />
+            </span>
+          </button>
         </div>
       </div>
     </section>
@@ -1988,12 +2403,9 @@ function HeroSection() {
 function StatsTicker() {
   const { t } = useTranslation();
 
-  const renderItem = (
-    item: (typeof TICKER_ITEMS)[number],
-    itemKey: string,
-  ) => {
+  const renderItem = (item: (typeof TICKER_ITEMS)[number], itemKey: string) => {
     const { Icon } = item;
-    const iconColor = item.dark ? '#ffffff' : '#000000';
+    const iconColor = item.dark ? "#ffffff" : "#000000";
 
     return (
       <div
@@ -2011,7 +2423,7 @@ function StatsTicker() {
         </span>
         <span
           className={`home-ticker-text ${item.textClass} ${
-            item.dark ? 'home-ticker-text--dark' : 'home-ticker-text--light'
+            item.dark ? "home-ticker-text--dark" : "home-ticker-text--light"
           }`}
         >
           {t(`public.home.stats.${item.key}`)}
@@ -2021,20 +2433,20 @@ function StatsTicker() {
   };
 
   return (
-    <div className="home-ticker" aria-label={t('public.home.stats.members')}>
+    <div className="home-ticker" aria-label={t("public.home.stats.members")}>
       <div className="home-ticker-track">
-        {TICKER_ITEMS.map((item, index) => renderItem(item, `ticker-a-${index}`))}
-        {TICKER_ITEMS.map((item, index) => renderItem(item, `ticker-b-${index}`))}
+        {TICKER_ITEMS.map((item, index) =>
+          renderItem(item, `ticker-a-${index}`),
+        )}
+        {TICKER_ITEMS.map((item, index) =>
+          renderItem(item, `ticker-b-${index}`),
+        )}
       </div>
     </div>
   );
 }
 
-function scrambleText(
-  element: HTMLElement,
-  finalText: string,
-  speed = 2
-) {
+function scrambleText(element: HTMLElement, finalText: string, speed = 2) {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
   let iteration = 0;
 
@@ -2066,14 +2478,34 @@ function CyclingJourneySection() {
   const textRef = useRef<HTMLParagraphElement | null>(null);
   const cardsRef = useRef<HTMLDivElement | null>(null);
   const [cardsVisible, setCardsVisible] = useState(false);
-  const titleLine1 = t('public.home.journey.titleLine1');
-  const titleLine2 = t('public.home.journey.titleLine2');
-  const journeyText = t('public.home.journey.text');
+  const titleLine1 = t("public.home.journey.titleLine1");
+  const titleLine2 = t("public.home.journey.titleLine2");
+  const journeyText = t("public.home.journey.text");
   const cards = [
-    { label: t('public.home.journey.cards.tracks'), bg: "#777777", img: "/images/journey-1.png", to:"/user-tracks" },
-    { label: t('public.home.journey.cards.events'), bg: "#777777", img: "/images/journey-2.png", to:"/user-event" },
-    { label: t('public.home.journey.cards.challenges'), bg: "#777777", img: "/images/journey-3.png" , to:"/user-challenges"},
-    { label: t('public.home.journey.cards.community'), bg: "#777777",img: "https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=400&q=80" , to:"/login"},
+    {
+      label: t("public.home.journey.cards.tracks"),
+      bg: "#777777",
+      img: "/images/journey-1.png",
+      to: "/user-tracks",
+    },
+    {
+      label: t("public.home.journey.cards.events"),
+      bg: "#777777",
+      img: "/images/journey-2.png",
+      to: "/user-event",
+    },
+    {
+      label: t("public.home.journey.cards.challenges"),
+      bg: "#777777",
+      img: "/images/journey-3.png",
+      to: "/user-challenges",
+    },
+    {
+      label: t("public.home.journey.cards.community"),
+      bg: "#777777",
+      img: "https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=400&q=80",
+      to: "/login",
+    },
   ];
 
   useEffect(() => {
@@ -2081,7 +2513,7 @@ function CyclingJourneySection() {
     if (!cardsEl) return;
 
     if (textRef.current) {
-      if (locale === 'ar') {
+      if (locale === "ar") {
         textRef.current.textContent = journeyText;
       } else {
         scrambleText(textRef.current, journeyText);
@@ -2090,14 +2522,14 @@ function CyclingJourneySection() {
 
     const observer = new IntersectionObserver(
       ([entry]) => setCardsVisible(entry.isIntersecting),
-      { threshold: 0.35 }
+      { threshold: 0.35 },
     );
 
     observer.observe(cardsEl);
 
     return () => observer.disconnect();
   }, [journeyText, locale]);
-  
+
   return (
     <section className="journey-section">
       <div className="journey-copy">
@@ -2119,8 +2551,8 @@ function CyclingJourneySection() {
               <motion.span
                 className="inline-block"
                 variants={{
-                  hidden: { y: '120%', opacity: 0 },
-                  visible: { y: '0%', opacity: 1 },
+                  hidden: { y: "120%", opacity: 0 },
+                  visible: { y: "0%", opacity: 1 },
                 }}
                 transition={{
                   duration: 0.7,
@@ -2143,17 +2575,40 @@ function CyclingJourneySection() {
           }}
           viewport={{ once: true }}
         >
-          <img src="/images/journey.png" alt={t('public.home.journey.riderAlt')} />
+          <img
+            src="/images/journey.png"
+            alt={t("public.home.journey.riderAlt")}
+          />
         </motion.div>
       </div>
       <div className="journey-content">
-        <div ref={cardsRef} className={`journey-cards${cardsVisible ? ' is-visible' : ''}`}>
+        <div
+          ref={cardsRef}
+          className={`journey-cards${cardsVisible ? " is-visible" : ""}`}
+        >
           {cards.map((card, i) => (
-            <div key={i} className="card-hover journey-card" style={{ background: card.bg }}
-            onClick={()=>navigate(card?.to)}>
+            <div
+              key={i}
+              className="card-hover journey-card"
+              style={{ background: card.bg }}
+              onClick={() => navigate(card?.to)}
+            >
               <span className="journey-card-label">{card.label}</span>
               <div className="journey-card-arrow">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#C12D32" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                <svg
+                  width="22"
+                  height="21"
+                  viewBox="0 0 22 21"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z"
+                    fill="#C12D32"
+                  />
+                </svg>
               </div>
               {/* <div className="journey-card-image">
                 <img src={card.img} alt={card.label.replace('\n', ' ')} />
@@ -2162,7 +2617,7 @@ function CyclingJourneySection() {
                 <img
                   className="adcc-image__img"
                   src={card.img}
-                  alt={card.label.replace('\n', ' ')}
+                  alt={card.label.replace("\n", " ")}
                   style={{
                     animation: cardsVisible
                       ? `imageExpand 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards`
@@ -2180,8 +2635,11 @@ function CyclingJourneySection() {
           <p ref={textRef} className="journey-text">
             {journeyText}
           </p>
-          <AnimatedButton onClick={() => navigate('/user-tracks')} className="journey-button">
-            {t('public.home.journey.exploreRoutes')}
+          <AnimatedButton
+            onClick={() => navigate("/user-tracks")}
+            className="journey-button"
+          >
+            {t("public.home.journey.exploreRoutes")}
           </AnimatedButton>
         </div>
       </div>
@@ -2195,15 +2653,23 @@ function AppSection() {
   const [phoneVisible, setPhoneVisible] = useState(false);
   const { t } = useTranslation();
   const { isRtl } = useLocale();
-  const appTitleWords = t('public.home.app.titleWords', { returnObjects: true }) as string[];
-  const downloadLabelWords = t('public.home.app.downloadLabelWords', { returnObjects: true }) as string[];
+  const _appTitleWordsRaw = t("public.home.app.titleWords", { returnObjects: true });
+  const appTitleWords: string[] = Array.isArray(_appTitleWordsRaw) ? _appTitleWordsRaw : [];
+  const _dlRaw = t("public.home.app.downloadLabelWords", { returnObjects: true });
+  const downloadLabelWords: string[] = Array.isArray(_dlRaw) ? _dlRaw : [];
   const downloadLine1 = downloadLabelWords.slice(0, 1);
   const downloadLine2 = downloadLabelWords.slice(1);
   const features = [
-    { icon: '/images/icon-1.png', label: t('public.home.app.features.track') },
-    { icon: '/images/icon-2.png', label: t('public.home.app.features.challenges') },
-    { icon: '/images/icon-3.png', label: t('public.home.app.features.connect') },
-    { icon: '/images/icon-4.png', label: t('public.home.app.features.routes') },
+    { icon: "/images/icon-1.png", label: t("public.home.app.features.track") },
+    {
+      icon: "/images/icon-2.png",
+      label: t("public.home.app.features.challenges"),
+    },
+    {
+      icon: "/images/icon-3.png",
+      label: t("public.home.app.features.connect"),
+    },
+    { icon: "/images/icon-4.png", label: t("public.home.app.features.routes") },
   ];
 
   useEffect(() => {
@@ -2212,7 +2678,7 @@ function AppSection() {
 
     const observer = new IntersectionObserver(
       ([entry]) => setPhoneVisible(entry.isIntersecting),
-      { threshold: 0.35 }
+      { threshold: 0.35 },
     );
 
     observer.observe(phoneEl);
@@ -2221,11 +2687,30 @@ function AppSection() {
   }, []);
 
   return (
-    <section id="app" className="home-app-section" style={{ background: '#435974', width: '100%', padding: '80px 86px', display: 'flex', alignItems: 'center', gap: 60, position: 'relative', overflow: 'hidden' }}>
-      {/* Left text */}
-      <div className="home-app-copy" style={{ flexShrink: 0, position: 'relative', width: '70%' }}>
-        {/* <h2 className="home-app-title" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 80, lineHeight: 1.007, textTransform: 'uppercase', color: '#fff', marginBottom: 32 }}>Everything You Need.<br />In One App.</h2> */}
-       <div>
+    <section
+      id="app"
+      className="home-app-section"
+      style={{
+        background: "#435974",
+        width: "100%",
+        padding: "80px 86px",
+        display: "flex",
+        alignItems: "center",
+        gap: 60,
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Left: Title + Download label + QR + Store buttons */}
+      <div
+        className="home-app-copy"
+        style={{
+          flexShrink: 0,
+          display: "flex",
+          flexDirection: "column",
+          minWidth: 0,
+        }}
+      >
         <motion.h2
           className="home-app-title overflow-hidden"
           style={{
@@ -2239,13 +2724,7 @@ function AppSection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          variants={{
-            visible: {
-              transition: {
-                staggerChildren: 0.08,
-              },
-            },
-          }}
+          variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
         >
           {appTitleWords.slice(0, 3).map((word, index) => (
             <span
@@ -2255,27 +2734,16 @@ function AppSection() {
               <motion.span
                 className="inline-block"
                 variants={{
-                  hidden: {
-                    y: "120%",
-                    opacity: 0,
-                  },
-                  visible: {
-                    y: "0%",
-                    opacity: 1,
-                  },
+                  hidden: { y: "120%", opacity: 0 },
+                  visible: { y: "0%", opacity: 1 },
                 }}
-                transition={{
-                  duration: 0.7,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
               >
                 {word}
               </motion.span>
             </span>
           ))}
-
           <br />
-
           {appTitleWords.slice(3).map((word, index) => (
             <span
               key={`${word}-${index}`}
@@ -2284,163 +2752,171 @@ function AppSection() {
               <motion.span
                 className="inline-block"
                 variants={{
-                  hidden: {
-                    y: "120%",
-                    opacity: 0,
-                  },
-                  visible: {
-                    y: "0%",
-                    opacity: 1,
-                  },
+                  hidden: { y: "120%", opacity: 0 },
+                  visible: { y: "0%", opacity: 1 },
                 }}
-                transition={{
-                  duration: 0.7,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
               >
                 {word}
               </motion.span>
             </span>
           ))}
         </motion.h2>
-        <div style={{ marginBottom: 24 }}>
-          <motion.p
-            className="home-download-label overflow-hidden"
-            style={{
-              fontFamily: "'Bebas Kai', sans-serif",
-              fontWeight: 700,
-              fontSize: 30,
-              color: "#fff",
-              textTransform: "uppercase",
-              marginBottom: 23,
-              lineHeight: "30px",
-            }}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={{
-              visible: {
-                transition: {
-                  staggerChildren: 0.08,
-                },
-              },
-            }}
-          >
-            {downloadLine1.map((word) => (
-                <span
-                  key={word}
-                  className="home-word-gap-sm inline-block overflow-hidden"
-                >
-                  <motion.span
-                    className="inline-block"
-                    variants={{
-                      hidden: {
-                        y: "120%",
-                        opacity: 0,
-                      },
-                      visible: {
-                        y: "0%",
-                        opacity: 1,
-                      },
-                    }}
-                    transition={{
-                      duration: 0.7,
-                      ease: [0.22, 1, 0.36, 1],
-                    }}
-                  >
-                    {word}
-                  </motion.span>
-                </span>
-              ))}
 
-              <br />
-
-              {downloadLine2.map((word, index) => (
-                <span
-                  key={`${word}-${index}`}
-                  className="home-word-gap-sm inline-block overflow-hidden"
-                >
-                  <motion.span
-                    className="inline-block"
-                    variants={{
-                      hidden: {
-                        y: "120%",
-                        opacity: 0,
-                      },
-                      visible: {
-                        y: "0%",
-                        opacity: 1,
-                      },
-                    }}
-                    transition={{
-                      duration: 0.7,
-                      ease: [0.22, 1, 0.36, 1],
-                    }}
-                  >
-                    {word}
-                  </motion.span>
-                </span>
-              ))}
-            </motion.p>
-
-            <motion.div
-              className="home-qr-box"
-              initial={{
-                opacity: 0,
-                x: isRtl ? -80 : 80,
-              }}
-              whileInView={{
-                opacity: 1,
-                x: "0%",
-              }}
-              transition={{
-                duration: 0.8,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              viewport={{ once: true }}
-              style={{
-                width: 256,
-                height: 256,
-                background: "#fff",
-                borderRadius: 16,
-                padding: 12,
-                marginBottom: 40,
-              }}
+        <motion.p
+          className="home-download-label overflow-hidden font-satoshi"
+          style={{
+            fontWeight: 700,
+            fontSize: 30,
+            color: "#fff",
+            textTransform: "uppercase",
+            marginBottom: 23,
+            lineHeight: "30px",
+          }}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
+        >
+          {downloadLine1.map((word) => (
+            <span
+              key={word}
+              className="home-word-gap-sm inline-block overflow-hidden"
             >
-              <QRCodePlaceholder />
-            </motion.div>
-          </div>
-          {/* App store buttons */}
-          <div
-            className="home-store-buttons"
-            style={{
-              display: "flex",
-              gap: 12,
-              flexWrap: "wrap",
-            }}
-          >
-            <AppStoreButton type="google" />
-            <AppStoreButton type="apple" />
-          </div>
-        </div>
-        {/* Phone mockup center */}
-        <div ref={phoneRef} className={`app-phone-stage home-phone-stage${phoneVisible ? ' is-visible' : ''}`}>
-          {/* Back phone */}
-          <div style={{ width: '100%', maxWidth: 560 }}>
-            <img src="/images/image%203066.png" alt={t('public.home.app.phoneAlt')} style={{ display: 'block', width: '100%', height: 'auto', objectFit: 'contain', opacity: 1 }} />
-          </div>
-          {/* Front phone */}
+              <motion.span
+                className="inline-block"
+                variants={{
+                  hidden: { y: "120%", opacity: 0 },
+                  visible: { y: "0%", opacity: 1 },
+                }}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {word}
+              </motion.span>
+            </span>
+          ))}
+          <br />
+          {downloadLine2.map((word, index) => (
+            <span
+              key={`${word}-${index}`}
+              className="home-word-gap-sm inline-block overflow-hidden"
+            >
+              <motion.span
+                className="inline-block"
+                variants={{
+                  hidden: { y: "120%", opacity: 0 },
+                  visible: { y: "0%", opacity: 1 },
+                }}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {word}
+              </motion.span>
+            </span>
+          ))}
+        </motion.p>
+
+        <motion.div
+          className="home-qr-box"
+          initial={{ opacity: 0, x: isRtl ? -80 : 80 }}
+          whileInView={{ opacity: 1, x: "0%" }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          viewport={{ once: true }}
+          style={{
+            width: 200,
+            height: 200,
+            background: "#fff",
+            borderRadius: 16,
+            padding: 10,
+            marginBottom: 32,
+          }}
+        >
+          <QRCodePlaceholder />
+        </motion.div>
+
+        <div
+          className="home-store-buttons"
+          style={{ display: "flex", gap: 12, flexWrap: "wrap" }}
+        >
+          <AppStoreButton type="google" />
+          <AppStoreButton type="apple" />
         </div>
       </div>
 
-      {/* Right features */}
-      <div className="home-feature-list" style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 80 }}>
+      {/* Center: Phone mockup */}
+      <div
+        ref={phoneRef}
+        className={`app-phone-stage home-phone-stage${phoneVisible ? " is-visible" : ""}`}
+        style={{
+          flex: "1 1 auto",
+          position: "relative",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: 660,
+        }}
+      >
+        <img
+          src="/images/image%203066.png"
+          alt={t("public.home.app.phoneAlt")}
+          style={{
+            display: "block",
+            width: "100%",
+            maxWidth: 780,
+            height: "auto",
+            objectFit: "contain",
+            opacity: 1,
+          }}
+        />
+      </div>
+
+      {/* Right: Feature list */}
+      <div
+        className="home-feature-list"
+        style={{
+          flexShrink: 0,
+          display: "flex",
+          flexDirection: "column",
+          gap: 48,
+        }}
+      >
         {features.map((f, i) => (
-          <div key={i} className="app-feature" style={{ display: 'flex', alignItems: 'flex-start', gap: 16, cursor: 'default', flexDirection: 'column' }}>
-            <div className="feature-icon" style={{ width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <img src={f.icon} alt={f.label.replace('\n', ' ')} style={{ }} />
+          <div
+            key={i}
+            className="app-feature"
+            style={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: 16,
+              cursor: "default",
+              flexDirection: "column",
+            }}
+          >
+            <div
+              className="feature-icon"
+              style={{
+                width: 44,
+                height: 44,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <img src={f.icon} alt={f.label.replace("\n", " ")} />
             </div>
-            <span style={{ fontFamily: "'Bebas Kai', sans-serif", fontWeight: 700, fontSize: 16, color: '#fff', textTransform: 'uppercase', lineHeight: 1.2, whiteSpace: 'pre-line' }}>{f.label}</span>
+            <span
+              className="font-satoshi"
+              style={{
+                fontWeight: 700,
+                fontSize: 16,
+                color: "#fff",
+                textTransform: "uppercase",
+                lineHeight: 1.2,
+                whiteSpace: "pre-line",
+              }}
+            >
+              {f.label}
+            </span>
           </div>
         ))}
       </div>
@@ -2455,15 +2931,27 @@ function CommunitySection() {
   const { t } = useTranslation();
 
   const icons = [
-    { icon: '/images/vegetabl.gif', label: t('public.home.community.icons.eat') },
-    { icon: '/images/moon-night.gif', label: t('public.home.community.icons.sleep') },
-    { icon: '/images/cycling.gif', label: t('public.home.community.icons.bike') },
-    { icon: '/images/sync.gif', label: t('public.home.community.icons.repeat') },
+    {
+      icon: "/images/vegetabl.gif",
+      label: t("public.home.community.icons.eat"),
+    },
+    {
+      icon: "/images/moon-night.gif",
+      label: t("public.home.community.icons.sleep"),
+    },
+    {
+      icon: "/images/cycling.gif",
+      label: t("public.home.community.icons.bike"),
+    },
+    {
+      icon: "/images/sync.gif",
+      label: t("public.home.community.icons.repeat"),
+    },
   ];
 
   const lineVariants = {
-    hidden: { y: '120%', opacity: 0 },
-    visible: { y: '0%', opacity: 1 },
+    hidden: { y: "120%", opacity: 0 },
+    visible: { y: "0%", opacity: 1 },
   };
 
   return (
@@ -2475,8 +2963,12 @@ function CommunitySection() {
         viewport={{ once: true }}
         variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
       >
-        <motion.span className="inline-block" variants={lineVariants} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
-          {t('public.home.community.eyebrow')}
+        <motion.span
+          className="inline-block"
+          variants={lineVariants}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {t("public.home.community.eyebrow")}
         </motion.span>
       </motion.p>
 
@@ -2487,8 +2979,12 @@ function CommunitySection() {
         viewport={{ once: true }}
         variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
       >
-        <motion.span className="inline-block" variants={lineVariants} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
-          {t('public.home.community.title')}
+        <motion.span
+          className="inline-block"
+          variants={lineVariants}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {t("public.home.community.title")}
         </motion.span>
       </motion.h2>
 
@@ -2510,19 +3006,26 @@ function CommunitySection() {
       </div>
 
       <motion.p
-        className="home-community-subtitle"
+        className="home-community-subtitle font-satoshi"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         variants={{ visible: { transition: { staggerChildren: 0.06 } } }}
       >
-        <motion.span className="inline-block" variants={lineVariants} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
-          {t('public.home.community.subtitle')}
+        <motion.span
+          className="inline-block"
+          variants={lineVariants}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {t("public.home.community.subtitle")}
         </motion.span>
       </motion.p>
 
-      <AnimatedButton className="home-community-start-btn" onClick={() => navigate('/login')}>
-        {t('public.home.community.startRiding')}
+      <AnimatedButton
+        className="home-community-start-btn"
+        onClick={() => navigate("/login")}
+      >
+        {t("public.home.community.startRiding")}
       </AnimatedButton>
     </section>
   );
@@ -2536,25 +3039,25 @@ function ExplorePlatformSection() {
   const [cardsVisible, setCardsVisible] = useState(false);
   const cards = [
     {
-      tag: t('public.home.platform.cards.events.tag'),
-      img: '/images/explore-1.png',
-      title: t('public.home.platform.cards.events.title'),
-      action: t('public.home.platform.cards.events.action'),
-      to: '/user-events',
+      tag: t("public.home.platform.cards.events.tag"),
+      img: "/images/explore-1.png",
+      title: t("public.home.platform.cards.events.title"),
+      action: t("public.home.platform.cards.events.action"),
+      to: "/user-events",
     },
     {
-      tag: t('public.home.platform.cards.tracks.tag'),
-      img: '/images/explore-2.png',
-      title: t('public.home.platform.cards.tracks.title'),
-      action: t('public.home.platform.cards.tracks.action'),
-      to: '/user-tracks',
+      tag: t("public.home.platform.cards.tracks.tag"),
+      img: "/images/explore-2.png",
+      title: t("public.home.platform.cards.tracks.title"),
+      action: t("public.home.platform.cards.tracks.action"),
+      to: "/user-tracks",
     },
     {
-      tag: t('public.home.platform.cards.challenges.tag'),
-      img: '/images/explore-3.png',
-      title: t('public.home.platform.cards.challenges.title'),
-      action: t('public.home.platform.cards.challenges.action'),
-      to: '/user-challenges',
+      tag: t("public.home.platform.cards.challenges.tag"),
+      img: "/images/explore-3.png",
+      title: t("public.home.platform.cards.challenges.title"),
+      action: t("public.home.platform.cards.challenges.action"),
+      to: "/user-challenges",
     },
   ];
 
@@ -2564,7 +3067,7 @@ function ExplorePlatformSection() {
 
     const observer = new IntersectionObserver(
       ([entry]) => setCardsVisible(entry.isIntersecting),
-      { threshold: 0.35 }
+      { threshold: 0.35 },
     );
 
     observer.observe(cardsEl);
@@ -2586,15 +3089,18 @@ function ExplorePlatformSection() {
         <motion.span
           className="inline-block"
           variants={{
-            hidden: { y: '120%', opacity: 0 },
-            visible: { y: '0%', opacity: 1 },
+            hidden: { y: "120%", opacity: 0 },
+            visible: { y: "0%", opacity: 1 },
           }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
-          {t('public.home.platform.title')}
+          {t("public.home.platform.title")}
         </motion.span>
       </motion.h2>
-      <div ref={cardsRef} className={`platform-cards home-platform-cards${cardsVisible ? ' is-visible' : ''}`}>
+      <div
+        ref={cardsRef}
+        className={`platform-cards home-platform-cards${cardsVisible ? " is-visible" : ""}`}
+      >
         {cards.map((card, i) => (
           <div
             key={card.to}
@@ -2609,7 +3115,7 @@ function ExplorePlatformSection() {
                 style={{
                   animation: cardsVisible
                     ? `imageExpand 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards`
-                    : 'none',
+                    : "none",
                   animationDelay: `${i * 0.18}s`,
                   opacity: 0,
                 }}
@@ -2640,50 +3146,21 @@ function StoreMarketplaceCarousel({
   title: string;
   fallbackImage: string;
 }) {
-  const { t } = useTranslation();
-  const [activeIndex, setActiveIndex] = useState(0);
   const slides = images.length ? images : [fallbackImage];
+  const activeIndex = 0;
 
   return (
-    <>
-      <div className="store-featured-product-media">
-        <img
-          className="store-featured-product adcc-image__img"
-          src={slides[activeIndex]}
-          alt={title}
-          onError={(event) => {
-            event.currentTarget.onerror = null;
-            event.currentTarget.src = fallbackImage;
-          }}
-        />
-      </div>
-      {slides.length > 1 && (
-        <div className="store-carousel-controls">
-          <button
-            type="button"
-            className="store-carousel-button"
-            aria-label={t('public.home.store.previousImage')}
-            onClick={(event) => {
-              event.stopPropagation();
-              setActiveIndex((index) => (index === 0 ? slides.length - 1 : index - 1));
-            }}
-          >
-            ‹
-          </button>
-          <button
-            type="button"
-            className="store-carousel-button"
-            aria-label={t('public.home.store.nextImage')}
-            onClick={(event) => {
-              event.stopPropagation();
-              setActiveIndex((index) => (index === slides.length - 1 ? 0 : index + 1));
-            }}
-          >
-            ›
-          </button>
-        </div>
-      )}
-    </>
+    <div className="store-featured-product-media">
+      <img
+        className="store-featured-product adcc-image__img"
+        src={slides[activeIndex]}
+        alt={title}
+        onError={(event) => {
+          event.currentTarget.onerror = null;
+          event.currentTarget.src = fallbackImage;
+        }}
+      />
+    </div>
   );
 }
 
@@ -2699,7 +3176,7 @@ function StoreSection() {
 
     const observer = new IntersectionObserver(
       ([entry]) => setStoreCardsVisible(entry.isIntersecting),
-      { threshold: 0.35 }
+      { threshold: 0.35 },
     );
 
     observer.observe(railEl);
@@ -2709,22 +3186,27 @@ function StoreSection() {
 
   return (
     <section id="store" className="home-store-section">
-      <h2 className="home-store-title">{t('public.home.store.title')}</h2>
-      <div ref={storeRailRef} className={`store-rail${storeCardsVisible ? ' is-visible' : ''}`}>
+      <h2 className="home-store-title">{t("public.home.store.title")}</h2>
+      <div
+        ref={storeRailRef}
+        className={`store-rail${storeCardsVisible ? " is-visible" : ""}`}
+      >
         {HOME_STORE_PRODUCTS.map((product) => (
           <div
             key={product.id}
-            onClick={() => navigate('/user-adcc-store')}
-            className={`store-card store-featured-card store-animated-card${product.variant === 'marketplace' ? ' is-marketplace' : ''}`}
+            onClick={() => navigate("/user-adcc-store")}
+            className={`store-card store-featured-card store-animated-card${product.variant === "marketplace" ? " is-marketplace" : ""}`}
           >
             <div className="store-featured-icon">
               <img src="/images/users.png" alt="" />
             </div>
             <span className="store-featured-type">{t(product.typeKey)}</span>
-            <span className="store-featured-action">{t(product.actionKey)}</span>
+            <span className="store-featured-action">
+              {t(product.actionKey)}
+            </span>
             <h3 className="store-featured-title">{t(product.titleKey)}</h3>
             <p className="store-featured-sub">{t(product.subKey)}</p>
-            {product.variant === 'marketplace' ? (
+            {product.variant === "marketplace" ? (
               <StoreMarketplaceCarousel
                 images={product.images ?? [product.img]}
                 title={t(product.titleKey)}
@@ -2751,11 +3233,7 @@ function StoreSection() {
   );
 }
 
-function scrambleNumber(
-  element: HTMLElement,
-  finalText: string,
-  speed = 30
-) {
+function scrambleNumber(element: HTMLElement, finalText: string, speed = 30) {
   const chars = "1234567890+";
   let iteration = 0;
 
@@ -2788,18 +3266,19 @@ function AboutSection() {
   const aboutRef = useRef<HTMLElement | null>(null);
   const statsRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [aboutVisible, setAboutVisible] = useState(false);
-  const titleWords = t('public.home.about.titleWords', { returnObjects: true }) as string[];
+  const _titleWordsRaw = t("public.home.about.titleWords", { returnObjects: true });
+  const titleWords: string[] = Array.isArray(_titleWordsRaw) ? _titleWordsRaw : [];
   const stats = [
-    { num: '15K+', label: t('public.home.about.stats.riders') },
-    { num: '100+', label: t('public.home.about.stats.events') },
-    { num: '10+', label: t('public.home.about.stats.years') },
+    { num: "15K+", label: t("public.home.about.stats.riders") },
+    { num: "100+", label: t("public.home.about.stats.events") },
+    { num: "10+", label: t("public.home.about.stats.years") },
   ];
 
   useEffect(() => {
     const aboutEl = aboutRef.current;
     if (!aboutEl) return;
 
-      const observer = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       ([entry]) => {
         setAboutVisible(entry.isIntersecting);
 
@@ -2809,14 +3288,14 @@ function AboutSection() {
           statsRefs.current.forEach((el, index) => {
             if (el) {
               setTimeout(() => {
-                                scrambleNumber(el, stats[index].num, 25);
+                scrambleNumber(el, stats[index].num, 25);
               }, index * 180);
             }
           });
         }
       },
       // { threshold: 0.35 }
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     observer.observe(aboutEl);
@@ -2825,12 +3304,16 @@ function AboutSection() {
   }, []);
 
   return (
-    <section ref={aboutRef} id="about" className={`about-section home-about-section${aboutVisible ? ' is-visible' : ''}`}>
+    <section
+      ref={aboutRef}
+      id="about"
+      className={`about-section home-about-section${aboutVisible ? " is-visible" : ""}`}
+    >
       <motion.div
         className="home-about-left-image about-left-image adcc-image-group"
         initial={{ opacity: 0, x: isRtl ? 300 : -300 }}
         whileInView={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
         viewport={{ once: true }}
       >
         <AnimatedImage
@@ -2838,13 +3321,13 @@ function AboutSection() {
           fill
           zoom="subtle"
           src="/img/event - F1.png"
-          alt={t('public.home.about.cyclistsAlt')}
-          style={{ width: '100%', height: '100%' }}
+          alt={t("public.home.about.cyclistsAlt")}
+          style={{ width: "100%", height: "100%" }}
           onError={(event) => {
             const img = event.currentTarget as HTMLImageElement;
-            if (img.src.includes('journey-2.png')) return;
+            if (img.src.includes("journey-2.png")) return;
             img.onerror = null;
-            img.src = '/images/journey-2.png';
+            img.src = "/images/journey-2.png";
           }}
         />
       </motion.div>
@@ -2870,8 +3353,8 @@ function AboutSection() {
               <motion.span
                 className="inline-block"
                 variants={{
-                  hidden: { y: '120%', opacity: 0 },
-                  visible: { y: '0%', opacity: 1 },
+                  hidden: { y: "120%", opacity: 0 },
+                  visible: { y: "0%", opacity: 1 },
                 }}
                 transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
               >
@@ -2891,8 +3374,8 @@ function AboutSection() {
                   <motion.span
                     className="inline-block"
                     variants={{
-                      hidden: { y: '120%', opacity: 0 },
-                      visible: { y: '0%', opacity: 1 },
+                      hidden: { y: "120%", opacity: 0 },
+                      visible: { y: "0%", opacity: 1 },
                     }}
                     transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
                   >
@@ -2903,7 +3386,7 @@ function AboutSection() {
             </>
           )}
         </motion.h2>
-        <p className="home-about-text">{t('public.home.about.text')}</p>
+        <p className="home-about-text">{t("public.home.about.text")}</p>
         <div className="home-about-stats">
           {stats.map((s, i) => (
             <div key={i}>
@@ -2914,15 +3397,18 @@ function AboutSection() {
             </div>
           ))}
         </div>
-        <AnimatedButton className="home-about-read-btn" onClick={() => navigate('/communities-abu-dhabi-cycling-community')}>
-          {t('public.home.about.readMore')}
+        <AnimatedButton
+          className="home-about-read-btn"
+          onClick={() => navigate("/communities-abu-dhabi-cycling-community")}
+        >
+          {t("public.home.about.readMore")}
         </AnimatedButton>
       </div>
       <motion.div
         className="home-about-rider about-right-image adcc-image-group"
         initial={{ opacity: 0, x: 150 }}
         whileInView={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
         viewport={{ once: true }}
       >
         <AnimatedImage
@@ -2930,8 +3416,8 @@ function AboutSection() {
           fill
           zoom="subtle"
           src="/images/right-cycle.png"
-          alt={t('public.home.about.riderAlt')}
-          style={{ width: '100%', height: '100%' }}
+          alt={t("public.home.about.riderAlt")}
+          style={{ width: "100%", height: "100%" }}
         />
       </motion.div>
     </section>
@@ -2943,26 +3429,132 @@ function CTABanner() {
   const { t } = useTranslation();
 
   return (
-    <section className="home-cta" style={{ position: 'relative', width: '100%', height: 420, overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(https://images.unsplash.com/photo-1508784411316-06c06401e69b?w=1440&q=80)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
-      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.55)' }} />
-      <div className="home-cta-content" style={{ position: 'relative', zIndex: 1, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '0 86px' }}>
-        <h2 className="home-cta-title" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 88, color: '#fff', textTransform: 'uppercase', lineHeight: 1.0, marginBottom: 16 }}>{t('public.home.cta.title')}</h2>
-        <p className="home-cta-text" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 22, color: 'rgba(255,255,255,0.9)', marginBottom: 36 }}>{t('public.home.cta.subtitle')}</p>
+    <section
+      className="home-cta"
+      style={{
+        position: "relative",
+        width: "100%",
+        height: 420,
+        overflow: "hidden",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage:
+            "url(https://images.unsplash.com/photo-1508784411316-06c06401e69b?w=1440&q=80)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "rgba(0,0,0,0.55)",
+        }}
+      />
+      <div
+        className="home-cta-content"
+        style={{
+          position: "relative",
+          zIndex: 1,
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+          padding: "0 86px",
+        }}
+      >
+        <h2
+          className="home-cta-title"
+          style={{
+            fontFamily: "'Bebas Kai', sans-serif",
+            fontSize: 88,
+            color: "#fff",
+            textTransform: "uppercase",
+            lineHeight: 1.0,
+            marginBottom: 16,
+          }}
+        >
+          {t("public.home.cta.title")}
+        </h2>
+        <p
+          className="home-cta-text"
+          style={{
+            fontFamily: "'Bebas Kai', sans-serif",
+            fontSize: 22,
+            color: "rgba(255,255,255,0.9)",
+            marginBottom: 36,
+          }}
+        >
+          {t("public.home.cta.subtitle")}
+        </p>
         {/* App store buttons */}
-        <div className="home-cta-buttons" style={{ display: 'flex', gap: 20 }}>
+        <div className="home-cta-buttons" style={{ display: "flex", gap: 20 }}>
           {[
-            { bg: 'white', top: t('public.footer.getItOn'), main: t('public.footer.googlePlay'), icon: '▶' },
-            { bg: 'white', top: t('public.footer.downloadOn'), main: t('public.footer.appStore'), icon: '' },
+            {
+              bg: "white",
+              top: t("public.footer.getItOn"),
+              main: t("public.footer.googlePlay"),
+              icon: "▶",
+            },
+            {
+              bg: "white",
+              top: t("public.footer.downloadOn"),
+              main: t("public.footer.appStore"),
+              icon: "",
+            },
           ].map((btn, i) => (
-            <div key={i} style={{ background: btn.bg, borderRadius: 100, padding: '12px 28px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, boxShadow: '0 4px 20px rgba(0,0,0,0.2)' }}>
-              <div style={{ fontSize: 24 }}>{i === 0 ? '▶' : ''}</div>
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" style={{ display: i === 1 ? 'block' : 'none' }}>
-                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" fill="#000" />
+            <div
+              key={i}
+              style={{
+                background: btn.bg,
+                borderRadius: 100,
+                padding: "12px 28px",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
+              }}
+            >
+              <div style={{ fontSize: 24 }}>{i === 0 ? "▶" : ""}</div>
+              <svg
+                width="26"
+                height="26"
+                viewBox="0 0 24 24"
+                fill="none"
+                style={{ display: i === 1 ? "block" : "none" }}
+              >
+                <path
+                  d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"
+                  fill="#000"
+                />
               </svg>
               <div>
-                <div style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 10, color: '#555' }}>{btn.top}</div>
-                <div style={{ fontFamily: "'Bebas Kai', sans-serif", fontWeight: 700, fontSize: 18, color: '#000' }}>{btn.main}</div>
+                <div
+                  style={{
+                    fontFamily: "'Bebas Kai', sans-serif",
+                    fontSize: 10,
+                    color: "#555",
+                  }}
+                >
+                  {btn.top}
+                </div>
+                <div
+                  style={{
+                    fontFamily: "'Bebas Kai', sans-serif",
+                    fontWeight: 700,
+                    fontSize: 18,
+                    color: "#000",
+                  }}
+                >
+                  {btn.main}
+                </div>
               </div>
             </div>
           ))}
@@ -2977,77 +3569,120 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function Footer() {
   const { t } = useTranslation();
-  const [email, setEmail] = useState('');
-  const [emailMessage, setEmailMessage] = useState('');
-  const [emailMessageType, setEmailMessageType] = useState<'success' | 'error'>('success');
+  const [email, setEmail] = useState("");
+  const [emailMessage, setEmailMessage] = useState("");
+  const [emailMessageType, setEmailMessageType] = useState<"success" | "error">(
+    "success",
+  );
   const [isSubmittingEmail, setIsSubmittingEmail] = useState(false);
   const quickLinks = [
-    t('public.nav.aboutUs'),
-    t('public.footer.rides'),
-    t('public.nav.events'),
-    t('public.footer.cyclistsCorner'),
-    t('public.footer.contactUs'),
+    t("public.nav.aboutUs"),
+    t("public.footer.rides"),
+    t("public.nav.events"),
+    t("public.footer.cyclistsCorner"),
+    t("public.footer.contactUs"),
   ];
   const contactItems = [
-    { icon: '📞', text: '+971 2 654 5645' },
-    { icon: '💬', text: '144226' },
-    { icon: '✉️', text: 'info@adcyclingclub.ae' },
-    { icon: '📍', text: 'Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18.' },
+    { icon: "📞", text: "+971 2 654 5645" },
+    { icon: "💬", text: "144226" },
+    { icon: "✉️", text: "info@adcyclingclub.ae" },
+    {
+      icon: "📍",
+      text: "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18.",
+    },
   ];
 
   const handleEmailSubmit = async () => {
     const normalizedEmail = email.trim().toLowerCase();
 
     if (!normalizedEmail) {
-      setEmailMessageType('error');
-      setEmailMessage(t('public.home.newsletter.emailRequired'));
+      setEmailMessageType("error");
+      setEmailMessage(t("public.home.newsletter.emailRequired"));
       return;
     }
 
     if (!EMAIL_PATTERN.test(normalizedEmail)) {
-      setEmailMessageType('error');
-      setEmailMessage(t('public.home.newsletter.emailInvalid'));
+      setEmailMessageType("error");
+      setEmailMessage(t("public.home.newsletter.emailInvalid"));
       return;
     }
 
     try {
       setIsSubmittingEmail(true);
-      setEmailMessage('');
+      setEmailMessage("");
       await subscribeToNewsletter(normalizedEmail);
-      setEmail('');
-      setEmailMessageType('success');
-      setEmailMessage(t('public.home.newsletter.thanks'));
+      setEmail("");
+      setEmailMessageType("success");
+      setEmailMessage(t("public.home.newsletter.thanks"));
     } catch (error) {
-      setEmailMessageType('error');
-      setEmailMessage(error instanceof Error ? error.message : t('public.home.newsletter.subscribeError'));
+      setEmailMessageType("error");
+      setEmailMessage(
+        error instanceof Error
+          ? error.message
+          : t("public.home.newsletter.subscribeError"),
+      );
     } finally {
       setIsSubmittingEmail(false);
     }
   };
 
   return (
-    <footer style={{ background: '#ffffff', borderTop: '1px solid #e5e5e5' }}>
-      <div className="home-footer-main" style={{ padding: '60px 86px 30px', display: 'flex', gap: 60 }}>
+    <footer style={{ background: "#ffffff", borderTop: "1px solid #e5e5e5" }}>
+      <div
+        className="home-footer-main"
+        style={{ padding: "60px 86px 30px", display: "flex", gap: 60 }}
+      >
         {/* Logo + tagline + newsletter */}
-        <div className="home-footer-brand" style={{ flexShrink: 0, width: 340 }}>
-          <div style={{ marginBottom: 24 }}><ADCCLogo size={0.83} /></div>
-          <p style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 16, color: '#333', lineHeight: 1.6, marginBottom: 32 }}>
-            {t('public.footer.brandText')}
+        <div
+          className="home-footer-brand"
+          style={{ flexShrink: 0, width: 340 }}
+        >
+          <div style={{ marginBottom: 24 }}>
+            <ADCCLogo size={0.83} />
+          </div>
+          <p
+            style={{
+              fontFamily: "'Bebas Kai', sans-serif",
+              fontSize: 16,
+              color: "#333",
+              lineHeight: 1.6,
+              marginBottom: 32,
+            }}
+          >
+            {t("public.footer.brandText")}
           </p>
           {/* Email signup */}
-          <div className="home-newsletter" style={{ display: 'flex', background: '#8DDF93', borderRadius: 10, overflow: 'hidden', height: 52 }}>
+          <div
+            className="home-newsletter"
+            style={{
+              display: "flex",
+              background: "#8DDF93",
+              borderRadius: 10,
+              overflow: "hidden",
+              height: 52,
+            }}
+          >
             <input
               type="email"
               value={email}
-              onChange={e => {
+              onChange={(e) => {
                 setEmail(e.target.value);
-                if (emailMessage) setEmailMessage('');
+                if (emailMessage) setEmailMessage("");
               }}
-              onKeyDown={e => {
-                if (e.key === 'Enter') handleEmailSubmit();
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleEmailSubmit();
               }}
-              placeholder={t('public.home.newsletter.placeholder')}
-              style={{ flex: 1, border: 'none', background: 'transparent', padding: '0 16px', fontFamily: "'Bebas Kai', sans-serif", fontSize: 15, color: '#333', outline: 'none' }}
+              placeholder={t("public.home.newsletter.placeholder")}
+              style={{
+                flex: 1,
+                border: "none",
+                background: "transparent",
+                padding: "0 16px",
+                fontFamily: "'Bebas Kai', sans-serif",
+                fontSize: 15,
+                color: "#333",
+                outline: "none",
+              }}
             />
             <AnimatedButton
               disabled={isSubmittingEmail}
@@ -3055,52 +3690,154 @@ function Footer() {
               squareEnd
               size="sm"
               onClick={handleEmailSubmit}
-              style={{ height: '100%', borderRadius: '0 10px 10px 0' }}
+              style={{ height: "100%", borderRadius: "0 10px 10px 0" }}
             >
-              {isSubmittingEmail ? t('public.home.newsletter.saving') : t('public.home.newsletter.submit')}
+              {isSubmittingEmail
+                ? t("public.home.newsletter.saving")
+                : t("public.home.newsletter.submit")}
             </AnimatedButton>
           </div>
           {emailMessage && (
-            <p style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 13, color: emailMessageType === 'success' ? '#019839' : '#C12D32', marginTop: 8 }}>
+            <p
+              style={{
+                fontFamily: "'Bebas Kai', sans-serif",
+                fontSize: 13,
+                color: emailMessageType === "success" ? "#019839" : "#C12D32",
+                marginTop: 8,
+              }}
+            >
               {emailMessage}
             </p>
           )}
         </div>
 
-        <div className="home-footer-links" style={{ flex: 1, display: 'flex', gap: 60 }}>
+        <div
+          className="home-footer-links"
+          style={{ flex: 1, display: "flex", gap: 60 }}
+        >
           {/* Quick links */}
           <div>
-            <h3 style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 24, color: '#000', textTransform: 'uppercase', marginBottom: 24 }}>{t('public.home.footer.quickLinks')}</h3>
-            <ul style={{ listStyle: 'none' }}>
-              {quickLinks.map(l => (
+            <h3
+              style={{
+                fontFamily: "'Bebas Kai', sans-serif",
+                fontSize: 24,
+                color: "#000",
+                textTransform: "uppercase",
+                marginBottom: 24,
+              }}
+            >
+              {t("public.home.footer.quickLinks")}
+            </h3>
+            <ul style={{ listStyle: "none" }}>
+              {quickLinks.map((l) => (
                 <li key={l} style={{ marginBottom: 14 }}>
-                  <a href="#" className="hover-green" style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 17, color: '#000', textDecoration: 'none', transition: 'color 0.2s' }}>{l}</a>
+                  <a
+                    href="#"
+                    className="hover-green"
+                    style={{
+                      fontFamily: "'Bebas Kai', sans-serif",
+                      fontSize: 17,
+                      color: "#000",
+                      textDecoration: "none",
+                      transition: "color 0.2s",
+                    }}
+                  >
+                    {l}
+                  </a>
                 </li>
               ))}
             </ul>
           </div>
           {/* Contact */}
           <div>
-            <h3 style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 24, color: '#000', textTransform: 'uppercase', marginBottom: 24 }}>{t('public.home.footer.contactUs')}</h3>
-            <ul style={{ listStyle: 'none' }}>
+            <h3
+              style={{
+                fontFamily: "'Bebas Kai', sans-serif",
+                fontSize: 24,
+                color: "#000",
+                textTransform: "uppercase",
+                marginBottom: 24,
+              }}
+            >
+              {t("public.home.footer.contactUs")}
+            </h3>
+            <ul style={{ listStyle: "none" }}>
               {contactItems.map((c, i) => (
-                <li key={i} style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                  <span style={{ fontSize: 18, flexShrink: 0, marginTop: 2 }}>{c.icon}</span>
-                  <span style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 16, color: '#000', lineHeight: 1.4 }}>{c.text}</span>
+                <li
+                  key={i}
+                  style={{
+                    marginBottom: 16,
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: 12,
+                  }}
+                >
+                  <span style={{ fontSize: 18, flexShrink: 0, marginTop: 2 }}>
+                    {c.icon}
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "'Bebas Kai', sans-serif",
+                      fontSize: 16,
+                      color: "#000",
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    {c.text}
+                  </span>
                 </li>
               ))}
             </ul>
           </div>
           {/* Social */}
           <div>
-            <h3 style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 24, color: '#000', textTransform: 'uppercase', marginBottom: 24 }}>{t('public.home.footer.followUs')}</h3>
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              {['📘', '📷', '🐦', '▶️'].map((icon, i) => (
-                <div key={i} style={{ width: 44, height: 44, background: '#EAF4FF', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 20, transition: 'background 0.2s' }}>{icon}</div>
+            <h3
+              style={{
+                fontFamily: "'Bebas Kai', sans-serif",
+                fontSize: 24,
+                color: "#000",
+                textTransform: "uppercase",
+                marginBottom: 24,
+              }}
+            >
+              {t("public.home.footer.followUs")}
+            </h3>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+              {["📘", "📷", "🐦", "▶️"].map((icon, i) => (
+                <div
+                  key={i}
+                  style={{
+                    width: 44,
+                    height: 44,
+                    background: "#EAF4FF",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    fontSize: 20,
+                    transition: "background 0.2s",
+                  }}
+                >
+                  {icon}
+                </div>
               ))}
             </div>
             {/* Green badge */}
-            <div style={{ marginTop: 32, width: 55, height: 55, background: '#019839', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px rgba(1,152,57,0.3)', cursor: 'pointer' }}>
+            <div
+              style={{
+                marginTop: 32,
+                width: 55,
+                height: 55,
+                background: "#019839",
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 4px 16px rgba(1,152,57,0.3)",
+                cursor: "pointer",
+              }}
+            >
               <ADCCLogo size={0.19} light={true} />
             </div>
           </div>
@@ -3108,8 +3845,24 @@ function Footer() {
       </div>
 
       {/* Divider + copyright */}
-      <div className="home-footer-bottom" style={{ borderTop: '1px solid #D5D5D5', margin: '0 86px', padding: '20px 0', textAlign: 'center' }}>
-        <span style={{ fontFamily: "'Bebas Kai', sans-serif", fontSize: 16, color: 'rgba(0,0,0,0.6)' }}>{t('public.home.footer.copyright')}</span>
+      <div
+        className="home-footer-bottom"
+        style={{
+          borderTop: "1px solid #D5D5D5",
+          margin: "0 86px",
+          padding: "20px 0",
+          textAlign: "center",
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "'Bebas Kai', sans-serif",
+            fontSize: 16,
+            color: "rgba(0,0,0,0.6)",
+          }}
+        >
+          {t("public.home.footer.copyright")}
+        </span>
       </div>
     </footer>
   );
@@ -3120,7 +3873,15 @@ export function Home() {
   useHomePageStyles();
 
   return (
-    <div className="home-page" style={{ minHeight: '100vh', background: '#EAF4FF', display: 'flex', flexDirection: 'column' }}>
+    <div
+      className="home-page"
+      style={{
+        minHeight: "100vh",
+        background: "#EAF4FF",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <HeroSection />
       <StatsTicker />
       <CyclingJourneySection />

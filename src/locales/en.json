@@ -541,8 +541,6 @@
         "noCommunities": "No communities using this track",
         "viewAll": "View All"
       },
-
-
       "notFound": "Community not found",
       "editButton": "Edit Community",
       "members": "members",
@@ -556,7 +554,6 @@
         "feed": "Feed Announcements",
         "tracks": "Tracks"
       },
-      "aboutHeading": "About This Track",
       "associatedTeams": "Associated Teams",
       "quickActions": "Quick Actions",
       "editCommunity": "Edit Community",
@@ -1238,7 +1235,6 @@
         "Fujairah": "Fujairah",
         "Al Ain": "Al Ain"
       },
- 
       "thumbnailLabel": "Track Thumbnail Image *",
       "coverLabel": "Cover Image *",
       "galleryLabel": "Gallery Images (multiple)",
@@ -1384,7 +1380,6 @@
         "Fujairah": "Fujairah",
         "Al Ain": "Al Ain"
       },
- 
       "toasts": {
         "notFound": "Track not found",
         "updateSuccess": "Track updated successfully",
@@ -1800,7 +1795,18 @@
     },
     "tabs": {
       "homepageSections": "Homepage Sections",
-      "staticPages": "Static Pages"
+      "staticPages": "Static Pages",
+      "appBanner": "App Banner"
+    },
+    "appBanner": {
+      "homeScreenBanner": "Home Screen Banner",
+      "merchandiseOfferBanner": "Merchandise Offer Banner",
+      "uploadBanner": "Upload Banner Image",
+      "saveBanner": "Save Banner",
+      "noBanner": "No banner uploaded yet",
+      "uploadSuccess": "Banner uploaded successfully",
+      "uploadError": "Failed to upload banner",
+      "currentBanner": "Current Banner"
     },
     "lastModified": "Last modified"
   },
@@ -2051,7 +2057,7 @@
     "retry": "Retry",
     "cancel": "Cancel"
   },
-  "member":{
+  "member": {
     "member-managaement": "Member Management",
     "view-manage-community-members": "View and manage community members"
   },
@@ -2131,8 +2137,19 @@
         }
       },
       "app": {
-        "titleWords": ["Everything", "You", "Need.", "In", "One", "App."],
-        "downloadLabelWords": ["Download", "the", "App"],
+        "titleWords": [
+          "Everything",
+          "You",
+          "Need.",
+          "In",
+          "One",
+          "App."
+        ],
+        "downloadLabelWords": [
+          "Download",
+          "the",
+          "App"
+        ],
         "phoneAlt": "ADCC mobile app",
         "features": {
           "track": "Track Performance\nand Rides",
@@ -2195,7 +2212,13 @@
         }
       },
       "about": {
-        "titleWords": ["About", "Abu", "Dhabi", "Cycling", "Club"],
+        "titleWords": [
+          "About",
+          "Abu",
+          "Dhabi",
+          "Cycling",
+          "Club"
+        ],
         "text": "At Abu Dhabi Cycling Club, every ride is a step toward building a stronger, healthier, and more connected society. We are the heart of the UAE's cycling movement uniting enthusiasts, athletes, and families through the shared joy of cycling.",
         "stats": {
           "riders": "Riders",
@@ -2256,6 +2279,104 @@
             "a": "Yes! ADCC organises regular women-only rides and training sessions. Check our events calendar for upcoming sessions."
           }
         ]
+      },
+      "hero": {
+        "titleWords": [
+          "Cycling",
+          "Tracks"
+        ],
+        "breadcrumb": [
+          "Home",
+          "/",
+          "Tracks"
+        ]
+      }
+    },
+    "common": {
+      "participants": "{{count}} participants",
+      "getInTouch": "Get In Touch",
+      "joinChallenge": "Join Challenge",
+      "viewDetails": "View Details",
+      "search": "Search",
+      "next": "Next",
+      "prev": "Prev",
+      "nextPage": "Next page",
+      "prevPage": "Previous page",
+      "na": "N/A",
+      "dateTBA": "Date TBA",
+      "distanceTBA": "Distance TBA",
+      "eventFallback": "Event",
+      "communityFallback": "Community",
+      "untitledTrack": "Untitled Track",
+      "noTracksFiltered": "No tracks match your filters.",
+      "noCommunities": "No communities found.",
+      "showingCount": "Showing {{count}}",
+      "showingResults": "Showing {{shown}} of {{total}} results",
+      "showingActiveChallenges": "Showing {{count}} active challenges",
+      "loadingEvents": "Loading events...",
+      "loadingTracks": "Loading tracks...",
+      "loadingChallenges": "Loading challenges...",
+      "loadErrorEvents": "Failed to load events.",
+      "loadErrorTracks": "Failed to load tracks.",
+      "loadErrorCommunities": "Failed to load communities.",
+      "loadErrorChallenges": "Failed to load challenges.",
+      "searchCommunities": "Search communities...",
+      "exploreTracksArrow": "Explore Tracks",
+      "filters": {
+        "allCategories": "All Categories",
+        "allCities": "All Cities",
+        "allLevels": "All Levels",
+        "allTypes": "All Types",
+        "easy": "Easy",
+        "medium": "Medium",
+        "hard": "Hard",
+        "status": "Status"
+      },
+      "stats": {
+        "distance": "{{value}} km",
+        "elevation": "{{value}} m",
+        "level": "{{level}}"
+      },
+      "challengeDays": {
+        "daysLeft": "{{count}} days left",
+        "endsToday": "Ends today",
+        "ended": "Ended",
+        "completed": "Completed"
+      },
+      "journeyCard": {
+        "eyebrow": "New to cycling?",
+        "title": [
+          "Start",
+          "Your",
+          "Journey",
+          "With",
+          "ADCC"
+        ],
+        "community": "+5K in the community",
+        "cta": "Get In Touch",
+        "riderAlt": "ADCC rider"
+      },
+      "loading": "Loading..."
+    },
+    "events": {
+      "hero": {
+        "titleWords": [
+          "Events",
+          "&",
+          "Races"
+        ],
+        "breadcrumb": [
+          "Home",
+          "/",
+          "Events"
+        ]
+      },
+      "intro": {
+        "titleWords": [
+          "Upcoming",
+          "Events"
+        ],
+        "body": "Discover and join cycling events across Abu Dhabi and the UAE."
       }
     }
   }

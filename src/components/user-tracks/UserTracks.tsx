@@ -1,10 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
-import { getTracksPageEn, UAE_CITIES, type Track } from "../../services/trackService";
+import {
+  getTracksPageEn,
+  UAE_CITIES,
+  type Track,
+} from "../../services/trackService";
 import { motion } from "framer-motion";
 import { APP_STORE_LINKS } from "../../config/appStoreLinks";
-import { AnimatedWords, PublicPageHero, useWordList } from "../public/publicPageHelpers";
+import {
+  AnimatedWords,
+  PublicPageHero,
+  useWordList,
+} from "../public/publicPageHelpers";
 
 type PublicTrackCard = {
   id: string;
@@ -39,23 +47,35 @@ const titleCase = (value?: string | null) =>
     .trim()
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
-const getTrackId = (track: Track) => String(track.id || (track as any)._id || track.slug || track.title);
+const getTrackId = (track: Track) =>
+  String(track.id || (track as any)._id || track.slug || track.title);
 
 const getTrackImage = (track: Track) =>
-  track.image || track.coverImage || track.galleryImages?.[0] || TRACK_FALLBACK_IMAGE;
+  track.image ||
+  track.coverImage ||
+  track.galleryImages?.[0] ||
+  TRACK_FALLBACK_IMAGE;
 
-const formatDistance = (distance: number | string | undefined, naLabel: string) => {
-  if (distance === undefined || distance === null || distance === "") return naLabel;
+const formatDistance = (
+  distance: number | string | undefined,
+  naLabel: string,
+) => {
+  if (distance === undefined || distance === null || distance === "")
+    return naLabel;
   const numeric = Number(distance);
   return Number.isFinite(numeric) ? `${numeric} km` : String(distance);
 };
 
-const normalizeTrack = (track: Track, t: (key: string) => string): PublicTrackCard => ({
+const normalizeTrack = (
+  track: Track,
+  t: (key: string) => string,
+): PublicTrackCard => ({
   id: getTrackId(track),
   name: track.title || (track as any).name || t("public.common.untitledTrack"),
   city: track.city || "UAE",
   difficulty: track.difficulty || "all",
-  location: [track.area, track.city].filter(Boolean).join(", ") || track.city || "UAE",
+  location:
+    [track.area, track.city].filter(Boolean).join(", ") || track.city || "UAE",
   distance: formatDistance(track.distance, t("public.common.na")),
   elevation: track.elevation ? String(track.elevation) : t("public.common.na"),
   level: titleCase(track.difficulty) || t("public.common.filters.allLevels"),
@@ -63,20 +83,39 @@ const normalizeTrack = (track: Track, t: (key: string) => string): PublicTrackCa
   img: getTrackImage(track),
 });
 
-const getPaginationItems = (page: number, totalPages: number): Array<number | string> => {
+const getPaginationItems = (
+  page: number,
+  totalPages: number,
+): Array<number | string> => {
   if (totalPages <= 5) {
     return Array.from({ length: totalPages }, (_, index) => index + 1);
   }
 
   if (page <= 3) return [1, 2, 3, 4, "...", totalPages];
-  if (page >= totalPages - 2) return [1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+  if (page >= totalPages - 2)
+    return [
+      1,
+      "...",
+      totalPages - 3,
+      totalPages - 2,
+      totalPages - 1,
+      totalPages,
+    ];
   return [1, "...", page - 1, page, page + 1, "...", totalPages];
 };
 
 const FontLoader = () => (
   <style>{`
-    * { box-sizing: border-box; margin: 0; }
-    body { background: #EAF4FF; font-family: 'Bebas Kai', sans-serif; color: #000; }
+
+h4.font-satoshi, .font-satoshi{
+font-family: 'Satoshi', sans-serif !important;
+}
+.capitalize{
+text-transform: Capitalize !important;}
+
+
+    * { box-sizing: border-box; }
+    body { background: #EAF4FF; color: #000; }
     .bebas { font-family: 'Bebas Kai', sans-serif; font-weight: 400; letter-spacing: 0.02em; }
     a { text-decoration: none; color: inherit; }
     select { appearance: none; -webkit-appearance: none; background: transparent; border: none; outline: none; cursor: pointer; font-family: 'Bebas Kai', sans-serif; font-size: 20px; color: #000; width: 100%; }
@@ -84,6 +123,9 @@ const FontLoader = () => (
     .tracks-page .adcc-btn--arrow:focus-visible .adcc-btn__arrow--enter {
       inset-inline-start: calc(var(--adcc-btn-arrow-inset) - var(--adcc-btn-arrow-shift) + 15px);
     }
+
+    .track-hero{
+    padding-inline-start: 86px;}
 
     .tracks-journey-card {
       width: 482px;
@@ -94,6 +136,8 @@ const FontLoader = () => (
       position: relative;
       overflow: visible;
     }
+
+
 
     .tracks-journey-card__image {
       position: absolute;
@@ -425,9 +469,16 @@ function TracksJourneyCard() {
         alt={t("public.common.journeyCard.riderAlt")}
         className="tracks-journey-card__image"
       />
-      <p className="tracks-journey-card__eyebrow">{t("public.common.journeyCard.eyebrow")}</p>
-      <h3 className="bebas tracks-journey-card__title">{t("public.common.journeyCard.title")}</h3>
-      <div className="tracks-journey-card__community" aria-label={t("public.common.journeyCard.community")}>
+      <p className="tracks-journey-card__eyebrow">
+        {t("public.common.journeyCard.eyebrow")}
+      </p>
+      <h3 className="bebas tracks-journey-card__title">
+        {t("public.common.journeyCard.title")}
+      </h3>
+      <div
+        className="tracks-journey-card__community"
+        aria-label={t("public.common.journeyCard.community")}
+      >
         {avatarBackgrounds.map((background, index) => (
           <span
             key={index}
@@ -436,7 +487,9 @@ function TracksJourneyCard() {
           />
         ))}
         <span className="tracks-journey-card__avatar" />
-        <span className="tracks-journey-card__community-text">{t("public.common.journeyCard.community")}</span>
+        <span className="tracks-journey-card__community-text">
+          {t("public.common.journeyCard.community")}
+        </span>
       </div>
     </div>
   );
@@ -445,8 +498,12 @@ function TracksJourneyCard() {
 // ── Hero ──────────────────────────────────────────────────────────────────────
 function Hero() {
   const { t } = useTranslation();
-  const titleWords = t("public.tracks.hero.titleWords", { returnObjects: true }) as string[];
-  const breadcrumb = t("public.tracks.hero.breadcrumb", { returnObjects: true }) as string[];
+  const titleWords = t("public.tracks.hero.titleWords", {
+    returnObjects: true,
+  }) as string[];
+  const breadcrumb = t("public.tracks.hero.breadcrumb", {
+    returnObjects: true,
+  }) as string[];
 
   return (
     <PublicPageHero
@@ -464,9 +521,20 @@ function ExploreIntro() {
   const titleWords = useWordList("public.tracks.intro.titleWords");
 
   return (
-    <section className="track-section" style={{ background: "#EAF4FF", padding: "80px 82px" }}>
-      <div className="track-intro-wrap" style={{ display: "flex", gap: 48, alignItems: "flex-start", overflow: "visible" }}>
-        <div className="track-intro-left" style={{ flex: "0 0 480px" }}>
+    <section
+      className="track-section"
+      style={{ background: "#EAF4FF", padding: "80px 82px" }}
+    >
+      <div
+        className="track-intro-wrap"
+        style={{
+          display: "flex",
+          gap: 48,
+          alignItems: "flex-start",
+          overflow: "visible",
+        }}
+      >
+        <div className="track-intro-left" style={{ flex: "0 0 580px" }}>
           <h2
             className="bebas track-intro-title overflow-hidden"
             style={{
@@ -478,61 +546,63 @@ function ExploreIntro() {
           >
             <AnimatedWords words={titleWords} gap={12} />
           </h2>
-         <motion.div
-          className="track-journey-offset"
-          initial={{ opacity: 0, y: 120 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 0.7,
-            ease: "easeOut",
-          }}
-          viewport={{ once: true }}
-          style={{ paddingTop: 90 }}
-        >
-          <TracksJourneyCard />
-        </motion.div>
+          <motion.div
+            className="track-journey-offset"
+            initial={{ opacity: 0, y: 120 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.7,
+              ease: "easeOut",
+            }}
+            viewport={{ once: true }}
+            style={{ paddingTop: 90 }}
+          >
+            <TracksJourneyCard />
+          </motion.div>
         </div>
 
         {/* Right: video thumbnail + description */}
         <div className="track-intro-right" style={{ flex: 1 }}>
           <motion.div
-          className="track-video"
-          initial={{ opacity: 0, y: 120 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 0.7,
-            ease: "easeOut",
-          }}
-          viewport={{ once: true }}
-          style={{
-            borderRadius: 12,
-            overflow: "hidden",
-            height: 340,
-            marginBottom: 28,
-            backgroundImage: "url('/img/SSYouTube.online_Falcon_daman.png')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            position: "relative",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-        </motion.div>
+            className="track-video"
+            initial={{ opacity: 0, y: 120 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.7,
+              ease: "easeOut",
+            }}
+            viewport={{ once: true }}
+            style={{
+              borderRadius: 12,
+              overflow: "hidden",
+              height: 340,
+              marginBottom: 28,
+              backgroundImage: "url('/img/SSYouTube.online_Falcon_daman.png')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              position: "relative",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          ></motion.div>
           {/* <div className="track-video" style={{
             borderRadius: 12, overflow: "hidden", height: 340, marginBottom: 28,
             backgroundImage: "url('/img/SSYouTube.online_Falcon_daman.png')",
             backgroundSize: "cover", backgroundPosition: "center",
             position: "relative", display: "flex", alignItems: "center", justifyContent: "center"
           }}> */}
-            {/* <div style={{
+          {/* <div style={{
               width: 60, height: 60, borderRadius: "50%", background: "rgba(255,255,255,0.9)",
               display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer"
             }}>
               <span style={{ fontSize: 22, marginLeft: 4 }}>▶</span>
             </div> */}
           {/* </div> */}
-          <p className="track-intro-text" style={{ fontSize: 22, lineHeight: 1.55, color: "#000" }}>
+          <p
+            className="track-intro-text"
+            style={{ fontSize: 22, lineHeight: 1.55, color: "#000" }}
+          >
             {t("public.tracks.intro.body")}
           </p>
         </div>
@@ -545,7 +615,12 @@ function ExploreIntro() {
 function WhySection() {
   const { t } = useTranslation();
   const titleWords = useWordList("public.tracks.why.title");
-  const featureKeys = ["infrastructure", "routes", "community", "performance"] as const;
+  const featureKeys = [
+    "infrastructure",
+    "routes",
+    "community",
+    "performance",
+  ] as const;
   const features = featureKeys.map((key, index) => ({
     num: `//00${index + 1}`,
     title: t(`public.tracks.why.features.${key}.title`),
@@ -553,14 +628,19 @@ function WhySection() {
   }));
 
   return (
-    <section className="track-section" style={{
-      backgroundImage: "url('/img/image 3517.png')",
-      // backgroundSize: "cover",
-      backgroundSize: "100% 100%",
-      backgroundPosition: "center",
-      backgroundRepeat: "no-repeat",
-      padding: "80px 82px", position: "relative", overflow: "hidden"
-    }}>
+    <section
+      className="track-section"
+      style={{
+        backgroundImage: "url('/img/image 3517.png')",
+        // backgroundSize: "cover",
+        backgroundSize: "100% 100%",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        padding: "80px 82px",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
       {/* bg texture */}
       {/* <div style={{
         position: "absolute", inset: 0,
@@ -569,26 +649,50 @@ function WhySection() {
       }} /> */}
       <div style={{ position: "relative", zIndex: 2 }}>
         {/* header row */}
-        <div className="track-why-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 48 }}>
+        <div
+          className="track-why-head"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            marginBottom: 48,
+          }}
+        >
           <h2
             className="bebas track-why-title overflow-hidden"
             style={{
               fontSize: 50,
               color: "#000",
-              lineHeight: 1.2,
+              lineHeight: 1,
               maxWidth: 300,
             }}
           >
             <AnimatedWords words={titleWords} gap={12} />
           </h2>
-          <button style={{
-            background: "#019839", color: "#fff", border: "none", borderRadius: 30,
-            padding: "13px 28px", fontWeight: 700, fontSize: 18, cursor: "pointer",
-            fontFamily: "'Bebas Kai',sans-serif", display: "flex", alignItems: "center", gap: 10
-          }}>{t("public.common.exploreTracksArrow")}</button>
+          <button
+            style={{
+              background: "#019839",
+              color: "#fff",
+              border: "none",
+              borderRadius: 30,
+              padding: "13px 28px",
+              fontWeight: 400,
+              fontSize: 18,
+              cursor: "pointer",
+              fontFamily: "'Satoshi',sans-serif",
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+            }}
+          >
+            {t("public.common.exploreTracksArrow")}
+          </button>
         </div>
 
-        <div className="track-why-content" style={{ display: "flex", gap: 24, alignItems: "stretch" }}>
+        <div
+          className="track-why-content"
+          style={{ display: "flex", gap: 24, alignItems: "stretch" }}
+        >
           {/* cycling photo */}
           <motion.div
             className="track-why-image"
@@ -600,17 +704,26 @@ function WhySection() {
             }}
             viewport={{ once: true }}
             style={{
-              flex: "0 0 480px",
+              flex: "0 0 550px",
               borderRadius: 12,
               overflow: "hidden",
-              backgroundImage: "url('/img/paolo-candelo-8tXukRrs7yk-unsplash 1.png')",
+              backgroundImage:
+                "url('/img/paolo-candelo-8tXukRrs7yk-unsplash 1.png')",
               backgroundSize: "cover",
               backgroundPosition: "center",
-              minHeight: 420
+              minHeight: 420,
             }}
           />
           {/* 2x2 feature grid */}
-          <div className="track-why-grid" style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+          <div
+            className="track-why-grid"
+            style={{
+              flex: 1,
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 16,
+            }}
+          >
             {features.map((f, i) => (
               <motion.div
                 key={i}
@@ -626,12 +739,42 @@ function WhySection() {
                   background: "rgba(0,0,0,0.2)",
                   backdropFilter: "blur(7.5px)",
                   borderRadius: 12,
-                  padding: "28px 24px"
+                  padding: "28px 24px",
                 }}
               >
-                <p style={{ fontSize: 13, color: "#fff", fontWeight: 400, marginBottom: 14, opacity: 0.8 }}>{f.num}</p>
-                <h4 style={{ fontSize: 20, fontWeight: 600, color: "#fff", marginBottom: 12, lineHeight: 1.3 }}>{f.title}</h4>
-                <p style={{ fontSize: 15, color: "#fff", lineHeight: 1.6, opacity: 0.9 }}>{f.desc}</p>
+                <p
+                  style={{
+                    fontSize: 14,
+                    color: "#fff",
+                    fontWeight: 400,
+                    marginBottom: 14,
+                    opacity: 0.8,
+                  }}
+                >
+                  {f.num}
+                </p>
+                <h4
+                  className="font-satoshi capitalize"
+                  style={{
+                    fontSize: 20,
+                    fontWeight: 600,
+                    color: "#fff",
+                    marginBottom: 12,
+                    lineHeight: 1.3,
+                  }}
+                >
+                  {f.title}
+                </h4>
+                <p
+                  style={{
+                    fontSize: 16,
+                    color: "#fff",
+                    lineHeight: 1.6,
+                    opacity: 0.9,
+                  }}
+                >
+                  {f.desc}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -642,7 +785,13 @@ function WhySection() {
 }
 
 // ── Track card ────────────────────────────────────────────────────────────────
-function TrackCard({ track, index = 0 }: { track: PublicTrackCard; index?: number }) {
+function TrackCard({
+  track,
+  index = 0,
+}: {
+  track: PublicTrackCard;
+  index?: number;
+}) {
   const { t } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
   const isFeatured = track.featured || isHovered;
@@ -657,71 +806,148 @@ function TrackCard({ track, index = 0 }: { track: PublicTrackCard; index?: numbe
 
   return (
     <motion.div
-    className="track-card"
-    initial={{ opacity: 0, y: 120 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    transition={{
-      duration: 0.5,
-      delay: index * 0.08,
-      ease: "easeOut",
-    }}
-    viewport={{ once: true }}
-    onMouseEnter={() => setIsHovered(true)}
-    onMouseLeave={() => setIsHovered(false)}
-    style={{
-      width: "calc(33.33% - 19px)", minWidth: 0,
-      borderRadius: 12, overflow: "hidden",
-      background: cardBg, border: borderStyle,
-      display: "flex", flexDirection: "column",
-      transition: "all .3s",
-      cursor: "pointer",
-    }}>
+      className="track-card"
+      initial={{ opacity: 0, y: 120 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: 0.5,
+        delay: index * 0.08,
+        ease: "easeOut",
+      }}
+      viewport={{ once: true }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        width: "calc(33.33% - 19px)",
+        minWidth: 0,
+        borderRadius: 12,
+        overflow: "hidden",
+        background: cardBg,
+        border: borderStyle,
+        display: "flex",
+        flexDirection: "column",
+        transition: "all .3s",
+        cursor: "pointer",
+      }}
+    >
       {/* image */}
-      <div className="track-card-image adcc-image adcc-image--fill" style={{
-        height: 240, overflow: "hidden", position: "relative",
-        background: "#ddd"
-      }}>
-        <img className="adcc-image__img adcc-image__img--fill" src={track.img} alt={track.name} />
+      <div
+        className="track-card-image adcc-image adcc-image--fill"
+        style={{
+          height: 240,
+          overflow: "hidden",
+          position: "relative",
+          background: "#ddd",
+        }}
+      >
+        <img
+          className="adcc-image__img adcc-image__img--fill"
+          src={track.img}
+          alt={track.name}
+        />
       </div>
 
       {/* info */}
       <div style={{ padding: "20px 14px 24px" }}>
         {/* location */}
-        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
-          <span style={{ fontSize: 14 }}>📍</span>
-          <span style={{ fontSize: 13, fontWeight: 500, color: mutedText }}>{track.location}</span>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            marginBottom: 8,
+          }}
+        >
+          <span>
+            <img
+              src="/img/icons/map.svg"
+              alt="Location"
+              width={18}
+              height={18}
+              style={{ display: "inline-block", verticalAlign: "middle" }}
+            />
+          </span>
+          <span style={{ fontSize: 14, fontWeight: 400, color: mutedText }}>
+            {track.location}
+          </span>
         </div>
         {/* name */}
-        <h3 className="bebas" style={{ fontSize: 24, color: textColor, marginBottom: 16, letterSpacing: 0.5 }}>{track.name}</h3>
+        <h3
+          className="bebas"
+          style={{
+            fontSize: 24,
+            color: textColor,
+            marginBottom: 16,
+            letterSpacing: 0.5,
+          }}
+        >
+          {track.name}
+        </h3>
 
         {/* stats row */}
-        <div className="track-stat-row" style={{ display: "flex", gap: 6, marginBottom: 20 }}>
+        <div
+          className="track-stat-row"
+          style={{ display: "flex", gap: 6, marginBottom: 20 }}
+        >
           {[
             { label: t("public.common.stats.distance"), val: track.distance },
             { label: t("public.common.stats.elevation"), val: track.elevation },
             { label: t("public.common.stats.level"), val: track.level },
           ].map((s, i) => (
-            <div key={i} style={{
-              flex: 1, background: statBg,
-              border: "1px solid rgba(255,255,255,0.18)",
-              borderRadius: 5, padding: "10px 6px", textAlign: "center"
-            }}>
-              <div style={{ fontSize: 12, color: "#fff", opacity: 0.8, marginBottom: 4 }}>{s.label}</div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", fontFamily: "'Bebas Kai',sans-serif" }}>{s.val}</div>
+            <div
+              key={i}
+              style={{
+                flex: 1,
+                background: statBg,
+                border: "1px solid rgba(255,255,255,0.18)",
+                borderRadius: 5,
+                padding: "10px 6px",
+                textAlign: "center",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 12,
+                  color: "#fff",
+                  opacity: 0.8,
+                  marginBottom: 4,
+                }}
+              >
+                {s.label}
+              </div>
+              <div
+                style={{
+                  fontSize: 14,
+                  fontWeight: 700,
+                  color: "#fff",
+                  fontFamily: "'Satoshi',sans-serif",
+                }}
+              >
+                {s.val}
+              </div>
             </div>
           ))}
         </div>
 
         {/* button */}
-        <button className="track-card-button" style={{
-          width: 157, height: 50,
-          background: isFeatured ? "#fff" : "transparent",
-          border: isFeatured ? "none" : "1px solid rgba(0,0,0,0.5)",
-          borderRadius: 30, cursor: "pointer",
-          color: isFeatured ? "#435974" : "rgba(0,0,0,0.49)",
-          fontSize: 15, fontWeight: 700, fontFamily: "'Bebas Kai',sans-serif",
-          transition: "all .2s"
-        }}>{t("public.common.viewDetails")}</button>
+        <button
+          className="track-card-button"
+          style={{
+            width: 157,
+            height: 50,
+            background: isFeatured ? "#fff" : "transparent",
+            border: isFeatured ? "none" : "1px solid rgba(0,0,0,0.5)",
+            borderRadius: 30,
+            cursor: "pointer",
+            color: isFeatured ? "#435974" : "rgba(0,0,0,0.49)",
+            fontSize: 15,
+            fontWeight: 700,
+            fontFamily: "'Satoshi',sans-serif",
+            transition: "all .2s",
+          }}
+        >
+          {t("public.common.viewDetails")}
+        </button>
       </div>
     </motion.div>
   );
@@ -730,8 +956,13 @@ function TrackCard({ track, index = 0 }: { track: PublicTrackCard; index?: numbe
 // ── Tracks grid ───────────────────────────────────────────────────────────────
 function TracksGrid() {
   const { t, i18n } = useTranslation();
-  const [filters, setFilters] = useState<TrackFilters>({ city: ALL_FILTER_VALUE, level: ALL_FILTER_VALUE });
-  const [openDropdown, setOpenDropdown] = useState<keyof TrackFilters | null>(null);
+  const [filters, setFilters] = useState<TrackFilters>({
+    city: ALL_FILTER_VALUE,
+    level: ALL_FILTER_VALUE,
+  });
+  const [openDropdown, setOpenDropdown] = useState<keyof TrackFilters | null>(
+    null,
+  );
   const [active, setActive] = useState(filters);
   const [page, setPage] = useState(1);
   const [tracks, setTracks] = useState<PublicTrackCard[]>([]);
@@ -769,7 +1000,8 @@ function TracksGrid() {
           page,
           limit: PAGE_SIZE,
           city: active.city === ALL_FILTER_VALUE ? undefined : active.city,
-          difficulty: active.level === ALL_FILTER_VALUE ? undefined : active.level,
+          difficulty:
+            active.level === ALL_FILTER_VALUE ? undefined : active.level,
           publicOnly: true,
         });
 
@@ -799,26 +1031,59 @@ function TracksGrid() {
   }, [active, page, t]);
 
   const ChevronDown = ({ open = false }: { open?: boolean }) => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, transform: open ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>
-      <path d="M6 9l6 6 6-6" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      style={{
+        flexShrink: 0,
+        transform: open ? "rotate(180deg)" : "none",
+        transition: "transform 0.2s",
+      }}
+    >
+      <path
+        d="M6 9l6 6 6-6"
+        stroke="#000"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 
-  const filterControls: Array<{ key: keyof TrackFilters; options: FilterOption[] }> = [
+  const filterControls: Array<{
+    key: keyof TrackFilters;
+    options: FilterOption[];
+  }> = [
     { key: "city", options: cityFilterOptions },
     { key: "level", options: levelFilterOptions },
   ];
   const paginationItems = getPaginationItems(page, totalPages);
 
-  const renderDropdown = ({ key, options }: { key: keyof TrackFilters; options: FilterOption[] }) => {
-    const selectedLabel = options.find((option) => option.value === filters[key])?.label || options[0]?.label || "";
+  const renderDropdown = ({
+    key,
+    options,
+  }: {
+    key: keyof TrackFilters;
+    options: FilterOption[];
+  }) => {
+    const selectedLabel =
+      options.find((option) => option.value === filters[key])?.label ||
+      options[0]?.label ||
+      "";
     const isOpen = openDropdown === key;
 
     return (
-      <div className="track-filter-field" style={{ position: "relative", width: 220 }}>
+      <div
+        className="track-filter-field"
+        style={{ position: "relative", width: 220 }}
+      >
         <button
           type="button"
-          onClick={() => setOpenDropdown((current) => (current === key ? null : key))}
+          onClick={() =>
+            setOpenDropdown((current) => (current === key ? null : key))
+          }
           style={{
             width: "100%",
             height: 60,
@@ -831,14 +1096,22 @@ function TracksGrid() {
             padding: "0 16px 0 22px",
             gap: 8,
             cursor: "pointer",
-            fontFamily: "'Bebas Kai',sans-serif",
+            fontFamily: "'Satoshi',sans-serif",
             fontSize: 20,
             color: "#000",
             textAlign: "left",
           }}
           aria-expanded={isOpen}
         >
-          <span style={{ minWidth: 0, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          <span
+            style={{
+              minWidth: 0,
+              flex: 1,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
             {selectedLabel}
           </span>
           <ChevronDown open={isOpen} />
@@ -866,24 +1139,35 @@ function TracksGrid() {
                 key={option.value}
                 type="button"
                 onClick={() => {
-                  setFilters((previous) => ({ ...previous, [key]: option.value }));
+                  setFilters((previous) => ({
+                    ...previous,
+                    [key]: option.value,
+                  }));
                   setOpenDropdown(null);
                 }}
                 style={{
                   display: "block",
                   width: "100%",
                   border: 0,
-                  background: option.value === filters[key] ? "#EAF4FF" : "#fff",
+                  background:
+                    option.value === filters[key] ? "#EAF4FF" : "#fff",
                   color: option.value === filters[key] ? "#019839" : "#000",
                   padding: "12px 18px",
                   textAlign: "left",
-                  fontFamily: "'Bebas Kai',sans-serif",
+                  fontFamily: "'Satoshi',sans-serif",
                   fontSize: 16,
                   fontWeight: option.value === filters[key] ? 700 : 400,
                   cursor: "pointer",
                 }}
               >
-                <span style={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <span
+                  style={{
+                    display: "block",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
                   {option.label}
                 </span>
               </button>
@@ -895,14 +1179,27 @@ function TracksGrid() {
   };
 
   return (
-    <section className="track-grid-section" style={{ background: "#EAF4FF", padding: "60px 82px 0" }}>
+    <section
+      className="track-grid-section"
+      style={{ background: "#EAF4FF", padding: "60px 82px 0" }}
+    >
       {/* section title + filters */}
-      <div className="track-grid-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 32, flexWrap: "wrap", gap: 20 }}>
+      <div
+        className="track-grid-head"
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-end",
+          marginBottom: 32,
+          flexWrap: "wrap",
+          gap: 20,
+        }}
+      >
         <motion.h2
           className="bebas track-grid-title overflow-hidden"
           style={{
             fontSize: 50,
-            lineHeight: 1.15,
+            lineHeight: 1,
             maxWidth: 440,
             textTransform: "capitalize",
           }}
@@ -917,35 +1214,40 @@ function TracksGrid() {
             },
           }}
         >
-          {["Explore", "Certified", "Routes", "Across", "the", "UAE"].map((word, index) => (
-            <span
-              key={`${word}-${index}`}
-              className="inline-block overflow-hidden"
-              style={{ marginRight: "12px" }}
-            >
-              <motion.span
-                className="inline-block"
-                variants={{
-                  hidden: {
-                    y: "120%",
-                    opacity: 0,
-                  },
-                  visible: {
-                    y: "0%",
-                    opacity: 1,
-                  },
-                }}
-                transition={{
-                  duration: 0.7,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
+          {["Explore", "Certified", "Routes", "Across", "the", "UAE"].map(
+            (word, index) => (
+              <span
+                key={`${word}-${index}`}
+                className="inline-block overflow-hidden"
+                style={{ marginRight: "12px" }}
               >
-                {word}
-              </motion.span>
-            </span>
-          ))}
+                <motion.span
+                  className="inline-block"
+                  variants={{
+                    hidden: {
+                      y: "120%",
+                      opacity: 0,
+                    },
+                    visible: {
+                      y: "0%",
+                      opacity: 1,
+                    },
+                  }}
+                  transition={{
+                    duration: 0.7,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  {word}
+                </motion.span>
+              </span>
+            ),
+          )}
         </motion.h2>
-        <div className="track-filter-bar" style={{ display: "flex", gap: 16, alignItems: "center" }}>
+        <div
+          className="track-filter-bar"
+          style={{ display: "flex", gap: 16, alignItems: "center" }}
+        >
           {filterControls.map((f, index) => (
             <motion.div
               key={f.key}
@@ -970,11 +1272,26 @@ function TracksGrid() {
               delay: filterControls.length * 0.12,
               ease: "easeOut",
             }}
-            viewport={{ once: true }} onClick={() => { setActive(filters); setPage(1); }} style={{
-            height: 60, padding: "0 32px", background: "#019839", color: "#fff",
-            border: "none", borderRadius: 40, fontSize: 20, fontWeight: 700,
-            cursor: "pointer", fontFamily: "'Bebas Kai',sans-serif"
-          }}>{t("public.common.search")}</motion.button>
+            viewport={{ once: true }}
+            onClick={() => {
+              setActive(filters);
+              setPage(1);
+            }}
+            style={{
+              height: 60,
+              padding: "0 32px",
+              background: "#019839",
+              color: "#fff",
+              border: "none",
+              borderRadius: 40,
+              fontSize: 20,
+              fontWeight: 700,
+              cursor: "pointer",
+              fontFamily: "'Satoshi',sans-serif",
+            }}
+          >
+            {t("public.common.search")}
+          </motion.button>
         </div>
       </div>
 
@@ -984,43 +1301,91 @@ function TracksGrid() {
           : t("public.common.showingCount", { count: totalResults })}
       </p>
 
-      <div className="track-cards-grid" style={{ display: "flex", flexWrap: "wrap", gap: "48px 28px" }}>
-        {tracks.map((t, index) => <TrackCard key={t.id} track={t} index={index} />)}
+      <div
+        className="track-cards-grid"
+        style={{ display: "flex", flexWrap: "wrap", gap: "48px 28px" }}
+      >
+        {tracks.map((t, index) => (
+          <TrackCard key={t.id} track={t} index={index} />
+        ))}
       </div>
 
       {!loading && error && (
-        <p style={{ fontSize: 17, color: "#B42318", padding: "32px 0 8px" }}>{error}</p>
+        <p style={{ fontSize: 17, color: "#B42318", padding: "32px 0 8px" }}>
+          {error}
+        </p>
       )}
 
       {!loading && !error && tracks.length === 0 && (
-        <p style={{ fontSize: 17, color: "rgba(0,0,0,0.7)", padding: "32px 0 8px" }}>
+        <p
+          style={{
+            fontSize: 17,
+            color: "rgba(0,0,0,0.7)",
+            padding: "32px 0 8px",
+          }}
+        >
           {t("public.common.noTracksFiltered")}
         </p>
       )}
 
       {/* Pagination */}
-      <div className="track-pagination" style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 16, padding: "48px 0 64px" }}>
+      <div
+        className="track-pagination"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 16,
+          padding: "48px 0 64px",
+        }}
+      >
         {paginationItems.map((p, i) => {
           const isDots = typeof p === "string";
           const isActive = p === page;
           return (
-            <button key={i} onClick={() => !isDots && setPage(p)} style={{
-              width: isDots ? "auto" : 47, height: isDots ? "auto" : 47,
-              minWidth: isDots ? 0 : 47,
-              borderRadius: "50%", border: "none",
-              background: isActive ? "#019839" : "transparent",
-              color: isActive ? "#fff" : "#019839",
-              fontSize: 18, fontWeight: 500, cursor: isDots ? "default" : "pointer",
-              fontFamily: "'Bebas Kai',sans-serif", letterSpacing: isDots ? "0.2em" : 0,
-              display: "flex", alignItems: "center", justifyContent: "center"
-            }}>{p}</button>
+            <button
+              key={i}
+              onClick={() => !isDots && setPage(p)}
+              style={{
+                width: isDots ? "auto" : 47,
+                height: isDots ? "auto" : 47,
+                minWidth: isDots ? 0 : 47,
+                borderRadius: "50%",
+                border: "none",
+                background: isActive ? "#019839" : "transparent",
+                color: isActive ? "#fff" : "#019839",
+                fontSize: 18,
+                fontWeight: 500,
+                cursor: isDots ? "default" : "pointer",
+                fontFamily: "'Bebas Kai',sans-serif",
+                letterSpacing: isDots ? "0.2em" : 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {p}
+            </button>
           );
         })}
-        <button onClick={() => setPage(p => Math.min(p + 1, totalPages))} style={{
-          width: 47, height: 47, borderRadius: "50%", border: "none",
-          background: "#019839", color: "#fff", cursor: "pointer",
-          fontSize: 20, display: "flex", alignItems: "center", justifyContent: "center"
-        }}>›</button>
+        <button
+          onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+          style={{
+            width: 47,
+            height: 47,
+            borderRadius: "50%",
+            border: "none",
+            background: "#019839",
+            color: "#fff",
+            cursor: "pointer",
+            fontSize: 20,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          ›
+        </button>
       </div>
     </section>
   );
@@ -1032,7 +1397,9 @@ type FaqItem = { q: string; a: string };
 function FAQ() {
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState<number | null>(null);
-  const faqs = t("public.tracks.faq.items", { returnObjects: true }) as FaqItem[];
+  const faqs = t("public.tracks.faq.items", {
+    returnObjects: true,
+  }) as FaqItem[];
   const left = faqs.filter((_, i) => i % 2 === 0);
   const right = faqs.filter((_, i) => i % 2 !== 0);
 
@@ -1045,40 +1412,103 @@ function FAQ() {
       className="track-faq-question"
       onClick={() => setOpen(open === idx ? null : idx)}
       style={{
-        border: "1px solid #CCC", borderRadius: 12, padding: "0 24px",
-        cursor: "pointer", overflow: "hidden",
+        border: "1px solid #CCC",
+        borderRadius: 12,
+        padding: "0 24px",
+        cursor: "pointer",
+        overflow: "hidden",
         transition: "all .25s",
         marginBottom: 16,
         textAlign: "start",
       }}
     >
-      <div style={{
-        display: "flex", justifyContent: "space-between", alignItems: "center",
-        minHeight: 100, gap: 16,
-      }}>
-        <p style={{ fontSize: 20, fontWeight: 500, color: "rgba(0,0,0,0.8)", lineHeight: 1.4, flex: 1, textAlign: "start" }}>{faq.q}</p>
-        <span style={{
-          width: 28, height: 28, borderRadius: "50%",
-          border: "2px solid #000", display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 18, flexShrink: 0, transform: open === idx ? "rotate(45deg)" : "none",
-          transition: "transform .2s"
-        }}>+</span>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          minHeight: 100,
+          gap: 16,
+        }}
+      >
+        <p
+          style={{
+            fontSize: 20,
+            fontWeight: 500,
+            color: "rgba(0,0,0,0.8)",
+            lineHeight: 1.4,
+            flex: 1,
+            textAlign: "start",
+          }}
+        >
+          {faq.q}
+        </p>
+        <span
+          style={{
+            width: 28,
+            height: 28,
+            borderRadius: "50%",
+            border: "2px solid #000",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 18,
+            flexShrink: 0,
+            transform: open === idx ? "rotate(45deg)" : "none",
+            transition: "transform .2s",
+          }}
+        >
+          +
+        </span>
       </div>
       {open === idx && (
-        <p style={{ fontSize: 16, color: "rgba(0,0,0,0.65)", lineHeight: 1.7, paddingBottom: 20, textAlign: "start" }}>{faq.a}</p>
+        <p
+          style={{
+            fontSize: 16,
+            color: "rgba(0,0,0,0.65)",
+            lineHeight: 1.7,
+            paddingBottom: 20,
+            textAlign: "start",
+          }}
+        >
+          {faq.a}
+        </p>
       )}
     </div>
   );
 
   return (
-    <section className="track-faq-section" style={{ background: "#EAF4FF", padding: "80px 82px" }}>
-      <h2 className="bebas track-faq-title" style={{ fontSize: 50, textAlign: "center", marginBottom: 12 }}>{t("public.tracks.faq.title")}</h2>
-      <p style={{ fontSize: 17, textAlign: "center", color: "#1D1D1D", marginBottom: 52 }}>
+    <section
+      className="track-faq-section"
+      style={{ background: "#EAF4FF", padding: "80px 82px" }}
+    >
+      <h2
+        className="bebas track-faq-title"
+        style={{ fontSize: 50, textAlign: "center", marginBottom: 12 }}
+      >
+        {t("public.tracks.faq.title")}
+      </h2>
+      <p
+        style={{
+          fontSize: 17,
+          textAlign: "center",
+          color: "#1D1D1D",
+          marginBottom: 52,
+        }}
+      >
         {t("public.tracks.faq.subtitle")}
       </p>
       <div className="track-faq-grid" style={{ display: "flex", gap: 28 }}>
-        <div style={{ flex: 1 }}>{left.map((f, i)  => <Item key={`${i18n.language}-l-${i}`} faq={f} idx={i * 2} />)}</div>
-        <div style={{ flex: 1 }}>{right.map((f, i) => <Item key={`${i18n.language}-r-${i}`} faq={f} idx={i * 2 + 1} />)}</div>
+        <div style={{ flex: 1 }}>
+          {left.map((f, i) => (
+            <Item key={`${i18n.language}-l-${i}`} faq={f} idx={i * 2} />
+          ))}
+        </div>
+        <div style={{ flex: 1 }}>
+          {right.map((f, i) => (
+            <Item key={`${i18n.language}-r-${i}`} faq={f} idx={i * 2 + 1} />
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -1087,21 +1517,53 @@ function FAQ() {
 // ── CTA Banner ────────────────────────────────────────────────────────────────
 function CTABanner() {
   return (
-    <section className="track-cta" style={{ position: "relative", overflow: "hidden", height: 502 }}>
-      <div style={{
-        position: "absolute", inset: 0,
-        backgroundImage: "linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.25)), url('https://images.unsplash.com/photo-1570489460099-2a6e43e4c3f0?w=1440&q=80')",
-        backgroundSize: "cover", backgroundPosition: "center"
-      }} />
-      <div style={{
-        position: "relative", zIndex: 2,
-        display: "flex", flexDirection: "column", alignItems: "center",
-        justifyContent: "center", height: "100%", textAlign: "center", padding: "0 24px"
-      }}>
-        <h2 className="bebas track-cta-title" style={{ fontSize: 94, color: "#fff", lineHeight: 1, textTransform: "uppercase" }}>
+    <section
+      className="track-cta"
+      style={{ position: "relative", overflow: "hidden", height: 502 }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage:
+            "linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.25)), url('https://images.unsplash.com/photo-1570489460099-2a6e43e4c3f0?w=1440&q=80')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      />
+      <div
+        style={{
+          position: "relative",
+          zIndex: 2,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
+          textAlign: "center",
+          padding: "0 24px",
+        }}
+      >
+        <h2
+          className="bebas track-cta-title"
+          style={{
+            fontSize: 94,
+            color: "#fff",
+            lineHeight: 1,
+            textTransform: "uppercase",
+          }}
+        >
           Start Your Ride Today
         </h2>
-        <p className="track-cta-text" style={{ fontSize: 24, color: "#fff", marginTop: 12, marginBottom: 36 }}>
+        <p
+          className="track-cta-text"
+          style={{
+            fontSize: 24,
+            color: "#fff",
+            marginTop: 12,
+            marginBottom: 36,
+          }}
+        >
           Download the ADCC app and join the cycling community.
         </p>
         <div className="track-cta-buttons" style={{ display: "flex", gap: 20 }}>
@@ -1113,9 +1575,16 @@ function CTABanner() {
               key={label}
               href={href}
               style={{
-                background: "#fff", border: "none", borderRadius: 100,
-                padding: "14px 32px", fontWeight: 600, fontSize: 16, cursor: "pointer",
-                fontFamily: "'Bebas Kai',sans-serif", textDecoration: "none", color: "#000",
+                background: "#fff",
+                border: "none",
+                borderRadius: 100,
+                padding: "14px 32px",
+                fontWeight: 600,
+                fontSize: 16,
+                cursor: "pointer",
+                fontFamily: "'Bebas Kai',sans-serif",
+                textDecoration: "none",
+                color: "#000",
               }}
             >
               {label}
@@ -1130,55 +1599,160 @@ function CTABanner() {
 // ── Footer ────────────────────────────────────────────────────────────────────
 function Footer() {
   return (
-    <footer className="track-footer" style={{ background: "#EAF4FF", padding: "60px 82px 32px" }}>
-      <div className="track-footer-main" style={{ display: "flex", gap: 64, marginBottom: 48 }}>
+    <footer
+      className="track-footer"
+      style={{ background: "#EAF4FF", padding: "60px 82px 32px" }}
+    >
+      <div
+        className="track-footer-main"
+        style={{ display: "flex", gap: 64, marginBottom: 48 }}
+      >
         <div className="track-footer-brand" style={{ flex: "0 0 340px" }}>
           <div style={{ marginBottom: 16 }}>
-            <span className="bebas" style={{ fontSize: 24, letterSpacing: 2 }}>ABU◉DHABI<br/>CYCLING CLUB</span>
+            <span className="bebas" style={{ fontSize: 24, letterSpacing: 2 }}>
+              ABU◉DHABI
+              <br />
+              CYCLING CLUB
+            </span>
           </div>
-          <p style={{ fontSize: 16, lineHeight: 1.6, color: "#000", maxWidth: 340, marginBottom: 24 }}>
-            From weekend warriors to elite athletes, we unite cyclists who share a passion for riding. ADCC is where your cycling journey thrives…
+          <p
+            style={{
+              fontSize: 16,
+              lineHeight: 1.6,
+              color: "#000",
+              maxWidth: 340,
+              marginBottom: 24,
+            }}
+          >
+            From weekend warriors to elite athletes, we unite cyclists who share
+            a passion for riding. ADCC is where your cycling journey thrives…
           </p>
-          <div className="track-newsletter" style={{ display: "flex", background: "#8DDF93", borderRadius: 8, overflow: "hidden", height: 56 }}>
-            <input placeholder="Enter your email" style={{
-              flex: 1, border: "none", background: "transparent",
-              padding: "0 18px", fontSize: 15, fontFamily: "'Bebas Kai',sans-serif", outline: "none"
-            }} />
-            <button style={{
-              background: "#019839", color: "#fff", border: "none",
-              padding: "0 22px", fontSize: 15, cursor: "pointer", fontFamily: "'Bebas Kai',sans-serif"
-            }}>Submit</button>
+          <div
+            className="track-newsletter"
+            style={{
+              display: "flex",
+              background: "#8DDF93",
+              borderRadius: 8,
+              overflow: "hidden",
+              height: 56,
+            }}
+          >
+            <input
+              placeholder="Enter your email"
+              style={{
+                flex: 1,
+                border: "none",
+                background: "transparent",
+                padding: "0 18px",
+                fontSize: 15,
+                fontFamily: "'Bebas Kai',sans-serif",
+                outline: "none",
+              }}
+            />
+            <button
+              style={{
+                background: "#019839",
+                color: "#fff",
+                border: "none",
+                padding: "0 22px",
+                fontSize: 15,
+                cursor: "pointer",
+                fontFamily: "'Bebas Kai',sans-serif",
+              }}
+            >
+              Submit
+            </button>
           </div>
         </div>
         <div>
-          <div className="bebas" style={{ fontSize: 22, textTransform: "uppercase", marginBottom: 18 }}>Quick Links</div>
-          {["About Us", "Rides", "Events", "Cyclist's Corner", "Contact Us"].map(l => (
-            <p key={l} style={{ fontSize: 16, marginBottom: 10 }}><a href="#" style={{ color: "#000" }}>{l}</a></p>
+          <div
+            className="bebas"
+            style={{
+              fontSize: 22,
+              textTransform: "uppercase",
+              marginBottom: 18,
+            }}
+          >
+            Quick Links
+          </div>
+          {[
+            "About Us",
+            "Rides",
+            "Events",
+            "Cyclist's Corner",
+            "Contact Us",
+          ].map((l) => (
+            <p key={l} style={{ fontSize: 16, marginBottom: 10 }}>
+              <a href="#" style={{ color: "#000" }}>
+                {l}
+              </a>
+            </p>
           ))}
         </div>
         <div>
-          <div className="bebas" style={{ fontSize: 22, textTransform: "uppercase", marginBottom: 18 }}>Contact Us</div>
+          <div
+            className="bebas"
+            style={{
+              fontSize: 22,
+              textTransform: "uppercase",
+              marginBottom: 18,
+            }}
+          >
+            Contact Us
+          </div>
           {[
             { icon: "📞", text: "+971 2 654 5645" },
             { icon: "💬", text: "144226" },
             { icon: "✉️", text: "info@adcyclingclub.ae" },
-            { icon: "📍", text: "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18." },
+            {
+              icon: "📍",
+              text: "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18.",
+            },
           ].map((c, i) => (
-            <div key={i} style={{ display: "flex", gap: 12, marginBottom: 12, alignItems: "flex-start" }}>
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                gap: 12,
+                marginBottom: 12,
+                alignItems: "flex-start",
+              }}
+            >
               <span style={{ fontSize: 17 }}>{c.icon}</span>
               <span style={{ fontSize: 16, lineHeight: 1.4 }}>{c.text}</span>
             </div>
           ))}
         </div>
       </div>
-      <div style={{ borderTop: "1px solid #D5D5D5", paddingTop: 22, textAlign: "center", position: "relative" }}>
-        <p style={{ fontSize: 16, color: "rgba(0,0,0,0.7)" }}>Copyright 2026. Abu Dhabi Cycling Club</p>
-        <button className="track-footer-top-button" style={{
-          position: "absolute", right: 0, top: -28,
-          width: 55, height: 55, borderRadius: "50%",
-          background: "#019839", border: "none", cursor: "pointer",
-          color: "#fff", fontSize: 22
-        }}>↑</button>
+      <div
+        style={{
+          borderTop: "1px solid #D5D5D5",
+          paddingTop: 22,
+          textAlign: "center",
+          position: "relative",
+        }}
+      >
+        <p style={{ fontSize: 16, color: "rgba(0,0,0,0.7)" }}>
+          Copyright 2026. Abu Dhabi Cycling Club
+        </p>
+        <button
+          className="track-footer-top-button"
+          style={{
+            position: "absolute",
+            right: 0,
+            top: -28,
+            width: 55,
+            height: 55,
+            borderRadius: "50%",
+            background: "#019839",
+            border: "none",
+            cursor: "pointer",
+            color: "#fff",
+            fontSize: 22,
+          }}
+        >
+          ↑
+        </button>
       </div>
     </footer>
   );
@@ -1189,7 +1763,10 @@ export default function Tracks() {
   return (
     <>
       <FontLoader />
-      <div className="tracks-page" style={{ minWidth: 320, overflowX: "hidden" }}>
+      <div
+        className="tracks-page"
+        style={{ minWidth: 320, overflowX: "hidden" }}
+      >
         <Hero />
         <ExploreIntro />
         <WhySection />

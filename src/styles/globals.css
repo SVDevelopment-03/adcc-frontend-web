@@ -189,6 +189,22 @@ html {
   100% { transform: translateX(-50%); }
 }
 
+.font-satoshi {
+  font-family: "Outfit", sans-serif !important;
+  text-transform: none;
+}
+
+/* Hero banner content aligned with header logo at every breakpoint */
+.public-hero-content-pos {
+  position: absolute;
+  bottom: 90px;
+  inset-inline-start: 20px;
+}
+@media (min-width: 640px)  { .public-hero-content-pos { inset-inline-start: 24px; } }
+@media (min-width: 768px)  { .public-hero-content-pos { inset-inline-start: 40px; } }
+@media (min-width: 1024px) { .public-hero-content-pos { inset-inline-start: 56px; } }
+@media (min-width: 1280px) { .public-hero-content-pos { inset-inline-start: 88px; } }
+
 .ticker-track {
   display: flex;
   align-items: stretch;

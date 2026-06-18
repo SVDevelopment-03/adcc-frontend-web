@@ -414,7 +414,7 @@ const formatTimeInput = (raw: string): string => {
             <span className="text-sm" style={{ color: '#666' }}>{t('events.detail.rewardPoints')}</span>
           </div>
           <p className="text-2xl" style={{ color: '#333' }}>
-            {event.rewards?.points ?? 0}
+            {/* {event.rewards.points} */}
           </p>
         </div>
       </div>
@@ -651,16 +651,14 @@ const formatTimeInput = (raw: string): string => {
               <div className="space-y-3">
                 <div>
                   <p className="text-sm mb-1" style={{ color: '#666' }}>{t('events.detail.labels.points')}</p>
-                  <p className="text-xl" style={{ color: '#C12D32' }}>
-                    {event.rewards?.points !== undefined ? `${event.rewards.points} pts` : '-'}
-                  </p>
+                  {/* <p className="text-xl" style={{ color: '#C12D32' }}>{event.rewards.points} pts</p> */}
                 </div>
-                <div>
-                  <p className="text-sm mb-1" style={{ color: '#666' }}>{t('events.detail.labels.badge')}</p>
-                  <p style={{ color: '#333' }}>
-                    {event.rewards?.badgeName || t('events.detail.noBadge', 'No badge assigned')}
-                  </p>
-                </div>
+                {/* {event.rewards.badgeName && (
+                  <div> */}
+                    <p className="text-sm mb-1" style={{ color: '#666' }}>{t('events.detail.labels.badge')}</p>
+                    {/* <p style={{ color: '#333' }}>{event.rewards.badgeName}</p>
+                  </div>
+                )} */}
               </div>
             </div>
 

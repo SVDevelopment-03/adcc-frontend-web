@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Upload, Trophy, Calendar, Target, Users, X, Plus, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Upload, Trophy, Calendar, Target, Users, X, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import {
   getChallengeById,
   createChallenge,
@@ -36,7 +36,6 @@ export function ChallengeCreate() {
     rewardBadge: '',
     featured: false,
     status: 'Active' as Challenge['status'],
-    rules: [] as string[],
   });
 
   const [selectedCommunities, setSelectedCommunities] = useState<string[]>([]);
@@ -66,7 +65,6 @@ export function ChallengeCreate() {
         rewardBadge: existing.rewardBadge ?? '',
         featured: existing.featured,
         status: existing.status,
-        rules: Array.isArray(existing.rules) ? existing.rules : [],
       });
       setSelectedCommunities(existing.communities ?? []);
       if (existing.image) setImagePreview(existing.image);
@@ -246,47 +244,6 @@ export function ChallengeCreate() {
                   <option value="Social">{t('challenges.types.Social')}</option>
                   <option value="Event">{t('challenges.types.Event')}</option>
                 </select>
-              </div>
-
-              <div>
-                <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('challenges.rules')}</label>
-                <div className="space-y-3">
-                  {formData.rules.map((rule, index) => (
-                    <div key={index} className="flex items-center gap-3">
-                      <input
-                        type="text"
-                        value={rule}
-                        onChange={(e) => setFormData((prev) => ({
-                          ...prev,
-                          rules: prev.rules.map((item, i) => i === index ? e.target.value : item),
-                        }))}
-                        placeholder={t('challenges.rulePlaceholder')}
-                        className="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setFormData((prev) => ({
-                          ...prev,
-                          rules: prev.rules.filter((_, i) => i !== index),
-                        }))}
-                        className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => setFormData((prev) => ({
-                      ...prev,
-                      rules: [...prev.rules, ''],
-                    }))}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
-                  >
-                    <Plus className="w-4 h-4" />
-                    {t('challenges.addRule')}
-                  </button>
-                </div>
               </div>
             </div>
           </div>

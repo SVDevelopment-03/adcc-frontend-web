@@ -5,7 +5,11 @@ import { getPublicStats } from "../../services/publicStatsApi";
 import { motion } from "framer-motion";
 import { AnimatedButton } from "../ui/AnimatedButton";
 import { AnimatedImage } from "../ui/AnimatedImage";
-import { AnimatedWords, PublicPageHero, useWordList } from "../public/publicPageHelpers";
+import {
+  AnimatedWords,
+  PublicPageHero,
+  useWordList,
+} from "../public/publicPageHelpers";
 
 // ─── Page styles ─────────────────────────────────────────────────────────────
 const FontLoader = () => (
@@ -20,9 +24,25 @@ const FontLoader = () => (
       --blue-dark: #013282;
     }
 
-    * { box-sizing: border-box; margin: 0; }
 
-    body { background: var(--bg); font-family: 'Bebas Kai', sans-serif; color: var(--black); }
+
+
+
+
+    .about-mission-content {
+        justify-content: space-between !important;
+      }
+
+
+
+
+
+
+
+
+    * { box-sizing: border-box; }
+
+    body { background: var(--bg); color: var(--black); }
 
     .bebas { font-family: 'Bebas Kai', sans-serif; font-weight: 400; letter-spacing: 0.02em; }
 
@@ -30,6 +50,17 @@ const FontLoader = () => (
     .about-page .adcc-btn--arrow:focus-visible .adcc-btn__arrow--enter {
       inset-inline-start: calc(var(--adcc-btn-arrow-inset) - var(--adcc-btn-arrow-shift) + 15px);
     }
+
+.about-page .about-stats-grid > div{
+    border-left: 3px solid rgb(31, 80, 154) !important;
+    padding-left: 16px !important;
+    padding-bottom: 20px !important;
+    padding-top: 20px !important;}
+
+.about-stats-grid
+{
+margin-bottom: 3rem !important;}
+
 
     .journey-card {
       flex: 0 0 480px;
@@ -127,7 +158,7 @@ const FontLoader = () => (
       top: 10.5px;
       width: 145px;
       color: #000;
-      font-family: 'Bebas Kai', sans-serif;
+      font-family: 'Satoshi', sans-serif;
       font-size: 15px;
       font-weight: 500;
       line-height: 19px;
@@ -169,6 +200,7 @@ const FontLoader = () => (
       .journey-card__community { top: 196px; }
       .journey-card__button { top: 261px; }
     }
+      
 
     @media (max-width: 768px) {
       .about-local-nav {
@@ -255,6 +287,7 @@ const FontLoader = () => (
         flex-direction: column !important;
         gap: 22px !important;
         align-items: stretch !important;
+        justify-content: space-between !important;
       }
       .about-mission-card-stack > div {
         padding: 22px 20px !important;
@@ -386,9 +419,20 @@ const FontLoader = () => (
         border-radius: 0 0 8px 8px !important;
       }
     }
+
+    .about-hero{
+    padding-inline-start: 86px !important;}
+
+.journey-card__title{
+    padding-bottom: 25px !important;
+    display: block !important;}
+
+.about-coaches-title div{
+justify-content: center !important;}
+    .public-layout .adcc-btn, button{
+    font-weight: 500 !important;}
   `}</style>
 );
-
 
 function JourneyCard() {
   const navigate = useNavigate();
@@ -417,7 +461,9 @@ function JourneyCard() {
         viewport={{ once: true }}
       />
 
-      <p className="journey-card__eyebrow">{t("public.common.journeyCard.eyebrow")}</p>
+      <p className="journey-card__eyebrow font-satoshi">
+        {t("public.common.journeyCard.eyebrow")}
+      </p>
 
       <h3
         className="bebas journey-card__title"
@@ -446,7 +492,10 @@ function JourneyCard() {
         ))}
       </h3>
 
-      <div className="journey-card__community" aria-label={t("public.common.journeyCard.community")}>
+      <div
+        className="journey-card__community"
+        aria-label={t("public.common.journeyCard.community")}
+      >
         {avatarBackgrounds.map((background, index) => (
           <span
             key={index}
@@ -455,7 +504,9 @@ function JourneyCard() {
           />
         ))}
         <span className="journey-card__avatar" />
-        <span className="journey-card__community-text">{t("public.common.journeyCard.community")}</span>
+        <span className="journey-card__community-text">
+          {t("public.common.journeyCard.community")}
+        </span>
       </div>
 
       <AnimatedButton
@@ -465,7 +516,6 @@ function JourneyCard() {
       >
         {t("public.common.journeyCard.cta")}
       </AnimatedButton>
-
     </div>
   );
 }
@@ -473,8 +523,12 @@ function JourneyCard() {
 // ─── HERO ─────────────────────────────────────────────────────────────────────
 function Hero() {
   const { t } = useTranslation();
-  const titleWords = t("public.about.hero.titleWords", { returnObjects: true }) as string[];
-  const breadcrumb = t("public.about.hero.breadcrumb", { returnObjects: true }) as string[];
+  const titleWords = t("public.about.hero.titleWords", {
+    returnObjects: true,
+  }) as string[];
+  const breadcrumb = t("public.about.hero.breadcrumb", {
+    returnObjects: true,
+  }) as string[];
 
   return (
     <PublicPageHero
@@ -513,68 +567,118 @@ function StatsSection() {
   }, []);
 
   const stats = [
-    { val: formatPublicStat(activeMembers, "5K+"), label: t("public.about.stats.activeMembers") },
-    { val: formatPublicStat(organizedEvents, "100+"), label: t("public.about.stats.eventsOrganized") },
+    {
+      val: formatPublicStat(activeMembers, "5K+"),
+      label: t("public.about.stats.activeMembers"),
+    },
+    {
+      val: formatPublicStat(organizedEvents, "100+"),
+      label: t("public.about.stats.eventsOrganized"),
+    },
     { val: "20+", label: t("public.about.stats.communityRides") },
     { val: "2017", label: t("public.about.stats.established") },
   ];
   return (
-    <section className="about-section" style={{ background: "#EAF4FF", padding: "80px 82px" }}>
-      <div className="about-stats-wrap" style={{ display: "flex", gap: 64, alignItems: "flex-start" }}>
-        {/* Headline */}
-        <div className="about-stats-left" style={{ flex: "0 0 520px" }}>
+    <section
+      className="about-section"
+      style={{ background: "#EAF4FF", padding: "80px 86px" }}
+    >
+      <div
+        className="about-stats-wrap"
+        style={{ display: "flex", gap: 0, alignItems: "flex-start" }}
+      >
+        {/* Headline — 65% */}
+        <div
+          className="about-stats-left"
+          style={{ flex: "0 0 60%", paddingInlineEnd: 64 }}
+        >
           <h2
             className="bebas about-stats-title overflow-hidden"
             style={{
               fontSize: 50,
-              lineHeight: 1,
+              lineHeight: 1.1,
               textTransform: "uppercase",
-              maxWidth: 500,
             }}
           >
             <AnimatedWords words={titleWords} gap={12} />
           </h2>
-          {/* small cycling photo */}
           <motion.div
             className="about-stats-photo"
             initial={{ opacity: 0, x: -200 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{
-              duration: 0.8,
-              ease: "easeOut",
-            }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             viewport={{ once: true }}
             style={{
               marginTop: 32,
               borderRadius: 12,
               overflow: "hidden",
               width: "100%",
-              maxWidth: 460,
-              height: 220,
+              maxWidth: "100%",
+              height: 320,
               background: "#ddd",
               backgroundImage: "url('/img/DSC04620.jpg 1.png')",
               backgroundSize: "cover",
-              backgroundPosition: "center"
+              backgroundPosition: "center",
             }}
           />
         </div>
 
-        {/* Stats grid + text */}
-        <div className="about-stats-right" style={{ flex: 1 }}>
-          <div className="about-stats-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 48px" }}>
+        {/* Stats grid + text — 35% */}
+        <div className="about-stats-right" style={{ flex: "0 0 35%" }}>
+          <div
+            className="about-stats-grid"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "40px 32px",
+            }}
+          >
             {stats.map((s, i) => (
-              <div key={i} style={{
-                borderLeft: "2px solid #1F509A", paddingLeft: 20, paddingBottom: 36
-              }}>
-                <div className="bebas about-stat-number" style={{ fontSize: 50, lineHeight: 1 }}>{s.val}</div>
-                <div className="about-stat-label" style={{ fontFamily: "'Bebas Kai',sans-serif", fontSize: 18, color: "#444", marginTop: 6, whiteSpace: "pre-line", lineHeight: 1.4 }}>{s.label}</div>
+              <div
+                key={i}
+                style={{
+                  borderLeft: "3px solid #1F509A",
+                  paddingLeft: 16,
+                  paddingBottom: 36,
+                }}
+              >
+                <div
+                  className="font-satoshi about-stat-number"
+                  style={{ fontSize: 46, lineHeight: 1, fontWeight: 500 }}
+                >
+                  {s.val}
+                </div>
+                <div
+                  className="font-satoshi about-stat-label"
+                  style={{
+                    fontSize: 14,
+                    color: "#444",
+                    marginTop: 6,
+                    lineHeight: 1.4,
+                    fontWeight: 500,
+                  }}
+                >
+                  {s.label}
+                </div>
               </div>
             ))}
           </div>
-          <p className="about-body-text" style={{ fontSize: 22, lineHeight: 1.5, maxWidth: 480, marginBottom: 28, color: "rgba(0,0,0,0.8)" }}>
+          <p
+            className="font-satoshi about-body-text"
+            style={{
+              fontSize: 18,
+              lineHeight: 1.6,
+              maxWidth: 380,
+              marginBottom: 28,
+              marginTop: 8,
+              color: "rgba(0,0,0,0.8)",
+            }}
+          >
             {t("public.about.stats.body")}
           </p>
-          <AnimatedButton onClick={() => navigate("/contact-us")}>{t("public.common.getInTouch")}</AnimatedButton>
+          <AnimatedButton onClick={() => navigate("/contact-us")}>
+            {t("public.common.getInTouch")}
+          </AnimatedButton>
         </div>
       </div>
     </section>
@@ -584,7 +688,10 @@ function StatsSection() {
 function formatPublicStat(value: number | null, fallback: string) {
   if (value === null) return fallback;
   if (value >= 1000) {
-    const formatted = value >= 10000 ? Math.round(value / 1000) : Number((value / 1000).toFixed(1));
+    const formatted =
+      value >= 10000
+        ? Math.round(value / 1000)
+        : Number((value / 1000).toFixed(1));
     return `${formatted}K+`;
   }
   return `${value}+`;
@@ -596,7 +703,7 @@ function MissionSection() {
   const titleWords = useWordList("public.about.mission.titleWords");
 
   return (
-    // <section style={{ background: "#EAF4FF", padding: "0 82px 80px" }}>
+    // <section style={{ background: "#EAF4FF", padding: "0 86px 80px" }}>
     <section
       className="about-section"
       style={{
@@ -604,12 +711,19 @@ function MissionSection() {
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
-        padding: "80px 82px",
+        padding: "80px 86px",
       }}
     >
-    
       {/* Headline row */}
-      <div className="about-mission-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 40 }}>
+      <div
+        className="about-mission-head"
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          marginBottom: 40,
+        }}
+      >
         <div>
           <h2
             className="bebas about-mission-title overflow-hidden"
@@ -623,12 +737,25 @@ function MissionSection() {
             <AnimatedWords words={titleWords} gap={12} />
           </h2>
         </div>
-        <p className="about-mission-intro" style={{ maxWidth: 430, fontSize: 22, fontWeight: 500, lineHeight: 1.5, color: "rgba(0,0,0,0.8)", paddingTop: 8 }}>
+        <p
+          className="about-mission-intro"
+          style={{
+            maxWidth: 480,
+            fontSize: 22,
+            fontWeight: 500,
+            lineHeight: 1.5,
+            color: "rgba(0,0,0,0.8)",
+            paddingTop: 8,
+          }}
+        >
           {t("public.about.mission.intro")}
         </p>
       </div>
 
-      <div className="mission-content about-mission-content" style={{ display: "flex", gap: 28, alignItems: "stretch" }}>
+      <div
+        className="mission-content about-mission-content"
+        style={{ display: "flex", gap: 60, alignItems: "stretch" }}
+      >
         {/* Mission + Vision cards */}
         <motion.div
           className="about-mission-card-stack"
@@ -646,7 +773,9 @@ function MissionSection() {
             flex: "0 0 600px",
             display: "flex",
             flexDirection: "column",
-            gap: 20,
+            justifyContent: "space-between",
+            gap: 0,
+            minHeight: 380,
           }}
         >
           {/* 01. Mission */}
@@ -671,10 +800,7 @@ function MissionSection() {
               padding: "28px 32px",
             }}
           >
-            <div
-              className="bebas"
-              style={{ fontSize: 20, marginBottom: 10 }}
-            >
+            <div className="bebas" style={{ fontSize: 20, marginBottom: 10 }}>
               {t("public.about.mission.heading")}
             </div>
 
@@ -711,18 +837,15 @@ function MissionSection() {
               padding: "28px 32px",
             }}
           >
-            <div
-              className="bebas"
-              style={{ fontSize: 20, marginBottom: 10 }}
-            >
+            <div className="bebas" style={{ fontSize: 20, marginBottom: 10 }}>
               {t("public.about.mission.visionHeading")}
             </div>
 
             <p
               style={{
-                fontSize: 15,
+                fontSize: 16,
                 color: "rgba(0,0,0,0.6)",
-                lineHeight: 1.6,
+                lineHeight: 1.5,
               }}
             >
               {t("public.about.mission.visionBody")}
@@ -741,7 +864,7 @@ function MissionSection() {
 //   return (
 //     <section style={{
 //       background: "linear-gradient(180deg,#025AE8 0%,#013282 100%)",
-//       padding: "80px 82px",
+//       padding: "80px 86px",
 //       position: "relative", overflow: "hidden"
 //     }}>
 //       <div style={{
@@ -764,7 +887,12 @@ function ValuesSection() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const titleWords = useWordList("public.about.values.titleWords");
-  const valueKeys = ["community", "excellence", "inclusivity", "achievement"] as const;
+  const valueKeys = [
+    "community",
+    "excellence",
+    "inclusivity",
+    "achievement",
+  ] as const;
   const values = valueKeys.map((key) => ({
     num: "//001",
     title: t(`public.about.values.items.${key}.title`),
@@ -772,10 +900,31 @@ function ValuesSection() {
     text: t(`public.about.values.items.${key}.text`),
   }));
   return (
-    <section className="about-section" style={{ background: "#EAF4FF", padding: "80px 82px" }}>
-      <div className="about-values-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 40 }}>
+    <section
+      className="about-section"
+      style={{ background: "#EAF4FF", padding: "80px 86px" }}
+    >
+      <div
+        className="about-values-head"
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-end",
+          marginBottom: 40,
+        }}
+      >
         <div>
-          <p style={{fontFamily: "'Bebas Kai',sans-serif", fontSize: 15, fontWeight: 500, marginBottom: 8, color: "#000" }}>{t("public.about.values.eyebrow")}</p>
+          <p
+            style={{
+              fontFamily: "'Bebas Kai',sans-serif",
+              fontSize: 15,
+              fontWeight: 500,
+              marginBottom: 8,
+              color: "#000",
+            }}
+          >
+            {t("public.about.values.eyebrow")}
+          </p>
           <h2
             className="bebas about-values-title overflow-hidden"
             style={{
@@ -788,7 +937,9 @@ function ValuesSection() {
             <AnimatedWords words={titleWords} gap={12} />
           </h2>
         </div>
-        <AnimatedButton onClick={() => navigate("/user-communities")}>{t("public.about.values.discoverCommunity")}</AnimatedButton>
+        <AnimatedButton onClick={() => navigate("/user-communities")}>
+          {t("public.about.values.discoverCommunity")}
+        </AnimatedButton>
       </div>
       <motion.div
         className="about-values-grid"
@@ -881,7 +1032,10 @@ function CoachesSection() {
     { label: t("public.about.coaches.mechanics"), img: "/img/image 2997.png" },
   ];
   return (
-    <section className="about-section about-coaches-section" style={{ background: "#EAF4FF", padding: "0 82px 80px" }}>
+    <section
+      className="about-section about-coaches-section"
+      style={{ background: "#EAF4FF", padding: "0 86px 80px" }}
+    >
       <h2
         className="bebas about-coaches-title overflow-hidden"
         style={{
@@ -895,10 +1049,16 @@ function CoachesSection() {
       >
         <AnimatedWords words={titleWords} gap={12} />
       </h2>
-      <div className="about-coaches-grid" style={{
-        display: "flex", borderRadius: 16, overflow: "hidden",
-        height: 488, background: "#fff"
-      }}>
+      <div
+        className="about-coaches-grid"
+        style={{
+          display: "flex",
+          borderRadius: 16,
+          overflow: "hidden",
+          height: 488,
+          background: "#fff",
+        }}
+      >
         {cards.map((c, i) => (
           // <div key={i} className="about-coach-card" style={{ flex: 1, position: "relative", overflow: "hidden" }}>
           <motion.div
@@ -983,33 +1143,76 @@ function CoachesSection() {
 // ─── CTA BANNER ──────────────────────────────────────────────────────────────
 function CTABanner() {
   return (
-    <section className="about-cta" style={{ position: "relative", overflow: "hidden", height: 502 }}>
-      <div style={{
-        position: "absolute", inset: 0,
-        backgroundImage: "linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.25)), url('/img/Rectangle 34625231.png')",
-        backgroundSize: "cover", backgroundPosition: "center"
-      }} />
-      <div style={{
-        position: "relative", zIndex: 2,
-        display: "flex", flexDirection: "column", alignItems: "center",
-        justifyContent: "center", height: "100%", textAlign: "center",
-        padding: "0 24px"
-      }}>
-        <h2 className="bebas about-cta-title" style={{ fontSize: 94, color: "#fff", lineHeight: 1, textTransform: "uppercase" }}>
+    <section
+      className="about-cta"
+      style={{ position: "relative", overflow: "hidden", height: 502 }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage:
+            "linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.25)), url('/img/Rectangle 34625231.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      />
+      <div
+        style={{
+          position: "relative",
+          zIndex: 2,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
+          textAlign: "center",
+          padding: "0 24px",
+        }}
+      >
+        <h2
+          className="bebas about-cta-title"
+          style={{
+            fontSize: 94,
+            color: "#fff",
+            lineHeight: 1,
+            textTransform: "uppercase",
+          }}
+        >
           Start Your Ride Today
         </h2>
         {/* <p style={{ fontSize: 24, color: "#fff", marginTop: 16, marginBottom: 36, opacity: .95 }}> */}
-        <p className="about-cta-text" style={{ fontFamily: "'Bebas Kai',sans-serif", fontSize: 26, color: "#fff", marginTop: 16, marginBottom: 36, opacity: .95 }}>
+        <p
+          className="about-cta-text"
+          style={{
+            fontFamily: "'Bebas Kai',sans-serif",
+            fontSize: 26,
+            color: "#fff",
+            marginTop: 16,
+            marginBottom: 36,
+            opacity: 0.95,
+          }}
+        >
           Download the ADCC app and join the cycling community.
         </p>
         <div className="about-cta-buttons" style={{ display: "flex", gap: 20 }}>
-          {["Google Play", "App Store"].map(s => (
-            <button key={s} style={{
-              background: "#fff", border: "none", borderRadius: 100,
-              padding: "14px 32px", fontFamily: "'Bebas Kai',sans-serif",
-              fontWeight: 600, fontSize: 16, cursor: "pointer",
-              display: "flex", alignItems: "center", gap: 10
-            }}>
+          {["Google Play", "App Store"].map((s) => (
+            <button
+              key={s}
+              style={{
+                background: "#fff",
+                border: "none",
+                borderRadius: 100,
+                padding: "14px 32px",
+                fontFamily: "'Bebas Kai',sans-serif",
+                fontWeight: 600,
+                fontSize: 16,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+              }}
+            >
               {s === "Google Play" ? "▶" : ""} {s}
             </button>
           ))}
@@ -1022,52 +1225,134 @@ function CTABanner() {
 // ─── FOOTER ───────────────────────────────────────────────────────────────────
 function Footer() {
   return (
-    <footer className="about-section" style={{ background: "#EAF4FF", padding: "60px 82px 32px" }}>
-      <div className="about-footer-main" style={{ display: "flex", gap: 64, marginBottom: 48 }}>
+    <footer
+      className="about-section"
+      style={{ background: "#EAF4FF", padding: "60px 86px 32px" }}
+    >
+      <div
+        className="about-footer-main"
+        style={{ display: "flex", gap: 64, marginBottom: 48 }}
+      >
         {/* Brand */}
         <div className="about-footer-brand" style={{ flex: "0 0 340px" }}>
           <div style={{ marginBottom: 20 }}>
-            <span className="bebas" style={{ fontSize: 26, letterSpacing: 2 }}>ABU◉DHABI<br/>CYCLING CLUB</span>
+            <span className="bebas" style={{ fontSize: 26, letterSpacing: 2 }}>
+              ABU◉DHABI
+              <br />
+              CYCLING CLUB
+            </span>
           </div>
-          <p style={{ fontSize: 17, lineHeight: 1.6, color: "#000", maxWidth: 320, marginBottom: 24 }}>
-            From weekend warriors to elite athletes, we unite cyclists who share a passion for riding. ADCC is where your cycling journey thrives…
+          <p
+            style={{
+              fontSize: 17,
+              lineHeight: 1.6,
+              color: "#000",
+              maxWidth: 320,
+              marginBottom: 24,
+            }}
+          >
+            From weekend warriors to elite athletes, we unite cyclists who share
+            a passion for riding. ADCC is where your cycling journey thrives…
           </p>
           {/* email subscribe */}
-          <div className="about-newsletter" style={{
-            display: "flex", background: "#8DDF93", borderRadius: 8,
-            overflow: "hidden", width: 340, height: 56
-          }}>
-            <input placeholder="Enter your email" style={{
-              flex: 1, border: "none", background: "transparent",
-              padding: "0 18px", fontSize: 16, fontFamily: "'Bebas Kai',sans-serif",
-              outline: "none", color: "#333"
-            }} />
-            <button style={{
-              background: "#019839", color: "#fff", border: "none",
-              padding: "0 24px", fontFamily: "'Bebas Kai',sans-serif", fontSize: 16,
-              cursor: "pointer", borderRadius: "0 8px 8px 0"
-            }}>Submit</button>
+          <div
+            className="about-newsletter"
+            style={{
+              display: "flex",
+              background: "#8DDF93",
+              borderRadius: 8,
+              overflow: "hidden",
+              width: 340,
+              height: 56,
+            }}
+          >
+            <input
+              placeholder="Enter your email"
+              style={{
+                flex: 1,
+                border: "none",
+                background: "transparent",
+                padding: "0 18px",
+                fontSize: 16,
+                fontFamily: "'Bebas Kai',sans-serif",
+                outline: "none",
+                color: "#333",
+              }}
+            />
+            <button
+              style={{
+                background: "#019839",
+                color: "#fff",
+                border: "none",
+                padding: "0 24px",
+                fontFamily: "'Bebas Kai',sans-serif",
+                fontSize: 16,
+                cursor: "pointer",
+                borderRadius: "0 8px 8px 0",
+              }}
+            >
+              Submit
+            </button>
           </div>
         </div>
 
         {/* Quick Links */}
         <div>
-          <div className="bebas" style={{ fontSize: 24, textTransform: "uppercase", marginBottom: 18 }}>Quick Links</div>
-          {["About Us", "Rides", "Events", "Cyclist's Corner", "Contact Us"].map(l => (
-            <p key={l} style={{ fontSize: 17, marginBottom: 10 }}><a href="#" style={{ color: "#000", textDecoration: "none" }}>{l}</a></p>
+          <div
+            className="bebas"
+            style={{
+              fontSize: 24,
+              textTransform: "uppercase",
+              marginBottom: 18,
+            }}
+          >
+            Quick Links
+          </div>
+          {[
+            "About Us",
+            "Rides",
+            "Events",
+            "Cyclist's Corner",
+            "Contact Us",
+          ].map((l) => (
+            <p key={l} style={{ fontSize: 17, marginBottom: 10 }}>
+              <a href="#" style={{ color: "#000", textDecoration: "none" }}>
+                {l}
+              </a>
+            </p>
           ))}
         </div>
 
         {/* Contact */}
         <div>
-          <div className="bebas" style={{ fontSize: 24, textTransform: "uppercase", marginBottom: 18 }}>Contact Us</div>
+          <div
+            className="bebas"
+            style={{
+              fontSize: 24,
+              textTransform: "uppercase",
+              marginBottom: 18,
+            }}
+          >
+            Contact Us
+          </div>
           {[
             { icon: "📞", text: "+971 2 654 5645" },
             { icon: "💬", text: "144226" },
             { icon: "✉️", text: "info@adcyclingclub.ae" },
-            { icon: "📍", text: "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18." },
+            {
+              icon: "📍",
+              text: "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18.",
+            },
           ].map((c, i) => (
-            <div key={i} style={{ display: "flex", gap: 12, marginBottom: 14, alignItems: "flex-start" }}>
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                gap: 12,
+                marginBottom: 14,
+                alignItems: "flex-start",
+              }}
+            >
               <span style={{ fontSize: 18 }}>{c.icon}</span>
               <span style={{ fontSize: 17, lineHeight: 1.4 }}>{c.text}</span>
             </div>
@@ -1075,15 +1360,37 @@ function Footer() {
         </div>
       </div>
 
-      <div className="about-footer-bottom" style={{ borderTop: "1px solid #D5D5D5", paddingTop: 24, textAlign: "center", position: "relative" }}>
-        <p style={{ fontSize: 17, color: "rgba(0,0,0,0.7)" }}>Copyright 2026. Abu Dhabi Cycling Club</p>
+      <div
+        className="about-footer-bottom"
+        style={{
+          borderTop: "1px solid #D5D5D5",
+          paddingTop: 24,
+          textAlign: "center",
+          position: "relative",
+        }}
+      >
+        <p style={{ fontSize: 17, color: "rgba(0,0,0,0.7)" }}>
+          Copyright 2026. Abu Dhabi Cycling Club
+        </p>
         {/* scroll-to-top */}
-        <button className="about-footer-top-button" style={{
-          position: "absolute", right: 0, top: 16,
-          width: 55, height: 55, borderRadius: "50%",
-          background: "#019839", border: "none", cursor: "pointer",
-          color: "#fff", fontSize: 22
-        }}>↑</button>
+        <button
+          className="about-footer-top-button"
+          style={{
+            position: "absolute",
+            right: 0,
+            top: 16,
+            width: 55,
+            height: 55,
+            borderRadius: "50%",
+            background: "#019839",
+            border: "none",
+            cursor: "pointer",
+            color: "#fff",
+            fontSize: 22,
+          }}
+        >
+          ↑
+        </button>
       </div>
     </footer>
   );
@@ -1094,7 +1401,10 @@ export default function AboutUs() {
   return (
     <>
       <FontLoader />
-      <div className="about-page" style={{ minWidth: 320, overflowX: "hidden" }}>
+      <div
+        className="about-page"
+        style={{ minWidth: 320, overflowX: "hidden" }}
+      >
         <Hero />
         <StatsSection />
         <MissionSection />

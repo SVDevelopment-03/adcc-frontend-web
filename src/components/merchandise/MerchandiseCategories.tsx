@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Edit2, Trash2, ToggleLeft, ToggleRight, X, ChevronRight, Layers } from 'lucide-react';
 import { toast } from 'sonner';
-import { Category } from './merchandiseData';
-import {
-  createMerchandiseCategory,
-  updateMerchandiseCategory,
-  deleteMerchandiseCategory,
-} from '../../services/merchandiseApi';
+import { Category, mockCategories as initialCategories } from './merchandiseData';
 
 interface MerchandiseCategoriesProps {
   categories: Category[];
@@ -42,50 +37,34 @@ export function MerchandiseCategories({ categories, setCategories }: Merchandise
     setShowForm(true);
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!form.name.trim()) { toast.error('Category name is required'); return; }
-    try {
-      const payload = {
+    if (editCat) {
+      setCategories(prev => prev.map(c => c.id === editCat.id ? { ...c, ...form } : c));
+      toast.success('Category updated');
+    } else {
+      const newCat: Category = {
+        id: form.name.toLowerCase().replace(/\s+/g, '-'),
         name: form.name,
         icon: form.icon,
-        active: form.active,
         subcategories: form.subcategories,
+        productCount: 0,
+        active: form.active,
       };
-      if (editCat) {
-        const updated = await updateMerchandiseCategory(editCat.id, payload);
-        setCategories(prev => prev.map(c => c.id === editCat.id ? { ...c, ...updated } : c));
-        toast.success('Category updated');
-      } else {
-        const created = await createMerchandiseCategory(payload);
-        setCategories(prev => [...prev, { ...created, productCount: 0 }]);
-        toast.success('Category created');
-      }
-      setShowForm(false);
-    } catch (error) {
-      toast.error((error as Error)?.message || 'Failed to save category');
+      setCategories(prev => [...prev, newCat]);
+      toast.success('Category created');
     }
+    setShowForm(false);
   };
 
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteMerchandiseCategory(id);
-      setCategories(prev => prev.filter(c => c.id !== id));
-      toast.success('Category deleted');
-      setDeleteConfirm(null);
-    } catch (error) {
-      toast.error((error as Error)?.message || 'Failed to delete category');
-    }
+  const handleDelete = (id: string) => {
+    setCategories(prev => prev.filter(c => c.id !== id));
+    toast.success('Category deleted');
+    setDeleteConfirm(null);
   };
 
-  const handleToggleActive = async (id: string) => {
-    try {
-      const category = categories.find(c => c.id === id);
-      if (!category) return;
-      const updated = await updateMerchandiseCategory(id, { active: !category.active });
-      setCategories(prev => prev.map(c => c.id === id ? { ...c, ...updated } : c));
-    } catch (error) {
-      toast.error((error as Error)?.message || 'Failed to update category');
-    }
+  const handleToggleActive = (id: string) => {
+    setCategories(prev => prev.map(c => c.id === id ? { ...c, active: !c.active } : c));
   };
 
   const addSubcat = () => {

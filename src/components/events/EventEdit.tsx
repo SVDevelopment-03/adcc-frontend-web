@@ -7,7 +7,6 @@ import { getEventByIdEn, updateEvent as updateEventApi, deleteEvent as deleteEve
 import { getAllTracksEn, deleteTrack } from '../../services/trackService';
 import { gccCountries, getCitiesByCountry, type GCCCountry } from '../../data/gccLocations';
 import { getAllCommunities, deleteCommunity as deleteCommunityApi, CommunityApiResponse } from '../../services/communitiesApi';
-import { getAllBadges, type Badge } from '../../services/badgesService';
 import { formatToInputDate } from '../../utils/date';
 import { useLocale } from '../../contexts/LocaleContext';
 import { useTranslation } from 'react-i18next';
@@ -35,7 +34,6 @@ export function EventEdit({ role }: EventEditProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [communities, setCommunities] = useState<any[]>([]);
   const [tracks, setTracks] = useState<any[]>([]);
-  const [badges, setBadges] = useState<Badge[]>([]);
   const [galleryImages, setGalleryImages] = useState<File[]>([]);
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
   const [mainImageFile, setMainImageFile] = useState<File | null>(null);
@@ -320,14 +318,6 @@ export function EventEdit({ role }: EventEditProps) {
     }
   }, [existingEvent]);
 
-  useEffect(() => {
-    getAllBadges()
-      .then((badgeList) => setBadges(badgeList || []))
-      .catch((error) => {
-        console.error('Failed to load badges:', error);
-      });
-  }, []);
-
 
   // const tracks = allTracks.filter(track => track.city === formData.city);
 
@@ -421,6 +411,7 @@ export function EventEdit({ role }: EventEditProps) {
     // Reset input so same file can be selected again
     e.target.value = '';
   };
+
 
   const removeGalleryImage = (index: number) => {
     const updatedImages = [...galleryImages];
@@ -576,15 +567,7 @@ export function EventEdit({ role }: EventEditProps) {
             }
           : undefined;
 
-      const payloadWithRewards = {
-        ...payload,
-        rewards: {
-          points: Number(formData.rewardPoints || 0),
-          badgeName: formData.rewardBadge || '',
-        },
-      };
-
-      await updateEventApi(id, payloadWithRewards, imageFiles);
+      await updateEventApi(id, payload, imageFiles);
 
       toast.success(t('events.edit.toasts.updateSuccess'));
       navigate(`/events/${id}`);
@@ -1231,32 +1214,43 @@ export function EventEdit({ role }: EventEditProps) {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.edit.pointsReward')}</label>
-                <input
+                {/* <input
                   type="number"
                   value={formData.rewardPoints}
-                  onChange={(e) => setFormData({ ...formData, rewardPoints: parseInt(e.target.value, 10) || 0 })}
+                  onChange={(e) => setFormData({ ...formData, rewardPoints: parseInt(e.target.value) || 0 })}
                   placeholder="50"
                   min="0"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
+                /> */}
+              </div>
+
+              <div>
+                <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.edit.badgeName')}</label>
+                <input
+                  type="text"
+                  value={formData.rewardBadge}
+                  onChange={(e) => setFormData({ ...formData, rewardBadge: e.target.value })}
+                  placeholder="Night Racer Champion"
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
               </div>
 
               <div>
-                <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.edit.badgeName')}</label>
-                <select
-                  value={formData.rewardBadge}
-                  onChange={(e) => setFormData({ ...formData, rewardBadge: e.target.value })}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
+                <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.edit.badgeImage')}</label>
+                <div className="mb-3">
+                  {/* {existingEvent.rewards.badgeImage && (
+                    <img src={existingEvent.rewards.badgeImage} alt="Badge" className="w-20 h-20 rounded-lg" />
+                  )} */}
+                </div>
+                <div
+                  className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:bg-gray-50 transition-colors"
+                  style={{ borderColor: '#ECC180' }}
                 >
-                  <option value="">{t('events.edit.selectBadge', 'Select a badge')}</option>
-                  {badges.map((badge) => (
-                    <option key={badge.id} value={badge.name}>
-                      {badge.name}
-                    </option>
-                  ))}
-                </select>
+                  <ImageIcon className="w-8 h-8 mx-auto mb-2" style={{ color: '#999' }} />
+                  <p className="text-sm" style={{ color: '#666' }}>{t('events.edit.uploadBadge')}</p>
+                  <p className="text-xs mt-1" style={{ color: '#999' }}>{t('events.edit.badgeHint')}</p>
+                </div>
               </div>
-
             </div>
           </div>
 

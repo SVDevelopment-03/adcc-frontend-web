@@ -76,23 +76,18 @@ export function EventResults() {
           return s === 'checked-in' || s === 'checked_in' || s === 'completed';
         });
 
-        setResults(checkedIn.map((p: any, idx: number) => {
-          const rank = p.rank ?? null;
-          const status: RiderStatus = p.status === 'completed' ? 'finished' : 'finished';
-          const storedPoints = Number.isFinite(Number(p.pointsEarned)) ? Number(p.pointsEarned) : null;
-          return {
-            participantId: p._id || p.id,
-            userId: p.user?._id || p.userId || p._id || p.id,
-            userName: p.user?.fullName || p.userName || '-',
-            userCommunity: p.user?.email || p.userCommunity || '-',
-            bibNumber: rank ? String(rank) : String(idx + 1),
-            rank,
-            time: p.time || '',
-            riderStatus: status,
-            points: storedPoints !== null ? storedPoints : calculatePoints(rank, status),
-            isDirty: false,
-          };
-        }));
+        setResults(checkedIn.map((p: any, idx: number) => ({
+          participantId: p._id || p.id,
+          userId: p.user?._id || p.userId || p._id || p.id,
+          userName: p.user?.fullName || p.userName || '-',
+          userCommunity: p.user?.email || p.userCommunity || '-',
+          bibNumber: p.rank ? String(p.rank) : String(idx + 1),
+          rank: p.rank ?? null,
+          time: p.time || '',
+          riderStatus: p.status === 'completed' ? 'finished' : 'finished',
+          points: 0,
+          isDirty: false,
+        })));
       } catch (err) {
         toast.error('Failed to load participants');
       } finally {
@@ -176,11 +171,7 @@ export function EventResults() {
     setIsSaving(true);
     try {
       await Promise.all(
-        dirty.map(r => adminUpdateParticipantResult(eventId, r.userId, {
-          rank: r.rank,
-          time: r.time || undefined,
-          points: r.points,
-        }))
+        dirty.map(r => adminUpdateParticipantResult(eventId, r.userId, { rank: r.rank, time: r.time || undefined }))
       );
       setResults(prev => prev.map(r => ({ ...r, isDirty: false })));
       setHasUnsaved(false);

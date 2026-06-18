@@ -1,15 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Package, Layers, ShoppingBag, BarChart3, TrendingUp, Star, AlertCircle, Shield, Store } from 'lucide-react';
-import { toast } from 'sonner';
-import { Product, Category, Order } from './merchandiseData';
+import { mockProducts, mockCategories, mockOrders, Product, Category, Order } from './merchandiseData';
 import { MerchandiseProducts } from './MerchandiseProducts';
 import { MerchandiseCategories } from './MerchandiseCategories';
 import { MerchandiseOrders } from './MerchandiseOrders';
-import {
-  getMerchandiseProducts,
-  getMerchandiseCategories,
-  getMerchandiseOrders,
-} from '../../services/merchandiseApi';
 
 type MerchandiseTab = 'overview' | 'adcc-products' | 'vendor-products' | 'categories' | 'orders';
 
@@ -19,10 +13,9 @@ interface MerchandiseProps {
 
 export function Merchandise({ navigate }: MerchandiseProps) {
   const [activeTab, setActiveTab] = useState<MerchandiseTab>('overview');
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>(mockProducts);
+  const [categories, setCategories] = useState<Category[]>(mockCategories);
+  const [orders, setOrders] = useState<Order[]>(mockOrders);
 
   const stats = {
     totalProducts: products.length,
@@ -37,28 +30,6 @@ export function Merchandise({ navigate }: MerchandiseProps) {
 
   const adccProducts = products.filter(p => !p.source || p.source === 'adcc');
   const vendorProducts = products.filter(p => p.source === 'vendor');
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        const [loadedProducts, loadedCategories, loadedOrders] = await Promise.all([
-          getMerchandiseProducts({ limit: 200 }),
-          getMerchandiseCategories(),
-          getMerchandiseOrders({ limit: 200 }),
-        ]);
-        setProducts(loadedProducts);
-        setCategories(loadedCategories);
-        setOrders(loadedOrders);
-      } catch (error) {
-        toast.error((error as Error)?.message || 'Failed to load merchandise data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    void loadData();
-  }, []);
 
   const tabs: { id: MerchandiseTab; label: string; icon: React.ReactNode }[] = [
     { id: 'overview', label: 'Overview', icon: <BarChart3 className="w-4 h-4" /> },
@@ -97,9 +68,8 @@ export function Merchandise({ navigate }: MerchandiseProps) {
         ))}
       </div>
 
-      {loading ? (
-        <div className="py-20 text-center text-gray-500">Loading merchandise data...</div>
-      ) : activeTab === 'overview' && (
+      {/* Overview Tab */}
+      {activeTab === 'overview' && (
         <div className="space-y-6">
           {/* KPI Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -239,12 +209,9 @@ export function Merchandise({ navigate }: MerchandiseProps) {
           </div>
           <MerchandiseProducts
             products={adccProducts}
-            categories={categories}
-            defaultSource="adcc"
             setProducts={(updater) => {
               setProducts(prev => {
-                const currentAdcc = prev.filter(p => !p.source || p.source === 'adcc');
-                const updated = typeof updater === 'function' ? updater(currentAdcc) : updater;
+                const updated = typeof updater === 'function' ? updater(adccProducts) : updater;
                 const vendorOnly = prev.filter(p => p.source === 'vendor');
                 return [...updated, ...vendorOnly];
               });
@@ -267,12 +234,9 @@ export function Merchandise({ navigate }: MerchandiseProps) {
           </div>
           <MerchandiseProducts
             products={vendorProducts}
-            categories={categories}
-            defaultSource="vendor"
             setProducts={(updater) => {
               setProducts(prev => {
-                const currentVendor = prev.filter(p => p.source === 'vendor');
-                const updated = typeof updater === 'function' ? updater(currentVendor) : updater;
+                const updated = typeof updater === 'function' ? updater(vendorProducts) : updater;
                 const adccOnly = prev.filter(p => !p.source || p.source === 'adcc');
                 return [...adccOnly, ...updated];
               });

@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Bike, LogIn, LogOut, Mail, MapPin, Menu, MessageCircle, Phone } from 'lucide-react';
+import { ChevronUp, LogIn, LogOut, Mail, MapPin, Menu, Phone } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLocale } from '../../contexts/LocaleContext';
-import { AnimatedButton } from '../ui/AnimatedButton';
 import { HeaderWeather } from './HeaderWeather';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { AppStoreButton } from './AppStoreButton';
@@ -29,6 +28,7 @@ const navItems = [
   },
   { labelKey: 'public.nav.challenges', to: '/user-challenges', match: ['/user-challenges'] },
   { labelKey: 'public.nav.tracks', to: '/user-tracks', match: ['/user-tracks', '/communities-al-quadra-cycle-path'] },
+  { labelKey: 'public.footer.contactUs', to: '/contact-us', match: ['/contact-us'] },
 ];
 
 function Logo({ compact = false }: { compact?: boolean }) {
@@ -39,7 +39,7 @@ function Logo({ compact = false }: { compact?: boolean }) {
     src="/images/adcc-logo.png"
     alt="Abu Dhabi Cycling Club"
     onClick={() => navigate("/home")}
-    className={compact ? 'h-14 w-34 object-contain sm:h-16 sm:w-38' : 'h-13 w-32 object-contain sm:h-15 sm:w-36 lg:h-17 lg:w-42 xl:h-19 xl:w-45'}
+    className={compact ? 'h-14 w-34 object-contain sm:h-16 sm:w-38 cursor-pointer' : 'h-13 w-32 object-contain sm:h-15 sm:w-36 lg:h-17 lg:w-42 xl:h-19 xl:w-45 cursor-pointer'}
    />
   );
 }
@@ -63,7 +63,7 @@ function PublicHeader() {
   };
 
   return (
-    <header className="public-header sticky top-0 z-[100] flex h-20 w-full items-center justify-between bg-white px-5 py-2 shadow-sm sm:h-22 sm:px-6 md:px-10! lg:h-24 lg:px-14! xl:h-28 xl:px-22!">
+    <header className="public-header sticky top-0 z-[100] flex h-20 w-full items-center justify-between bg-[#EAF4FF] px-5 py-2 shadow-sm sm:h-22 sm:px-6 md:px-10! lg:h-24 lg:px-14! xl:h-28 xl:px-22!">
       <style>{`
         @media (max-width: 640px) {
           .public-header {
@@ -100,6 +100,31 @@ function PublicHeader() {
             padding: 13px 18px !important;
           }
         }
+        .pub-nav-link {
+          border-radius: 6px;
+          padding: 4px 12px;
+          transition: background-color 0.25s ease;
+        }
+        .pub-nav-link:hover {
+          background-color: #fff;
+        }
+        .pub-footer-link {
+          position: relative;
+          display: inline-block;
+        }
+        .pub-footer-link::after {
+          content: '';
+          position: absolute;
+          bottom: -2px;
+          left: 0;
+          width: 0;
+          height: 1.5px;
+          background: currentColor;
+          transition: width 0.3s ease;
+        }
+        .pub-footer-link:hover::after {
+          width: 100%;
+        }
       `}</style>
       <div className="public-header-logo-wrap">
         <Logo />
@@ -114,10 +139,7 @@ function PublicHeader() {
             <NavLink
               key={item.labelKey}
               to={item.to}
-              // className={`inline-block transition-colors duration-300 ease-out hover:text-[#019839] ${
-              //   isActive ? 'text-[#019839]' : 'text-black'
-              // }`}
-              className={`inline-block transition-colors duration-300 ease-out hover:!text-[#019839] ${
+              className={`pub-nav-link inline-block ${
                 isActive ? '!text-[#019839]' : '!text-black'
               }`}
             >
@@ -139,31 +161,6 @@ function PublicHeader() {
         >
           <Menu className="h-5 w-5" />
         </button>
-        <div className="group relative hidden sm:block">
-          <AnimatedButton
-            showArrow={false}
-            hoverDark
-            className="h-10 w-[86px] px-5 text-[15px] lg:h-11 lg:w-[94px] xl:h-12 xl:w-[101px] xl:px-7 xl:text-[18px]"
-          >
-            {t('public.auth.menu')}
-          </AnimatedButton>
-          <div className="invisible absolute end-0 top-full z-[120] w-[220px] translate-y-2 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
-            <div className="overflow-hidden rounded-xl border border-black/10 bg-white p-3 shadow-[0_18px_45px_rgba(0,0,0,0.16)]">
-              <button
-                type="button"
-                onClick={handleAuthAction}
-                className={`public-auth-button flex min-h-12 w-full items-center gap-4 rounded-lg px-7 py-3.5 text-[16px] font-semibold text-start text-black transition-colors hover:bg-black hover:text-white focus:bg-black focus:text-white focus:outline-none ${isRtl ? 'flex-row-reverse' : ''}`}
-              >
-                {isAuthenticated ? (
-                  <LogOut className="h-5 w-5 shrink-0" />
-                ) : (
-                  <LogIn className="h-5 w-5 shrink-0" />
-                )}
-                <span>{isAuthenticated ? t('public.auth.logout') : t('public.auth.login')}</span>
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
 
       {menuOpen && (
@@ -178,7 +175,7 @@ function PublicHeader() {
                   key={item.labelKey}
                   to={item.to}
                   onClick={() => setMenuOpen(false)}
-                  className={`rounded-md px-4 py-2.5 transition-colors duration-300 ease-out hover:!text-[#019839] ${
+                  className={`pub-nav-link px-4 py-2.5 ${
                     isActive ? '!text-[#019839]' : '!text-black'
                   }`}
                 >
@@ -320,11 +317,11 @@ function PublicFooter() {
           <div>
             <h3 className="text-[22px] font-black uppercase sm:text-[24px]">{t('public.footer.quickLinks')}</h3>
             <ul className="!mt-5 space-y-3! text-[16px] sm:!mt-7 sm:space-y-4! sm:text-[18px]">
-              <li><NavLink to="/aboutus">{t('public.nav.aboutUs')}</NavLink></li>
-              <li><NavLink to="/user-tracks">{t('public.footer.rides')}</NavLink></li>
-              <li><NavLink to="/user-event">{t('public.nav.events')}</NavLink></li>
-              <li><NavLink to="/user-challenges">{t('public.footer.cyclistsCorner')}</NavLink></li>
-              <li><NavLink to="/contact-us">{t('public.footer.contactUs')}</NavLink></li>
+              <li><NavLink to="/aboutus" className="pub-footer-link">{t('public.nav.aboutUs')}</NavLink></li>
+              <li><NavLink to="/user-tracks" className="pub-footer-link">{t('public.footer.rides')}</NavLink></li>
+              <li><NavLink to="/user-event" className="pub-footer-link">{t('public.nav.events')}</NavLink></li>
+              <li><NavLink to="/user-challenges" className="pub-footer-link">{t('public.footer.cyclistsCorner')}</NavLink></li>
+              <li><NavLink to="/contact-us" className="pub-footer-link">{t('public.footer.contactUs')}</NavLink></li>
             </ul>
           </div>
 
@@ -375,18 +372,46 @@ function PublicFooter() {
   );
 }
 
+function ScrollToTopButton() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 400);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <button
+      type="button"
+      onClick={scrollToTop}
+      aria-label="Scroll to top"
+      className="fixed bottom-8 end-8 z-[200] flex h-12 w-12 items-center justify-center rounded-full bg-[#019839] text-white shadow-lg transition-all duration-300 hover:bg-black hover:scale-110 focus:outline-none"
+    >
+      <ChevronUp className="h-6 w-6" />
+    </button>
+  );
+}
+
 export function PublicLayout({ children }: PublicLayoutProps) {
   const location = useLocation();
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
-  
+
   return (
     <div className="public-layout min-h-screen bg-[#EAF4FF] text-black">
       <PublicHeader />
       <main className="public-layout-content">{children}</main>
       <PublicFooter />
+      <ScrollToTopButton />
     </div>
   );
 }

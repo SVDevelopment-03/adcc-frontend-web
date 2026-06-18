@@ -24,7 +24,16 @@ import {
 
 const FontLoader = () => (
   <style>{`
-    body { background: #EAF4FF; font-family: 'Bebas Kai', sans-serif; color: #000; }
+
+
+
+.font-bebas{font-family: 'Bebas Kai', sans-serif !important;
+}
+.justify-center{justify-content:center !important;}
+
+
+    
+    body { background: #EAF4FF; color: #000; }
     .bebas { font-family: 'Bebas Kai', sans-serif; font-weight: 400; letter-spacing: 0; }
     .communities-page .adcc-btn--arrow:hover .adcc-btn__arrow--enter,
     .communities-page .adcc-btn--arrow:focus-visible .adcc-btn__arrow--enter {
@@ -53,7 +62,8 @@ const FontLoader = () => (
 );
 
 const COMMUNITIES_PER_PAGE = 4;
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
 const FALLBACK_COMMUNITY_IMAGE =
   "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=1200&auto=format&fit=crop";
 
@@ -68,7 +78,10 @@ const COMMUNITY_TYPE_OPTIONS = [
   "Training & Clinics",
 ] as const;
 
-const COMMUNITY_TYPE_LOCALE_KEYS: Record<(typeof COMMUNITY_TYPE_OPTIONS)[number], string> = {
+const COMMUNITY_TYPE_LOCALE_KEYS: Record<
+  (typeof COMMUNITY_TYPE_OPTIONS)[number],
+  string
+> = {
   "Family Rides": "familyRides",
   "Racing & Performance": "racingPerformance",
   "Women (SheRides)": "sheRides",
@@ -126,14 +139,20 @@ export default function CommunitiesPage() {
   const heroTitleWords = useWordList("public.communities.hero.titleWords");
   const heroBreadcrumb = useWordList("public.communities.hero.breadcrumb");
   const introTitleWords = useWordList("public.communities.intro.titleWords");
-  const exploreTitleWords = useWordList("public.communities.explore.titleWords");
-  const faqs = t("public.tracks.faq.items", { returnObjects: true }) as FaqItem[];
+  const exploreTitleWords = useWordList(
+    "public.communities.explore.titleWords",
+  );
+  const faqs = t("public.tracks.faq.items", {
+    returnObjects: true,
+  }) as FaqItem[];
 
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [cityFilter, setCityFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
-  const [openDropdown, setOpenDropdown] = useState<"city" | "type" | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<"city" | "type" | null>(
+    null,
+  );
   const [currentPage, setCurrentPage] = useState(1);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [communities, setCommunities] = useState<
@@ -151,7 +170,10 @@ export default function CommunitiesPage() {
   const [loadError, setLoadError] = useState(false);
 
   const formatCount = useCallback(
-    (value: number | string | undefined, labelKey: "members" | "eventsCount") => {
+    (
+      value: number | string | undefined,
+      labelKey: "members" | "eventsCount",
+    ) => {
       const count = Number(value ?? 0);
       const formattedCount = Number.isFinite(count)
         ? count.toLocaleString(i18n.language)
@@ -164,7 +186,10 @@ export default function CommunitiesPage() {
   const mapCommunityCard = useCallback(
     (community: CommunityApiResponse) => ({
       id: community._id || community.id || community.title,
-      title: community.title || community.name || t("public.common.communityFallback"),
+      title:
+        community.title ||
+        community.name ||
+        t("public.common.communityFallback"),
       members: formatCount(community.memberCount, "members"),
       events: formatCount(
         community.upcomingEventCount ?? community.eventsCount,
@@ -281,19 +306,27 @@ export default function CommunitiesPage() {
     options: Array<{ value: string; label: string }>,
     onChange: (value: string) => void,
   ) => {
-    const selectedLabel = options.find((option) => option.value === value)?.label || options[0]?.label || "";
+    const selectedLabel =
+      options.find((option) => option.value === value)?.label ||
+      options[0]?.label ||
+      "";
     const isOpen = openDropdown === id;
 
     return (
       <div className="relative min-w-0">
         <button
           type="button"
-          onClick={() => setOpenDropdown((current) => (current === id ? null : id))}
+          onClick={() =>
+            setOpenDropdown((current) => (current === id ? null : id))
+          }
           className="flex h-[54px] w-full min-w-0 items-center justify-between gap-3 overflow-hidden rounded-full bg-white px-5 text-left text-[16px] sm:text-[18px] lg:h-[66px] lg:px-8 lg:text-[22px]"
           aria-expanded={isOpen}
         >
           <span className="min-w-0 flex-1 truncate">{selectedLabel}</span>
-          <ChevronDown size={22} className={`shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+          <ChevronDown
+            size={22}
+            className={`shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          />
         </button>
 
         {isOpen && (
@@ -304,7 +337,9 @@ export default function CommunitiesPage() {
                 type="button"
                 onClick={() => onChange(option.value)}
                 className={`block w-full px-5 py-3 text-left text-[15px] transition-colors hover:bg-[#EAF4FF] sm:text-[16px] ${
-                  option.value === value ? "bg-[#EAF4FF] font-semibold text-[#019839]" : "text-black"
+                  option.value === value
+                    ? "bg-[#EAF4FF] font-semibold text-[#019839]"
+                    : "text-black"
                 }`}
               >
                 <span className="block truncate">{option.label}</span>
@@ -332,7 +367,7 @@ export default function CommunitiesPage() {
           <AnimatedWords
             words={introTitleWords}
             gap={12}
-            className="bebas max-w-[634px] text-[34px] capitalize leading-[39px] sm:text-[42px] sm:leading-[50px] md:text-[52px] md:leading-[62px] lg:text-[60px] lg:leading-[72px]"
+            className="bebas max-w-[634px] text-[34px] capitalize leading-[39px] sm:text-[42px] sm:leading-[50px] md:text-[52px] md:leading-[50px] lg:text-[60px] lg:leading-[60px]"
           />
 
           <p className="mt-5 max-w-[610px] text-[16px] leading-[23px] sm:text-[18px] sm:leading-[24px] md:text-[22px] md:leading-[28px] lg:mt-[44px] lg:text-[24px] lg:leading-[30px]">
@@ -353,7 +388,7 @@ export default function CommunitiesPage() {
         <AnimatedWords
           words={exploreTitleWords}
           gap={14}
-          className="text-center text-[34px] font-black uppercase sm:text-[42px] lg:text-[50px]"
+          className="justify-center text-center text-[34px] font-bebas uppercase sm:text-[42px] lg:text-[50px]"
         />
 
         <motion.div
@@ -450,7 +485,9 @@ export default function CommunitiesPage() {
                   viewport={{ once: true }}
                   type="button"
                   key={item.id}
-                  onClick={() => navigate(`/user-communities/${encodeURIComponent(item.id)}`)}
+                  onClick={() =>
+                    navigate(`/user-communities/${encodeURIComponent(item.id)}`)
+                  }
                   className="group relative h-[300px] overflow-hidden rounded-[10px] bg-black text-left sm:h-[380px] lg:h-[467px]"
                 >
                   <motion.img
@@ -530,7 +567,9 @@ export default function CommunitiesPage() {
 
             <button
               type="button"
-              onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+              onClick={() =>
+                setCurrentPage((page) => Math.min(totalPages, page + 1))
+              }
               disabled={currentPage === totalPages || loading}
               className="flex h-10 w-10 items-center justify-center rounded-full bg-[#019839] text-white disabled:cursor-not-allowed disabled:opacity-40 sm:h-12 sm:w-12"
               aria-label={t("public.common.nextPage")}
@@ -545,9 +584,11 @@ export default function CommunitiesPage() {
         <AnimatedWords
           words={t("public.tracks.faq.title").split(/\s+/).filter(Boolean)}
           gap={12}
-          className="text-[34px] font-black uppercase sm:text-[42px] lg:text-[50px]"
+          className="text-[34px] font-bebas justify-center uppercase sm:text-[42px] lg:text-[50px]"
         />
-        <p className="mt-4 text-[16px] sm:text-[18px]">{t("public.tracks.faq.subtitle")}</p>
+        <p className="mt-4 text-[16px] sm:text-[18px]">
+          {t("public.tracks.faq.subtitle")}
+        </p>
 
         <div className="mt-8 grid grid-cols-1 gap-4 md:mt-12 md:grid-cols-2 md:gap-7">
           {faqs.map((faq, index) => (
@@ -557,13 +598,17 @@ export default function CommunitiesPage() {
               tabIndex={0}
               onClick={() => setOpenFaq(openFaq === index ? null : index)}
               onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") setOpenFaq(openFaq === index ? null : index);
+                if (event.key === "Enter" || event.key === " ")
+                  setOpenFaq(openFaq === index ? null : index);
               }}
               className="cursor-pointer rounded-xl border border-[#ccc] px-4 text-left text-[16px] font-medium sm:px-6 sm:text-[19px] lg:px-7 lg:text-[22px]"
             >
               <div className="flex min-h-[82px] items-center justify-between gap-4 py-4 sm:min-h-[92px] lg:min-h-[100px]">
                 <span>{faq.q}</span>
-                <Plus className={`shrink-0 transition-transform ${openFaq === index ? "rotate-45" : ""}`} size={24} />
+                <Plus
+                  className={`shrink-0 transition-transform ${openFaq === index ? "rotate-45" : ""}`}
+                  size={24}
+                />
               </div>
               {openFaq === index && (
                 <p className="pb-5 text-[15px] font-normal leading-7 text-black/65 sm:text-[16px] lg:text-[17px]">

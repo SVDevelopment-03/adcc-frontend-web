@@ -1,14 +1,39 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { EventApiResponse, GetEventsParams, getEventsPage } from "../../services/eventsApi";
+import {
+  EventApiResponse,
+  GetEventsParams,
+  getEventsPage,
+} from "../../services/eventsApi";
 import { motion } from "framer-motion";
 import i18n from "../../i18n";
-import { AnimatedWords, PublicPageHero, useWordList } from "../public/publicPageHelpers";
+import {
+  AnimatedWords,
+  PublicPageHero,
+  useWordList,
+} from "../public/publicPageHelpers";
 
 const FontLoader = () => (
   <style>{`
-    * { box-sizing: border-box; margin: 0; }
-    body { background: #EAF4FF; font-family: 'Bebas Kai', sans-serif; color: #000; }
+    * { box-sizing: border-box; }
+
+.event-hero{
+
+padding-inline-start: 86px !important;}
+.event-section-title div
+{justify-content: center !important;
+}
+
+.event-page .event-filter-bar{justify-content: center !important;
+}
+
+
+
+button{
+font-family: 'Satoshi', sans-serif !important;
+}
+    
+    body { background: #EAF4FF; color: #000; }
     .bebas { font-family: 'Bebas Kai', sans-serif; font-weight: 400; letter-spacing: 0.02em; }
     a { text-decoration: none; color: inherit; }
     select { appearance: none; -webkit-appearance: none; background: transparent; border: none; outline: none; cursor: pointer; font-family: 'Bebas Kai', sans-serif; font-size: 18px; color: #000; width: 100%; padding-right: 28px; }
@@ -184,8 +209,12 @@ const FontLoader = () => (
 // ── Hero ──────────────────────────────────────────────────────────────────────
 function Hero() {
   const { t } = useTranslation();
-  const titleWords = t("public.events.hero.titleWords", { returnObjects: true }) as string[];
-  const breadcrumb = t("public.events.hero.breadcrumb", { returnObjects: true }) as string[];
+  const titleWords = t("public.events.hero.titleWords", {
+    returnObjects: true,
+  }) as string[];
+  const breadcrumb = t("public.events.hero.breadcrumb", {
+    returnObjects: true,
+  }) as string[];
 
   return (
     <PublicPageHero
@@ -203,7 +232,14 @@ function SectionHeader() {
   const titleWords = useWordList("public.events.intro.titleWords");
 
   return (
-    <section className="event-section-header" style={{ background: "#EAF4FF", padding: "64px 82px 40px", textAlign: "center" }}>
+    <section
+      className="event-section-header"
+      style={{
+        background: "#EAF4FF",
+        padding: "64px 82px 40px",
+        textAlign: "center",
+      }}
+    >
       <h2
         className="bebas event-section-title overflow-hidden"
         style={{
@@ -216,7 +252,17 @@ function SectionHeader() {
       >
         <AnimatedWords words={titleWords} gap={12} />
       </h2>
-      <p className="event-section-copy" style={{ fontSize: 16, fontWeight: 500, color: "rgba(0,0,0,0.6)", maxWidth: 444, margin: "0 auto", lineHeight: 1.6 }}>
+      <p
+        className="event-section-copy"
+        style={{
+          fontSize: 16,
+          fontWeight: 500,
+          color: "rgba(0,0,0,0.6)",
+          maxWidth: 444,
+          margin: "0 auto",
+          lineHeight: 1.6,
+        }}
+      >
         {t("public.events.intro.body")}
       </p>
     </section>
@@ -254,64 +300,101 @@ function FilterBar({
   loading: boolean;
 }) {
   const { t } = useTranslation();
-  const [openDropdown, setOpenDropdown] = useState<keyof EventFilters | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<keyof EventFilters | null>(
+    null,
+  );
 
-  const dropdowns = useMemo<Array<{ key: keyof EventFilters; options: FilterOption[] }>>(() => [
-    {
-      key: "city",
-      options: [
-        { value: ALL_FILTER_VALUE, label: t("public.common.filters.allCities") },
-        { value: "Abu Dhabi", label: "Abu Dhabi" },
-        { value: "Dubai", label: "Dubai" },
-        { value: "Sharjah", label: "Sharjah" },
-        { value: "Al Ain", label: "Al Ain" },
-      ],
-    },
-    {
-      key: "category",
-      options: [
-        { value: ALL_FILTER_VALUE, label: t("public.common.filters.allCategories") },
-        { value: "Race", label: "Race" },
-        { value: "Community Ride", label: "Community Ride" },
-        { value: "Training & Clinics", label: "Training & Clinics" },
-        { value: "Awareness Rides", label: "Awareness Rides" },
-        { value: "Family & Kids", label: "Family & Kids" },
-        { value: "Corporate Events", label: "Corporate Events" },
-        { value: "National Events", label: "National Events" },
-      ],
-    },
-    {
-      key: "level",
-      options: [
-        { value: ALL_FILTER_VALUE, label: t("public.common.filters.allLevels") },
-        { value: "beginner", label: "beginner" },
-        { value: "intermediate", label: "intermediate" },
-        { value: "advanced", label: "advanced" },
-        { value: "all", label: "all" },
-      ],
-    },
-    {
-      key: "status",
-      options: [
-        { value: ALL_FILTER_VALUE, label: t("public.common.filters.status") },
-        { value: "Upcoming", label: "Upcoming" },
-        { value: "Ongoing", label: "Ongoing" },
-        { value: "Completed", label: "Completed" },
-      ],
-    },
-  ], [t]);
+  const dropdowns = useMemo<
+    Array<{ key: keyof EventFilters; options: FilterOption[] }>
+  >(
+    () => [
+      {
+        key: "city",
+        options: [
+          {
+            value: ALL_FILTER_VALUE,
+            label: t("public.common.filters.allCities"),
+          },
+          { value: "Abu Dhabi", label: "Abu Dhabi" },
+          { value: "Dubai", label: "Dubai" },
+          { value: "Sharjah", label: "Sharjah" },
+          { value: "Al Ain", label: "Al Ain" },
+        ],
+      },
+      {
+        key: "category",
+        options: [
+          {
+            value: ALL_FILTER_VALUE,
+            label: t("public.common.filters.allCategories"),
+          },
+          { value: "Race", label: "Race" },
+          { value: "Community Ride", label: "Community Ride" },
+          { value: "Training & Clinics", label: "Training & Clinics" },
+          { value: "Awareness Rides", label: "Awareness Rides" },
+          { value: "Family & Kids", label: "Family & Kids" },
+          { value: "Corporate Events", label: "Corporate Events" },
+          { value: "National Events", label: "National Events" },
+        ],
+      },
+      {
+        key: "level",
+        options: [
+          {
+            value: ALL_FILTER_VALUE,
+            label: t("public.common.filters.allLevels"),
+          },
+          { value: "beginner", label: "beginner" },
+          { value: "intermediate", label: "intermediate" },
+          { value: "advanced", label: "advanced" },
+          { value: "all", label: "all" },
+        ],
+      },
+      {
+        key: "status",
+        options: [
+          { value: ALL_FILTER_VALUE, label: t("public.common.filters.status") },
+          { value: "Upcoming", label: "Upcoming" },
+          { value: "Ongoing", label: "Ongoing" },
+          { value: "Completed", label: "Completed" },
+        ],
+      },
+    ],
+    [t],
+  );
 
   const ChevronDown = ({ open = false }: { open?: boolean }) => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, transform: open ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>
-      <path d="M6 9l6 6 6-6" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      style={{
+        flexShrink: 0,
+        transform: open ? "rotate(180deg)" : "none",
+        transition: "transform 0.2s",
+      }}
+    >
+      <path
+        d="M6 9l6 6 6-6"
+        stroke="#000"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 
-  const renderDropdown = (filter: { key: keyof EventFilters; options: FilterOption[] }) => {
+  const renderDropdown = (filter: {
+    key: keyof EventFilters;
+    options: FilterOption[];
+  }) => {
     const isOpen = openDropdown === filter.key;
-    const selected = filter.options.find((option) => option.value === filters[filter.key])?.label
-      || filter.options[0]?.label
-      || "";
+    const selected =
+      filter.options.find((option) => option.value === filters[filter.key])
+        ?.label ||
+      filter.options[0]?.label ||
+      "";
 
     return (
       // <div key={filter.key} className="event-filter-field" style={{ position: "relative", width: 260 }}>
@@ -342,7 +425,7 @@ function FilterBar({
           type="button"
           onClick={() =>
             setOpenDropdown((current) =>
-              current === filter.key ? null : filter.key
+              current === filter.key ? null : filter.key,
             )
           }
           style={{
@@ -417,8 +500,10 @@ function FilterBar({
                   display: "block",
                   width: "100%",
                   border: 0,
-                  background: option.value === filters[filter.key] ? "#EAF4FF" : "#fff",
-                  color: option.value === filters[filter.key] ? "#019839" : "#000",
+                  background:
+                    option.value === filters[filter.key] ? "#EAF4FF" : "#fff",
+                  color:
+                    option.value === filters[filter.key] ? "#019839" : "#000",
                   padding: "12px 18px",
                   textAlign: "left",
                   fontFamily: "'Bebas Kai', sans-serif",
@@ -447,19 +532,40 @@ function FilterBar({
 
   return (
     // <div style={{ padding: "0 82px 24px", display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
-    <div className="event-filter-bar" style={{ padding: "0 82px 24px", display: "flex", gap: 18, alignItems: "center", gridTemplateColumns: "repeat(3, 403px)" }}>
+    <div
+      className="event-filter-bar"
+      style={{
+        padding: "0 82px 24px",
+        display: "flex",
+        gap: 18,
+        alignItems: "center",
+        gridTemplateColumns: "repeat(3, 403px)",
+      }}
+    >
       {dropdowns.map(renderDropdown)}
       <motion.button
         className="event-filter-search"
         initial={{ opacity: 0, x: 120 }}
         whileInView={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5, delay: dropdowns.length * 0.12, ease: "easeOut" }}
+        transition={{
+          duration: 0.5,
+          delay: dropdowns.length * 0.12,
+          ease: "easeOut",
+        }}
         viewport={{ once: true }}
         onClick={onSearch}
         style={{
-          width: 156, height: 66, background: "#019839", color: "#fff",
-          border: "none", borderRadius: 40, fontSize: 20, fontWeight: 700,
-          cursor: "pointer", fontFamily: "'Bebas Kai',sans-serif", transition: "opacity .2s"
+          width: 156,
+          height: 66,
+          background: "#019839",
+          color: "#fff",
+          border: "none",
+          borderRadius: 40,
+          fontSize: 20,
+          fontWeight: 700,
+          cursor: "pointer",
+          fontFamily: "'Bebas Kai',sans-serif",
+          transition: "opacity .2s",
         }}
       >
         {loading ? t("public.common.loading") : t("public.common.search")}
@@ -469,7 +575,13 @@ function FilterBar({
 }
 
 // ── Event card ────────────────────────────────────────────────────────────────
-function EventCard({ event, index }: { event: EventApiResponse; index: number }) {
+function EventCard({
+  event,
+  index,
+}: {
+  event: EventApiResponse;
+  index: number;
+}) {
   const { t } = useTranslation();
   const [columns, setColumns] = useState(3);
 
@@ -497,14 +609,10 @@ function EventCard({ event, index }: { event: EventApiResponse; index: number })
     }
 
     if (cols === 2) {
-      return position === 0
-        ? { opacity: 0, x: -180 }
-        : { opacity: 0, x: 180 };
+      return position === 0 ? { opacity: 0, x: -180 } : { opacity: 0, x: 180 };
     }
 
-    return index % 2 === 0
-      ? { opacity: 0, x: -180 }
-      : { opacity: 0, x: 180 };
+    return index % 2 === 0 ? { opacity: 0, x: -180 } : { opacity: 0, x: 180 };
   };
 
   const tag = event.category || t("public.common.eventFallback");
@@ -527,7 +635,12 @@ function EventCard({ event, index }: { event: EventApiResponse; index: number })
         ease: "easeOut",
       }}
       viewport={{ once: true }}
-      style={{ width: "100%", display: "flex", flexDirection: "column", gap: 0 }}
+      style={{
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        gap: 0,
+      }}
     >
       <div
         className="event-card-image adcc-image"
@@ -578,15 +691,60 @@ function EventCard({ event, index }: { event: EventApiResponse; index: number })
       </div>
 
       <div style={{ paddingTop: 20 }}>
-        <h3 className="bebas event-card-title" style={{ fontSize: 24, marginBottom: 14, letterSpacing: 0.5 }}>
+        <h3
+          className="bebas event-card-title"
+          style={{ fontSize: 24, marginBottom: 14, letterSpacing: 0.5 }}
+        >
           {event.title}
         </h3>
 
-        <div className="event-card-meta" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 12px", marginBottom: 20 }}>
-          <Meta icon="📅" text={formatEventDate(event.eventDate, t("public.common.dateTBA"))} />
-          <Meta icon="⚡" text={typeof event.distance === "number" ? `${event.distance} km` : t("public.common.distanceTBA")} />
-          <Meta icon="👥" text={t("public.common.participants", { count: participants })} />
-          <Meta icon="📍" text={event.city || event.address || "—"} />
+        <div
+          className="event-card-meta"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "8px 12px",
+            marginBottom: 20,
+          }}
+        >
+          <Meta
+            icon={
+              <img
+                src="/img/icons/calendar.svg"
+                alt="Calendar"
+                width={18}
+                height={18}
+              />
+            }
+            text={formatEventDate(event.eventDate, t("public.common.dateTBA"))}
+          />
+          <Meta
+            icon={
+              <img src="/img/icons/kms.svg" alt="kms" width={18} height={18} />
+            }
+            text={
+              typeof event.distance === "number"
+                ? `${event.distance} km`
+                : t("public.common.distanceTBA")
+            }
+          />
+          <Meta
+            icon={
+              <img
+                src="/img/icons/people.svg"
+                alt="people"
+                width={18}
+                height={18}
+              />
+            }
+            text={t("public.common.participants", { count: participants })}
+          />
+          <Meta
+            icon={
+              <img src="/img/icons/map.svg" alt="map" width={18} height={18} />
+            }
+            text={event.city || event.address || "—"}
+          />
         </div>
 
         <button
@@ -624,7 +782,9 @@ function Meta({ icon, text }: { icon: string; text: string }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
       <span style={{ fontSize: 16 }}>{icon}</span>
-      <span style={{ fontSize: 16, fontWeight: 500, color: "rgba(0,0,0,0.7)" }}>{text}</span>
+      <span style={{ fontSize: 16, fontWeight: 500, color: "rgba(0,0,0,0.7)" }}>
+        {text}
+      </span>
     </div>
   );
 }
@@ -636,7 +796,8 @@ function EventsGrid() {
   const { t } = useTranslation();
   const [filters, setFilters] = useState<EventFilters>(DEFAULT_FILTERS);
   const [page, setPage] = useState(1);
-  const [activeFilters, setActiveFilters] = useState<EventFilters>(DEFAULT_FILTERS);
+  const [activeFilters, setActiveFilters] =
+    useState<EventFilters>(DEFAULT_FILTERS);
   const [events, setEvents] = useState<EventApiResponse[]>([]);
   const [totalResults, setTotalResults] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -645,10 +806,14 @@ function EventsGrid() {
 
   const queryParams = useMemo<GetEventsParams>(() => {
     const params: GetEventsParams = { page, limit: PAGE_SIZE };
-    if (activeFilters.city !== ALL_FILTER_VALUE) params.city = activeFilters.city;
-    if (activeFilters.category !== ALL_FILTER_VALUE) params.category = activeFilters.category;
-    if (activeFilters.level !== ALL_FILTER_VALUE) params.level = activeFilters.level;
-    if (activeFilters.status !== ALL_FILTER_VALUE) params.status = activeFilters.status;
+    if (activeFilters.city !== ALL_FILTER_VALUE)
+      params.city = activeFilters.city;
+    if (activeFilters.category !== ALL_FILTER_VALUE)
+      params.category = activeFilters.category;
+    if (activeFilters.level !== ALL_FILTER_VALUE)
+      params.level = activeFilters.level;
+    if (activeFilters.status !== ALL_FILTER_VALUE)
+      params.status = activeFilters.status;
     return params;
   }, [activeFilters, page]);
 
@@ -683,25 +848,45 @@ function EventsGrid() {
 
   return (
     <>
-      <FilterBar filters={filters} setFilters={setFilters} loading={loading} onSearch={() => { setActiveFilters(filters); setPage(1); }} />
+      <FilterBar
+        filters={filters}
+        setFilters={setFilters}
+        loading={loading}
+        onSearch={() => {
+          setActiveFilters(filters);
+          setPage(1);
+        }}
+      />
       <div className="event-grid-wrap" style={{ padding: "0 82px" }}>
         <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 20 }}>
           {loading
             ? t("public.common.loadingEvents")
-            : t("public.common.showingResults", { shown: events.length, total: totalResults })}
+            : t("public.common.showingResults", {
+                shown: events.length,
+                total: totalResults,
+              })}
         </p>
-        {error && <p style={{ fontSize: 16, color: "#C12D32", marginBottom: 20 }}>{error}</p>}
+        {error && (
+          <p style={{ fontSize: 16, color: "#C12D32", marginBottom: 20 }}>
+            {error}
+          </p>
+        )}
         {/* <div style={{ display: "flex", flexWrap: "wrap", gap: "48px 28px" }}> */}
         <div
           className="event-cards-grid"
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gridTemplateColumns: "repeat(3, 1fr)",
             gap: "48px 28px",
-            rowGap: 48,
           }}
         >
-          {events.map((e, index) => <EventCard key={e._id || e.id || e.slug || e.title} event={e} index={index} />)}
+          {events.map((e, index) => (
+            <EventCard
+              key={e._id || e.id || e.slug || e.title}
+              event={e}
+              index={index}
+            />
+          ))}
         </div>
         <Pagination page={page} total={totalPages} setPage={setPage} />
       </div>
@@ -710,40 +895,84 @@ function EventsGrid() {
 }
 
 // ── Pagination ────────────────────────────────────────────────────────────────
-function Pagination({ page, total, setPage }: { page: number; total: number; setPage: Dispatch<SetStateAction<number>> }) {
+function Pagination({
+  page,
+  total,
+  setPage,
+}: {
+  page: number;
+  total: number;
+  setPage: Dispatch<SetStateAction<number>>;
+}) {
   const pages = buildPagination(page, total);
   return (
-    <div className="event-pagination" style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 16, padding: "48px 0 64px" }}>
+    <div
+      className="event-pagination"
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 16,
+        padding: "48px 0 64px",
+      }}
+    >
       {pages.map((p, i) => {
         const isActive = p === page;
         const isDots = typeof p === "string";
         return (
-          <button key={i} onClick={() => !isDots && setPage(p)} style={{
-            width: isDots ? "auto" : 47, height: isDots ? "auto" : 47,
-            minWidth: isDots ? 0 : 47,
-            borderRadius: "50%", border: "none",
-            background: isActive ? "#019839" : "transparent",
-            color: isActive ? "#fff" : "#019839",
-            fontSize: 18, fontWeight: 500, cursor: isDots ? "default" : "pointer",
-            fontFamily: "'Bebas Kai',sans-serif",
-            letterSpacing: isDots ? "0.2em" : 0,
-            display: "flex", alignItems: "center", justifyContent: "center"
-          }}>{p}</button>
+          <button
+            key={i}
+            onClick={() => !isDots && setPage(p)}
+            style={{
+              width: isDots ? "auto" : 47,
+              height: isDots ? "auto" : 47,
+              minWidth: isDots ? 0 : 47,
+              borderRadius: "50%",
+              border: "none",
+              background: isActive ? "#019839" : "transparent",
+              color: isActive ? "#fff" : "#019839",
+              fontSize: 18,
+              fontWeight: 500,
+              cursor: isDots ? "default" : "pointer",
+              fontFamily: "'Bebas Kai',sans-serif",
+              letterSpacing: isDots ? "0.2em" : 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {p}
+          </button>
         );
       })}
       {/* next arrow */}
-      <button onClick={() => setPage(p => Math.min(p + 1, total))} style={{
-        width: 47, height: 47, borderRadius: "50%", border: "none",
-        background: "#019839", color: "#fff", cursor: "pointer",
-        fontSize: 20, display: "flex", alignItems: "center", justifyContent: "center"
-      }}>›</button>
+      <button
+        onClick={() => setPage((p) => Math.min(p + 1, total))}
+        style={{
+          width: 47,
+          height: 47,
+          borderRadius: "50%",
+          border: "none",
+          background: "#019839",
+          color: "#fff",
+          cursor: "pointer",
+          fontSize: 20,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        ›
+      </button>
     </div>
   );
 }
 
 function buildPagination(page: number, total: number): Array<number | string> {
   if (total <= 5) return Array.from({ length: total }, (_, index) => index + 1);
-  const pages = new Set([1, total, page, page - 1, page + 1].filter(p => p >= 1 && p <= total));
+  const pages = new Set(
+    [1, total, page, page - 1, page + 1].filter((p) => p >= 1 && p <= total),
+  );
   const sorted = Array.from(pages).sort((a, b) => a - b);
   const result: Array<number | string> = [];
 
@@ -769,30 +998,75 @@ function formatEventDate(value: string | undefined, fallback: string) {
 // ── CTA Banner ────────────────────────────────────────────────────────────────
 function CTABanner() {
   return (
-    <section className="event-cta" style={{ position: "relative", overflow: "hidden", height: 502 }}>
-      <div style={{
-        position: "absolute", inset: 0,
-        backgroundImage: "linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.25)), url('https://images.unsplash.com/photo-1570489460099-2a6e43e4c3f0?w=1440&q=80')",
-        backgroundSize: "cover", backgroundPosition: "center"
-      }} />
-      <div style={{
-        position: "relative", zIndex: 2,
-        display: "flex", flexDirection: "column", alignItems: "center",
-        justifyContent: "center", height: "100%", textAlign: "center", padding: "0 24px"
-      }}>
-        <h2 className="bebas event-cta-title" style={{ fontSize: 94, color: "#fff", lineHeight: 1, textTransform: "uppercase" }}>
+    <section
+      className="event-cta"
+      style={{ position: "relative", overflow: "hidden", height: 502 }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage:
+            "linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.25)), url('https://images.unsplash.com/photo-1570489460099-2a6e43e4c3f0?w=1440&q=80')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      />
+      <div
+        style={{
+          position: "relative",
+          zIndex: 2,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
+          textAlign: "center",
+          padding: "0 24px",
+        }}
+      >
+        <h2
+          className="bebas event-cta-title"
+          style={{
+            fontSize: 94,
+            color: "#fff",
+            lineHeight: 1,
+            textTransform: "uppercase",
+          }}
+        >
           Start Your Ride Today
         </h2>
-        <p className="event-cta-text" style={{ fontSize: 24, color: "#fff", marginTop: 12, marginBottom: 36 }}>
+        <p
+          className="event-cta-text"
+          style={{
+            fontSize: 24,
+            color: "#fff",
+            marginTop: 12,
+            marginBottom: 36,
+          }}
+        >
           Download the ADCC app and join the cycling community.
         </p>
         <div className="event-cta-buttons" style={{ display: "flex", gap: 20 }}>
-          {["Google Play", "App Store"].map(s => (
-            <button key={s} style={{
-              background: "#fff", border: "none", borderRadius: 100,
-              padding: "14px 32px", fontWeight: 600, fontSize: 16, cursor: "pointer",
-              fontFamily: "'Bebas Kai',sans-serif", display: "flex", alignItems: "center", gap: 10
-            }}>{s}</button>
+          {["Google Play", "App Store"].map((s) => (
+            <button
+              key={s}
+              style={{
+                background: "#fff",
+                border: "none",
+                borderRadius: 100,
+                padding: "14px 32px",
+                fontWeight: 600,
+                fontSize: 16,
+                cursor: "pointer",
+                fontFamily: "'Bebas Kai',sans-serif",
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+              }}
+            >
+              {s}
+            </button>
           ))}
         </div>
       </div>
@@ -803,56 +1077,167 @@ function CTABanner() {
 // ── Footer ────────────────────────────────────────────────────────────────────
 function Footer() {
   return (
-    <footer className="event-footer" style={{ background: "#EAF4FF", padding: "60px 82px 32px" }}>
-      <div className="event-footer-main" style={{ display: "flex", gap: 64, marginBottom: 48 }}>
+    <footer
+      className="event-footer"
+      style={{ background: "#EAF4FF", padding: "60px 82px 32px" }}
+    >
+      <div
+        className="event-footer-main"
+        style={{ display: "flex", gap: 64, marginBottom: 48 }}
+      >
         <div className="event-footer-brand" style={{ flex: "0 0 340px" }}>
           <div style={{ marginBottom: 16 }}>
-            <span className="bebas" style={{ fontSize: 24, letterSpacing: 2 }}>ABU◉DHABI<br/>CYCLING CLUB</span>
+            <span className="bebas" style={{ fontSize: 24, letterSpacing: 2 }}>
+              ABU◉DHABI
+              <br />
+              CYCLING CLUB
+            </span>
           </div>
-          <p style={{ fontSize: 16, lineHeight: 1.6, color: "#000", maxWidth: 340, marginBottom: 24 }}>
-            From weekend warriors to elite athletes, we unite cyclists who share a passion for riding. ADCC is where your cycling journey thrives…
+          <p
+            style={{
+              fontSize: 16,
+              lineHeight: 1.6,
+              color: "#000",
+              maxWidth: 340,
+              marginBottom: 24,
+            }}
+          >
+            From weekend warriors to elite athletes, we unite cyclists who share
+            a passion for riding. ADCC is where your cycling journey thrives…
           </p>
-          <div className="event-newsletter" style={{ display: "flex", background: "#8DDF93", borderRadius: 8, overflow: "hidden", width: 340, height: 56 }}>
-            <input placeholder="Enter your email" style={{
-              flex: 1, border: "none", background: "transparent",
-              padding: "0 18px", fontSize: 15, fontFamily: "'Bebas Kai',sans-serif", outline: "none"
-            }} />
-            <button style={{
-              background: "#019839", color: "#fff", border: "none",
-              padding: "0 22px", fontSize: 15, cursor: "pointer", fontFamily: "'Bebas Kai',sans-serif"
-            }}>Submit</button>
+          <div
+            className="event-newsletter"
+            style={{
+              display: "flex",
+              background: "#8DDF93",
+              borderRadius: 8,
+              overflow: "hidden",
+              width: 340,
+              height: 56,
+            }}
+          >
+            <input
+              placeholder="Enter your email"
+              style={{
+                flex: 1,
+                border: "none",
+                background: "transparent",
+                padding: "0 18px",
+                fontSize: 15,
+                fontFamily: "'Bebas Kai',sans-serif",
+                outline: "none",
+              }}
+            />
+            <button
+              style={{
+                background: "#019839",
+                color: "#fff",
+                border: "none",
+                padding: "0 22px",
+                fontSize: 15,
+                cursor: "pointer",
+                fontFamily: "'Bebas Kai',sans-serif",
+              }}
+            >
+              Submit
+            </button>
           </div>
         </div>
         <div>
-          <div className="bebas" style={{ fontSize: 22, textTransform: "uppercase", marginBottom: 18 }}>Quick Links</div>
-          {["About Us", "Rides", "Events", "Cyclist's Corner", "Contact Us"].map(l => (
-            <p key={l} style={{ fontSize: 16, marginBottom: 10 }}><a href="#" style={{ color: "#000" }}>{l}</a></p>
+          <div
+            className="bebas"
+            style={{
+              fontSize: 22,
+              textTransform: "uppercase",
+              marginBottom: 18,
+            }}
+          >
+            Quick Links
+          </div>
+          {[
+            "About Us",
+            "Rides",
+            "Events",
+            "Cyclist's Corner",
+            "Contact Us",
+          ].map((l) => (
+            <p key={l} style={{ fontSize: 16, marginBottom: 10 }}>
+              <a href="#" style={{ color: "#000" }}>
+                {l}
+              </a>
+            </p>
           ))}
         </div>
         <div>
-          <div className="bebas" style={{ fontSize: 22, textTransform: "uppercase", marginBottom: 18 }}>Contact Us</div>
+          <div
+            className="bebas"
+            style={{
+              fontSize: 22,
+              textTransform: "uppercase",
+              marginBottom: 18,
+            }}
+          >
+            Contact Us
+          </div>
           {[
             { icon: "📞", text: "+971 2 654 5645" },
             { icon: "💬", text: "144226" },
             { icon: "✉️", text: "info@adcyclingclub.ae" },
-            { icon: "📍", text: "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18." },
+            {
+              icon: "📍",
+              text: "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18.",
+            },
           ].map((c, i) => (
-            <div key={i} style={{ display: "flex", gap: 12, marginBottom: 12, alignItems: "flex-start" }}>
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                gap: 12,
+                marginBottom: 12,
+                alignItems: "flex-start",
+              }}
+            >
               <span style={{ fontSize: 17 }}>{c.icon}</span>
               <span style={{ fontSize: 16, lineHeight: 1.4 }}>{c.text}</span>
             </div>
           ))}
         </div>
       </div>
-      <div className="event-footer-bottom" style={{ borderTop: "1px solid #D5D5D5", paddingTop: 22, display: "flex", justifyContent: "space-between", alignItems: "center", position: "relative" }}>
-        <p style={{ fontSize: 16, color: "rgba(0,0,0,0.7)" }}>Copyright 2026. Abu Dhabi Cycling Club</p>
-        <p style={{ fontSize: 16, color: "rgba(0,0,0,0.7)" }}>Copyright 2026. Abu Dhabi Cycling Club</p>
-        <button className="event-footer-top-button" style={{
-          position: "absolute", right: 0, top: -28,
-          width: 55, height: 55, borderRadius: "50%",
-          background: "#019839", border: "none", cursor: "pointer",
-          color: "#fff", fontSize: 22
-        }}>↑</button>
+      <div
+        className="event-footer-bottom"
+        style={{
+          borderTop: "1px solid #D5D5D5",
+          paddingTop: 22,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          position: "relative",
+        }}
+      >
+        <p style={{ fontSize: 16, color: "rgba(0,0,0,0.7)" }}>
+          Copyright 2026. Abu Dhabi Cycling Club
+        </p>
+        <p style={{ fontSize: 16, color: "rgba(0,0,0,0.7)" }}>
+          Copyright 2026. Abu Dhabi Cycling Club
+        </p>
+        <button
+          className="event-footer-top-button"
+          style={{
+            position: "absolute",
+            right: 0,
+            top: -28,
+            width: 55,
+            height: 55,
+            borderRadius: "50%",
+            background: "#019839",
+            border: "none",
+            cursor: "pointer",
+            color: "#fff",
+            fontSize: 22,
+          }}
+        >
+          ↑
+        </button>
       </div>
     </footer>
   );
@@ -863,7 +1248,10 @@ export default function Events() {
   return (
     <>
       <FontLoader />
-      <div className="event-page" style={{ minWidth: 320, overflowX: "hidden" }}>
+      <div
+        className="event-page"
+        style={{ minWidth: 320, overflowX: "hidden" }}
+      >
         <Hero />
         <SectionHeader />
         <EventsGrid />

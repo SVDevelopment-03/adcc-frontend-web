@@ -5,7 +5,6 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Order, OrderStatus } from './merchandiseData';
-import { updateMerchandiseOrderStatus, updateMerchandiseOrderTracking } from '../../services/merchandiseApi';
 
 interface MerchandiseOrdersProps {
   orders: Order[];
@@ -37,28 +36,18 @@ export function MerchandiseOrders({ orders, setOrders }: MerchandiseOrdersProps)
     return matchSearch && matchStatus;
   });
 
-  const updateStatus = async (orderId: string, status: OrderStatus) => {
-    try {
-      const updated = await updateMerchandiseOrderStatus(orderId, status);
-      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, ...updated } : o));
-      if (viewOrder?.id === orderId) setViewOrder(prev => prev ? { ...prev, ...updated } : null);
-      toast.success(`Order status updated to ${statusConfig[status].label}`);
-    } catch (error) {
-      toast.error((error as Error)?.message || 'Failed to update order status');
-    }
+  const updateStatus = (orderId: string, status: OrderStatus) => {
+    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status, updatedAt: new Date().toISOString() } : o));
+    if (viewOrder?.id === orderId) setViewOrder(prev => prev ? { ...prev, status } : null);
+    toast.success(`Order status updated to ${statusConfig[status].label}`);
   };
 
-  const saveTracking = async (orderId: string) => {
+  const saveTracking = (orderId: string) => {
     if (!trackingInput.trim()) return;
-    try {
-      const updated = await updateMerchandiseOrderTracking(orderId, trackingInput.trim());
-      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, ...updated } : o));
-      if (viewOrder?.id === orderId) setViewOrder(prev => prev ? { ...prev, ...updated } : null);
-      toast.success('Tracking number saved');
-      setTrackingInput('');
-    } catch (error) {
-      toast.error((error as Error)?.message || 'Failed to save tracking number');
-    }
+    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, trackingNumber: trackingInput.trim() } : o));
+    if (viewOrder?.id === orderId) setViewOrder(prev => prev ? { ...prev, trackingNumber: trackingInput.trim() } : null);
+    toast.success('Tracking number saved');
+    setTrackingInput('');
   };
 
   const stats = {

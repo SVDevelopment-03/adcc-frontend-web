@@ -4,7 +4,7 @@ import { auth } from '../config/firebase';
 import { verifyFirebaseAuth, registerUser, getCurrentUser, logout as apiLogout, CurrentUserResponse, registerFcmToken } from '../services/authApi';
 import { initFcmToken, clearStoredFcmToken, getLastSyncedFcmToken, markFcmTokenSynced, getFcmClientInfo, initForegroundMessageListener } from '../services/fcm';
 import { toast } from 'sonner';
-import i18n from '../i18n';
+import { useTranslation } from 'react-i18next';
 
 export interface PendingGoogleProfile {
   fullName: string;
@@ -40,6 +40,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const { t } = useTranslation();
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<CurrentUserResponse['data'] | null>(null);
   const [pendingGoogleProfile, setPendingGoogleProfile] = useState<PendingGoogleProfile | null>(null);
@@ -105,7 +106,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('refreshToken');
                 setUserProfile(null);
-                toast.error(i18n.t('auth.toasts.sessionExpired'));
+                toast.error(t('auth.toasts.sessionExpired'));
               }
             }
           } else {
@@ -133,11 +134,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           if (!verifyResponse.data.isNewUser && verifyResponse.data.user) {
             await refreshUserProfile();
           } else if (verifyResponse.data.isNewUser) {
-            toast.info(i18n.t('auth.toasts.completeRegistration'));
+            toast.info(t('auth.toasts.completeRegistration'));
           }
         } catch (error: any) {
           console.error('❌ Error verifying auth:', error);
-          toast.error(error?.response?.data?.message || i18n.t('auth.toasts.verifyFailed'));
+          toast.error(error?.response?.data?.message || t('auth.toasts.verifyFailed'));
         }
       } else {
         // Clear tokens when logged out
@@ -207,23 +208,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const displayName = userCredential.user.displayName || '';
         const email = userCredential.user.email || '';
         setPendingGoogleProfile({ fullName: displayName, email });
-        toast.info(i18n.t('auth.toasts.completeRegistration'));
+        toast.info(t('auth.toasts.completeRegistration'));
         isHandlingAuthManually.current = false;
         return;
       }
 
       await refreshUserProfile();
-      toast.success(i18n.t('auth.toasts.loginSuccess'));
+      toast.success(t('auth.toasts.loginSuccess'));
       isHandlingAuthManually.current = false;
     } catch (error: any) {
       isHandlingAuthManually.current = false;
       console.error('❌ Google sign-in error:', error);
       const errorMessage =
         error?.code === 'auth/popup-closed-by-user'
-          ? i18n.t('auth.toasts.googleSignInCancelled')
+          ? t('auth.toasts.googleSignInCancelled')
           : error?.code === 'auth/popup-blocked'
-          ? i18n.t('auth.toasts.googlePopupBlocked')
-          : error?.response?.data?.message || error?.message || i18n.t('auth.toasts.googleSignInFailed');
+          ? t('auth.toasts.googlePopupBlocked')
+          : error?.response?.data?.message || error?.message || t('auth.toasts.googleSignInFailed');
       toast.error(errorMessage);
       throw error;
     }
@@ -231,7 +232,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const completeGoogleRegistration = async (gender: 'Male' | 'Female', age: number, dob: string, country: string) => {
     if (!pendingGoogleProfile) {
-      toast.error(i18n.t('auth.toasts.completeRegistration'));
+      toast.error(t('auth.toasts.completeRegistration'));
       return;
     }
     try {
@@ -250,10 +251,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       setUserProfile(registerResponse.data.user as any);
       setPendingGoogleProfile(null);
-      toast.success(i18n.t('auth.toasts.registrationSuccess'));
+      toast.success(t('auth.toasts.registrationSuccess'));
     } catch (error: any) {
       console.error('❌ Complete Google registration error:', error);
-      toast.error(error?.response?.data?.message || i18n.t('auth.toasts.registrationFailed'));
+      toast.error(error?.response?.data?.message || t('auth.toasts.registrationFailed'));
       throw error;
     }
   };
@@ -283,7 +284,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // If new user, they need to register
       if (verifyResponse.data.isNewUser) {
         console.log('🆕 New user, redirecting to registration');
-        toast.info(i18n.t('auth.toasts.completeRegistration'));
+        toast.info(t('auth.toasts.completeRegistration'));
         isHandlingAuthManually.current = false;
         return;
       }
@@ -291,7 +292,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Fetch user profile
       console.log('👤 Fetching user profile...');
       await refreshUserProfile();
-      toast.success(i18n.t('auth.toasts.loginSuccess'));
+      toast.success(t('auth.toasts.loginSuccess'));
       isHandlingAuthManually.current = false;
     } catch (error: any) {
       isHandlingAuthManually.current = false;
@@ -303,16 +304,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         status: error?.response?.status,
       });
       const errorMessage = error.code === 'auth/user-not-found'
-        ? i18n.t('auth.toasts.userNotFound')
+        ? t('auth.toasts.userNotFound')
         : error.code === 'auth/wrong-password'
-        ? i18n.t('auth.toasts.incorrectPassword')
+        ? t('auth.toasts.incorrectPassword')
         : error.code === 'auth/invalid-email'
-        ? i18n.t('auth.toasts.invalidEmail')
+        ? t('auth.toasts.invalidEmail')
         : error.code === 'auth/user-disabled'
-        ? i18n.t('auth.toasts.accountDisabled')
+        ? t('auth.toasts.accountDisabled')
         : error?.response?.data?.message
         ? error.response.data.message
-        : error.message || i18n.t('auth.toasts.loginFailed');
+        : error.message || t('auth.toasts.loginFailed');
       toast.error(errorMessage);
       throw error;
     }
@@ -352,7 +353,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         
         // Fetch user profile
         await refreshUserProfile();
-        toast.success(i18n.t('auth.toasts.accountExistsLoggedIn'));
+        toast.success(t('auth.toasts.accountExistsLoggedIn'));
         isHandlingAuthManually.current = false;
         return;
       }
@@ -384,7 +385,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Set user profile
       setUserProfile(registerResponse.data.user as any);
       console.log('✅ User profile set:', registerResponse.data.user);
-      toast.success(i18n.t('auth.toasts.registrationSuccess'));
+      toast.success(t('auth.toasts.registrationSuccess'));
       isHandlingAuthManually.current = false;
     } catch (error: any) {
       isHandlingAuthManually.current = false;
@@ -399,7 +400,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       // Handle Firebase errors
       if (error.code === 'auth/email-already-in-use') {
-        toast.error(i18n.t('auth.toasts.emailInUse'));
+        toast.error(t('auth.toasts.emailInUse'));
         throw error;
       }
       
@@ -410,21 +411,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         
         // Check if it's a duplicate key error
         if (backendError?.message?.includes('duplicate') || backendError?.message?.includes('Duplicate')) {
-          toast.error(i18n.t('auth.toasts.accountExists'));
+          toast.error(t('auth.toasts.accountExists'));
         } else {
-          toast.error(backendError?.message || i18n.t('auth.toasts.accountExistsLogin'));
+          toast.error(backendError?.message || t('auth.toasts.accountExistsLogin'));
         }
         throw error;
       }
       
       // Handle other errors
       const errorMessage = error.code === 'auth/invalid-email'
-        ? i18n.t('auth.toasts.invalidEmail')
+        ? t('auth.toasts.invalidEmail')
         : error.code === 'auth/weak-password'
-        ? i18n.t('auth.toasts.weakPassword')
+        ? t('auth.toasts.weakPassword')
         : error?.response?.data?.message
         ? error.response.data.message
-        : error.message || i18n.t('auth.toasts.registrationFailed');
+        : error.message || t('auth.toasts.registrationFailed');
       toast.error(errorMessage);
       throw error;
     }
@@ -454,10 +455,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       hasSyncedFcmToken.current = false;
       setUserProfile(null);
       
-      toast.success(i18n.t('auth.toasts.logoutSuccess'));
+      toast.success(t('auth.toasts.logoutSuccess'));
     } catch (error: any) {
       console.error('❌ Logout error:', error);
-      toast.error(i18n.t('auth.toasts.logoutFailed'));
+      toast.error(t('auth.toasts.logoutFailed'));
       throw error;
     }
   };
