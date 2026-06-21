@@ -143,10 +143,83 @@ const createContentSettingWithImage = async (params: {
   await api.post('/v1/settings/content', formData);
 };
 
-const APP_BANNER_CONFIGS = [
-  { key: 'app_banner_home_screen', label: 'Home Screen Banner', translationKey: 'homeScreenBanner' },
-  { key: 'app_banner_merchandise_offer', label: 'Merchandise Offer Banner', translationKey: 'merchandiseOfferBanner' },
-] as const;
+export const getAppBanners = async (active?: boolean): Promise<ContentSetting[]> => {
+  try {
+    const response = await api.get('/v1/app-banners', {
+      params: active === undefined ? {} : { active: String(active) },
+    });
+
+    const payload = (response.data as any)?.data ?? response.data;
+    const banners = Array.isArray(payload?.banners) ? payload.banners : [];
+
+    return banners
+      .filter((item: unknown): item is Record<string, unknown> => Boolean(item && typeof item === 'object'))
+      .map((item) => ({
+        _id: String(item._id ?? item.id ?? item.key ?? ''),
+        group: String(item.group ?? 'app_banner'),
+        key: String(item.key ?? ''),
+        label: String(item.label ?? ''),
+        title: typeof item.title === 'string' ? item.title : undefined,
+        description: typeof item.description === 'string' ? item.description : undefined,
+        image: typeof item.image === 'string' ? item.image : undefined,
+        active: typeof item.active === 'boolean' ? item.active : undefined,
+        createdAt: typeof item.createdAt === 'string' ? item.createdAt : undefined,
+        updatedAt: typeof item.updatedAt === 'string' ? item.updatedAt : undefined,
+      }))
+      .filter((item) => item.group && item.key && item.label);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to load app banners'));
+  }
+};
+
+export const createAppBanner = async (params: {
+  key?: string;
+  label?: string;
+  title?: string;
+  description?: string;
+  active?: boolean;
+  imageFile?: File;
+}): Promise<void> => {
+  try {
+    const formData = new FormData();
+    if (params.key) formData.append('key', params.key);
+    if (params.label) formData.append('label', params.label);
+    if (params.title) formData.append('title', params.title);
+    if (params.description !== undefined) formData.append('description', params.description);
+    if (params.active !== undefined) formData.append('active', String(params.active));
+    if (params.imageFile) formData.append('image', params.imageFile);
+    await api.post('/v1/app-banners', formData);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to create app banner'));
+  }
+};
+
+export const updateAppBanner = async (
+  key: string,
+  payload: Partial<Pick<ContentSetting, 'title' | 'description' | 'active'>> & { imageFile?: File }
+): Promise<void> => {
+  try {
+    const formData = new FormData();
+    if (payload.title !== undefined) formData.append('title', payload.title);
+    if (payload.description !== undefined) formData.append('description', payload.description);
+    if (payload.active !== undefined) formData.append('active', String(payload.active));
+    if (payload.imageFile) {
+      formData.append('image', payload.imageFile);
+    }
+    await api.patch(`/v1/app-banners/${encodeURIComponent(key)}`, formData);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to update app banner'));
+  }
+};
+
+export const deleteAppBanner = async (key: string): Promise<void> => {
+  try {
+    if (!key) throw new Error('Banner key is required');
+    await api.delete(`/v1/app-banners/${encodeURIComponent(key)}`);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to delete app banner'));
+  }
+};
 
 interface ItemFormState {
   title: string;
@@ -172,12 +245,16 @@ const fileToDataUrl = async (file: File): Promise<string> =>
 export function CMS() {
   const { t } = useTranslation();
   const [allItems, setAllItems] = useState<ContentSetting[]>([]);
+  const [appBannerItems, setAppBannerItems] = useState<ContentSetting[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'homepage' | 'static' | 'appBanner'>('homepage');
   const [bannerFiles, setBannerFiles] = useState<Record<string, File | null>>({});
   const [bannerPreviews, setBannerPreviews] = useState<Record<string, string>>({});
   const [savingBanners, setSavingBanners] = useState<Record<string, boolean>>({});
+  const [newBannerFile, setNewBannerFile] = useState<File | null>(null);
+  const [newBannerPreview, setNewBannerPreview] = useState<string | null>(null);
+  const [savingNewBanner, setSavingNewBanner] = useState(false);
   const bannerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const [selectedItem, setSelectedItem] = useState<ContentSetting | null>(null);
@@ -225,12 +302,7 @@ export function CMS() {
     return allItems.filter((item) => !isHomepageGroup(item.group) && isStaticGroup(item.group));
   }, [allItems, isHomepageGroup, isStaticGroup]);
 
-  const appBannerItems = useMemo(() => {
-    return allItems.filter((item) => {
-      const g = String(item.group || '').toLowerCase();
-      return g === 'app_banner' || g === 'app-banner';
-    });
-  }, [allItems]);
+  const appBannerItemsMemo = useMemo(() => appBannerItems, [appBannerItems]);
 
   const handleBannerFileChange = (bannerKey: string, file: File | null) => {
     setBannerFiles((prev) => ({ ...prev, [bannerKey]: file }));
@@ -244,22 +316,62 @@ export function CMS() {
     }
   };
 
+  const handleNewBannerFileChange = (file: File | null) => {
+    if (newBannerPreview) {
+      URL.revokeObjectURL(newBannerPreview);
+    }
+    if (file) {
+      setNewBannerFile(file);
+      setNewBannerPreview(URL.createObjectURL(file));
+      return;
+    }
+    setNewBannerFile(null);
+    setNewBannerPreview(null);
+  };
+
+  const clearNewBannerUpload = () => {
+    if (newBannerPreview) {
+      URL.revokeObjectURL(newBannerPreview);
+    }
+    setNewBannerFile(null);
+    setNewBannerPreview(null);
+  };
+
+  const handleAddNewBanner = async () => {
+    if (!newBannerFile) return;
+
+    setSavingNewBanner(true);
+    try {
+      await createAppBanner({
+        title: `App Banner ${Date.now()}`,
+        imageFile: newBannerFile,
+      });
+      toast.success(t('cms.appBanner.uploadSuccess'));
+      clearNewBannerUpload();
+      await fetchAllGroupsSettings();
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, t('cms.appBanner.uploadError')));
+    } finally {
+      setSavingNewBanner(false);
+    }
+  };
+
   const handleBannerSave = async (bannerKey: string, bannerLabel: string) => {
     const file = bannerFiles[bannerKey];
     if (!file) return;
 
     setSavingBanners((prev) => ({ ...prev, [bannerKey]: true }));
     try {
-      const existing = appBannerItems.find((item) => item.key === bannerKey);
+      const existing = appBannerItemsMemo.find((item) => item.key === bannerKey);
       if (existing) {
-        await updateContentSetting(bannerKey, { imageFile: file });
+        await updateAppBanner(bannerKey, { imageFile: file });
       } else {
-        await createContentSettingWithImage({
-          group: 'app_banner',
+        await createAppBanner({
           key: bannerKey,
           label: bannerLabel,
           title: bannerLabel,
           imageFile: file,
+          active: true,
         });
       }
       toast.success(t('cms.appBanner.uploadSuccess'));
@@ -287,12 +399,14 @@ export function CMS() {
     setIsLoading(true);
     setErrorMessage(null);
     try {
-      const data = await getContentSettings({});
+      const [data, bannerData] = await Promise.all([getContentSettings({}), getAppBanners()]);
       setAllItems(data);
+      setAppBannerItems(bannerData);
     } catch (error) {
       const message = getApiErrorMessage(error, t('cms.toasts.loadError'));
       setErrorMessage(message);
       setAllItems([]);
+      setAppBannerItems([]);
       toast.error(message);
     } finally {
       setIsLoading(false);
@@ -375,7 +489,11 @@ export function CMS() {
 
     setIsDeleting(true);
     try {
-      await deleteContentSetting(item.key);
+      if (item.group === 'app_banner') {
+        await deleteAppBanner(item.key);
+      } else {
+        await deleteContentSetting(item.key);
+      }
       toast.success(t('cms.toasts.deleteSuccess'));
       await fetchAllGroupsSettings();
     } catch (error) {
@@ -473,69 +591,138 @@ export function CMS() {
           {activeTab === 'appBanner' ? (
             <div className="p-6 rounded-2xl shadow-sm bg-white">
               <h2 className="text-xl mb-6" style={{ color: '#333' }}>{t('cms.tabs.appBanner')}</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {APP_BANNER_CONFIGS.map((config) => {
-                  const existing = appBannerItems.find((item) => item.key === config.key);
-                  const previewUrl = bannerPreviews[config.key] || existing?.image || '';
-                  const selectedFile = bannerFiles[config.key];
-                  const isSaving = savingBanners[config.key] ?? false;
 
-                  return (
-                    <div key={config.key} className="rounded-xl border p-5 space-y-4" style={{ borderColor: '#E5DDD4' }}>
-                      <div className="flex items-center gap-2">
-                        <ImageIcon className="w-5 h-5" style={{ color: '#C12D32' }} />
-                        <h3 className="text-sm font-medium" style={{ color: '#333' }}>
-                          {t(`cms.appBanner.${config.translationKey}`)}
-                        </h3>
-                      </div>
+              <div className="rounded-xl border p-5 space-y-4" style={{ borderColor: '#E5DDD4' }}>
+                <div className="flex items-center gap-2">
+                  <ImageIcon className="w-5 h-5" style={{ color: '#C12D32' }} />
+                  <h3 className="text-sm font-medium" style={{ color: '#333' }}>
+                    {t('cms.appBanner.addNewBanner')}
+                  </h3>
+                </div>
 
-                      <div
-                        className="w-full rounded-lg overflow-hidden flex items-center justify-center"
-                        style={{ backgroundColor: '#F3EEE7', minHeight: '160px' }}
-                      >
-                        {previewUrl ? (
-                          <img
-                            src={previewUrl}
-                            alt={config.label}
-                            className="w-full object-cover"
-                            style={{ maxHeight: '200px' }}
-                          />
-                        ) : (
-                          <div className="flex flex-col items-center gap-2 py-8">
-                            <ImageIcon className="w-10 h-10" style={{ color: '#CCC' }} />
-                            <span className="text-xs" style={{ color: '#999' }}>
-                              {t('cms.appBanner.noBanner')}
-                            </span>
+                <div className="space-y-2">
+                  <label className="block text-xs font-medium" style={{ color: '#666' }}>
+                    {t('cms.appBanner.uploadBanner')}
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleNewBannerFileChange(e.target.files?.[0] ?? null)}
+                    className="w-full border rounded-lg px-3 py-2 text-sm"
+                    style={{ borderColor: '#E5DDD4' }}
+                  />
+                </div>
+
+                {newBannerPreview ? (
+                  <div className="rounded-lg overflow-hidden border" style={{ borderColor: '#E5DDD4' }}>
+                    <img src={newBannerPreview} alt="New banner preview" className="w-full h-32 object-cover" />
+                  </div>
+                ) : null}
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleAddNewBanner}
+                    disabled={!newBannerFile || savingNewBanner}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-white text-sm disabled:opacity-50 transition-opacity"
+                    style={{ backgroundColor: '#C12D32' }}
+                  >
+                    <Upload className="w-4 h-4" />
+                    {savingNewBanner ? t('cms.saving') : t('cms.appBanner.saveBanner')}
+                  </button>
+                  <button
+                    onClick={clearNewBannerUpload}
+                    type="button"
+                    className="flex-1 px-4 py-2 rounded-lg text-sm border"
+                    style={{ borderColor: '#E5DDD4', color: '#333' }}
+                  >
+                    {t('cms.appBanner.clearSelection')}
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                {appBannerItemsMemo.length === 0 ? (
+                  <div className="rounded-xl border p-6 text-center" style={{ borderColor: '#E5DDD4' }}>
+                    {t('cms.appBanner.noBanners')}
+                  </div>
+                ) : (
+                  appBannerItemsMemo.map((item) => {
+                    const previewUrl = bannerPreviews[item.key] || item.image || '';
+                    const selectedFile = bannerFiles[item.key];
+                    const isSaving = savingBanners[item.key] ?? false;
+
+                    return (
+                      <div key={item.key} className="rounded-xl border p-5 space-y-4" style={{ borderColor: '#E5DDD4' }}>
+                        <div className="flex items-center gap-2">
+                          <ImageIcon className="w-5 h-5" style={{ color: '#C12D32' }} />
+                          <div>
+                            <h3 className="text-sm font-medium" style={{ color: '#333' }}>
+                              {item.label || item.title || item.key}
+                            </h3>
+                            {item.active === false ? (
+                              <span className="text-xs" style={{ color: '#999' }}>
+                                {t('cms.appBanner.inactive')}
+                              </span>
+                            ) : null}
                           </div>
-                        )}
-                      </div>
+                        </div>
 
-                      <div className="space-y-2">
-                        <label className="block text-xs font-medium" style={{ color: '#666' }}>
-                          {t('cms.appBanner.uploadBanner')}
-                        </label>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          ref={(el) => { bannerInputRefs.current[config.key] = el; }}
-                          onChange={(e) => handleBannerFileChange(config.key, e.target.files?.[0] ?? null)}
-                          className="w-full border rounded-lg px-3 py-2 text-sm"
-                          style={{ borderColor: '#E5DDD4' }}
-                        />
-                      </div>
+                        <div
+                          className="w-full rounded-lg overflow-hidden flex items-center justify-center"
+                          style={{ backgroundColor: '#F3EEE7', minHeight: '160px' }}
+                        >
+                          {previewUrl ? (
+                            <img
+                              src={previewUrl}
+                              alt={item.label || item.key}
+                              className="w-full object-cover"
+                              style={{ maxHeight: '200px' }}
+                            />
+                          ) : (
+                            <div className="flex flex-col items-center gap-2 py-8">
+                              <ImageIcon className="w-10 h-10" style={{ color: '#CCC' }} />
+                              <span className="text-xs" style={{ color: '#999' }}>
+                                {t('cms.appBanner.noBanner')}
+                              </span>
+                            </div>
+                          )}
+                        </div>
 
-                      <button
-                        onClick={() => handleBannerSave(config.key, config.label)}
-                        disabled={!selectedFile || isSaving}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-white text-sm disabled:opacity-50 transition-opacity"
-                        style={{ backgroundColor: '#C12D32' }}
-                      >
-                        <Upload className="w-4 h-4" />
-                        {isSaving ? t('cms.saving') : t('cms.appBanner.saveBanner')}
-                      </button>
-                    </div>
-                  );
-                })}
+                        <div className="space-y-2">
+                          <label className="block text-xs font-medium" style={{ color: '#666' }}>
+                            {t('cms.appBanner.uploadBanner')}
+                          </label>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            ref={(el) => { bannerInputRefs.current[item.key] = el; }}
+                            onChange={(e) => handleBannerFileChange(item.key, e.target.files?.[0] ?? null)}
+                            className="w-full border rounded-lg px-3 py-2 text-sm"
+                            style={{ borderColor: '#E5DDD4' }}
+                          />
+                        </div>
+
+                        <button
+                          onClick={() => handleBannerSave(item.key, item.label || item.key)}
+                          disabled={!selectedFile || isSaving}
+                          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-white text-sm disabled:opacity-50 transition-opacity"
+                          style={{ backgroundColor: '#C12D32' }}
+                        >
+                          <Upload className="w-4 h-4" />
+                          {isSaving ? t('cms.saving') : t('cms.appBanner.saveBanner')}
+                        </button>
+                        <button
+                          onClick={() => handleDelete(item)}
+                          disabled={isDeleting}
+                          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm border border-red-200 text-red-600 disabled:opacity-50 transition-opacity"
+                          style={{ backgroundColor: '#FFF5F5' }}
+                        >
+                          {t('cms.delete', 'Delete')}
+                        </button>
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </div>
           ) : activeTab === 'homepage' ? (
