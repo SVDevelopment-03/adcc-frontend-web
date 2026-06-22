@@ -465,10 +465,10 @@ function ScheduleSection({
           <div className=" left-[60px] top-[265px] z-20 flex items-center">
           {/* <div className="left-[60px]  z-20 flex h-[58.33px] items-center"> */}
             {[
-              "/img/avatar-1.png",
-              "/img/avatar-2.png",
-              "/img/avatar-3.png",
-              "/img/avatar-4.png",
+              "/img/Ellipse 2 (1).png",
+              "/img/Ellipse 3 (1).png",
+              "/img/Ellipse 4 (1).png",
+              "/img/Ellipse 5 (1).png",
             ].map((src) => (
               <img
                 key={src}
