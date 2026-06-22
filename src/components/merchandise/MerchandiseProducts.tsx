@@ -4,11 +4,20 @@ import {
   Upload, X, ChevronDown, Tag, CheckCircle, AlertTriangle, Archive
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { mockProducts, mockCategories, Product, ProductVariant, ProductStatus } from './merchandiseData';
+import { Product, ProductVariant, ProductStatus, Category } from './merchandiseData';
+import {
+  createMerchandiseProduct,
+  updateMerchandiseProduct,
+  deleteMerchandiseProduct,
+  updateMerchandiseProductStatus,
+  updateMerchandiseProductFeatured,
+} from '../../services/merchandiseApi';
 
 interface MerchandiseProductsProps {
   products: Product[];
+  categories: Category[];
   setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
+  defaultSource?: 'adcc' | 'vendor';
 }
 
 const emptyVariant = (): ProductVariant => ({
@@ -20,9 +29,9 @@ const emptyVariant = (): ProductVariant => ({
   sku: '',
 });
 
-const emptyProduct = (): Omit<Product, 'id' | 'sold' | 'createdAt'> => ({
+const emptyProduct = (source: 'adcc' | 'vendor' = 'adcc'): Omit<Product, 'id' | 'sold' | 'createdAt'> => ({
   name: '',
-  categoryId: mockCategories[0].id,
+  categoryId: '',
   subcategoryId: '',
   price: 0,
   originalPrice: undefined,
@@ -35,7 +44,7 @@ const emptyProduct = (): Omit<Product, 'id' | 'sold' | 'createdAt'> => ({
   tags: [],
   totalStock: 0,
   sku: '',
-  source: 'adcc',
+  source,
 });
 
 const statusConfig: Record<ProductStatus, { label: string; color: string; bg: string; icon: React.ReactNode }> = {
@@ -44,7 +53,7 @@ const statusConfig: Record<ProductStatus, { label: string; color: string; bg: st
   archived: { label: 'Archived', color: '#6B7280', bg: '#F9FAFB', icon: <Archive className="w-3 h-3" /> },
 };
 
-export function MerchandiseProducts({ products, setProducts }: MerchandiseProductsProps) {
+export function MerchandiseProducts({ products, categories, setProducts, defaultSource }: MerchandiseProductsProps) {
   const [search, setSearch] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterStatus, setFilterStatus] = useState<'all' | ProductStatus>('all');
@@ -52,7 +61,7 @@ export function MerchandiseProducts({ products, setProducts }: MerchandiseProduc
   const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [viewProduct, setViewProduct] = useState<Product | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-  const [form, setForm] = useState(emptyProduct());
+  const [form, setForm] = useState(emptyProduct(defaultSource ?? 'adcc'));
   const [tagInput, setTagInput] = useState('');
   const [imageUrlInput, setImageUrlInput] = useState('');
 
@@ -64,7 +73,10 @@ export function MerchandiseProducts({ products, setProducts }: MerchandiseProduc
   });
 
   const openCreate = () => {
-    setForm(emptyProduct());
+    setForm({
+      ...emptyProduct(defaultSource ?? 'adcc'),
+      categoryId: categories[0]?.id ?? '',
+    });
     setTagInput('');
     setImageUrlInput('');
     setEditProduct(null);
@@ -87,6 +99,7 @@ export function MerchandiseProducts({ products, setProducts }: MerchandiseProduc
       tags: [...product.tags],
       totalStock: product.totalStock,
       sku: product.sku,
+      source: product.source ?? (defaultSource ?? 'adcc'),
     });
     setTagInput('');
     setImageUrlInput('');
@@ -94,44 +107,62 @@ export function MerchandiseProducts({ products, setProducts }: MerchandiseProduc
     setShowForm(true);
   };
 
-  const handleSave = () => {
-    if (!form.name.trim() || !form.sku.trim() || form.price <= 0) {
-      toast.error('Name, SKU and price are required');
+  const handleSave = async () => {
+    if (!form.name.trim() || !form.sku.trim() || form.price <= 0 || !form.categoryId) {
+      toast.error('Name, SKU, category and price are required');
       return;
     }
     const totalStock = form.variants.reduce((s, v) => s + (v.stock || 0), 0);
-    if (editProduct) {
-      setProducts(prev => prev.map(p => p.id === editProduct.id ? { ...editProduct, ...form, totalStock } : p));
-      toast.success('Product updated successfully');
-    } else {
-      const newProduct: Product = {
+    try {
+      const payload = {
         ...form,
-        id: `p${Date.now()}`,
-        sold: 0,
-        totalStock,
-        createdAt: new Date().toISOString().split('T')[0],
+        source: form.source ?? editProduct?.source ?? defaultSource ?? 'adcc',
       };
-      setProducts(prev => [newProduct, ...prev]);
-      toast.success('Product created successfully');
+      if (editProduct) {
+        const updated = await updateMerchandiseProduct(editProduct.id, payload);
+        setProducts(prev => prev.map(p => p.id === editProduct.id ? { ...updated, totalStock, source: updated.source ?? editProduct.source ?? defaultSource ?? 'adcc' } : p));
+        toast.success('Product updated successfully');
+      } else {
+        const created = await createMerchandiseProduct(payload);
+        setProducts(prev => [created, ...prev]);
+        toast.success('Product created successfully');
+      }
+      setShowForm(false);
+    } catch (error) {
+      toast.error((error as Error)?.message || 'Failed to save product');
     }
-    setShowForm(false);
   };
 
-  const handleDelete = (id: string) => {
-    setProducts(prev => prev.filter(p => p.id !== id));
-    toast.success('Product deleted');
-    setDeleteConfirm(null);
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteMerchandiseProduct(id);
+      setProducts(prev => prev.filter(p => p.id !== id));
+      toast.success('Product deleted');
+      setDeleteConfirm(null);
+    } catch (error) {
+      toast.error((error as Error)?.message || 'Failed to delete product');
+    }
   };
 
-  const handleToggleStatus = (product: Product) => {
-    const next: ProductStatus = product.status === 'published' ? 'draft' : 'published';
-    setProducts(prev => prev.map(p => p.id === product.id ? { ...p, status: next } : p));
-    toast.success(`Product ${next}`);
+  const handleToggleStatus = async (product: Product) => {
+    try {
+      const next: ProductStatus = product.status === 'published' ? 'draft' : 'published';
+      const updated = await updateMerchandiseProductStatus(product.id, next);
+      setProducts(prev => prev.map(p => p.id === product.id ? { ...p, status: updated.status } : p));
+      toast.success(`Product ${updated.status}`);
+    } catch (error) {
+      toast.error((error as Error)?.message || 'Failed to update product status');
+    }
   };
 
-  const handleToggleFeatured = (product: Product) => {
-    setProducts(prev => prev.map(p => p.id === product.id ? { ...p, featured: !p.featured } : p));
-    toast.success(product.featured ? 'Removed from featured' : 'Marked as featured');
+  const handleToggleFeatured = async (product: Product) => {
+    try {
+      const updated = await updateMerchandiseProductFeatured(product.id, !product.featured);
+      setProducts(prev => prev.map(p => p.id === product.id ? { ...p, featured: updated.featured } : p));
+      toast.success(updated.featured ? 'Marked as featured' : 'Removed from featured');
+    } catch (error) {
+      toast.error((error as Error)?.message || 'Failed to update featured state');
+    }
   };
 
   const addTag = () => {
@@ -168,7 +199,7 @@ export function MerchandiseProducts({ products, setProducts }: MerchandiseProduc
     }));
   };
 
-  const selectedCategory = mockCategories.find(c => c.id === form.categoryId);
+  const selectedCategory = categories.find(c => c.id === form.categoryId);
 
   return (
     <div className="space-y-6">
@@ -190,12 +221,12 @@ export function MerchandiseProducts({ products, setProducts }: MerchandiseProduc
           className="px-4 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-red-600"
         >
           <option value="all">All Categories</option>
-          {mockCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
 
         <select
           value={filterStatus}
-          onChange={e => setFilterStatus(e.target.value as any)}
+          onChange={e => setFilterStatus(e.target.value as 'all' | ProductStatus)}
           className="px-4 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-red-600"
         >
           <option value="all">All Status</option>
@@ -230,7 +261,7 @@ export function MerchandiseProducts({ products, setProducts }: MerchandiseProduc
           </thead>
           <tbody>
             {filtered.map((product, idx) => {
-              const cat = mockCategories.find(c => c.id === product.categoryId);
+              const cat = categories.find(c => c.id === product.categoryId);
               const st = statusConfig[product.status];
               return (
                 <tr key={product.id} className="border-t border-gray-100 hover:bg-gray-50 transition-colors">
@@ -394,7 +425,7 @@ export function MerchandiseProducts({ products, setProducts }: MerchandiseProduc
                     onChange={e => setForm(f => ({ ...f, categoryId: e.target.value, subcategoryId: '' }))}
                     className="w-full px-4 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-red-600"
                   >
-                    {mockCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
                 </div>
 
