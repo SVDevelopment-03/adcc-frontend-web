@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   Search,
@@ -134,7 +134,6 @@ function buildPageNumbers(currentPage: number, totalPages: number) {
 }
 
 export default function CommunitiesPage() {
-  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const heroTitleWords = useWordList("public.communities.hero.titleWords");
   const heroBreadcrumb = useWordList("public.communities.hero.breadcrumb");
@@ -474,7 +473,7 @@ export default function CommunitiesPage() {
                 />
               ))
             : communities.map((item, index) => (
-                <motion.button
+                <motion.div
                   initial={{ opacity: 0, y: 120 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{
@@ -483,13 +482,12 @@ export default function CommunitiesPage() {
                     ease: "easeOut",
                   }}
                   viewport={{ once: true }}
-                  type="button"
                   key={item.id}
-                  onClick={() =>
-                    navigate(`/user-communities/${encodeURIComponent(item.id)}`)
-                  }
-                  className="group relative h-[300px] overflow-hidden rounded-[10px] bg-black text-left sm:h-[380px] lg:h-[467px]"
                 >
+                  <Link
+                    to={`/user-communities/${encodeURIComponent(item.id)}`}
+                    className="group relative block h-[300px] overflow-hidden rounded-[10px] bg-black text-left sm:h-[380px] lg:h-[467px]"
+                  >
                   <motion.img
                     src={item.image}
                     alt={item.title}
@@ -519,7 +517,8 @@ export default function CommunitiesPage() {
                       </span>
                     </div>
                   </div>
-                </motion.button>
+                  </Link>
+                </motion.div>
               ))}
         </div>
 

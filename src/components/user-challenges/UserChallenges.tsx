@@ -11,6 +11,7 @@ import {
   PublicPageHero,
   useWordList,
 } from "../public/publicPageHelpers";
+import { Link } from "react-router-dom";
 
 const PAGE_SIZE = 4;
 const CHALLENGE_FALLBACK_IMAGE =
@@ -455,9 +456,12 @@ justify-content: center !important;}
                     </p>
                   </div>
 
-                  <button className="rounded-full border border-white px-5 py-3 text-[13px] font-semibold sm:px-6">
+                  <Link
+                    to={`/user-challenges/${encodeURIComponent(item.id)}`}
+                    className="rounded-full border border-white px-5 py-3 text-[13px] font-semibold sm:px-6"
+                  >
                     {t("public.common.joinChallenge")}
-                  </button>
+                  </Link>
                 </div>
               </div>
             </motion.div>

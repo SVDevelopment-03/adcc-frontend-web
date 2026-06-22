@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 import {
   ArrowRight,
   Bike,
@@ -34,6 +35,41 @@ const TARGET_COMMUNITY_TITLE = "Abu Dhabi Cycling Community";
 const TARGET_COMMUNITY_SLUG = "abu-dhabi-cycling-community";
 const FALLBACK_HERO_IMAGE = "/img/pexels-ander-garcia-1317358711-25016478 1.png";
 const FALLBACK_TRACK_IMAGE = "/img/image 3049.png";
+
+const FALLBACK_TRACKS: CommunityTrack[] = [
+  { id: "dubai-marina-loop", title: "Dubai Marina Loop", city: "Abu Dhabi", distance: 25, difficulty: "Easy", trackType: "Loop", image: "/img/pexels-stephen-noulton-421904730-17272198 1 (1).png" },
+  { id: "yas-island-circuit", title: "Yas Island Circuit", city: "Abu Dhabi", distance: 45, difficulty: "Intermediate", trackType: "Circuit", image: FALLBACK_TRACK_IMAGE },
+  { id: "sharjah-corniche", title: "Sharjah Corniche", city: "Abu Dhabi", distance: 18, difficulty: "Easy", trackType: "Road", image: FALLBACK_TRACK_IMAGE },
+];
+
+const FALLBACK_COMMUNITY: CommunityApiResponse = {
+  id: TARGET_COMMUNITY_SLUG,
+  slug: TARGET_COMMUNITY_SLUG,
+  title: TARGET_COMMUNITY_TITLE,
+  description: "The cycling community of Abu Dhabi unites cyclists of all levels to explore the best routes. Join us for group rides, social events, and community challenges. Whether a beginner or experienced, you will find your place here.",
+  type: "Official",
+  category: "Cycling Community",
+  location: "Abu Dhabi",
+  city: "Abu Dhabi",
+  country: "United Arab Emirates",
+  image: FALLBACK_HERO_IMAGE,
+  isActive: true,
+  isPublic: true,
+  memberCount: "2456",
+  upcomingEventCount: "3",
+  weeklyRides: "12+",
+  ridesThisMonth: "48",
+  distance: 45000,
+  terrain: "Road",
+  allowPosts: true,
+  trackId: FALLBACK_TRACKS,
+};
+
+const FALLBACK_EVENTS: EventApiResponse[] = [
+  { id: "abu-dhabi-grand-prix-ride", title: "Abu Dhabi Grand Prix Ride", description: "A challenging ride around Abu Dhabi.", eventImage: "/img/Frame 2147226042.png", eventDate: "2026-03-15", eventTime: "7:00 AM", endTime: "11:00 AM", address: "Yas Marina Circuit", city: "Abu Dhabi", maxParticipants: 200, currentParticipants: 156, distance: 42, category: "Race", status: "Open", rewards: { points: 0, badgeName: "" }, galleryImages: [] },
+  { id: "dubai-marina-sunrise-ride", title: "Dubai Marina Sunrise Ride", description: "A scenic sunrise community ride.", eventImage: "/img/490796704_1417267435941639_5633845168834004037_n. 1.png", eventDate: "2026-03-20", eventTime: "6:00 AM", endTime: "9:00 AM", address: "Dubai Marina", city: "Dubai", maxParticipants: 120, currentParticipants: 89, distance: 25, category: "Community Ride", status: "Open", rewards: { points: 0, badgeName: "" }, galleryImages: [] },
+  { id: "al-ain-mountain-challenge", title: "Al Ain Mountain Challenge", description: "A demanding mountain cycling challenge.", eventImage: "/img/503933859_18364437631178203_8919788300453479084_n. 1.png", eventDate: "2026-03-28", eventTime: "6:30 AM", endTime: "12:00 PM", address: "Jebel Hafeet", city: "Al Ain", maxParticipants: 200, currentParticipants: 156, distance: 65, category: "Race", status: "Open", rewards: { points: 0, badgeName: "" }, galleryImages: [] },
+];
 
 const getCommunityId = (community?: CommunityApiResponse | null) =>
   community?._id || community?.id || "";
@@ -269,12 +305,10 @@ function TracksSection({ tracks }: { tracks: CommunityTrack[] }) {
         </p>
       ) : (
         <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-10 lg:grid-cols-3">
-          {tracks.map((track, index) => (
+          {tracks.map((track) => (
             <div
               key={track._id || track.id || track.title}
-              className={`rounded-xl p-3 ${
-                index === 0 ? "bg-[#323232] text-white" : "bg-white text-black"
-              }`}
+              className="group flex min-h-[645px] flex-col rounded-xl bg-[#FFFFFF] p-3 text-black transition-colors duration-300 hover:bg-[#323232] hover:text-white"
             >
               <img
                 src={track.image || FALLBACK_TRACK_IMAGE}
@@ -282,7 +316,7 @@ function TracksSection({ tracks }: { tracks: CommunityTrack[] }) {
                 className="h-[363px] w-full rounded-lg object-cover"
               />
 
-              <div className="p-4">
+              <div className="flex flex-1 flex-col p-4">
                 <p className="flex gap-2 text-sm opacity-80">
                   <MapPin size={18} /> {track.city || "Location TBA"}
                 </p>
@@ -305,6 +339,13 @@ function TracksSection({ tracks }: { tracks: CommunityTrack[] }) {
                     </div>
                   ))}
                 </div>
+
+                <button
+                  type="button"
+                  className="mt-[30px] flex h-[50px] w-[157px] items-center justify-center rounded-[30px] border border-black/50 bg-transparent text-[16px] font-bold capitalize leading-[22px] text-black/50 transition-colors duration-300 group-hover:border-[#019839] group-hover:bg-[#019839] group-hover:text-white"
+                >
+                  View Details
+                </button>
               </div>
             </div>
           ))}
@@ -341,48 +382,38 @@ function FaqSection({ community }: { community: CommunityApiResponse }) {
   );
 }
 
-function AppCta({ community }: { community: CommunityApiResponse }) {
-  return (
-    <section
-      className="flex h-[502px] items-center justify-center bg-cover bg-center px-10 text-center text-white"
-      style={{
-        backgroundImage: `linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.35)),url('${getCommunityImage(
-          community,
-        )}')`,
-      }}
-    >
-      <div>
-        <h2 className="text-[80px] font-black uppercase">Start Your Ride Today</h2>
-        <p className="mt-7 text-[26px]">
-          Download the ADCC app and join {community.title}.
-        </p>
-        <div className="mt-10 flex justify-center gap-5 max-sm:flex-col">
-          <button className="rounded-full bg-white px-9 py-4 text-black">
-            <span className="block text-xs">GET IT ON</span> <b>Google Play</b>
-          </button>
-          <button className="rounded-full bg-white px-9 py-4 text-black">
-            <span className="block text-xs">DOWNLOAD ON THE</span> <b>App Store</b>
-          </button>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 export default function CommunityDetailPage() {
-  const [community, setCommunity] = useState<CommunityApiResponse | null>(null);
-  const [events, setEvents] = useState<EventApiResponse[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { communityId = "" } = useParams<{ communityId: string }>();
+  const selectedCommunityId = communityId.trim();
+  const [community, setCommunity] = useState<CommunityApiResponse>(FALLBACK_COMMUNITY);
+  const [events, setEvents] = useState<EventApiResponse[]>(FALLBACK_EVENTS);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
 
     const loadCommunityPage = async () => {
-      setLoading(true);
       setError("");
 
       try {
+        if (selectedCommunityId) {
+          setLoading(true);
+          const selectedCommunity = await getCommunityById(selectedCommunityId);
+          const relatedEvents = await getEventsPage({
+            communityId: selectedCommunityId,
+            status: "Upcoming",
+            page: 1,
+            limit: 3,
+          });
+
+          if (!cancelled) {
+            setCommunity(selectedCommunity);
+            setEvents(relatedEvents.events || []);
+          }
+          return;
+        }
+
         const list = await getCommunities({
           search: TARGET_COMMUNITY_TITLE,
           isActive: true,
@@ -401,9 +432,8 @@ export default function CommunityDetailPage() {
 
         if (!matched) {
           if (!cancelled) {
-            setCommunity(null);
-            setEvents([]);
-            setError("Community details are not available right now.");
+            setCommunity(FALLBACK_COMMUNITY);
+            setEvents(FALLBACK_EVENTS);
           }
           return;
         }
@@ -426,9 +456,12 @@ export default function CommunityDetailPage() {
       } catch (err) {
         if (!cancelled) {
           console.error("Failed to load cycling community page:", err);
-          setCommunity(null);
-          setEvents([]);
-          setError("Community details could not be loaded right now.");
+          if (selectedCommunityId) {
+            setError("The selected community details could not be loaded right now.");
+          } else {
+            setCommunity(FALLBACK_COMMUNITY);
+            setEvents(FALLBACK_EVENTS);
+          }
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -440,7 +473,7 @@ export default function CommunityDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [selectedCommunityId]);
 
   const tracks = useMemo(() => getTrackList(community), [community]);
 
@@ -455,7 +488,6 @@ export default function CommunityDetailPage() {
       <UpcomingEventsSection events={events} />
       <TracksSection tracks={tracks} />
       <FaqSection community={community} />
-      <AppCta community={community} />
       <button className="fixed bottom-10 right-10 rounded-full bg-[#019839] p-4 text-white shadow-lg">
         <Bike size={28} />
       </button>

@@ -15,7 +15,8 @@ import {
   Users,
   Wrench,
 } from "lucide-react";
-import { EventApiResponse, getEventsPage } from "../../services/eventsApi";
+import { useParams } from "react-router-dom";
+import { EventApiResponse, getEventById, getEventsPage } from "../../services/eventsApi";
 
 type StatCard = {
   icon: LucideIcon;
@@ -59,6 +60,37 @@ const TARGET_EVENT_TITLE = "Abu Dhabi Grand Prix Ride";
 const TARGET_EVENT_SLUG = "abu-dhabi-grand-prix-ride";
 const FALLBACK_HERO_IMAGE = "/img/pexels-ander-garcia-1317358711-25016478 1.png";
 const SCHEDULE_IMAGE = "/img/505801846.png";
+
+const FALLBACK_EVENT: GrandPrixEvent = {
+  id: TARGET_EVENT_SLUG,
+  slug: TARGET_EVENT_SLUG,
+  title: TARGET_EVENT_TITLE,
+  description:
+    "Join us for an unforgettable cycling experience in Abu Dhabi. This advanced event is for riders wanting a challenge while enjoying fellow enthusiasts. The route covers 42 km of paths showcasing the UAE's best. Compete or enjoy the ride; it promises to be exceptional.",
+  mainImage: FALLBACK_HERO_IMAGE,
+  eventDate: "2026-03-15",
+  eventTime: "7:00 AM",
+  endTime: "11:00 AM",
+  address: "Yas Marina Circuit",
+  city: "Abu Dhabi",
+  country: "United Arab Emirates",
+  maxParticipants: 200,
+  currentParticipants: 156,
+  registrationFeeType: "free",
+  registrationFeeAmount: 0,
+  status: "Open",
+  difficulty: "Advanced",
+  distance: 42,
+  category: "Race",
+  rewards: { points: 0, badgeName: "" },
+  galleryImages: [],
+  amenities: ["Water Stations", "Medical Support", "Bike Repair", "Restrooms", "Parking"],
+  schedule: [
+    { time: "6:00 AM", title: "Registration Opens", description: "Check-in and collect your race packet", order: 1 },
+    { time: "7:00 AM", title: "Event Start", description: "The ride begins!", order: 2 },
+    { time: "11:00 AM", title: "Awards Ceremony", description: "Celebration and prizes", order: 3 },
+  ],
+};
 
 const formatDate = (date?: string) => {
   if (!date) return "Date TBA";
@@ -515,15 +547,36 @@ function FaqSection({ faqs }: { faqs: string[] }) {
 }
 
 export default function CommunitiesAbuDhabiGrandPrixRide() {
-  const [event, setEvent] = useState<GrandPrixEvent | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { eventId = "" } = useParams<{ eventId: string }>();
+  const selectedEventId = eventId.trim();
+  const [event, setEvent] = useState<GrandPrixEvent>(FALLBACK_EVENT);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
 
-    setLoading(true);
     setError("");
+
+    if (selectedEventId) {
+      setLoading(true);
+      getEventById(selectedEventId)
+        .then((selectedEvent) => {
+          if (!cancelled) setEvent(selectedEvent as GrandPrixEvent);
+        })
+        .catch((err) => {
+          if (cancelled) return;
+          console.error("Failed to load selected event:", err);
+          setError("The selected event details could not be loaded right now.");
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false);
+        });
+
+      return () => {
+        cancelled = true;
+      };
+    }
 
     getEventsPage({
       search: TARGET_EVENT_TITLE,
@@ -536,19 +589,15 @@ export default function CommunitiesAbuDhabiGrandPrixRide() {
         const matchedEvent =
           events.find((item) => item.slug === TARGET_EVENT_SLUG) ||
           events.find((item) => item.title.toLowerCase() === TARGET_EVENT_TITLE.toLowerCase()) ||
-          events[0] ||
-          null;
+          events[0];
 
-        setEvent(matchedEvent);
-        if (!matchedEvent) {
-          setError("Event details are not available right now.");
-        }
+        if (matchedEvent) setEvent(matchedEvent);
       })
       .catch((err) => {
         if (cancelled) return;
         console.error("Failed to load Grand Prix event:", err);
-        setEvent(null);
-        setError("Event details could not be loaded right now.");
+        // Keep the complete designed page visible when the API is unavailable.
+        setEvent(FALLBACK_EVENT);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -557,7 +606,7 @@ export default function CommunitiesAbuDhabiGrandPrixRide() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [selectedEventId]);
 
   const stats = useMemo(() => getStats(event), [event]);
   const facilities = useMemo(() => getFacilities(event), [event]);
@@ -580,7 +629,7 @@ export default function CommunitiesAbuDhabiGrandPrixRide() {
           <p className="mt-4 text-[20px] font-medium text-black/70">{error}</p>
         </section>
       )}
-      {!loading && event && (
+      {!loading && !error && event && (
         <>
           <HeroSection event={event} />
           <AboutSection event={event} />

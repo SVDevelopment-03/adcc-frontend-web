@@ -13,7 +13,6 @@ import UserEvent from './components/user-event/UserEvent';
 import UserTracks from './components/user-tracks/UserTracks';
 import UserChallenges from './components/user-challenges/UserChallenges';
 import UserCommunities from './components/user-communities/UserCommunities';
-import UserCommunityDetail from './components/user-communities/UserCommunityDetail';
 import CommunitiesAbuDhabiGrandPrixRide from './components/communities-abu-dhabi-grand-prix-ride/CommunitiesAbuDhabiGrandPrixRide';
 import CommunitiesAbuDhabiCyclingCommunity from './components/communities-abu-dhabi-cycling-community/CommunitiesAbuDhabiCyclingCommunity';
 import CommunitiesAlQuadraCyclePath from './components/communities-al-quadra-cycle-path/CommunitiesAlQuadraCyclePath';
@@ -36,10 +35,6 @@ const publicRoutePrefixes = [
   '/user-tracks',
   '/user-challenges',
   '/user-communities',
-  '/communities-abu-dhabi-grand-prix-ride',
-  '/communities-abu-dhabi-cycling-community',
-  '/communities-al-quadra-cycle-path',
-  '/communities-march-distance-challenge',
   '/user-adcc-store',
   '/user-store-detail',
   '/contact-us',
@@ -115,27 +110,26 @@ function AppContent() {
         } 
       />
       <Route path="/aboutus/*" element={publicPage(<AboutUs />)} />
-      <Route path="/user-event/*" element={publicPage(<UserEvent />)} />
-      <Route path="/user-events/*" element={publicPage(<UserEvent />)} />
-      <Route path="/user-tracks/*" element={publicPage(<UserTracks />)} />
-      <Route path="/user-challenges/*" element={publicPage(<UserChallenges />)} />
-      <Route path="/user-communities" element={publicPage(<UserCommunities />)} />
-      <Route path="/user-communities/:id" element={publicPage(<UserCommunityDetail />)} />
+      <Route path="/user-event" element={publicPage(<UserEvent />)} />
       <Route
-        path="/communities-abu-dhabi-grand-prix-ride/*"
+        path="/user-event/:eventId"
         element={publicPage(<CommunitiesAbuDhabiGrandPrixRide />)}
       />
+      <Route path="/user-events/*" element={publicPage(<UserEvent />)} />
+      <Route path="/user-tracks" element={publicPage(<UserTracks />)} />
       <Route
-        path="/communities-abu-dhabi-cycling-community/*"
-        element={publicPage(<CommunitiesAbuDhabiCyclingCommunity />)}
-      />
-      <Route
-        path="/communities-al-quadra-cycle-path/*"
+        path="/user-tracks/:trackId"
         element={publicPage(<CommunitiesAlQuadraCyclePath />)}
       />
+      <Route path="/user-challenges" element={publicPage(<UserChallenges />)} />
       <Route
-        path="/communities-march-distance-challenge/*"
+        path="/user-challenges/:challengeId"
         element={publicPage(<CommunitiesMarchDistanceChallenge />)}
+      />
+      <Route path="/user-communities" element={publicPage(<UserCommunities />)} />
+      <Route
+        path="/user-communities/:communityId"
+        element={publicPage(<CommunitiesAbuDhabiCyclingCommunity />)}
       />
       <Route path="/user-adcc-store/*" element={publicPage(<UserAdccStore />)} />
       <Route path="/user-store-detail/*" element={publicPage(<StoreDetailPage />)} />

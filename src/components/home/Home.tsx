@@ -3399,7 +3399,7 @@ function AboutSection() {
         </div>
         <AnimatedButton
           className="home-about-read-btn"
-          onClick={() => navigate("/communities-abu-dhabi-cycling-community")}
+          onClick={() => navigate("/user-communities")}
         >
           {t("public.home.about.readMore")}
         </AnimatedButton>

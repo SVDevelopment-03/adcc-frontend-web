@@ -16,18 +16,16 @@ interface PublicLayoutProps {
 const navItems = [
   { labelKey: 'public.nav.home', to: '/home', match: ['/home'] },
   { labelKey: 'public.nav.aboutUs', to: '/aboutus', match: ['/aboutus'] },
-  { labelKey: 'public.nav.events', to: '/user-event', match: ['/user-event', '/user-events', '/communities-abu-dhabi-grand-prix-ride'] },
+  { labelKey: 'public.nav.events', to: '/user-event', match: ['/user-event', '/user-events'] },
   {
     labelKey: 'public.nav.community',
     to: '/user-communities',
     match: [
       '/user-communities',
-      '/communities-abu-dhabi-cycling-community',
-      '/communities-march-distance-challenge',
     ],
   },
   { labelKey: 'public.nav.challenges', to: '/user-challenges', match: ['/user-challenges'] },
-  { labelKey: 'public.nav.tracks', to: '/user-tracks', match: ['/user-tracks', '/communities-al-quadra-cycle-path'] },
+  { labelKey: 'public.nav.tracks', to: '/user-tracks', match: ['/user-tracks'] },
   { labelKey: 'public.footer.contactUs', to: '/contact-us', match: ['/contact-us'] },
 ];
 

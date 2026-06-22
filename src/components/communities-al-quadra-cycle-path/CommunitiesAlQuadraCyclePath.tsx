@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import {
   ArrowRight,
   Bike,
@@ -33,6 +34,41 @@ const TARGET_TRACK_SLUGS = ["al-qudra-cycle-path", "al-quadra-cycle-path"];
 const FALLBACK_HERO_IMAGE = "/img/pexels-ander-garcia-1317358711-25016478 1.png";
 const FALLBACK_EVENT_IMAGE = "/img/501345306_3950860245127637_1209497623770704531_n. 1.png";
 const FACILITIES_BG = "/img/image 3518.png";
+
+const FALLBACK_TRACK: Track = {
+  id: "al-quadra-cycle-path",
+  slug: "al-quadra-cycle-path",
+  title: TARGET_TRACK_TITLE,
+  city: "Abu Dhabi",
+  area: "Al Qudra",
+  country: "United Arab Emirates",
+  distance: 18,
+  elevation: "50 m",
+  difficulty: "easy",
+  trackType: "road",
+  surfaceType: "Asphalt",
+  status: "open",
+  hasLighting: true,
+  safetyLevel: "high",
+  trafficLevel: "lLow",
+  helmetRequired: true,
+  nightRidingAllowed: true,
+  safetyNotes: "Always wear a helmet, carry sufficient water and ride during cooler hours.",
+  shortDescription: "The Al Qudra Cycle Path is an 18 km beginner-friendly track, ideal for cyclists who want a safe, well-maintained route with useful amenities for training or a leisurely ride.",
+  eventsCount: 3,
+  image: FALLBACK_HERO_IMAGE,
+  coverImage: FALLBACK_HERO_IMAGE,
+  galleryImages: [FALLBACK_HERO_IMAGE, "/img/image 3049.png"],
+  mapPreview: "/img/image 3049.png",
+  facilities: ["water", "firstAid", "bikeRental", "toilets", "parking"] as unknown as Track["facilities"],
+  createdAt: "2026-01-01T00:00:00.000Z",
+};
+
+const FALLBACK_EVENTS: EventApiResponse[] = [
+  { id: "abu-dhabi-grand-prix-ride", title: "Abu Dhabi Grand Prix Ride", description: "A challenging ride around Abu Dhabi.", eventImage: FALLBACK_EVENT_IMAGE, eventDate: "2026-03-15", eventTime: "7:00 AM", endTime: "11:00 AM", address: "Yas Marina Circuit", city: "Abu Dhabi", maxParticipants: 200, currentParticipants: 156, distance: 42, category: "Race", status: "Open", rewards: { points: 0, badgeName: "" }, galleryImages: [] },
+  { id: "dubai-marina-sunrise-ride", title: "Dubai Marina Sunrise Ride", description: "A scenic sunrise community ride.", eventImage: "/img/490796704_1417267435941639_5633845168834004037_n. 1.png", eventDate: "2026-03-20", eventTime: "6:00 AM", endTime: "9:00 AM", address: "Dubai Marina", city: "Dubai", maxParticipants: 120, currentParticipants: 89, distance: 25, category: "Community Ride", status: "Open", rewards: { points: 0, badgeName: "" }, galleryImages: [] },
+  { id: "al-ain-mountain-challenge", title: "Al Ain Mountain Challenge", description: "A demanding mountain cycling challenge.", eventImage: "/img/503933859_18364437631178203_8919788300453479084_n. 1.png", eventDate: "2026-03-28", eventTime: "6:30 AM", endTime: "12:00 PM", address: "Jebel Hafeet", city: "Al Ain", maxParticipants: 200, currentParticipants: 156, distance: 65, category: "Race", status: "Open", rewards: { points: 0, badgeName: "" }, galleryImages: [] },
+];
 
 const getTrackId = (track?: Track | null) => ((track as any)?._id || track?.id || "") as string;
 
@@ -263,6 +299,7 @@ function EventCard({ event }: { event: EventApiResponse }) {
     event.galleryImages?.[0] ||
     FALLBACK_EVENT_IMAGE;
   const participants = event.currentParticipants ?? event.registrations ?? 0;
+  const eventId = event._id || event.id;
 
   return (
     <div>
@@ -291,6 +328,17 @@ function EventCard({ event }: { event: EventApiResponse }) {
           <MapPin size={20} /> {event.city || event.address || "Location TBA"}
         </p>
       </div>
+
+      <Link
+        to={
+          eventId
+            ? `/user-event/${encodeURIComponent(eventId)}`
+            : "/user-event"
+        }
+        className="mt-[27px] flex h-[50px] w-[157px] items-center justify-center rounded-[30px] border border-[#019839] bg-transparent text-[16px] font-bold capitalize leading-[22px] text-[#019839] transition-colors hover:bg-[#019839] hover:text-white"
+      >
+        View Details
+      </Link>
     </div>
   );
 }
@@ -340,46 +388,35 @@ function FaqSection({ track }: { track: Track }) {
   );
 }
 
-function AppCta({ track }: { track: Track }) {
-  return (
-    <section
-      className="flex h-[502px] items-center justify-center bg-cover bg-center px-10 text-center text-white"
-      style={{
-        backgroundImage: `linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.35)),url('${getTrackImage(
-          track,
-        )}')`,
-      }}
-    >
-      <div>
-        <h2 className="text-[80px] font-black uppercase">Start Your Ride Today</h2>
-        <p className="mt-7 text-[26px]">Download the ADCC app and ride {track.title}.</p>
-        <div className="mt-10 flex justify-center gap-5 max-sm:flex-col">
-          <button className="rounded-full bg-white px-9 py-4 text-black">
-            <span className="block text-xs">GET IT ON</span> <b>Google Play</b>
-          </button>
-          <button className="rounded-full bg-white px-9 py-4 text-black">
-            <span className="block text-xs">DOWNLOAD ON THE</span> <b>App Store</b>
-          </button>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 export default function TrackDetailPage() {
-  const [track, setTrack] = useState<Track | null>(null);
-  const [events, setEvents] = useState<EventApiResponse[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { trackId = "" } = useParams<{ trackId: string }>();
+  const selectedTrackId = trackId.trim();
+  const [track, setTrack] = useState<Track>(FALLBACK_TRACK);
+  const [events, setEvents] = useState<EventApiResponse[]>(FALLBACK_EVENTS);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
 
     const loadTrackPage = async () => {
-      setLoading(true);
       setError("");
 
       try {
+        if (selectedTrackId) {
+          setLoading(true);
+          const [selectedTrack, selectedTrackEvents] = await Promise.all([
+            getTrackById(selectedTrackId),
+            getTrackEventsPage(selectedTrackId, { page: 1, limit: 3 }),
+          ]);
+
+          if (!cancelled) {
+            setTrack(selectedTrack);
+            setEvents(selectedTrackEvents.events || []);
+          }
+          return;
+        }
+
         const tracksPage = await getTracksPage({
           search: TARGET_TRACK_TITLE,
           publicOnly: true,
@@ -407,9 +444,8 @@ export default function TrackDetailPage() {
 
         if (!matched) {
           if (!cancelled) {
-            setTrack(null);
-            setEvents([]);
-            setError("Track details are not available right now.");
+            setTrack(FALLBACK_TRACK);
+            setEvents(FALLBACK_EVENTS);
           }
           return;
         }
@@ -427,9 +463,12 @@ export default function TrackDetailPage() {
       } catch (err) {
         if (!cancelled) {
           console.error("Failed to load Al Qudra track page:", err);
-          setTrack(null);
-          setEvents([]);
-          setError("Track details could not be loaded right now.");
+          if (selectedTrackId) {
+            setError("The selected track details could not be loaded right now.");
+          } else {
+            setTrack(FALLBACK_TRACK);
+            setEvents(FALLBACK_EVENTS);
+          }
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -441,7 +480,7 @@ export default function TrackDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [selectedTrackId]);
 
   const facilities = useMemo(() => normalizeFacilities(track), [track]);
 
@@ -457,7 +496,6 @@ export default function TrackDetailPage() {
       <TrackMediaSection track={track} />
       <UpcomingEventsSection events={events} />
       <FaqSection track={track} />
-      <AppCta track={track} />
       <button className="fixed bottom-10 right-10 rounded-full bg-[#019839] p-4 text-white shadow-lg">
         <Bike size={28} />
       </button>

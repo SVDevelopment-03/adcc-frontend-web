@@ -7,6 +7,7 @@ import {
   type Track,
 } from "../../services/trackService";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { APP_STORE_LINKS } from "../../config/appStoreLinks";
 import {
   AnimatedWords,
@@ -930,7 +931,8 @@ function TrackCard({
         </div>
 
         {/* button */}
-        <button
+        <Link
+          to={`/user-tracks/${encodeURIComponent(track.id)}`}
           className="track-card-button"
           style={{
             width: 157,
@@ -939,6 +941,10 @@ function TrackCard({
             border: isFeatured ? "none" : "1px solid rgba(0,0,0,0.5)",
             borderRadius: 30,
             cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            textDecoration: "none",
             color: isFeatured ? "#435974" : "rgba(0,0,0,0.49)",
             fontSize: 15,
             fontWeight: 700,
@@ -947,7 +953,7 @@ function TrackCard({
           }}
         >
           {t("public.common.viewDetails")}
-        </button>
+        </Link>
       </div>
     </motion.div>
   );

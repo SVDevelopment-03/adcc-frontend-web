@@ -12,6 +12,7 @@ import {
   PublicPageHero,
   useWordList,
 } from "../public/publicPageHelpers";
+import { useNavigate } from "react-router-dom";
 
 const FontLoader = () => (
   <style>{`
@@ -583,6 +584,7 @@ function EventCard({
   index: number;
 }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [columns, setColumns] = useState(3);
 
   useEffect(() => {
@@ -748,6 +750,7 @@ function EventCard({
         </div>
 
         <button
+          type="button"
           className="event-card-button"
           style={{
             width: 157,
@@ -769,6 +772,12 @@ function EventCard({
           onMouseLeave={(e) => {
             e.currentTarget.style.background = "transparent";
             e.currentTarget.style.color = "#019839";
+          }}
+          onClick={() => {
+            const eventId = event._id || event.id;
+            if (eventId) {
+              navigate(`/user-event/${encodeURIComponent(eventId)}`);
+            }
           }}
         >
           {t("public.common.viewDetails")}

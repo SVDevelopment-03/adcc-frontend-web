@@ -1,25 +1,87 @@
+import { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 import {
   Cloud, ArrowRight, CalendarDays, Plus, Phone, Mail, MapPin,
   Bike, Apple, Trophy
 } from "lucide-react";
+import { Challenge, getChallengeById } from "../../services/challengesApi";
 
-const steps = [
-  "Register for the challenge before the deadline",
-  "Track all rides using the ADCC mobile app",
-  "Complete the challenge goal within the time period",
-  "Only outdoor rides count towards your progress",
-];
+const FALLBACK_CHALLENGE: Challenge = {
+  id: "march-distance-challenge",
+  title: "March Distance Challenge",
+  description: "Build consistency throughout March, track every outdoor ride with the ADCC app and complete the distance goal before the challenge ends.",
+  type: "Distance",
+  target: 200,
+  unit: "km",
+  startDate: "2026-03-01",
+  endDate: "2026-03-31",
+  participants: 342,
+  completions: 0,
+  status: "Active",
+  rewardBadge: "",
+  rewardBadgeName: "ADCC Jersey + Medal",
+  featured: true,
+  image: "/img/pexels-ander-garcia-1317358711-25016478 1.png",
+};
 
-const faqs = [
-  "Do I need to be an experienced cyclist to join ADCC rides?",
-  "Are there specific tracks for beginners or families?",
-  "What gear do I need to bring for a group ride?",
-  "Can I participate in races without being a professional?",
-  "How do I track my performance or join challenges?",
-  "Are there any women-only rides or training sessions?",
-];
+const formatDate = (value: string) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Date TBA";
+  return new Intl.DateTimeFormat("en", { month: "long", day: "numeric", year: "numeric" }).format(date);
+};
 
 export default function ChallengeDetailPage() {
+  const { challengeId = "" } = useParams<{ challengeId: string }>();
+  const selectedChallengeId = challengeId.trim();
+  const [challenge, setChallenge] = useState<Challenge>(FALLBACK_CHALLENGE);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!selectedChallengeId) {
+      setChallenge(FALLBACK_CHALLENGE);
+      setError("");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    getChallengeById(selectedChallengeId)
+      .then((data) => {
+        if (!cancelled) setChallenge(data);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("Failed to load selected challenge:", err);
+        setError("The selected challenge details could not be loaded right now.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => { cancelled = true; };
+  }, [selectedChallengeId]);
+
+  const reward = challenge.rewardBadgeName || challenge.rewardBadge || "Completion Badge";
+  const steps = useMemo(() => [
+    `Register before ${formatDate(challenge.endDate)}`,
+    "Track all rides using the ADCC mobile app",
+    `Complete ${challenge.target} ${challenge.unit} within the challenge period`,
+    `Only eligible ${challenge.type.toLowerCase()} activities count towards your progress`,
+  ], [challenge]);
+  const faqs = useMemo(() => [
+    `How do I join ${challenge.title}?`,
+    `What is the ${challenge.target} ${challenge.unit} target?`,
+    `When does ${challenge.title} end?`,
+    `Which activities count for this ${challenge.type.toLowerCase()} challenge?`,
+    `How do I track my progress in the ADCC app?`,
+    `What reward will I receive after completing ${challenge.title}?`,
+  ], [challenge]);
+
+  if (loading) return <main className="min-h-[420px] bg-[#eaf4ff] px-10 py-24 text-center"><p className="text-[22px] text-black/70">Loading challenge details...</p></main>;
+  if (error) return <main className="min-h-[420px] bg-[#eaf4ff] px-10 py-24 text-center"><h1 className="text-[50px] font-black uppercase">Challenge Details</h1><p className="mt-4 text-[20px] text-black/70">{error}</p></main>;
+
   return (
     <div className="min-h-screen bg-[#eaf4ff] text-black">
       <header className="h-[134px] flex items-center justify-between px-10 md:px-20">
@@ -45,14 +107,13 @@ export default function ChallengeDetailPage() {
         <div
           className="relative h-[500px] overflow-hidden bg-cover bg-center"
           style={{
-            backgroundImage:
-              "linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url('/img/pexels-ander-garcia-1317358711-25016478 1.png')",
+            backgroundImage: `linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url('${challenge.image || FALLBACK_CHALLENGE.image}')`,
           }}
         >
           <div className="absolute bottom-20 left-10 text-white">
-            <span className="rounded-full bg-white/30 px-5 py-2">Active</span>
+            <span className="rounded-full bg-white/30 px-5 py-2">{challenge.status}</span>
             <h1 className="mt-4 text-[40px] font-black uppercase">
-              March Distance Challenge
+              {challenge.title}
             </h1>
           </div>
         </div>
@@ -61,13 +122,11 @@ export default function ChallengeDetailPage() {
       <section className="px-10 py-24 text-center">
         <h2 className="text-[60px] font-black uppercase">About This Challenge</h2>
         <p className="mx-auto mt-8 max-w-[851px] text-[24px] leading-[30px]">
-          The Corniche Coastal Route is an 18 km beginner track. Ideal for cyclists
-          wanting to enjoy Abu Dhabi’s beauty on a safe, well-maintained route. It offers
-          amenities for a comfortable ride, whether training or leisurely.
+          {challenge.description}
         </p>
 
         <button className="mt-8 inline-flex items-center gap-3 rounded-full bg-[#019839] px-8 py-4 text-[18px] font-bold text-white">
-          Start Ride <ArrowRight size={20} />
+          Join this Challenge <ArrowRight size={20} />
         </button>
       </section>
 
@@ -76,14 +135,14 @@ export default function ChallengeDetailPage() {
           <div>
             <p className="text-white/70">• Join Challenge</p>
             <h3 className="mt-8 text-[40px] font-black uppercase leading-tight">
-              Track your ride. Reach 200 km.
+              Track your progress. Reach {challenge.target} {challenge.unit}.
             </h3>
           </div>
 
           <div className="mt-8 border-white/30 md:mt-0 md:border-l md:pl-8">
             <h4 className="text-[24px] font-black uppercase">Rewards</h4>
             <div className="mt-6 grid grid-cols-2 gap-5 text-[16px] text-white/70">
-              <p>ADCC Jersey + Medal</p>
+              <p>{reward}</p>
               <p>Digital Badge</p>
               <p>Leaderboard Recognition</p>
             </div>
@@ -91,9 +150,9 @@ export default function ChallengeDetailPage() {
         </div>
 
         {[
-          ["342", "Participants"],
-          ["March 31", "Ends"],
-          ["ADCC Jersey", "Prize"],
+          [String(challenge.participants), "Participants"],
+          [formatDate(challenge.endDate), "Ends"],
+          [reward, "Prize"],
         ].map(([value, label]) => (
           <div key={label} className="rounded-xl bg-[#435974] p-8 text-white">
             <span className="inline-flex rounded-full bg-white p-4 text-[#019839]">
@@ -122,8 +181,8 @@ export default function ChallengeDetailPage() {
 
           <div className="mt-16 grid grid-cols-1 gap-8 lg:grid-cols-[554px_1fr_1fr]">
             <img
-              src="/img/pexels-leyla-helvaci-50263565-13358009 1.png"
-              alt="Challenge"
+              src={challenge.image || FALLBACK_CHALLENGE.image}
+              alt={challenge.title}
               className="h-[439px] w-full rounded-xl object-cover"
             />
 
@@ -170,30 +229,6 @@ export default function ChallengeDetailPage() {
               <Plus size={24} />
             </button>
           ))}
-        </div>
-      </section>
-
-      <section
-        className="flex h-[502px] items-center justify-center bg-cover bg-center text-center text-white"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.35)),url('https://images.unsplash.com/photo-1511994298241-608e28f14fde?q=80&w=1600&auto=format&fit=crop')",
-        }}
-      >
-        <div>
-          <h2 className="text-[80px] font-black uppercase">Start Your Ride Today</h2>
-          <p className="mt-7 text-[26px]">
-            Download the ADCC app and join the cycling community.
-          </p>
-
-          <div className="mt-10 flex justify-center gap-5">
-            <button className="rounded-full bg-white px-9 py-4 text-black">
-              <span className="text-xs">GET IT ON</span> <b>Google Play</b>
-            </button>
-            <button className="flex items-center gap-3 rounded-full bg-white px-9 py-4 text-black">
-              <Apple size={24} /> <b>App Store</b>
-            </button>
-          </div>
         </div>
       </section>
 
