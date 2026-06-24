@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Plus, Edit2, Trash2, ToggleLeft, ToggleRight, X, ChevronRight, Layers } from 'lucide-react';
 import { toast } from 'sonner';
 import { Category } from './merchandiseData';
@@ -6,6 +6,7 @@ import {
   createMerchandiseCategory,
   updateMerchandiseCategory,
   deleteMerchandiseCategory,
+  uploadMerchandiseCategoryImage,
 } from '../../services/merchandiseApi';
 
 interface MerchandiseCategoriesProps {
@@ -23,34 +24,62 @@ export function MerchandiseCategories({ categories, setCategories }: Merchandise
   const [form, setForm] = useState({
     name: '',
     icon: '🏷️',
+    image: '',
     active: true,
     subcategories: [] as { id: string; name: string }[],
   });
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState('');
   const [newSubcatName, setNewSubcatName] = useState('');
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
 
   const openCreate = () => {
-    setForm({ name: '', icon: '🏷️', active: true, subcategories: [] });
+    setForm({ name: '', icon: '🏷️', image: '', active: true, subcategories: [] });
+    setSelectedImageFile(null);
+    setImagePreviewUrl('');
     setNewSubcatName('');
     setEditCat(null);
     setShowForm(true);
   };
 
   const openEdit = (cat: Category) => {
-    setForm({ name: cat.name, icon: cat.icon, active: cat.active, subcategories: cat.subcategories.map(s => ({ ...s })) });
+    setForm({ name: cat.name, icon: cat.icon ?? '🏷️', image: cat.image ?? '', active: cat.active, subcategories: cat.subcategories.map(s => ({ ...s })) });
+    setSelectedImageFile(null);
+    setImagePreviewUrl(cat.image ?? '');
     setNewSubcatName('');
     setEditCat(cat);
     setShowForm(true);
   };
 
+  useEffect(() => {
+    if (!selectedImageFile) return;
+    const url = URL.createObjectURL(selectedImageFile);
+    setImagePreviewUrl(url);
+    return () => {
+      URL.revokeObjectURL(url);
+    };
+  }, [selectedImageFile]);
+
   const handleSave = async () => {
     if (!form.name.trim()) { toast.error('Category name is required'); return; }
     try {
-      const payload = {
+      const payload: any = {
         name: form.name,
-        icon: form.icon,
         active: form.active,
         subcategories: form.subcategories,
       };
+
+      if (selectedImageFile) {
+        const uploadResult = await uploadMerchandiseCategoryImage(selectedImageFile);
+        payload.image = uploadResult.url;
+      } else if (form.image) {
+        payload.image = form.image;
+      }
+
+      if (!payload.image) {
+        payload.icon = form.icon;
+      }
+
       if (editCat) {
         const updated = await updateMerchandiseCategory(editCat.id, payload);
         setCategories(prev => prev.map(c => c.id === editCat.id ? { ...c, ...updated } : c));
@@ -100,8 +129,6 @@ export function MerchandiseCategories({ categories, setCategories }: Merchandise
 
   const removeSubcat = (id: string) => setForm(f => ({ ...f, subcategories: f.subcategories.filter(s => s.id !== id) }));
 
-  const emojiOptions = ['🏷️', '🚴', '🧢', '👕', '🔧', '🏆', '👟', '🎽', '🧤', '🥤', '🎒', '🎯'];
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -129,8 +156,12 @@ export function MerchandiseCategories({ categories, setCategories }: Merchandise
             <div className="p-5">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center text-2xl" style={{ backgroundColor: '#FFF9EF' }}>
-                    {cat.icon}
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center overflow-hidden bg-[#FFF9EF]">
+                    {cat.image ? (
+                      <img src={cat.image} alt={cat.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-2xl">{cat.icon}</span>
+                    )}
                   </div>
                   <div>
                     <p className="text-sm font-medium" style={{ color: '#333' }}>{cat.name}</p>
@@ -218,22 +249,38 @@ export function MerchandiseCategories({ categories, setCategories }: Merchandise
               </div>
 
               <div>
-                <label className="block text-sm mb-2" style={{ color: '#666' }}>Icon</label>
-                <div className="flex flex-wrap gap-2">
-                  {emojiOptions.map(emoji => (
-                    <button
-                      key={emoji}
-                      onClick={() => setForm(f => ({ ...f, icon: emoji }))}
-                      className="w-10 h-10 rounded-xl flex items-center justify-center text-lg transition-all"
-                      style={{
-                        backgroundColor: form.icon === emoji ? '#ECC180' : '#F9FAFB',
-                        border: form.icon === emoji ? '2px solid #C12D32' : '2px solid transparent',
-                      }}
-                    >
-                      {emoji}
-                    </button>
-                  ))}
+                <label className="block text-sm mb-2" style={{ color: '#666' }}>Category Image</label>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => imageInputRef.current?.click()}
+                    className="px-3 py-2 rounded-xl border border-gray-200 bg-white text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    Choose Image
+                  </button>
+                  <input
+                    ref={imageInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(event) => {
+                      const file = event.target.files?.[0] ?? null;
+                      setSelectedImageFile(file);
+                      if (!file) {
+                        setForm(f => ({ ...f, image: '' }));
+                        setImagePreviewUrl('');
+                      }
+                    }}
+                  />
+                  {imagePreviewUrl && (
+                    <img
+                      src={imagePreviewUrl}
+                      alt="Category preview"
+                      className="w-16 h-16 rounded-xl object-cover border border-gray-200"
+                    />
+                  )}
                 </div>
+                <p className="text-xs text-gray-500 mt-2">Upload a category image instead of using an icon.</p>
               </div>
 
               <div>

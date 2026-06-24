@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Store, TrendingUp, ShoppingBag, Package, ExternalLink, ArrowRight } from 'lucide-react';
 import { getDashboardLanding, type DashboardLandingData } from '../../services/dashboardApi';
+import { MerchandiseBannerUploader } from './MerchandiseBannerUploader';
 
 export function ClubMerchandise() {
   const navigate = useNavigate();
@@ -168,6 +169,8 @@ export function ClubMerchandise() {
           </button>
         </div>
       </div>
+
+      <MerchandiseBannerUploader />
     </div>
   );
 }

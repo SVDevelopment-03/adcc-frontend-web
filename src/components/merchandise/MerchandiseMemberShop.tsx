@@ -252,7 +252,11 @@ export function MerchandiseMemberShop({ products, categories, orders, setOrders 
               borderColor: activeCategory === cat.id ? '#C12D32' : '#e5e7eb',
             }}
           >
-            <span>{cat.icon}</span>
+            {cat.image ? (
+              <img src={cat.image} alt={cat.name} className="w-5 h-5 rounded-full object-cover" />
+            ) : (
+              <span>{cat.icon}</span>
+            )}
             {cat.name}
           </button>
         ))}

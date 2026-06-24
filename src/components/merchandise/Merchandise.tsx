@@ -5,6 +5,7 @@ import { Product, Category, Order } from './merchandiseData';
 import { MerchandiseProducts } from './MerchandiseProducts';
 import { MerchandiseCategories } from './MerchandiseCategories';
 import { MerchandiseOrders } from './MerchandiseOrders';
+import { MerchandiseBannerUploader } from './MerchandiseBannerUploader';
 import {
   getMerchandiseProducts,
   getMerchandiseCategories,
@@ -202,6 +203,8 @@ export function Merchandise({ navigate }: MerchandiseProps) {
               })}
             </div>
           </div>
+
+          <MerchandiseBannerUploader />
 
           {/* Quick Actions */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">

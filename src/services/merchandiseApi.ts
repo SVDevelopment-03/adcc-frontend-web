@@ -2,6 +2,19 @@ import axios, { AxiosError } from 'axios';
 import api from './api';
 import type { Category, Order, OrderItem, Product, ProductStatus, OrderStatus } from '../components/merchandise/merchandiseData';
 
+export interface ProductBanner {
+  id: string;
+  key: string;
+  group?: string;
+  label?: string;
+  title?: string;
+  description?: string;
+  image?: string;
+  active?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 interface ApiErrorResponse {
   message?: string;
   error?: string;
@@ -32,6 +45,8 @@ const mapProduct = (product: any): Product => ({
 const mapCategory = (category: any): Category => ({
   ...category,
   id: category.id || category._id || String(category._id),
+  icon: category.icon,
+  image: category.image,
   productCount: category.productCount ?? 0,
   active: category.active ?? true,
 });
@@ -93,6 +108,113 @@ export const createMerchandiseProduct = async (payload: Omit<Product, 'id' | 'so
     return mapProduct(data.data);
   } catch (error) {
     throw new Error(getApiErrorMessage(error, 'Failed to create product'));
+  }
+};
+
+export const uploadMerchandiseBanner = async (file: File): Promise<{ url: string; key: string }> => {
+  try {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const { data } = await api.post<{ success: boolean; message?: string; data?: { url: string; key: string } }>(
+      '/v1/uploads/image/merchandise-banners',
+      formData
+    );
+
+    if (!data?.success || !data?.data) {
+      throw new Error(data?.message || 'Failed to upload merchandise banner');
+    }
+    return data.data;
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to upload merchandise banner'));
+  }
+};
+
+export const uploadMerchandiseCategoryImage = async (file: File): Promise<{ url: string; key: string }> => {
+  try {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const { data } = await api.post<{ success: boolean; message?: string; data?: { url: string; key: string } }>(
+      '/v1/uploads/image/product-categories',
+      formData,
+      {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      }
+    );
+
+    if (!data?.success || !data?.data) {
+      throw new Error(data?.message || 'Failed to upload category image');
+    }
+
+    return data.data;
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to upload category image'));
+  }
+};
+
+export const getProductBanners = async (): Promise<ProductBanner[]> => {
+  try {
+    const { data } = await api.get<{ success: boolean; message?: string; data?: { banners: any[] } }>('/v1/product-banners');
+    if (!data?.success || !data.data?.banners) {
+      return [];
+    }
+    return data.data.banners.map((banner) => ({
+      id: banner.id || banner._id || String(banner._id),
+      key: banner.key,
+      group: banner.group,
+      label: banner.label,
+      title: banner.title,
+      description: banner.description,
+      image: banner.image,
+      active: banner.active,
+      createdAt: banner.createdAt,
+      updatedAt: banner.updatedAt,
+    }));
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to load product banners'));
+  }
+};
+
+export const uploadProductBanners = async (files: File[]): Promise<ProductBanner[]> => {
+  try {
+    const formData = new FormData();
+    files.forEach((file) => formData.append('images', file));
+
+    const { data } = await api.post<{ success: boolean; message?: string; data?: { banners: any[] } }>(
+      '/v1/product-banners',
+      formData,
+      {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      }
+    );
+
+    if (!data?.success || !data.data?.banners) {
+      throw new Error(data?.message || 'Failed to upload product banners');
+    }
+
+    return data.data.banners.map((banner) => ({
+      id: banner.id || banner._id || String(banner._id),
+      key: banner.key,
+      group: banner.group,
+      label: banner.label,
+      title: banner.title,
+      description: banner.description,
+      image: banner.image,
+      active: banner.active,
+      createdAt: banner.createdAt,
+      updatedAt: banner.updatedAt,
+    }));
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to upload product banners'));
+  }
+};
+
+export const deleteProductBanner = async (key: string): Promise<void> => {
+  try {
+    await api.delete(`/v1/product-banners/${encodeURIComponent(key)}`);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to delete product banner'));
   }
 };
 

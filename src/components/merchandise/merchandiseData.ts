@@ -35,7 +35,8 @@ export interface Product {
 export interface Category {
   id: string;
   name: string;
-  icon: string;
+  icon?: string;
+  image?: string;
   subcategories: { id: string; name: string }[];
   productCount: number;
   active: boolean;
