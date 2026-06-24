@@ -1,9 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import {
-  Cloud, ArrowRight, CalendarDays, Plus, Phone, Mail, MapPin,
-  Bike, Apple, Trophy
-} from "lucide-react";
+import { ArrowRight, CalendarDays, Plus } from "lucide-react";
 import { Challenge, getChallengeById } from "../../services/challengesApi";
 
 const FALLBACK_CHALLENGE: Challenge = {
@@ -29,6 +26,39 @@ const formatDate = (value: string) => {
   if (Number.isNaN(date.getTime())) return "Date TBA";
   return new Intl.DateTimeFormat("en", { month: "long", day: "numeric", year: "numeric" }).format(date);
 };
+
+function FaqSection({ faqs }: { faqs: string[] }) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  return (
+    <section className="w-full px-4 pb-16 pt-14 text-center sm:px-6 md:px-10 lg:px-16 lg:pb-28 xl:px-20 2xl:px-24">
+      <h2 className="text-[30px] font-normal uppercase sm:text-[38px] lg:text-[46px]">Frequently Asked Questions</h2>
+      <p className="mt-3 text-[15px] text-black/70 sm:text-[16px]">Got questions before hitting the road? We've got you covered.</p>
+      <div className="mx-auto mt-8 grid max-w-[1098px] grid-cols-1 gap-4 sm:mt-10 md:grid-cols-2 md:gap-5">
+        {faqs.map((faq, index) => (
+          <div
+            key={faq}
+            role="button"
+            tabIndex={0}
+            onClick={() => setOpenIndex(openIndex === index ? null : index)}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setOpenIndex(openIndex === index ? null : index); }}
+            className="cursor-pointer rounded-lg border border-[#cad8e6] bg-[#eef7ff] px-4 text-left text-[15px] font-medium sm:px-7 sm:text-[16px]"
+            style={{ fontFamily: "'Outfit', 'Satoshi', sans-serif" }}
+          >
+            <div className="flex min-h-17 items-center justify-between gap-4 py-5 sm:min-h-20 sm:py-6">
+              <span>{faq}</span>
+              <Plus size={18} className="shrink-0 transition-transform duration-300" style={{ transform: openIndex === index ? "rotate(45deg)" : "rotate(0deg)" }} />
+            </div>
+            {openIndex === index && (
+              <p className="pb-5 text-[14px] font-normal leading-6 text-black/65 sm:text-[15px]">
+                For more information about this topic, please contact our support team or refer to the challenge guidelines.
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 export default function ChallengeDetailPage() {
   const { challengeId = "" } = useParams<{ challengeId: string }>();
@@ -80,130 +110,111 @@ export default function ChallengeDetailPage() {
   ], [challenge]);
 
   if (loading) return <main className="min-h-[420px] bg-[#eaf4ff] px-10 py-24 text-center"><p className="text-[22px] text-black/70">Loading challenge details...</p></main>;
-  if (error) return <main className="min-h-[420px] bg-[#eaf4ff] px-10 py-24 text-center"><h1 className="text-[50px] font-black uppercase">Challenge Details</h1><p className="mt-4 text-[20px] text-black/70">{error}</p></main>;
+  if (error) return <main className="min-h-[420px] bg-[#eaf4ff] px-10 py-24 text-center"><h1 className="text-[50px] font-normal uppercase">Challenge Details</h1><p className="mt-4 text-[20px] text-black/70">{error}</p></main>;
 
   return (
-    <div className="min-h-screen bg-[#eaf4ff] text-black">
-      <header className="h-[134px] flex items-center justify-between px-10 md:px-20">
-        <img src="/ADCC-Logo.png" alt="ADCC" className="h-[57px] w-[135px] object-contain" />
-
-        <nav className="hidden lg:flex gap-12 text-[20px] font-medium">
-          <span>About Us</span>
-          <span>Events</span>
-          <span>Community</span>
-          <span>Tracks</span>
-        </nav>
-
-        <div className="flex items-center gap-6">
-          <Cloud size={24} />
-          <span className="text-[17px]">English</span>
-          <button className="rounded-full bg-black px-8 py-4 text-[18px] font-bold text-white">
-            Menu
-          </button>
-        </div>
-      </header>
-
-      <section className="mx-auto max-w-[1272px] px-10">
+    <div className="font-satoshi min-h-screen bg-[#eaf4ff] text-black">
+      {/* Hero — full-width, consistent with other inner pages */}
+      <section
+        className="relative w-full overflow-hidden"
+        style={{ height: "clamp(300px, 45vw, 500px)" }}
+      >
         <div
-          className="relative h-[500px] overflow-hidden bg-cover bg-center"
+          className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url('${challenge.image || FALLBACK_CHALLENGE.image}')`,
+            backgroundImage: `linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url(‘${challenge.image || FALLBACK_CHALLENGE.image}’)`,
           }}
-        >
-          <div className="absolute bottom-20 left-10 text-white">
-            <span className="rounded-full bg-white/30 px-5 py-2">{challenge.status}</span>
-            <h1 className="mt-4 text-[40px] font-black uppercase">
-              {challenge.title}
-            </h1>
+          aria-hidden
+        />
+        <div className="public-hero-content-pos">
+          <div className="mb-3">
+            <span className="rounded-full bg-white/30 px-5 py-2 text-[14px] font-medium text-white backdrop-blur sm:text-[16px]">
+              {challenge.status}
+            </span>
           </div>
+          <h1 className="text-[30px] font-normal uppercase leading-tight text-white sm:text-[40px] lg:text-[50px]">
+            {challenge.title}
+          </h1>
         </div>
       </section>
 
-      <section className="px-10 py-24 text-center">
-        <h2 className="text-[60px] font-black uppercase">About This Challenge</h2>
-        <p className="mx-auto mt-8 max-w-[851px] text-[24px] leading-[30px]">
+      {/* About */}
+      <section className="px-4 py-14 text-center sm:px-6 sm:py-16 md:px-10 lg:py-24">
+        <h2 className="text-[28px] font-normal uppercase sm:text-[38px] md:text-[48px] lg:text-[56px]">About This Challenge</h2>
+        <p className="mx-auto mt-4 max-w-[851px] text-[14px] leading-relaxed sm:mt-6 sm:text-[17px] md:text-[20px] lg:text-[22px]">
           {challenge.description}
         </p>
-
-        <button className="mt-8 inline-flex items-center gap-3 rounded-full bg-[#019839] px-8 py-4 text-[18px] font-bold text-white">
-          Join this Challenge <ArrowRight size={20} />
+        <button className="mt-8 inline-flex items-center gap-3 rounded-full bg-[#019839] px-6 py-3 text-[16px] font-bold text-white sm:px-8 sm:py-4 sm:text-[18px]">
+          Join this Challenge <ArrowRight size={18} />
         </button>
       </section>
 
-      <section className="mx-auto mb-28 grid max-w-[1140px] grid-cols-1 gap-4 rounded-2xl bg-[#323232] p-4 lg:grid-cols-[528px_repeat(3,1fr)]">
-        <div className="grid rounded-2xl bg-[#435974] p-8 text-white md:grid-cols-[190px_1fr]">
+      {/* Stats strip */}
+      <section className="mx-auto mb-16 grid max-w-[1140px] grid-cols-1 gap-4 rounded-2xl bg-[#323232] p-4 lg:grid-cols-[528px_repeat(3,1fr)]">
+        <div className="grid rounded-2xl bg-[#435974] p-5 text-white sm:p-8 md:grid-cols-[190px_1fr]">
           <div>
-            <p className="text-white/70">• Join Challenge</p>
-            <h3 className="mt-8 text-[40px] font-black uppercase leading-tight">
+            <p className="text-[13px] text-white/70 sm:text-[14px]">• Join Challenge</p>
+            <h3 className="mt-4 text-[20px] font-normal uppercase leading-tight sm:mt-8 sm:text-[28px] lg:text-[36px]">
               Track your progress. Reach {challenge.target} {challenge.unit}.
             </h3>
           </div>
-
-          <div className="mt-8 border-white/30 md:mt-0 md:border-l md:pl-8">
-            <h4 className="text-[24px] font-black uppercase">Rewards</h4>
-            <div className="mt-6 grid grid-cols-2 gap-5 text-[16px] text-white/70">
+          <div className="mt-5 border-white/30 sm:mt-8 md:mt-0 md:border-l md:pl-8">
+            <h4 className="text-[16px] font-normal uppercase sm:text-[20px] lg:text-[24px]">Rewards</h4>
+            <div className="mt-3 grid grid-cols-2 gap-3 text-[13px] text-white/70 sm:mt-4 sm:gap-4 sm:text-[15px]">
               <p>{reward}</p>
               <p>Digital Badge</p>
               <p>Leaderboard Recognition</p>
             </div>
           </div>
         </div>
-
         {[
           [String(challenge.participants), "Participants"],
           [formatDate(challenge.endDate), "Ends"],
           [reward, "Prize"],
         ].map(([value, label]) => (
-          <div key={label} className="rounded-xl bg-[#435974] p-8 text-white">
-            <span className="inline-flex rounded-full bg-white p-4 text-[#019839]">
-              <CalendarDays size={25} />
+          <div key={label} className="rounded-xl bg-[#435974] p-5 text-white sm:p-8">
+            <span className="inline-flex rounded-full bg-white p-3 text-[#019839]">
+              <CalendarDays size={20} />
             </span>
-            <h3 className="mt-20 text-[30px] font-black uppercase">{value}</h3>
-            <p className="text-[20px] text-white/60">{label}</p>
+            <h3 className="mt-8 text-[18px] font-normal uppercase sm:mt-16 sm:text-[24px] lg:text-[28px]">{value}</h3>
+            <p className="text-[13px] text-white/60 sm:text-[16px] lg:text-[18px]">{label}</p>
           </div>
         ))}
       </section>
 
-      {/* <section className="bg-gradient-to-b from-[#d8ebff] to-[#adc7df] px-10 py-20"> */}
+      {/* Guide section */}
       <section
-        className="bg-gradient-to-b from-[#d8ebff] to-[#adc7df] bg-cover bg-center bg-no-repeat px-10 py-20"
-        style={{ backgroundImage: "url('/img/image 3517.png')" }}
+        className="bg-cover bg-center bg-no-repeat px-4 py-14 sm:px-6 sm:py-16 md:px-10 lg:py-20"
+        style={{ backgroundImage: "url(‘/img/image 3517.png’)", background: "linear-gradient(to bottom, #d8ebff, #adc7df)" }}
       >
         <div className="mx-auto max-w-[1268px]">
-          <div className="flex flex-col justify-between gap-8 md:flex-row">
-            <h2 className="max-w-[487px] text-[50px] font-black uppercase leading-tight">
+          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
+            <h2 className="max-w-[487px] text-[22px] font-normal uppercase leading-tight sm:text-[30px] lg:text-[46px]">
               Your Guide to Completing the Challenge
             </h2>
-            <button className="h-fit rounded-full bg-[#019839] px-8 py-4 font-bold text-white">
+            <button className="h-fit rounded-full bg-[#019839] px-5 py-2.5 text-[14px] font-bold text-white sm:px-8 sm:py-4 sm:text-[16px]">
               Join this Challenge
             </button>
           </div>
-
-          <div className="mt-16 grid grid-cols-1 gap-8 lg:grid-cols-[554px_1fr_1fr]">
+          <div className="mt-8 grid grid-cols-1 gap-5 sm:mt-14 lg:grid-cols-[554px_1fr_1fr]">
             <img
               src={challenge.image || FALLBACK_CHALLENGE.image}
               alt={challenge.title}
-              className="h-[439px] w-full rounded-xl object-cover"
+              className="h-[220px] w-full rounded-xl object-cover sm:h-[340px] lg:h-[420px]"
             />
-
-            <div className="grid gap-6">
+            <div className="grid gap-4 sm:gap-5">
               {steps.slice(0, 2).map((step, index) => (
-                <div key={step} className="rounded-xl bg-black/20 p-8 text-white backdrop-blur">
-                  <p className="text-sm">//00{index + 1}</p>
-                  <h3 className="mt-8 text-[24px] font-semibold leading-[30px]">
-                    {step}
-                  </h3>
+                <div key={step} className="rounded-xl bg-black/20 p-5 text-white backdrop-blur sm:p-8">
+                  <p className="font-satoshi text-xs sm:text-sm">//00{index + 1}</p>
+                  <h3 className="font-satoshi mt-4 text-[14px] font-normal leading-snug sm:mt-8 sm:text-[18px] lg:text-[22px]">{step}</h3>
                 </div>
               ))}
             </div>
-
-            <div className="grid gap-6">
+            <div className="grid gap-4 sm:gap-5">
               {steps.slice(2).map((step, index) => (
-                <div key={step} className="rounded-xl bg-black/20 p-8 text-white backdrop-blur">
-                  <p className="text-sm">//00{index + 3}</p>
-                  <h3 className="mt-8 text-[24px] font-semibold leading-[30px]">
-                    {step}
-                  </h3>
+                <div key={step} className="rounded-xl bg-black/20 p-5 text-white backdrop-blur sm:p-8">
+                  <p className="font-satoshi text-xs sm:text-sm">//00{index + 3}</p>
+                  <h3 className="font-satoshi mt-4 text-[14px] font-normal leading-snug sm:mt-8 sm:text-[18px] lg:text-[22px]">{step}</h3>
                 </div>
               ))}
             </div>
@@ -211,71 +222,8 @@ export default function ChallengeDetailPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1100px] px-10 py-32 text-center">
-        <h2 className="text-[50px] font-black uppercase">
-          Frequently Asked Questions
-        </h2>
-        <p className="mt-4 text-[18px]">
-          Got questions before hitting the road? We’ve got you covered.
-        </p>
-
-        <div className="mt-12 grid grid-cols-1 gap-7 md:grid-cols-2">
-          {faqs.map((faq, index) => (
-            <button
-              key={faq}
-              className="flex min-h-[100px] items-center justify-between rounded-xl border border-[#ccc] px-7 text-left text-[22px] font-medium"
-            >
-              <span>{String(index + 1).padStart(2, "0")}. {faq}</span>
-              <Plus size={24} />
-            </button>
-          ))}
-        </div>
-      </section>
-
-      <footer className="mx-auto max-w-[1268px] px-10 py-24">
-        <div className="grid grid-cols-1 gap-16 md:grid-cols-3">
-          <div>
-            <img src="/ADCC-Logo.png" alt="ADCC" className="h-[63px] w-[149px] object-contain" />
-            <p className="mt-8 max-w-[402px] text-[18px]">
-              From weekend warriors to elite athletes, we unite cyclists who share a passion
-              for riding. ADCC is where your cycling journey thrives...
-            </p>
-            <div className="mt-8 flex h-[57px] max-w-[367px] rounded-lg bg-[#8DDF93] p-[6px]">
-              <input placeholder="Enter your email" className="flex-1 bg-transparent px-4 outline-none" />
-              <button className="rounded-lg bg-[#019839] px-7 text-white">Submit</button>
-            </div>
-          </div>
-
-          <div>
-            <h4 className="text-[24px] font-black uppercase">Quick Links</h4>
-            <ul className="mt-8 space-y-4 text-[18px]">
-              <li>About Us</li>
-              <li>Rides</li>
-              <li>Events</li>
-              <li>Cyclist’s Corner</li>
-              <li>Contact Us</li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-[24px] font-black uppercase">Contact Us</h4>
-            <ul className="mt-8 space-y-4 text-[18px]">
-              <li className="flex gap-3"><Phone size={22} /> +971 2 654 5645</li>
-              <li className="flex gap-3"><Phone size={22} /> 144226</li>
-              <li className="flex gap-3"><Mail size={22} /> Abu Dhabi, Yas island, yas marina circuit, Villa 18.</li>
-              <li className="flex gap-3"><MapPin size={22} /> info@adcyclingclub.ae</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="mt-20 border-t border-[#d5d5d5] pt-8 text-center text-[18px] text-black/70">
-          Copyright 2026. Abu Dhabi Cycling Club
-        </div>
-
-        <button className="fixed bottom-10 right-10 rounded-full bg-[#019839] p-4 text-white shadow-lg">
-          <Bike size={28} />
-        </button>
-      </footer>
+      {/* FAQ */}
+      <FaqSection faqs={faqs} />
     </div>
   );
 }

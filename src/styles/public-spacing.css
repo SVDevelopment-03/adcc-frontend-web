@@ -421,6 +421,21 @@ html[dir='rtl'] .communities-page .text-left {
   .communities-page > section {
     padding-inline: 16px !important;
   }
+
+  /* ─── Track detail page mobile ─── */
+  .tracks-page .track-faq-section {
+    padding-block: 40px !important;
+    padding-inline: 18px !important;
+  }
+  .tracks-page .track-faq-grid {
+    flex-direction: column !important;
+  }
+
+  /* ─── About page mobile text ─── */
+  .about-page .about-body-text {
+    font-size: 16px !important;
+    line-height: 24px !important;
+  }
 }
 
 @media (min-width: 640px) {

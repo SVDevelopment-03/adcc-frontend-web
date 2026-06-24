@@ -43,3 +43,150 @@ select {
 .public-layout-content > div {
   min-width: 0 !important;
 }
+
+@media (max-width: 650px) {
+  .home-hero {
+    padding-inline-start: 15px !important;
+  }
+
+  div.home-store-buttons {
+    flex-direction: row !important;
+  }
+  .home-page section.home-app-section {
+    gap: 30px !important;
+  }
+  div.home-phone-stage img {
+    max-height: 350px !important;
+  }
+  div.home-feature-list {
+    grid-template-columns: 2fr 2fr !important;
+    gap: 40px !important;
+  }
+  .home-page #community.home-community-section {
+    padding-block: 50px !important;
+  }
+  .journey-button {
+    width: auto !important;
+  }
+  .home-ticker-item {
+    height: 50px !important;
+  }
+  .home-page #app.home-app-section {
+    padding-block: 40px !important;
+  }
+  div.home-about-stats {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .home-platform-card-content {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+  .home-page .home-store-section {
+    padding-bottom: 0px !important;
+  }
+  .home-page .home-about-section {
+    gap: 30px !important;
+  }
+  .home-page #about.home-about-section {
+    padding-block: 30px 40px !important;
+  }
+  .public-footer-cta .relative.z-10 {
+    padding-inline: 0px !important;
+  }
+  section.journey-section {
+    padding-top: 0px !important;
+  }
+  .journey-scroll-controls {
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+  }
+  .home-page #platform.home-platform-section {
+    padding-block: 0 40px !important;
+  }
+  .home-platform-title {
+    text-align: center !important;
+  }
+  .journey-title {
+    margin-bottom: 0px !important;
+  }
+  .journey-card-arrow svg {
+    width: 15px !important;
+  }
+  .home-about-text,
+  .home-about-stats {
+    margin-bottom: 25px !important;
+  }
+  h1.about-hero-title,
+  h1.event-hero-title,
+  h1.communities-page-hero-title,
+  h1.challenges-page-hero-title,
+  h1.track-hero-title,
+  h1.contact-page-hero-title {
+    font-size: 34px !important;
+  }
+  div.about-hero-content,
+  div.event-hero-content,
+  div.communities-page-hero-content,
+  div.challenges-page-hero-content,
+  div.track-hero-content,
+  div.contact-page-hero-content {
+    bottom: 20px !important;
+  }
+
+  .communities-page-hero-breadcrumb,
+  .challenges-page-hero-breadcrumb,
+  .contact-page-hero-breadcrumb {
+    font-size: 17px !important;
+  }
+
+  .about-stats-left {
+    padding-inline-end: 0px !important;
+  }
+  div.about-stats-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 30px !important;
+  }
+  .about-page .about-stats-grid > div {
+    padding-bottom: 0px !important;
+    padding-top: 0px !important;
+  }
+  div.about-stat-number {
+    font-size: 30px !important;
+  }
+  div.about-stats-grid {
+    margin-bottom: 30px !important;
+  }
+  .event-page .event-filter-bar {
+    padding-top: 0px !important;
+    gap: 10px !important;
+  }
+  .event-filter-field button {
+    height: 50px !important;
+  }
+  div.event-grid-wrap {
+    padding-top: 0px !important;
+  }
+  .event-filter-field {
+    padding: 0px !important;
+  }
+
+  .grid-new {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  .font-bebas.text-\[30px\].font-black.uppercase.sm\:text-\[42px\] {
+    justify-content: center;
+  }
+  .tracks-page h2.track-intro-title {
+    margin-bottom: 0px !important;
+    margin-block-end: 0px !important;
+  }
+  .tracks-page .track-journey-offset {
+    padding-block-start: 25px !important;
+  }
+  .contact-page-hero {
+    height: 320px !important;
+  }
+  h2.contact-intro-title {
+    line-height: 38px !important;
+  }
+}

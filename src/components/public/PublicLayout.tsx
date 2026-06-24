@@ -1,44 +1,70 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { ChevronUp, LogIn, LogOut, Mail, MapPin, Menu, Phone } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { useAuth } from '../../contexts/AuthContext';
-import { useLocale } from '../../contexts/LocaleContext';
-import { HeaderWeather } from './HeaderWeather';
-import { LanguageSwitcher } from './LanguageSwitcher';
-import { AppStoreButton } from './AppStoreButton';
-import { subscribeToNewsletter } from '../../services/newsletterApi';
+import React, { useState, useEffect, useCallback } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import {
+  ChevronUp,
+  LogIn,
+  LogOut,
+  Mail,
+  MapPin,
+  Menu,
+  Phone,
+} from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { useAuth } from "../../contexts/AuthContext";
+import { useLocale } from "../../contexts/LocaleContext";
+import { HeaderWeather } from "./HeaderWeather";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { AppStoreButton } from "./AppStoreButton";
+import { subscribeToNewsletter } from "../../services/newsletterApi";
 
 interface PublicLayoutProps {
   children: React.ReactNode;
 }
 
 const navItems = [
-  { labelKey: 'public.nav.home', to: '/home', match: ['/home'] },
-  { labelKey: 'public.nav.aboutUs', to: '/aboutus', match: ['/aboutus'] },
-  { labelKey: 'public.nav.events', to: '/user-event', match: ['/user-event', '/user-events'] },
+  { labelKey: "public.nav.home", to: "/home", match: ["/home"] },
+  { labelKey: "public.nav.aboutUs", to: "/aboutus", match: ["/aboutus"] },
   {
-    labelKey: 'public.nav.community',
-    to: '/user-communities',
-    match: [
-      '/user-communities',
-    ],
+    labelKey: "public.nav.events",
+    to: "/user-event",
+    match: ["/user-event", "/user-events"],
   },
-  { labelKey: 'public.nav.challenges', to: '/user-challenges', match: ['/user-challenges'] },
-  { labelKey: 'public.nav.tracks', to: '/user-tracks', match: ['/user-tracks'] },
-  { labelKey: 'public.footer.contactUs', to: '/contact-us', match: ['/contact-us'] },
+  {
+    labelKey: "public.nav.community",
+    to: "/user-communities",
+    match: ["/user-communities"],
+  },
+  {
+    labelKey: "public.nav.challenges",
+    to: "/user-challenges",
+    match: ["/user-challenges"],
+  },
+  {
+    labelKey: "public.nav.tracks",
+    to: "/user-tracks",
+    match: ["/user-tracks"],
+  },
+  {
+    labelKey: "public.footer.contactUs",
+    to: "/contact-us",
+    match: ["/contact-us"],
+  },
 ];
 
 function Logo({ compact = false }: { compact?: boolean }) {
   const navigate = useNavigate();
 
   return (
-   <img
-    src="/images/adcc-logo.png"
-    alt="Abu Dhabi Cycling Club"
-    onClick={() => navigate("/home")}
-    className={compact ? 'h-14 w-34 object-contain sm:h-16 sm:w-38 cursor-pointer' : 'h-13 w-32 object-contain sm:h-15 sm:w-36 lg:h-17 lg:w-42 xl:h-19 xl:w-45 cursor-pointer'}
-   />
+    <img
+      src="/images/adcc-logo.png"
+      alt="Abu Dhabi Cycling Club"
+      onClick={() => navigate("/home")}
+      className={
+        compact
+          ? "h-14 w-34 object-contain sm:h-16 sm:w-38 cursor-pointer"
+          : "h-13 w-32 object-contain sm:h-15 sm:w-36 lg:h-17 lg:w-42 xl:h-19 xl:w-45 cursor-pointer"
+      }
+    />
   );
 }
 
@@ -53,11 +79,11 @@ function PublicHeader() {
   const handleAuthAction = async () => {
     if (isAuthenticated) {
       await logout();
-      navigate('/home');
+      navigate("/home");
       return;
     }
 
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -66,7 +92,7 @@ function PublicHeader() {
         @media (max-width: 640px) {
           .public-header {
             min-height: 92px !important;
-            padding: 14px 22px !important;
+            padding: 14px 10px !important;
           }
           .public-header-logo-wrap img {
             width: 132px !important;
@@ -77,8 +103,8 @@ function PublicHeader() {
             gap: 14px !important;
           }
           .public-menu-toggle {
-            width: 46px !important;
-            height: 46px !important;
+            width: 36px !important;
+            height: 36px !important;
           }
           .public-mobile-menu {
             padding: 16px 22px 20px !important;
@@ -124,21 +150,24 @@ function PublicHeader() {
           width: 100%;
         }
       `}</style>
-      <div className="public-header-logo-wrap">
+      <div className="public-header-logo-wrap flex items-center gap-3">
         <Logo />
+        <LanguageSwitcher className="md:hidden" />
       </div>
 
       <nav className="hidden items-center gap-6 text-[17px] font-medium xl:flex 2xl:gap-10 2xl:text-[20px]">
         {navItems.map((item) => {
           const isActive = item.match.some(
-            (path) => location.pathname === path || location.pathname.startsWith(`${path}/`),
+            (path) =>
+              location.pathname === path ||
+              location.pathname.startsWith(`${path}/`),
           );
           return (
             <NavLink
               key={item.labelKey}
               to={item.to}
               className={`pub-nav-link inline-block ${
-                isActive ? '!text-[#019839]' : '!text-black'
+                isActive ? "!text-[#019839]" : "!text-black"
               }`}
             >
               {t(item.labelKey)}
@@ -153,7 +182,7 @@ function PublicHeader() {
         <button
           type="button"
           aria-expanded={menuOpen}
-          aria-label={t('public.auth.toggleMenu')}
+          aria-label={t("public.auth.toggleMenu")}
           onClick={() => setMenuOpen((value) => !value)}
           className="public-menu-toggle flex h-11 w-11 items-center justify-center rounded-full bg-[#019839] text-white transition-colors hover:bg-black sm:h-11 sm:w-11 xl:hidden"
         >
@@ -166,7 +195,9 @@ function PublicHeader() {
           <nav className="flex flex-col gap-2 text-[16px] font-semibold">
             {navItems.map((item) => {
               const isActive = item.match.some(
-                (path) => location.pathname === path || location.pathname.startsWith(`${path}/`),
+                (path) =>
+                  location.pathname === path ||
+                  location.pathname.startsWith(`${path}/`),
               );
               return (
                 <NavLink
@@ -174,28 +205,31 @@ function PublicHeader() {
                   to={item.to}
                   onClick={() => setMenuOpen(false)}
                   className={`pub-nav-link px-4 py-2.5 ${
-                    isActive ? '!text-[#019839]' : '!text-black'
+                    isActive ? "!text-[#019839]" : "!text-black"
                   }`}
                 >
                   {t(item.labelKey)}
                 </NavLink>
               );
             })}
-            <LanguageSwitcher className="block md:hidden px-4 py-2" />
             <button
               type="button"
               onClick={() => {
                 setMenuOpen(false);
                 void handleAuthAction();
               }}
-              className={`public-auth-button mt-3 flex items-center gap-3 rounded-md bg-[#019839] py-3.5 ps-7 pe-5 text-[16px] font-bold text-white transition-colors hover:bg-black ${isRtl ? 'flex-row-reverse' : ''}`}
+              className={`public-auth-button mt-3 flex items-center gap-3 rounded-md bg-[#019839] py-3.5 ps-7 pe-5 text-[16px] font-bold text-white transition-colors hover:bg-black ${isRtl ? "flex-row-reverse" : ""}`}
             >
               {isAuthenticated ? (
                 <LogOut className="h-5 w-5 shrink-0" />
               ) : (
                 <LogIn className="h-5 w-5 shrink-0" />
               )}
-              <span>{isAuthenticated ? t('public.auth.logout') : t('public.auth.login')}</span>
+              <span>
+                {isAuthenticated
+                  ? t("public.auth.logout")
+                  : t("public.auth.login")}
+              </span>
             </button>
           </nav>
         </div>
@@ -204,14 +238,16 @@ function PublicHeader() {
   );
 }
 
-function StoreButton({ type }: { type: 'google' | 'apple' }) {
+function StoreButton({ type }: { type: "google" | "apple" }) {
   return <AppStoreButton type={type} />;
 }
 
 function PublicFooter() {
-  const [email, setEmail] = useState('');
-  const [emailMessage, setEmailMessage] = useState('');
-  const [emailMessageType, setEmailMessageType] = useState<'success' | 'error'>('success');
+  const [email, setEmail] = useState("");
+  const [emailMessage, setEmailMessage] = useState("");
+  const [emailMessageType, setEmailMessageType] = useState<"success" | "error">(
+    "success",
+  );
   const [isSubmittingEmail, setIsSubmittingEmail] = useState(false);
   const { t } = useTranslation();
 
@@ -219,28 +255,30 @@ function PublicFooter() {
     const normalizedEmail = email.trim().toLowerCase();
 
     if (!normalizedEmail) {
-      setEmailMessageType('error');
-      setEmailMessage(t('public.footer.emailRequired'));
+      setEmailMessageType("error");
+      setEmailMessage(t("public.footer.emailRequired"));
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-      setEmailMessageType('error');
-      setEmailMessage(t('public.footer.emailInvalid'));
+      setEmailMessageType("error");
+      setEmailMessage(t("public.footer.emailInvalid"));
       return;
     }
 
     try {
       setIsSubmittingEmail(true);
-      setEmailMessage('');
-      await subscribeToNewsletter(normalizedEmail, 'public-footer');
-      setEmail('');
-      setEmailMessageType('success');
-      setEmailMessage(t('public.footer.thanks'));
+      setEmailMessage("");
+      await subscribeToNewsletter(normalizedEmail, "public-footer");
+      setEmail("");
+      setEmailMessageType("success");
+      setEmailMessage(t("public.footer.thanks"));
     } catch (error) {
-      setEmailMessageType('error');
+      setEmailMessageType("error");
       setEmailMessage(
-        error instanceof Error ? error.message : t('public.footer.subscribeError'),
+        error instanceof Error
+          ? error.message
+          : t("public.footer.subscribeError"),
       );
     } finally {
       setIsSubmittingEmail(false);
@@ -252,13 +290,16 @@ function PublicFooter() {
       <section
         className="public-footer-cta relative flex min-h-[360px] items-center justify-center overflow-hidden bg-cover bg-center px-4 py-12 text-center text-white sm:min-h-[430px] sm:px-6 sm:py-16 lg:min-h-[502px]"
         style={{
-          backgroundImage:
-            " url('/images/footer-image.png')",
+          backgroundImage: " url('/images/footer-image.png')",
         }}
       >
         <div className="relative z-10 w-full max-w-[760px]">
-          <h2 className="text-[36px] font-black uppercase leading-none tracking-wide sm:text-[44px] md:text-[56px] lg:text-[64px]">{t('public.footer.ctaTitle')}</h2>
-          <p className="mt-5! text-[16px] leading-6 sm:mt-7! sm:text-[18px] md:text-[22px]">{t('public.footer.ctaSubtitle')}</p>
+          <h2 className="text-[36px] font-black uppercase leading-none tracking-wide sm:text-[44px] md:text-[56px] lg:text-[64px]">
+            {t("public.footer.ctaTitle")}
+          </h2>
+          <p className="mt-5! text-[16px] leading-6 sm:mt-7! sm:text-[18px] md:text-[22px]">
+            {t("public.footer.ctaSubtitle")}
+          </p>
           <div className="mt-6! flex flex-col items-center justify-center gap-3 sm:mt-7! sm:flex-row sm:flex-wrap sm:gap-4">
             <StoreButton type="google" />
             <StoreButton type="apple" />
@@ -271,7 +312,7 @@ function PublicFooter() {
           <div className="sm:col-span-2 lg:col-span-1">
             <Logo compact />
             <p className="mt-6! max-w-[390px] text-[16px] leading-6 text-black sm:mt-8! sm:text-[18px] lg:mt-9!">
-              {t('public.footer.brandText')}
+              {t("public.footer.brandText")}
             </p>
             <div className="mt-6! flex h-12 w-full max-w-[360px] overflow-hidden rounded-lg bg-[#8DDF93] p-1 max-[380px]:h-auto max-[380px]:flex-col sm:mt-7!">
               <input
@@ -279,17 +320,17 @@ function PublicFooter() {
                 value={email}
                 onChange={(event) => {
                   setEmail(event.target.value);
-                  if (emailMessage) setEmailMessage('');
+                  if (emailMessage) setEmailMessage("");
                 }}
                 onKeyDown={(event) => {
-                  if (event.key === 'Enter') {
+                  if (event.key === "Enter") {
                     event.preventDefault();
                     void handleNewsletterSubmit();
                   }
                 }}
-                placeholder={t('public.footer.emailPlaceholder')}
+                placeholder={t("public.footer.emailPlaceholder")}
                 disabled={isSubmittingEmail}
-                aria-label={t('public.footer.emailPlaceholder')}
+                aria-label={t("public.footer.emailPlaceholder")}
                 className="min-h-10 min-w-0 flex-1 bg-transparent px-4! text-[14px] outline-none placeholder:text-black/45 disabled:opacity-60"
               />
               <button
@@ -298,13 +339,17 @@ function PublicFooter() {
                 disabled={isSubmittingEmail}
                 className="min-h-10 rounded-md bg-[#019839] px-5! text-[14px] font-medium text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-70 sm:min-w-[103px] sm:px-6!"
               >
-                {isSubmittingEmail ? t('public.footer.saving') : t('public.footer.submit')}
+                {isSubmittingEmail
+                  ? t("public.footer.saving")
+                  : t("public.footer.submit")}
               </button>
             </div>
             {emailMessage && (
               <p
                 className={`mt-2! max-w-[360px] text-[13px] ${
-                  emailMessageType === 'success' ? 'text-[#019839]' : 'text-[#C12D32]'
+                  emailMessageType === "success"
+                    ? "text-[#019839]"
+                    : "text-[#C12D32]"
                 }`}
               >
                 {emailMessage}
@@ -313,26 +358,50 @@ function PublicFooter() {
           </div>
 
           <div>
-            <h3 className="text-[22px] font-black uppercase sm:text-[24px]">{t('public.footer.quickLinks')}</h3>
+            <h3 className="text-[22px] font-black uppercase sm:text-[24px]">
+              {t("public.footer.quickLinks")}
+            </h3>
             <ul className="!mt-5 space-y-3! text-[16px] sm:!mt-7 sm:space-y-4! sm:text-[18px]">
-              <li><NavLink to="/aboutus" className="pub-footer-link">{t('public.nav.aboutUs')}</NavLink></li>
-              <li><NavLink to="/user-tracks" className="pub-footer-link">{t('public.footer.rides')}</NavLink></li>
-              <li><NavLink to="/user-event" className="pub-footer-link">{t('public.nav.events')}</NavLink></li>
-              <li><NavLink to="/user-challenges" className="pub-footer-link">{t('public.footer.cyclistsCorner')}</NavLink></li>
-              <li><NavLink to="/contact-us" className="pub-footer-link">{t('public.footer.contactUs')}</NavLink></li>
+              <li>
+                <NavLink to="/aboutus" className="pub-footer-link">
+                  {t("public.nav.aboutUs")}
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/user-tracks" className="pub-footer-link">
+                  {t("public.footer.rides")}
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/user-event" className="pub-footer-link">
+                  {t("public.nav.events")}
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/user-challenges" className="pub-footer-link">
+                  {t("public.footer.cyclistsCorner")}
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/contact-us" className="pub-footer-link">
+                  {t("public.footer.contactUs")}
+                </NavLink>
+              </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="text-[22px] font-black uppercase sm:text-[24px]">{t('public.footer.contactUs')}</h3>
+            <h3 className="text-[22px] font-black uppercase sm:text-[24px]">
+              {t("public.footer.contactUs")}
+            </h3>
             <ul className="mt-5! space-y-3! text-[16px] leading-6 sm:mt-7! sm:space-y-4! sm:text-[18px]">
-              <li className="flex gap-3"> 
+              <li className="flex gap-3">
                 <Phone className="mt-0.5 h-5 w-5 shrink-0" />
                 <a
                   href="tel:+97126545645"
                   className="transition-colors hover:text-[#019839]"
                 >
-                  +971 2 654 5645 
+                  +971 2 654 5645
                 </a>
               </li>
               {/* <li className="flex gap-3"><MessageCircle className="mt-0.5 h-5 w-5 shrink-0" /> <span>144226</span></li> */}
@@ -362,7 +431,7 @@ function PublicFooter() {
 
         <div className="mt-10! border-t border-black/15 pt-[20px]! text-center sm:mt-14! md:mt-20!">
           <span className="inline-block h-[23px] w-fit max-w-full whitespace-nowrap text-[clamp(14px,4.6vw,18px)] font-normal leading-none text-black">
-            {t('public.footer.copyright')}
+            {t("public.footer.copyright")}
           </span>
         </div>
       </footer>
@@ -375,12 +444,12 @@ function ScrollToTopButton() {
 
   useEffect(() => {
     const onScroll = () => setVisible(window.scrollY > 400);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const scrollToTop = useCallback(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
   if (!visible) return null;

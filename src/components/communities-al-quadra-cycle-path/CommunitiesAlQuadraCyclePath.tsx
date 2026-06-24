@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   ArrowRight,
@@ -145,7 +145,7 @@ function LoadingState() {
 function ErrorState({ message }: { message: string }) {
   return (
     <main className="min-h-[420px] bg-[#eaf4ff] px-10 py-24 text-center text-black">
-      <h1 className="text-[50px] font-black uppercase">{TARGET_TRACK_TITLE}</h1>
+      <h1 className="text-[50px] font-normal uppercase">{TARGET_TRACK_TITLE}</h1>
       <p className="mt-4 text-[20px] font-medium text-black/70">{message}</p>
     </main>
   );
@@ -153,26 +153,29 @@ function ErrorState({ message }: { message: string }) {
 
 function HeroSection({ track }: { track: Track }) {
   return (
-    <section className="mx-auto max-w-[1272px] px-10">
+    <section
+      className="relative w-full overflow-hidden"
+      style={{ height: "clamp(300px, 45vw, 500px)" }}
+    >
       <div
-        className="relative h-[500px] overflow-hidden bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-center"
         style={{
-          backgroundImage: `linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url('${getTrackImage(
-            track,
-          )}')`,
+          backgroundImage: `linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url('${getTrackImage(track)}')`,
         }}
-      >
-        <div className="absolute bottom-20 left-10 text-white">
-          <div className="mb-3 flex gap-3">
-            <span className="rounded-full bg-white/30 px-5 py-2">
-              {track.city || "Location TBA"}
-            </span>
-            <span className="rounded-full bg-white/30 px-5 py-2">
-              {titleCase(track.trackType)}
-            </span>
-          </div>
-          <h1 className="text-[40px] font-black uppercase">{track.title}</h1>
+        aria-hidden
+      />
+      <div className="public-hero-content-pos">
+        <div className="mb-3 flex flex-wrap gap-2">
+          <span className="rounded-full bg-white/30 px-5 py-2 text-[14px] font-medium text-white backdrop-blur sm:text-[16px]">
+            {track.city || "Location TBA"}
+          </span>
+          <span className="rounded-full bg-white/30 px-5 py-2 text-[14px] font-medium text-white backdrop-blur sm:text-[16px]">
+            {titleCase(track.trackType)}
+          </span>
         </div>
+        <h1 className="text-[30px] font-normal uppercase leading-tight text-white sm:text-[40px] lg:text-[50px]">
+          {track.title}
+        </h1>
       </div>
     </section>
   );
@@ -180,14 +183,14 @@ function HeroSection({ track }: { track: Track }) {
 
 function AboutSection({ track }: { track: Track }) {
   return (
-    <section className="px-10 py-24 text-center">
-      <h2 className="text-[60px] font-black uppercase">About This Track</h2>
-      <p className="mx-auto mt-8 max-w-[851px] text-[24px] leading-[30px]">
+    <section className="px-10 py-24 text-center max-md:px-5 max-md:py-14 max-sm:px-4 max-sm:py-10">
+      <h2 className="text-[28px] font-normal uppercase sm:text-[38px] md:text-[48px] lg:text-[60px]">About This Track</h2>
+      <p className="mx-auto mt-4 max-w-[851px] text-[14px] leading-relaxed sm:mt-6 sm:text-[17px] md:text-[20px] lg:text-[24px]">
         {track.shortDescription || (track as any).description || track.safetyNotes || "Track details are coming soon."}
       </p>
 
-      <button className="mt-8 inline-flex items-center gap-3 rounded-full bg-[#019839] px-8 py-4 text-[18px] font-bold text-white">
-        Start Ride <ArrowRight size={20} />
+      <button className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#019839] px-6 py-3 text-[15px] font-bold text-white sm:mt-8 sm:px-8 sm:py-4 sm:text-[18px]">
+        Start Ride <ArrowRight size={18} />
       </button>
     </section>
   );
@@ -201,14 +204,14 @@ function StatsSection({ track }: { track: Track }) {
   ];
 
   return (
-    <section className="mx-auto mb-28 grid max-w-[1108px] grid-cols-1 gap-4 rounded-2xl bg-[#323232] p-4 lg:grid-cols-[430px_repeat(3,1fr)]">
-      <div className="rounded-2xl bg-[#435974] p-8 text-white">
-        <p className="text-white/70">• Start Your Ride</p>
-        <h3 className="mt-8 text-[40px] font-black uppercase leading-tight">
+    <section className="mx-auto mb-16 grid max-w-[1108px] grid-cols-1 gap-4 rounded-2xl bg-[#323232] p-4 lg:mb-28 lg:grid-cols-[430px_repeat(3,1fr)]">
+      <div className="rounded-2xl bg-[#435974] p-5 text-white sm:p-8">
+        <p className="text-[13px] text-white/70 sm:text-[14px]">• Start Your Ride</p>
+        <h3 className="mt-4 text-[22px] font-normal uppercase leading-tight sm:mt-8 sm:text-[30px] lg:text-[36px]">
           Track your progress with the ADCC app
         </h3>
 
-        <div className="mt-8 grid grid-cols-2 gap-3 text-[14px] text-white/80">
+        <div className="mt-5 grid grid-cols-2 gap-3 text-[13px] text-white/80 sm:mt-8 sm:text-[14px]">
           <p>Safety Notes</p>
           <p>{track.safetyNotes || "Follow posted track guidance"}</p>
           <p>Helmet Required</p>
@@ -219,12 +222,13 @@ function StatsSection({ track }: { track: Track }) {
       </div>
 
       {stats.map(([value, label]) => (
-        <div key={label} className="rounded-xl bg-[#435974] p-8 text-white">
-          <span className="inline-flex rounded-full bg-white p-4 text-[#019839]">
-            <CalendarDays size={25} />
+        <div key={label} className="rounded-xl bg-[#435974] p-5 text-white sm:p-8">
+          <span className="inline-flex rounded-full bg-white p-3 text-[#019839] sm:p-4">
+            <CalendarDays size={20} className="sm:hidden" />
+            <CalendarDays size={25} className="hidden sm:block" />
           </span>
-          <h3 className="mt-20 text-[30px] font-black uppercase">{value}</h3>
-          <p className="text-[20px] text-white/60">{label}</p>
+          <h3 className="mt-10 text-[22px] font-normal uppercase sm:mt-20 sm:text-[26px] lg:text-[30px]">{value}</h3>
+          <p className="text-[13px] text-white/60 sm:text-[17px] lg:text-[20px]">{label}</p>
         </div>
       ))}
     </section>
@@ -236,14 +240,14 @@ function FacilitiesSection({ facilities }: { facilities: FacilityCard[] }) {
 
   return (
     <section
-      className="bg-cover bg-center bg-no-repeat px-10 py-20"
+      className="bg-cover bg-center bg-no-repeat px-4 py-12 sm:px-6 sm:py-16 md:px-10 lg:py-20"
       style={{
         backgroundImage: `url('${FACILITIES_BG}')`,
       }}
     >
       <div className="mx-auto max-w-[1268px]">
         <div className="flex justify-between gap-8 max-lg:flex-col">
-          <h2 className="max-w-[580px] text-[50px] font-black uppercase leading-tight">
+          <h2 className="max-w-[580px] text-[26px] font-normal uppercase leading-tight sm:text-[34px] lg:text-[44px]">
             Everything You Need for a Seamless Ride Experience
           </h2>
           <button className="h-fit rounded-full bg-[#019839] px-8 py-4 font-bold text-white">
@@ -311,7 +315,7 @@ function EventCard({ event }: { event: EventApiResponse }) {
         </span>
       </div>
 
-      <h3 className="mt-6 text-[26px] font-black uppercase">{event.title}</h3>
+      <h3 className="mt-6 text-[26px] font-normal uppercase">{event.title}</h3>
 
       <div className="mt-5 grid grid-cols-2 gap-y-4 text-[18px] text-black/70">
         <p className="flex gap-2">
@@ -345,8 +349,8 @@ function EventCard({ event }: { event: EventApiResponse }) {
 
 function UpcomingEventsSection({ events }: { events: EventApiResponse[] }) {
   return (
-    <section className="mx-auto max-w-[1269px] px-10 py-32">
-      <h2 className="mb-16 text-center text-[50px] font-black uppercase">Upcoming Events</h2>
+    <section className="mx-auto max-w-[1269px] px-10 py-32 max-md:px-5 max-md:py-16 max-sm:px-4 max-sm:py-12">
+      <h2 className="mb-8 text-center text-[26px] font-normal uppercase sm:text-[34px] md:text-[42px] lg:text-[50px] lg:mb-16">Upcoming Events</h2>
 
       {events.length === 0 ? (
         <p className="text-center text-[20px] font-medium text-black/60">
@@ -365,23 +369,41 @@ function UpcomingEventsSection({ events }: { events: EventApiResponse[] }) {
 
 function FaqSection({ track }: { track: Track }) {
   const faqs = getFaqs(track);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const toggle = useCallback((idx: number) => {
+    setOpenIndex((prev) => (prev === idx ? null : idx));
+  }, []);
 
   return (
-    <section className="mx-auto max-w-[1100px] px-10 pb-32 text-center">
-      <h2 className="text-[50px] font-black uppercase">Frequently Asked Questions</h2>
-      <p className="mt-4 text-[18px]">Got questions before hitting the road? We have got you covered.</p>
+    <section className="w-full px-4 pb-16 text-center sm:px-6 md:px-10 lg:px-16 lg:pb-28 xl:px-20 2xl:px-24">
+      <h2 className="text-[30px] font-normal uppercase sm:text-[38px] lg:text-[46px]">Frequently Asked Questions</h2>
+      <p className="mt-3 text-[15px] text-black/70 sm:text-[16px]">Got questions before hitting the road? We've got you covered.</p>
 
-      <div className="mt-12 grid grid-cols-1 gap-7 md:grid-cols-2">
+      <div className="mx-auto mt-8 grid max-w-[1098px] grid-cols-1 gap-4 sm:mt-10 md:grid-cols-2 md:gap-5">
         {faqs.map((faq, index) => (
-          <button
+          <div
             key={faq}
-            className="flex min-h-[100px] items-center justify-between rounded-xl border border-[#ccc] px-7 text-left text-[22px] font-medium"
+            role="button"
+            tabIndex={0}
+            onClick={() => toggle(index)}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") toggle(index); }}
+            className="cursor-pointer rounded-lg border border-[#cad8e6] bg-[#eef7ff] px-4 text-left text-[15px] font-medium sm:px-7 sm:text-[16px]"
+            style={{ fontFamily: "'Outfit', 'Satoshi', sans-serif" }}
           >
-            <span>
-              {String(index + 1).padStart(2, "0")}. {faq}
-            </span>
-            <Plus size={24} />
-          </button>
+            <div className="flex min-h-[68px] items-center justify-between gap-4 py-5 sm:min-h-[80px] sm:py-6">
+              <span>{faq}</span>
+              <Plus
+                size={18}
+                className="shrink-0 transition-transform duration-300"
+                style={{ transform: openIndex === index ? "rotate(45deg)" : "rotate(0deg)" }}
+              />
+            </div>
+            {openIndex === index && (
+              <p className="pb-5 text-[14px] font-normal leading-6 text-black/65 sm:text-[15px]">
+                For more information about this topic, please contact our support team or refer to the track guidelines.
+              </p>
+            )}
+          </div>
         ))}
       </div>
     </section>
@@ -488,7 +510,7 @@ export default function TrackDetailPage() {
   if (error || !track) return <ErrorState message={error || "Track not found."} />;
 
   return (
-    <main className="min-h-screen bg-[#eaf4ff] text-black">
+    <main className="font-satoshi min-h-screen bg-[#eaf4ff] text-black">
       <HeroSection track={track} />
       <AboutSection track={track} />
       <StatsSection track={track} />

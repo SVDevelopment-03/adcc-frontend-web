@@ -107,7 +107,6 @@ const CSS = `
   }
   * { box-sizing: border-box; margin: 0; }
   body { background: #EAF4FF; }
-  ::-webkit-scrollbar { display: none; }
   .home-page {
     width: 100%;
     max-width: 100vw;
@@ -119,6 +118,18 @@ const CSS = `
     max-width: 100%;
   }
 
+.app-phone-stage img{
+    left: -150px !important;
+    top: 50px;}
+  [dir="rtl"] .app-phone-stage img {
+    left: auto !important;
+    right: -150px !important;
+  }
+
+
+
+
+  
   .home-hero {
     position: relative;
     width: 100%;
@@ -348,7 +359,7 @@ font-family: var(--font-satoshi) !important;}
     min-width: 624px;
     min-height: 583px;
     border-radius: 20px;
-    background: #D8E5FB;
+    background: linear-gradient(135deg, #CCDADD, #B0C4C7, #BDCED1, #99ADB0, #D7E2E3);
     position: relative;
     overflow: hidden;
     cursor: pointer;
@@ -616,15 +627,15 @@ font-family: var(--font-satoshi) !important;}
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 46px;
+    gap: 0px;
     margin-bottom:128px;
   }
   .journey-text {
     font-family: 'Outfit', sans-serif !important;
     font-style: normal;
     font-weight: 400;
-    font-size: 24px;
-    line-height: 30px;
+    font-size: 18px;
+    line-height: 26px;
     color: #000000;
     margin: 0 0 23px;
     max-width: 684px;
@@ -668,8 +679,8 @@ font-family: var(--font-satoshi) !important;}
     font-family: 'Satoshi', sans-serif;
     font-style: normal;
     font-weight: 700;
-    font-size: 24px;
-    line-height: 100.7%;
+    font-size: 18px;
+    line-height: 26px;
     text-transform: uppercase;
     letter-spacing: 0px;
     color: #000000;
@@ -692,8 +703,8 @@ font-family: var(--font-satoshi) !important;}
     font-family: 'Outfit', sans-serif !important;
     font-style: normal;
     font-weight: 700;
-    font-size: 28px;
-    line-height: 100.7%;
+    font-size: 18px;
+    line-height: 26px;
     text-transform: uppercase;
     color: #000000;
     margin: 0 auto 28px;
@@ -811,8 +822,8 @@ font-family: var(--font-satoshi) !important;}
     font-family: 'Outfit', sans-serif;
     font-style: normal;
     font-weight: 400;
-    font-size: 24px;
-    line-height: 30px;
+    font-size: 18px;
+    line-height: 26px;
     color: #000000;
     max-width: 694px;
     margin: 0 0 40px;
@@ -835,8 +846,8 @@ font-family: var(--font-satoshi) !important;}
     font-family: 'Outfit', sans-serif;
     font-style: normal;
     font-weight: 400;
-    font-size: 24px;
-    line-height: 30px;
+    font-size: 18px;
+    line-height: 24px;
     color: #000000;
     margin-top: 0;
   }
@@ -1013,6 +1024,35 @@ font-family: var(--font-satoshi) !important;}
     overflow-x: auto;
     padding-bottom: 8px;
     scrollbar-width: none;
+    scroll-behavior: smooth;
+  }
+  .journey-cards::-webkit-scrollbar { display: none; }
+  .journey-scroll-controls {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+        justify-content: flex-end;
+  }
+  .journey-scroll-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid #000;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    flex-shrink: 0;
+  }
+  .journey-scroll-btn:hover {
+    background: #019839;
+    border-color: #019839;
+  }
+  .journey-scroll-btn:hover svg path {
+    fill: #fff;
   }
 
   .journey-card {
@@ -1394,8 +1434,8 @@ font-family: var(--font-satoshi) !important;}
       max-width: 640px !important;
       margin-bottom: 20px !important;
       padding-right: 0 !important;
-      font-size: 20px !important;
-      line-height: 28px !important;
+      font-size: 18px !important;
+      line-height: 26px !important;
     }
     .home-app-section {
       padding: 56px 32px !important;
@@ -1420,6 +1460,7 @@ font-family: var(--font-satoshi) !important;}
       width: 100% !important;
     }
     .home-phone-stage img {
+      width: 100% !important;
       max-width: 100% !important;
       height: auto !important;
     }
@@ -1435,7 +1476,7 @@ font-family: var(--font-satoshi) !important;}
     }
     .home-community-eyebrow,
     .home-community-subtitle {
-      font-size: 22px !important;
+      font-size: 18px !important;
     }
     .home-community-title {
       font-size: clamp(44px, 8vw, 56px) !important;
@@ -1501,6 +1542,7 @@ font-family: var(--font-satoshi) !important;}
     .home-about-left-image {
       width: min(100%, 396px) !important;
       height: auto !important;
+      max-height: 400px !important;
       aspect-ratio: 396 / 599;
     }
     .home-about-title {
@@ -1585,7 +1627,7 @@ font-family: var(--font-satoshi) !important;}
     }
     .home-hero-content {
       inset-inline-start: 20px !important;
-      top: clamp(72px, 18%, 120px) !important;
+      top: 40px !important;
       width: min(340px, calc(100% - 36px)) !important;
       max-width: 340px !important;
     }
@@ -1596,19 +1638,34 @@ font-family: var(--font-satoshi) !important;}
       max-width: 340px !important;
     }
     .home-hero-actions {
-      gap: 10px !important;
+      gap: 8px !important;
+      flex-wrap: nowrap !important;
     }
     .home-hero-actions button {
+      flex: 1 1 0 !important;
+      min-width: 0 !important;
       height: 40px !important;
-      padding: 0 16px !important;
+      padding: 0 10px !important;
     }
-    .home-hero-actions button:not(.home-hero-download-btn) {
-      font-size: 14px !important;
+    .home-hero-download-btn {
+      --adcc-btn-font-size: 14px !important;
+      --adcc-btn-padding-x: 10px !important;
+      --adcc-btn-min-height: 40px !important;
     }
     .home-hero-download-btn,
     .home-hero-download-btn .adcc-btn__label {
-      font-size: 18px !important;
+      font-size: 14px !important;
       line-height: 125% !important;
+    }
+    .hero-explore-btn {
+      padding: 0 10px !important;
+      font-size: 13px !important;
+      min-height: 40px !important;
+      justify-content: center !important;
+      overflow: hidden !important;
+    }
+    .hero-explore-btn-icon {
+      display: none !important;
     }
     .home-floating-bike {
       display: none !important;
@@ -1627,7 +1684,7 @@ font-family: var(--font-satoshi) !important;}
       width: 100% !important;
     }
     .journey-title {
-      font-size: 42px !important;
+      font-size: 30px !important;
       line-height: 100.7% !important;
       max-width: 100% !important;
     }
@@ -1681,12 +1738,17 @@ font-family: var(--font-satoshi) !important;}
       width: 100% !important;
     }
     .home-phone-stage {
-      min-height: 240px !important;
+      min-height: 200px !important;
       order: 0 !important;
     }
-    .home-phone-stage img {
-      max-height: 280px !important;
+    .home-phone-stage img,
+    .app-phone-stage img {
+      width: 100% !important;
+      max-height: 260px !important;
       object-fit: contain !important;
+      left: 0 !important;
+      right: auto !important;
+      top: 0 !important;
     }
     .home-feature-list {
       display: grid !important;
@@ -1709,8 +1771,8 @@ font-family: var(--font-satoshi) !important;}
       line-height: 100.7% !important;
     }
     .home-community-subtitle {
-      font-size: 22px !important;
-      line-height: 100.7% !important;
+      font-size: 18px !important;
+      line-height: 26px !important;
     }
     .home-community-title {
       font-size: clamp(36px, 10vw, 42px) !important;
@@ -1732,34 +1794,79 @@ font-family: var(--font-satoshi) !important;}
     .home-store-section {
       padding-left: 18px !important;
       padding-right: 18px !important;
+      padding-top: 48px !important;
       padding-bottom: 58px !important;
     }
     .home-section-title {
-      font-size: 42px !important;
-      margin-bottom: 28px !important;
+      font-size: 36px !important;
+      margin-bottom: 20px !important;
+    }
+    .home-platform-title {
+      text-align: center !important;
+      margin: 0 0 16px 0 !important;
+      padding-top: 0 !important;
+    }
+    .home-store-title {
+      text-align: left !important;
+      margin: 0 0 20px 0 !important;
+      padding-top: 0 !important;
+    }
+    .home-platform-cards {
+      gap: 14px !important;
+      border-radius: 0 !important;
     }
     .home-platform-card {
-      height: 320px !important;
+      height: 280px !important;
+      border-radius: 14px !important;
+      margin: 0 !important;
+    }
+    .home-platform-card:first-child,
+    .home-platform-card:last-child {
+      border-radius: 14px !important;
+    }
+    .home-platform-card-tag {
+      top: 16px !important;
+      inset-inline-start: 16px !important;
+      padding: 4px 10px !important;
+      border-radius: 12px !important;
+    }
+    .home-platform-card-tag span {
+      font-size: 13px !important;
+      line-height: 1.2 !important;
     }
     .home-platform-card-content {
-      inset-inline: 22px !important;
-      left: auto !important;
-      right: auto !important;
-      bottom: 22px !important;
+      position: absolute !important;
+      left: 16px !important;
+      right: 16px !important;
+      bottom: 16px !important;
+      inset-inline-start: unset !important;
+      inset-inline-end: unset !important;
     }
     .home-platform-card-title {
-      font-size: 25px !important;
+      font-size: 16px !important;
+      line-height: 1.25 !important;
+      margin: 0 0 6px 0 !important;
+      padding: 0 !important;
+    }
+    .home-platform-card-action {
+      font-size: 13px !important;
+      line-height: 1.4 !important;
     }
     .store-rail {
       gap: 14px !important;
       justify-content: flex-start !important;
     }
-    .store-featured-card {
+    .store-featured-card,
+    .store-featured-card:hover {
       flex: 0 0 624px !important;
       width: 624px !important;
       height: 583px !important;
       min-width: 624px !important;
       min-height: 583px !important;
+      transform: scale(0.52) !important;
+      transform-origin: left top !important;
+      margin-inline-end: -300px !important;
+      margin-block-end: -280px !important;
     }
     .store-featured-product-media {
       inset-inline-end: 18px !important;
@@ -1777,8 +1884,9 @@ font-family: var(--font-satoshi) !important;}
     }
     .home-about-left-image {
       width: 100% !important;
-      height: auto !important;
-      aspect-ratio: 396 / 599;
+      height: 260px !important;
+      aspect-ratio: unset !important;
+      object-fit: cover !important;
     }
     .home-about-title {
       font-size: 42px !important;
@@ -1793,8 +1901,8 @@ font-family: var(--font-satoshi) !important;}
       flex-wrap: wrap !important;
     }
     .home-about-stat-number {
-      font-size: 38px !important;
-      line-height: 48px !important;
+      font-size: 30px !important;
+      line-height: 40px !important;
     }
     .home-about-stat-label {
       font-size: 18px !important;
@@ -1837,14 +1945,14 @@ font-family: var(--font-satoshi) !important;}
     }
   }
 
-  @media (max-width: 360px) {
+  @media (max-width: 650px) {
     .home-hero-title,
     .home-app-title,
     .home-community-title,
     .home-section-title,
     .home-about-title,
     .home-cta-title {
-      font-size: 36px !important;
+      font-size: 30px !important;
     }
     .home-hero-content {
       width: min(300px, calc(100% - 36px)) !important;
@@ -1865,7 +1973,7 @@ font-family: var(--font-satoshi) !important;}
       height: 178px !important;
     }
     .journey-button {
-      width: 100% !important;
+      width: auto !important;
       min-width: 0 !important;
     }
     .home-store-buttons > div,
@@ -1887,36 +1995,44 @@ font-family: var(--font-satoshi) !important;}
       gap: 16px !important;
     }
     .home-platform-title {
-      font-size: 42px !important;
+      font-size: 34px !important;
       line-height: 100.7% !important;
-      padding-top: 24px !important;
-      margin-bottom: 28px !important;
+      padding-top: 16px !important;
+      margin-bottom: 16px !important;
     }
     .home-store-title {
-      font-size: 42px !important;
+      font-size: 34px !important;
       line-height: 100.7% !important;
-      margin-bottom: 28px !important;
+      margin-bottom: 20px !important;
+              text-align: center !important;
     }
     .home-platform-card {
-      height: 420px !important;
+      height: 350px !important;
     }
     .home-platform-card-title {
-      font-size: 26px !important;
-      line-height: 100.7% !important;
+      font-size: 17px !important;
+      line-height: 1.2 !important;
+      margin-bottom: 6px !important;
     }
     .home-platform-card-action {
-      font-size: 18px !important;
-      line-height: 24px !important;
+      font-size: 14px !important;
+      line-height: 20px !important;
     }
-    .store-featured-card {
+    .store-featured-card,
+    .store-featured-card:hover {
       flex: 0 0 624px !important;
       width: 624px !important;
       height: 583px !important;
       min-width: 624px !important;
       min-height: 583px !important;
+      transform: scale(0.5) !important;
+      transform-origin: left top !important;
+      margin-inline-end: -312px !important;
+      margin-block-end: -292px !important;
     }
     .home-about-left-image {
-      height: 290px !important;
+      height: 380px !important;
+      aspect-ratio: unset !important;
     }
     .home-about-stats {
       display: grid !important;
@@ -2478,6 +2594,15 @@ function CyclingJourneySection() {
   const textRef = useRef<HTMLParagraphElement | null>(null);
   const cardsRef = useRef<HTMLDivElement | null>(null);
   const [cardsVisible, setCardsVisible] = useState(false);
+
+  const scrollCards = (direction: "left" | "right") => {
+    const el = cardsRef.current;
+    if (!el) return;
+    el.scrollBy({
+      left: direction === "right" ? 300 : -300,
+      behavior: "smooth",
+    });
+  };
   const titleLine1 = t("public.home.journey.titleLine1");
   const titleLine2 = t("public.home.journey.titleLine2");
   const journeyText = t("public.home.journey.text");
@@ -2630,6 +2755,49 @@ function CyclingJourneySection() {
             </div>
           ))}
         </div>
+        <div className="journey-scroll-controls">
+          <button
+            className="journey-scroll-btn"
+            onClick={() => scrollCards("left")}
+            aria-label="Scroll left"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 22 21"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{ transform: "scaleX(-1)" }}
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z"
+                fill="#000"
+              />
+            </svg>
+          </button>
+          <button
+            className="journey-scroll-btn"
+            onClick={() => scrollCards("right")}
+            aria-label="Scroll right"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 22 21"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z"
+                fill="#000"
+              />
+            </svg>
+          </button>
+        </div>
         <div>
           {/* <p className="journey-text">Choose how you want to ride with ADCC. Discover routes, join challenges, and be part of a growing cycling community.</p> */}
           <p ref={textRef} className="journey-text">
@@ -2653,9 +2821,15 @@ function AppSection() {
   const [phoneVisible, setPhoneVisible] = useState(false);
   const { t } = useTranslation();
   const { isRtl } = useLocale();
-  const _appTitleWordsRaw = t("public.home.app.titleWords", { returnObjects: true });
-  const appTitleWords: string[] = Array.isArray(_appTitleWordsRaw) ? _appTitleWordsRaw : [];
-  const _dlRaw = t("public.home.app.downloadLabelWords", { returnObjects: true });
+  const _appTitleWordsRaw = t("public.home.app.titleWords", {
+    returnObjects: true,
+  });
+  const appTitleWords: string[] = Array.isArray(_appTitleWordsRaw)
+    ? _appTitleWordsRaw
+    : [];
+  const _dlRaw = t("public.home.app.downloadLabelWords", {
+    returnObjects: true,
+  });
   const downloadLabelWords: string[] = Array.isArray(_dlRaw) ? _dlRaw : [];
   const downloadLine1 = downloadLabelWords.slice(0, 1);
   const downloadLine2 = downloadLabelWords.slice(1);
@@ -2850,7 +3024,7 @@ function AppSection() {
           flex: "1 1 auto",
           position: "relative",
           display: "flex",
-          justifyContent: "center",
+          justifyContent: "flex-end",
           alignItems: "center",
           minHeight: 660,
         }}
@@ -2860,11 +3034,13 @@ function AppSection() {
           alt={t("public.home.app.phoneAlt")}
           style={{
             display: "block",
-            width: "100%",
-            maxWidth: 780,
+            width: "120%",
+            maxWidth: "none",
             height: "auto",
             objectFit: "contain",
             opacity: 1,
+            position: "relative",
+            zIndex: 1,
           }}
         />
       </div>
@@ -3266,8 +3442,12 @@ function AboutSection() {
   const aboutRef = useRef<HTMLElement | null>(null);
   const statsRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [aboutVisible, setAboutVisible] = useState(false);
-  const _titleWordsRaw = t("public.home.about.titleWords", { returnObjects: true });
-  const titleWords: string[] = Array.isArray(_titleWordsRaw) ? _titleWordsRaw : [];
+  const _titleWordsRaw = t("public.home.about.titleWords", {
+    returnObjects: true,
+  });
+  const titleWords: string[] = Array.isArray(_titleWordsRaw)
+    ? _titleWordsRaw
+    : [];
   const stats = [
     { num: "15K+", label: t("public.home.about.stats.riders") },
     { num: "100+", label: t("public.home.about.stats.events") },
@@ -3316,18 +3496,17 @@ function AboutSection() {
         transition={{ duration: 0.8, ease: "easeOut" }}
         viewport={{ once: true }}
       >
-        <AnimatedImage
-          bare
-          fill
-          zoom="subtle"
-          src="/img/event - F1.png"
-          alt={t("public.home.about.cyclistsAlt")}
-          style={{ width: "100%", height: "100%" }}
-          onError={(event) => {
-            const img = event.currentTarget as HTMLImageElement;
-            if (img.src.includes("journey-2.png")) return;
-            img.onerror = null;
-            img.src = "/images/journey-2.png";
+        <video
+          src="/video/event-1.mp4"
+          autoPlay
+          muted
+          loop
+          playsInline
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            display: "block",
           }}
         />
       </motion.div>

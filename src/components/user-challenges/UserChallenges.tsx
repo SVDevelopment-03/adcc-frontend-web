@@ -339,7 +339,7 @@ justify-content: center !important;}
                 },
               },
             }}
-            className="grid grid-cols-1 gap-3 sm:grid-cols-3 md:flex md:gap-5"
+            className="flex gap-2 sm:gap-3 md:gap-5 grid-new"
           >
             {statusTabs.map((tab) => {
               const selected = status === tab;

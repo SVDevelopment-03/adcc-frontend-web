@@ -13,7 +13,12 @@ const FontLoader = () => (
 .contact-page-hero{
 padding-inline-start: 86px;
 }
-
+@media (max-width: 768px) {
+  .contact-page-hero { padding-inline-start: 18px !important; }
+}
+@media (max-width: 640px) {
+  .contact-page-hero { padding-inline-start: 16px !important; }
+}
   `}</style>
 );
 
@@ -40,28 +45,28 @@ export default function ContactUsPage() {
           classPrefix="contact-page"
         />
 
-        <section className="mx-auto max-w-[1268px] px-10 py-28">
+        <section className="mx-auto max-w-[1268px] px-10 py-28 max-md:px-5 max-md:py-16 max-sm:px-4 max-sm:py-12">
           <div className="text-center">
-            <h2 className="contact-intro-title text-[60px] uppercase">
+            <h2 className="contact-intro-title text-[60px] uppercase max-md:text-[44px] max-sm:text-[36px]">
               {t("public.contact.intro.title")}
             </h2>
-            <p className="mt-4 text-[24px]">{t("public.contact.intro.body")}</p>
+            <p className="mt-4 text-[24px] max-md:text-[18px]">{t("public.contact.intro.body")}</p>
           </div>
 
-          <div className="mt-20 grid grid-cols-1 gap-8 lg:grid-cols-2">
+          <div className="mt-20 grid grid-cols-1 gap-8 lg:grid-cols-2 max-md:mt-12 max-sm:mt-8">
             <div>
               <img
                 src="/img/490796704_1417267435941639_5633845168834004037_n. 1 (1).png"
                 alt={t("public.contact.imageAlt")}
-                className="h-[562px] w-full rounded-[15px] object-cover"
+                className="h-[562px] w-full rounded-[15px] object-cover max-md:h-[380px] max-sm:h-[260px]"
               />
 
-              <div className="mt-8 rounded-[15px] border border-black/20 p-8">
-                <div className="space-y-8">
+              <div className="mt-8 rounded-[15px] border border-black/20 p-5">
+                <div className="space-y-4">
                   {contactItems.map(({ Icon, labelKey, value }) => (
-                    <div key={labelKey} className="flex items-center gap-6">
-                      <span className="flex h-[60px] w-[60px] items-center justify-center rounded-full bg-[#019839] text-white">
-                        <Icon size={34} />
+                    <div key={labelKey} className="flex items-center gap-4">
+                      <span className="flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-full bg-[#019839] text-white">
+                        <Icon size={22} strokeWidth={1.8} />
                       </span>
                       <div>
                         <p className="text-[14px] text-black/50">
@@ -75,71 +80,71 @@ export default function ContactUsPage() {
               </div>
             </div>
 
-            <form className="rounded-[15px] border border-black/20 p-10">
-              <h3 className="text-[40px]  uppercase">
+            <form className="rounded-[15px] border border-black/20 p-6">
+              <h3 className="text-[28px] uppercase">
                 {t("public.contact.form.title")}
               </h3>
-              <p className="mt-3 max-w-[495px] text-[20px] leading-[25px] text-black/70">
+              <p className="mt-2 max-w-[495px] text-[15px] leading-[22px] text-black/70">
                 {t("public.contact.form.description")}
               </p>
 
-              <div className="mt-12 space-y-8">
+              <div className="mt-6 space-y-5">
                 <label className="block">
-                  <span className="text-[18px]">
+                  <span className="text-[14px]">
                     {t("public.contact.form.firstName")}
                   </span>
                   <input
                     placeholder={t("public.contact.form.firstNamePlaceholder")}
-                    className="mt-3 h-[50px] w-full rounded-[10px] border border-[#CBCBCB] bg-transparent px-5 outline-none"
+                    className="mt-2 h-[42px] w-full rounded-[10px] border border-[#CBCBCB] bg-transparent px-4 text-[14px] outline-none"
                   />
                 </label>
 
                 <label className="block">
-                  <span className="text-[18px]">
+                  <span className="text-[14px]">
                     {t("public.contact.form.email")}
                   </span>
                   <input
                     placeholder={t("public.contact.form.emailPlaceholder")}
-                    className="mt-3 h-[50px] w-full rounded-[10px] border border-[#CBCBCB] bg-transparent px-5 outline-none"
+                    className="mt-2 h-[42px] w-full rounded-[10px] border border-[#CBCBCB] bg-transparent px-4 text-[14px] outline-none"
                   />
                 </label>
 
                 <label className="block">
-                  <span className="text-[18px]">
+                  <span className="text-[14px]">
                     {t("public.contact.form.phone")}
                   </span>
-                  <div className="mt-3 flex h-[50px] items-center rounded-[10px] border border-[#CBCBCB] px-4">
+                  <div className="mt-2 flex h-[42px] items-center rounded-[10px] border border-[#CBCBCB] px-4 text-[14px]">
                     <span className="font-bold">
                       🇦🇪 {t("public.contact.form.phonePlaceholder")}
                     </span>
-                    <div className="mx-4 h-6 border-l border-[#ccc]" />
+                    <div className="mx-3 h-5 border-l border-[#ccc]" />
                     <input
                       placeholder={t("public.contact.form.phonePlaceholder")}
-                      className="flex-1 bg-transparent outline-none"
+                      className="flex-1 bg-transparent text-[14px] outline-none"
                     />
                   </div>
                 </label>
 
                 <label className="block">
-                  <span className="text-[18px]">
+                  <span className="text-[14px]">
                     {t("public.contact.form.message")}
                   </span>
                   <textarea
                     placeholder={t("public.contact.form.messagePlaceholder")}
-                    className="mt-3 h-[100px] w-full rounded-[10px] border border-[#CBCBCB] bg-transparent px-5 py-4 outline-none"
+                    className="mt-2 h-[90px] w-full rounded-[10px] border border-[#CBCBCB] bg-transparent px-4 py-3 text-[14px] outline-none"
                   />
                 </label>
 
-                <label className="flex items-center gap-3 text-[#888]">
-                  <input type="checkbox" className="h-[27px] w-[27px]" />
+                <label className="flex items-center gap-2 text-[13px] text-[#888]">
+                  <input type="checkbox" className="h-[20px] w-[20px]" />
                   {t("public.contact.form.privacy")}
                 </label>
 
                 <button
                   type="button"
-                  className="inline-flex items-center gap-3 rounded-full bg-[#019839] px-8 py-4 text-[18px] font-bold text-white"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#019839] px-6 py-3 text-[15px] font-bold text-white"
                 >
-                  {t("public.contact.form.submit")} <ArrowRight size={20} />
+                  {t("public.contact.form.submit")} <ArrowRight size={16} />
                 </button>
               </div>
             </form>

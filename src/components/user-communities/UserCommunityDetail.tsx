@@ -796,7 +796,7 @@ export default function UserCommunityDetail() {
   if (error || !community) return <ErrorState message={error || "Community not found."} />;
 
   return (
-    <main className="min-h-screen bg-[#eaf4ff] text-black">
+    <main className="font-satoshi min-h-screen bg-[#eaf4ff] text-black">
       <div className="mx-auto max-w-[1272px] px-4 pb-5 sm:px-6 md:px-10 md:pb-6">
         <button
           type="button"

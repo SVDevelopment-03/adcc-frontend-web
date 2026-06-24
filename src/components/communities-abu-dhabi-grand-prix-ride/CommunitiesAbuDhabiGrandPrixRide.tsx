@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
@@ -222,7 +222,18 @@ const FontLoader = () => (
       overflow-y: visible;
       background: #EAF4FF;
       color: #000;
-      font-family: 'Bebas Kai', sans-serif;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .grand-prix-page p,
+    .grand-prix-page button,
+    .grand-prix-page input,
+    .grand-prix-page textarea,
+    .grand-prix-page li,
+    .grand-prix-page time,
+    .grand-prix-page label,
+    .grand-prix-page span:not(.grand-prix-bebas) {
+      font-family: 'Outfit', sans-serif;
     }
 
     .grand-prix-page * {
@@ -236,14 +247,36 @@ const FontLoader = () => (
     }
 
     .grand-prix-shell {
-      width: min(1268px, calc(100vw - 32px));
+      width: min(1268px, calc(100vw - 24px));
       margin: 0 auto;
+    }
+    @media (min-width: 768px) {
+      .grand-prix-shell {
+        width: min(1268px, calc(100vw - 48px));
+      }
     }
 
     .public-layout-content > div.grand-prix-page > section.grand-prix-section {
       display: block !important;
     }
 
+    /* Facility scrollbar */
+    .facility-scroll::-webkit-scrollbar { height: 5px; }
+    .facility-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.2); border-radius: 4px; }
+    .facility-scroll::-webkit-scrollbar-thumb { background: #019839; border-radius: 4px; }
+    .facility-scroll { scrollbar-width: thin; scrollbar-color: #019839 rgba(255,255,255,0.2); }
+
+    /* FAQ font */
+    .grand-prix-faq-item {
+      font-family: 'Outfit', 'Satoshi', sans-serif;
+    }
+
+    @media (max-width: 640px) {
+      .grand-prix-hero { height: 300px !important; }
+    }
+    @media (min-width: 641px) and (max-width: 1023px) {
+      .grand-prix-hero { height: 400px !important; }
+    }
   `}</style>
 );
 
@@ -251,27 +284,25 @@ function HeroSection({ event }: { event: GrandPrixEvent }) {
   const tags = [event.category, event.city].filter(Boolean);
 
   return (
-    <section className="grand-prix-section grand-prix-shell pt-0">
-      <div className="relative h-[500px] overflow-hidden bg-[#111] max-md:h-[420px]">
-        <img
-          src={getImage(event)}
-          alt={event.title}
-          className="h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black/40" />
-
-        <div className="absolute bottom-[102px] left-[43px] flex gap-[10px] max-sm:left-5">
+    <section className="grand-prix-hero relative w-full overflow-hidden" style={{ height: 500 }}>
+      <img
+        src={getImage(event)}
+        alt={event.title}
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+      <div className="absolute inset-0 bg-black/40" />
+      <div className="public-hero-content-pos">
+        <div className="mb-3 flex flex-wrap gap-2">
           {tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full bg-white/30 px-[21px] py-2 text-[16px] font-medium leading-5 text-white backdrop-blur"
+              className="rounded-full bg-white/30 px-5 py-2 text-[14px] font-medium text-white backdrop-blur sm:text-[16px]"
             >
               {tag}
             </span>
           ))}
         </div>
-
-        <h1 className="grand-prix-bebas absolute bottom-[56px] left-[43px] text-[40px] uppercase leading-none text-white max-sm:left-5 max-sm:text-[34px]">
+        <h1 className="grand-prix-bebas text-[32px] uppercase leading-tight text-white sm:text-[44px] lg:text-[52px]">
           {event.title}
         </h1>
       </div>
@@ -281,19 +312,19 @@ function HeroSection({ event }: { event: GrandPrixEvent }) {
 
 function AboutSection({ event }: { event: GrandPrixEvent }) {
   return (
-    <section className="grand-prix-section px-4 pt-[103px] text-center">
-      <h2 className="grand-prix-bebas text-[60px] uppercase leading-[72px] max-md:text-[44px] max-md:leading-[52px]">
+    <section className="grand-prix-section px-4 pt-[103px] max-md:pt-14 max-sm:pt-10 text-center">
+      <h2 className="grand-prix-bebas text-[28px] uppercase leading-tight sm:text-[38px] md:text-[48px] lg:text-[60px]">
         About This Event
       </h2>
-      <p className="mx-auto mt-[23px] max-w-[851px] text-[24px] font-normal leading-[30px] text-black max-md:text-[18px] max-md:leading-[28px]">
+      <p className="mx-auto mt-4 max-w-[851px] text-[14px] font-normal leading-relaxed text-black sm:text-[17px] md:text-[20px] lg:text-[24px]">
         {event.description}
       </p>
       <button
         type="button"
-        className="mt-5 inline-flex h-[49px] items-center justify-center gap-[14px] rounded-full bg-[#019839] px-[28px] text-[18px] font-bold leading-none text-white transition hover:bg-[#017a2e]"
+        className="mt-5 inline-flex h-[44px] items-center justify-center gap-3 rounded-full bg-[#019839] px-6 text-[15px] font-bold leading-none text-white transition hover:bg-[#017a2e] sm:h-[49px] sm:px-[28px] sm:text-[18px]"
       >
         Join this Event
-        <ArrowRight className="h-5 w-5" />
+        <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
       </button>
     </section>
   );
@@ -306,45 +337,45 @@ function RegisterCard({ event }: { event: GrandPrixEvent }) {
     total > 0 ? `${Math.max(total - joined, 0)} spots available` : "Open registration";
 
   return (
-    <article className="relative h-[236px] w-[426px] shrink-0 rounded-2xl bg-[#435974] text-white max-sm:w-[calc(100vw-56px)]">
-      <p className="absolute left-6 top-[19px] flex items-center gap-[7px] text-[18px] font-medium leading-[23px]">
-        <span className="h-[9px] w-[9px] rounded-full bg-white" />
+    <article className="relative h-[200px] w-[300px] shrink-0 rounded-2xl bg-[#435974] text-white lg:h-[236px] lg:w-[426px] max-sm:w-[calc(100vw-56px)]">
+      <p className="absolute left-4 top-[14px] flex items-center gap-[6px] text-[12px] font-medium leading-[18px] lg:left-6 lg:top-[19px] lg:text-[14px]">
+        <span className="h-[7px] w-[7px] rounded-full bg-white" />
         Register Now
       </p>
 
-      <h3 className="grand-prix-bebas absolute left-6 top-[66px] text-[50px] uppercase leading-[36px]">
+      <h3 className="grand-prix-bebas absolute left-4 top-[44px] text-[28px] uppercase leading-tight lg:left-6 lg:top-[56px] lg:text-[36px]">
         {formatFee(event)}
       </h3>
-      <p className="absolute left-6 top-[110px] text-[14px] leading-5 text-white/60">
+      <p className="absolute left-4 top-[78px] text-[11px] leading-5 text-white/60 lg:left-6 lg:top-[96px] lg:text-[12px]">
         {spotsText}
       </p>
 
-      <div className="absolute bottom-[14px] left-6 right-6 h-[71px] border-t border-white/10">
-        <span className="absolute left-[13px] top-[31px] flex items-center gap-[7px] text-[16px] font-medium leading-5">
-          <span className="h-[9px] w-[9px] rounded-full bg-white" />
+      <div className="absolute bottom-[12px] left-4 right-4 h-[60px] border-t border-white/10 lg:bottom-[14px] lg:left-6 lg:right-6 lg:h-[71px]">
+        <span className="absolute left-[10px] top-[24px] flex items-center gap-[6px] text-[11px] font-medium leading-5 lg:left-[13px] lg:top-[31px] lg:text-[13px]">
+          <span className="h-[7px] w-[7px] rounded-full bg-white" />
           Organized by
         </span>
-        <div className="absolute right-0 top-[17px] flex h-12 items-center gap-3">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#019839]">
-            <Bike className="h-5 w-5" />
+        <div className="absolute right-0 top-[12px] flex h-9 items-center gap-2 lg:h-10 lg:top-[17px]">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#019839] lg:h-10 lg:w-10">
+            <Bike className="h-[14px] w-[14px] lg:h-4 lg:w-4" />
           </span>
-          <b className="grand-prix-bebas text-[40px] leading-[48px]">ADCC</b>
+          <b className="grand-prix-bebas text-[24px] leading-tight lg:text-[30px]">ADCC</b>
         </div>
       </div>
 
       <button
         type="button"
         aria-label="Save event"
-        className="absolute right-6 top-4 flex h-[50px] w-[50px] items-center justify-center rounded-full bg-white text-[#C12D32]"
+        className="absolute right-4 top-[14px] flex h-[32px] w-[32px] items-center justify-center rounded-full bg-white text-[#C12D32] lg:right-5 lg:top-4 lg:h-[38px] lg:w-[38px]"
       >
-        <Heart className="h-6 w-6" />
+        <Heart className="h-3 w-3 lg:h-4 lg:w-4" />
       </button>
       <button
         type="button"
         aria-label="Share event"
-        className="absolute right-6 top-[75px] flex h-[50px] w-[50px] items-center justify-center rounded-full bg-white text-[#019839]"
+        className="absolute right-4 top-[54px] flex h-[32px] w-[32px] items-center justify-center rounded-full bg-white text-[#019839] lg:right-5 lg:top-[56px] lg:h-[38px] lg:w-[38px]"
       >
-        <Share2 className="h-6 w-6" />
+        <Share2 className="h-3 w-3 lg:h-4 lg:w-4" />
       </button>
     </article>
   );
@@ -352,21 +383,21 @@ function RegisterCard({ event }: { event: GrandPrixEvent }) {
 
 function StatsStrip({ event, stats }: { event: GrandPrixEvent; stats: StatCard[] }) {
   return (
-    <section className="grand-prix-section mx-auto mt-[60px] h-[270px] w-[1192px] max-w-[calc(100vw-32px)] overflow-x-auto rounded-2xl bg-[#323232] p-[17px] lg:overflow-visible">
-      <div className="flex w-max gap-3">
+    <section className="grand-prix-section mx-auto mt-10 max-w-[calc(100vw-32px)] overflow-x-auto rounded-2xl bg-[#323232] p-3 lg:mt-[60px] lg:overflow-visible">
+      <div className="flex w-max gap-2 lg:gap-3">
         <RegisterCard event={event} />
         {stats.map(({ icon: Icon, title, label }) => (
           <article
             key={title}
-            className="relative h-[236px] w-[171px] shrink-0 overflow-hidden rounded-[10px] bg-[#435974] text-white"
+            className="relative h-[200px] w-[140px] shrink-0 overflow-hidden rounded-[10px] bg-[#435974] text-white lg:h-[236px] lg:w-[171px]"
           >
-            <span className="absolute left-5 top-5 flex h-[50px] w-[50px] items-center justify-center rounded-full bg-white text-[#019839]">
-              <Icon className="h-[25px] w-[25px]" />
+            <span className="absolute left-4 top-4 flex h-[38px] w-[38px] items-center justify-center rounded-full bg-white text-[#019839] lg:h-[50px] lg:w-[50px] lg:left-5 lg:top-5">
+              <Icon className="h-[18px] w-[18px] lg:h-[25px] lg:w-[25px]" />
             </span>
-            <h3 className="grand-prix-bebas absolute left-5 top-[155px] whitespace-nowrap text-[30px] uppercase leading-[36px]">
+            <h3 className="grand-prix-bebas absolute left-4 top-[125px] whitespace-nowrap text-[22px] uppercase leading-tight lg:left-5 lg:top-[155px] lg:text-[30px]">
               {title}
             </h3>
-            <p className="absolute left-5 top-[191px] text-[20px] leading-[25px] text-white/60">
+            <p className="absolute left-4 top-[152px] text-[14px] leading-5 text-white/60 lg:left-5 lg:top-[191px] lg:text-[18px]">
               {label}
             </p>
           </article>
@@ -381,14 +412,14 @@ function FacilitiesSection({ facilities }: { facilities: Facility[] }) {
 
   return (
     <section
-        className="grand-prix-section mt-[130px] bg-cover bg-center bg-no-repeat py-16 text-white"
+        className="grand-prix-section mt-[130px] max-md:mt-16 max-sm:mt-10 bg-cover bg-center bg-no-repeat py-16 text-white"
       style={{ backgroundImage: "url('/img/image 3518.png')" }}
     >
       {/* <div className="grand-prix-shell relative h-full"> */}
       {/* <div className="grand-prix-shell relative "> */}
-      <div className="grand-prix-shell relative px-4">
+      <div className="grand-prix-shell relative">
         <div className="flex items-start justify-between pt-16 max-lg:flex-col max-lg:gap-8 max-lg:pt-0">
-          <h2 className="grand-prix-bebas max-w-[579px] text-[50px] uppercase leading-[60px] text-[#000000] max-md:text-[38px] max-md:leading-[46px]">
+          <h2 className="grand-prix-bebas max-w-[579px] text-[32px] uppercase leading-tight text-[#000000] sm:text-[38px] lg:text-[44px]">
             Everything You Need for a Seamless Ride Experience
           </h2>
           <button
@@ -400,27 +431,19 @@ function FacilitiesSection({ facilities }: { facilities: Facility[] }) {
           </button>
         </div>
 
-        <div className="mt-[42px] flex gap-5 overflow-x-auto pb-4">
-          {facilities.map(({ title, icon: Icon, active }) => (
+        <div className="facility-scroll mt-[42px] flex gap-5 overflow-x-auto pb-3">
+          {facilities.map(({ title, icon: Icon }) => (
             <article
               key={title}
-              className={`relative h-[97px] w-[260px] shrink-0 rounded-[10px] ${
-                active ? "bg-white text-[#333]" : "bg-white/25 text-white"
-              }`}
+              className="relative h-[97px] w-[240px] shrink-0 rounded-[10px] bg-white text-[#333] sm:w-[260px]"
             >
-              <span
-                className={`absolute left-[19px] top-5 flex h-[50px] w-[50px] items-center justify-center rounded-[10px] ${
-                  active ? "bg-[#019839] text-white" : "bg-white text-[#333]"
-                }`}
-              >
-                <Icon className="h-[30px] w-[30px]" />
+              <span className="absolute left-[19px] top-5 flex h-[50px] w-[50px] items-center justify-center rounded-[10px] bg-[#019839] text-white">
+                <Icon className="h-[26px] w-[26px]" />
               </span>
-              <b className="absolute left-[92px] top-5 flex h-[50px] max-w-[125px] items-center text-[20px] font-bold leading-[25px]">
+              <b className="absolute left-[86px] top-5 flex h-[50px] max-w-[130px] items-center text-[18px] font-bold leading-[22px] sm:text-[20px]">
                 {title}
               </b>
-              {active && (
-                <span className="absolute bottom-0 left-0 h-[5px] w-full bg-[#019839]" />
-              )}
+              <span className="absolute bottom-0 left-0 h-[4px] w-full rounded-b-[10px] bg-[#019839]" />
             </article>
           ))}
         </div>
@@ -441,13 +464,13 @@ function ScheduleSection({
   return (
     <section
       id="grand-prix-schedule"
-      className="grand-prix-section relative z-10 block w-full bg-[#323232] px-4 pb-[78px] pt-[69px] text-white"
+      className="grand-prix-section relative z-10 block w-full bg-[#323232] pb-[78px] pt-[69px] text-white max-md:pb-12 max-md:pt-10"
     >
-      <h2 className="grand-prix-bebas mx-auto max-w-[621px] text-center text-[50px] uppercase leading-[60px] max-md:text-[38px] max-md:leading-[46px]">
+      <h2 className="grand-prix-bebas mx-auto max-w-[621px] text-center text-[26px] uppercase leading-tight sm:text-[34px] md:text-[42px] lg:text-[50px]">
         {event.title} Schedule
       </h2>
 
-      <p className="mx-auto mb-[45px] mt-[22px] max-w-[795px] text-center text-[24px] leading-[30px] text-white/70 max-md:text-[18px] max-md:leading-[28px]">
+      <p className="mx-auto mb-8 mt-3 max-w-[795px] text-center text-[13px] leading-relaxed text-white/70 sm:text-[16px] md:text-[18px] lg:text-[22px] lg:mb-[45px] lg:mt-[22px]">
         {event.address || event.city || "Event schedule details"}
       </p>
 
@@ -495,16 +518,16 @@ function ScheduleSection({
                 index === 0 ? "bg-[#435974]" : "bg-[#7891AF]"
               }`}
             >
-              <time className="text-[18px] font-normal leading-[23px]">
+              <time className="text-[13px] font-normal leading-snug sm:text-[16px] md:text-[18px]">
                 {item.time}
               </time>
 
               <div>
-                <h3 className="text-[24px] font-medium leading-[30px]">
+                <h3 className="text-[15px] font-normal leading-snug sm:text-[18px] md:text-[22px]">
                   {item.title}
                 </h3>
 
-                <p className="mt-1 text-[18px] leading-[23px] text-white/70">
+                <p className="mt-1 text-[13px] leading-snug text-white/70 sm:text-[15px] md:text-[17px]">
                   {item.description}
                 </p>
               </div>
@@ -517,29 +540,46 @@ function ScheduleSection({
 }
 
 function FaqSection({ faqs }: { faqs: string[] }) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const toggle = useCallback((idx: number) => {
+    setOpenIndex((prev) => (prev === idx ? null : idx));
+  }, []);
+
   if (faqs.length === 0) return null;
 
   return (
-    <section className="grand-prix-section px-4 pb-[130px] pt-[120px] text-center">
-      <h2 className="grand-prix-bebas text-[50px] uppercase leading-[60px] max-md:text-[38px] max-md:leading-[46px]">
+    <section className="grand-prix-section px-4 pb-16 pt-14 text-center sm:pb-20 sm:pt-16 lg:pb-28 lg:pt-20">
+      <h2 className="grand-prix-bebas text-[34px] uppercase leading-tight sm:text-[42px] lg:text-[50px]">
         Frequently Asked Questions
       </h2>
-      <p className="mx-auto mt-4 max-w-[563px] text-[18px] font-medium leading-[23px] text-black/70">
+      <p className="mx-auto mt-3 max-w-[563px] text-[15px] font-medium text-black/70 sm:text-[16px]">
         Got questions before hitting the road? We've got you covered.
       </p>
 
-      <div className="mx-auto mt-[46px] grid max-w-[1098px] grid-cols-2 gap-x-[30px] gap-y-[30px] max-lg:grid-cols-1">
+      <div className="mx-auto mt-8 grid max-w-[1098px] grid-cols-1 gap-4 sm:mt-10 md:grid-cols-2 md:gap-5">
         {faqs.map((faq, index) => (
-          <button
-            type="button"
+          <div
             key={faq}
-            className="flex min-h-[100px] items-center justify-between rounded-xl border border-black/10 bg-transparent px-[29px] text-left text-[22px] font-medium leading-[28px] text-black transition hover:border-[#019839] max-sm:px-5 max-sm:text-[18px]"
+            role="button"
+            tabIndex={0}
+            onClick={() => toggle(index)}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") toggle(index); }}
+            className="grand-prix-faq-item cursor-pointer rounded-lg border border-[#cad8e6] bg-[#eef7ff] px-4 text-left text-[15px] font-medium sm:px-7 sm:text-[16px]"
           >
-            <span>
-              {String(index + 1).padStart(2, "0")}. {faq}
-            </span>
-            <Plus className="h-6 w-6 shrink-0" />
-          </button>
+            <div className="flex min-h-[68px] items-center justify-between gap-4 py-5 sm:min-h-[80px] sm:py-6">
+              <span>{faq}</span>
+              <Plus
+                className="shrink-0 transition-transform duration-300"
+                size={18}
+                style={{ transform: openIndex === index ? "rotate(45deg)" : "rotate(0deg)" }}
+              />
+            </div>
+            {openIndex === index && (
+              <p className="pb-5 text-[14px] font-normal leading-6 text-black/65 sm:text-[15px]">
+                For more information about this topic, please contact our support team or refer to the event guidelines.
+              </p>
+            )}
+          </div>
         ))}
       </div>
     </section>
