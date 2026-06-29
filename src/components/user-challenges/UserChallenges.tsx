@@ -118,9 +118,18 @@ export default function ChallengesPage() {
         });
 
         if (mounted) {
-          setChallenges(response.challenges);
+          const newChallenges = response.challenges;
+          const serverPages = response.pagination.pages || 1;
+          const calculatedPages = Math.ceil(response.pagination.total / PAGE_SIZE) || 1;
+          const computedPages = Math.max(1, Math.min(serverPages, calculatedPages));
+
+          setChallenges(newChallenges);
           setTotalResults(response.pagination.total);
-          setTotalPages(Math.max(1, response.pagination.pages || 1));
+          setTotalPages(computedPages);
+
+          if (newChallenges.length === 0 && page > 1) {
+            setPage(1);
+          }
         }
       } catch (err) {
         console.error("Failed to load public challenges:", err);
@@ -387,9 +396,9 @@ justify-content: center !important;}
         </p>
 
         <motion.div
+          key={`challenges-grid-${status}-${page}`}
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.12 }}
+          animate="visible"
           variants={{
             visible: {
               transition: {
@@ -528,7 +537,7 @@ justify-content: center !important;}
         <AnimatedWords
           words={t("public.tracks.faq.title").split(/\s+/).filter(Boolean)}
           gap={12}
-          className="font-bebas justify-center text-[30px] font-black uppercase sm:text-[42px]"
+          className="font-bebas justify-center text-[34px] font-black uppercase sm:text-[42px] lg:text-[50px]"
         />
         <p className="mt-4 text-[16px]">{t("public.tracks.faq.subtitle")}</p>
 
@@ -569,17 +578,14 @@ justify-content: center !important;}
                 if (event.key === "Enter" || event.key === " ")
                   setOpenFaq(openFaq === index ? null : index);
               }}
-              className="cursor-pointer rounded-lg border border-[#cad8e6] bg-[#eef7ff] px-4 text-left text-[15px] font-medium sm:px-7 sm:text-[16px]"
+              className="cursor-pointer overflow-hidden rounded-xl border border-[#ccc] px-6 text-left text-[20px] font-medium"
             >
-              <div className="flex min-h-[72px] items-center justify-between gap-4 py-5 sm:min-h-[84px] sm:py-6">
+              <div className="flex min-h-25 items-center justify-between gap-4 py-4">
                 <span>{faq.q}</span>
 
-                <Plus
-                  className={`shrink-0 transition-transform ${
-                    openFaq === index ? "rotate-45" : ""
-                  }`}
-                  size={18}
-                />
+                <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-black text-[18px] font-normal leading-none transition-transform ${openFaq === index ? "rotate-45" : ""}`}>
+                  +
+                </span>
               </div>
 
               {openFaq === index && (
@@ -587,7 +593,7 @@ justify-content: center !important;}
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   transition={{ duration: 0.35 }}
-                  className="pb-5 text-[14px] font-normal leading-6 text-black/65 sm:text-[15px]"
+                  className="pb-5 text-[16px] font-normal leading-7 text-black/65"
                 >
                   {faq.a}
                 </motion.p>

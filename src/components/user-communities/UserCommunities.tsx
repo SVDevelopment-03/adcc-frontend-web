@@ -589,10 +589,21 @@ export default function CommunitiesPage() {
           {t("public.tracks.faq.subtitle")}
         </p>
 
-        <div className="mt-8 grid grid-cols-1 gap-4 md:mt-12 md:grid-cols-2 md:gap-7">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+          variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
+          className="mt-8 grid grid-cols-1 gap-4 md:mt-12 md:grid-cols-2 md:gap-7"
+        >
           {faqs.map((faq, index) => (
-            <div
+            <motion.div
               key={faq.q}
+              variants={{
+                hidden: { opacity: 0, y: 40 },
+                visible: { opacity: 1, y: 0 },
+              }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               role="button"
               tabIndex={0}
               onClick={() => setOpenFaq(openFaq === index ? null : index)}
@@ -600,23 +611,27 @@ export default function CommunitiesPage() {
                 if (event.key === "Enter" || event.key === " ")
                   setOpenFaq(openFaq === index ? null : index);
               }}
-              className="cursor-pointer rounded-xl border border-[#ccc] px-4 text-left text-[16px] font-medium sm:px-6 sm:text-[19px] lg:px-7 lg:text-[22px]"
+              className="cursor-pointer overflow-hidden rounded-xl border border-[#ccc] px-6 text-left text-[20px] font-medium"
             >
-              <div className="flex min-h-[82px] items-center justify-between gap-4 py-4 sm:min-h-[92px] lg:min-h-[100px]">
+              <div className="flex min-h-25 items-center justify-between gap-4 py-4">
                 <span>{faq.q}</span>
-                <Plus
-                  className={`shrink-0 transition-transform ${openFaq === index ? "rotate-45" : ""}`}
-                  size={24}
-                />
+                <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-black text-[18px] font-normal leading-none transition-transform ${openFaq === index ? "rotate-45" : ""}`}>
+                  +
+                </span>
               </div>
               {openFaq === index && (
-                <p className="pb-5 text-[15px] font-normal leading-7 text-black/65 sm:text-[16px] lg:text-[17px]">
+                <motion.p
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="pb-5 text-[16px] font-normal leading-7 text-black/65"
+                >
                   {faq.a}
-                </p>
+                </motion.p>
               )}
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
     </div>
   );

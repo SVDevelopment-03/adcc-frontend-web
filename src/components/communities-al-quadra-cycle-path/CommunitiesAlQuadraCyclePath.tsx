@@ -387,19 +387,16 @@ function FaqSection({ track }: { track: Track }) {
             tabIndex={0}
             onClick={() => toggle(index)}
             onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") toggle(index); }}
-            className="cursor-pointer rounded-lg border border-[#cad8e6] bg-[#eef7ff] px-4 text-left text-[15px] font-medium sm:px-7 sm:text-[16px]"
-            style={{ fontFamily: "'Outfit', 'Satoshi', sans-serif" }}
+            className="cursor-pointer overflow-hidden rounded-xl border border-[#ccc] px-6 text-left text-[20px] font-medium"
           >
-            <div className="flex min-h-[68px] items-center justify-between gap-4 py-5 sm:min-h-[80px] sm:py-6">
+            <div className="flex min-h-25 items-center justify-between gap-4 py-4">
               <span>{faq}</span>
-              <Plus
-                size={18}
-                className="shrink-0 transition-transform duration-300"
-                style={{ transform: openIndex === index ? "rotate(45deg)" : "rotate(0deg)" }}
-              />
+              <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-black text-[18px] font-normal leading-none transition-transform duration-300 ${openIndex === index ? "rotate-45" : ""}`}>
+                +
+              </span>
             </div>
             {openIndex === index && (
-              <p className="pb-5 text-[14px] font-normal leading-6 text-black/65 sm:text-[15px]">
+              <p className="pb-5 text-[16px] font-normal leading-7 text-black/65">
                 For more information about this topic, please contact our support team or refer to the track guidelines.
               </p>
             )}

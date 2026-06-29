@@ -13,6 +13,7 @@ import {
   useWordList,
 } from "../public/publicPageHelpers";
 import { useNavigate } from "react-router-dom";
+import { AnimatedButton } from "../ui/AnimatedButton";
 
 const FontLoader = () => (
   <style>{`
@@ -253,8 +254,12 @@ function SectionHeader() {
       >
         <AnimatedWords words={titleWords} gap={12} />
       </h2>
-      <p
+      <motion.p
         className="event-section-copy"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+        viewport={{ once: true }}
         style={{
           fontSize: 16,
           fontWeight: 500,
@@ -265,7 +270,7 @@ function SectionHeader() {
         }}
       >
         {t("public.events.intro.body")}
-      </p>
+      </motion.p>
     </section>
   );
 }
@@ -536,7 +541,7 @@ function FilterBar({
     <div
       className="event-filter-bar"
       style={{
-        padding: "0 82px 24px",
+        padding: "40px 82px 32px",
         display: "flex",
         gap: 18,
         alignItems: "center",
@@ -656,12 +661,12 @@ function EventCard({
         }}
       >
         <motion.div
-          initial={{ opacity: 0, scale: 0.25 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 64 }}
+          whileInView={{ opacity: 1, y: 0 }}
           transition={{
-            duration: 0.8,
-            delay: 0.25 + (index % 3) * 0.12,
-            ease: "easeOut",
+            duration: 0.7,
+            delay: 0.15 + (index % 3) * 0.12,
+            ease: [0.22, 1, 0.36, 1],
           }}
           viewport={{ once: true }}
           style={{ width: "100%", height: "100%", transformOrigin: "center" }}
@@ -749,30 +754,10 @@ function EventCard({
           />
         </div>
 
-        <button
-          type="button"
+        <AnimatedButton
+          variant="outline"
+          size="sm"
           className="event-card-button"
-          style={{
-            width: 157,
-            height: 50,
-            border: "1.5px solid #019839",
-            borderRadius: 30,
-            background: "transparent",
-            color: "#019839",
-            fontSize: 16,
-            fontWeight: 700,
-            cursor: "pointer",
-            fontFamily: "'Bebas Kai',sans-serif",
-            transition: "all .2s",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = "#019839";
-            e.currentTarget.style.color = "#fff";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "transparent";
-            e.currentTarget.style.color = "#019839";
-          }}
           onClick={() => {
             const eventId = event._id || event.id;
             if (eventId) {
@@ -781,16 +766,16 @@ function EventCard({
           }}
         >
           {t("public.common.viewDetails")}
-        </button>
+        </AnimatedButton>
       </div>
     </motion.div>
   );
 }
 
-function Meta({ icon, text }: { icon: string; text: string }) {
+function Meta({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-      <span style={{ fontSize: 16 }}>{icon}</span>
+      <span style={{ fontSize: 16, display: "flex", filter: "brightness(0) saturate(100%) invert(42%) sepia(99%) saturate(458%) hue-rotate(100deg) brightness(91%) contrast(102%)" }}>{icon}</span>
       <span style={{ fontSize: 16, fontWeight: 500, color: "rgba(0,0,0,0.7)" }}>
         {text}
       </span>
@@ -866,7 +851,7 @@ function EventsGrid() {
           setPage(1);
         }}
       />
-      <div className="event-grid-wrap" style={{ padding: "0 82px" }}>
+      <div className="event-grid-wrap" style={{ padding: "0 82px 80px" }}>
         <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 20 }}>
           {loading
             ? t("public.common.loadingEvents")
@@ -913,6 +898,7 @@ function Pagination({
   total: number;
   setPage: Dispatch<SetStateAction<number>>;
 }) {
+  if (total <= 1) return null;
   const pages = buildPagination(page, total);
   return (
     <div
@@ -1259,7 +1245,7 @@ export default function Events() {
       <FontLoader />
       <div
         className="event-page"
-        style={{ minWidth: 320, overflowX: "hidden" }}
+        style={{ minWidth: 320, overflowX: "hidden", paddingBottom: 80 }}
       >
         <Hero />
         <SectionHeader />

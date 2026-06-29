@@ -7,13 +7,14 @@ import {
   type Track,
 } from "../../services/trackService";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { APP_STORE_LINKS } from "../../config/appStoreLinks";
 import {
   AnimatedWords,
   PublicPageHero,
   useWordList,
 } from "../public/publicPageHelpers";
+import { AnimatedButton } from "../ui/AnimatedButton";
 
 type PublicTrackCard = {
   id: string;
@@ -670,24 +671,9 @@ function WhySection() {
           >
             <AnimatedWords words={titleWords} gap={12} />
           </h2>
-          <button
-            style={{
-              background: "#019839",
-              color: "#fff",
-              border: "none",
-              borderRadius: 30,
-              padding: "13px 28px",
-              fontWeight: 400,
-              fontSize: 18,
-              cursor: "pointer",
-              fontFamily: "'Satoshi',sans-serif",
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-            }}
-          >
+          <AnimatedButton>
             {t("public.common.exploreTracksArrow")}
-          </button>
+          </AnimatedButton>
         </div>
 
         <div
@@ -794,6 +780,7 @@ function TrackCard({
   index?: number;
 }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
   const isFeatured = track.featured || isHovered;
   // const cardBg = isFeatured ? "#435974" : "#fff";
@@ -931,29 +918,14 @@ function TrackCard({
         </div>
 
         {/* button */}
-        <Link
-          to={`/user-tracks/${encodeURIComponent(track.id)}`}
+        <AnimatedButton
+          variant="outline"
+          size="sm"
           className="track-card-button"
-          style={{
-            width: 157,
-            height: 50,
-            background: isFeatured ? "#fff" : "transparent",
-            border: isFeatured ? "none" : "1px solid rgba(0,0,0,0.5)",
-            borderRadius: 30,
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            textDecoration: "none",
-            color: isFeatured ? "#435974" : "rgba(0,0,0,0.49)",
-            fontSize: 15,
-            fontWeight: 700,
-            fontFamily: "'Satoshi',sans-serif",
-            transition: "all .2s",
-          }}
+          onClick={() => navigate(`/user-tracks/${encodeURIComponent(track.id)}`)}
         >
           {t("public.common.viewDetails")}
-        </Link>
+        </AnimatedButton>
       </div>
     </motion.div>
   );
@@ -1335,64 +1307,66 @@ function TracksGrid() {
       )}
 
       {/* Pagination */}
-      <div
-        className="track-pagination"
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 16,
-          padding: "48px 0 64px",
-        }}
-      >
-        {paginationItems.map((p, i) => {
-          const isDots = typeof p === "string";
-          const isActive = p === page;
-          return (
-            <button
-              key={i}
-              onClick={() => !isDots && setPage(p)}
-              style={{
-                width: isDots ? "auto" : 47,
-                height: isDots ? "auto" : 47,
-                minWidth: isDots ? 0 : 47,
-                borderRadius: "50%",
-                border: "none",
-                background: isActive ? "#019839" : "transparent",
-                color: isActive ? "#fff" : "#019839",
-                fontSize: 18,
-                fontWeight: 500,
-                cursor: isDots ? "default" : "pointer",
-                fontFamily: "'Bebas Kai',sans-serif",
-                letterSpacing: isDots ? "0.2em" : 0,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {p}
-            </button>
-          );
-        })}
-        <button
-          onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+      {totalPages > 1 && (
+        <div
+          className="track-pagination"
           style={{
-            width: 47,
-            height: 47,
-            borderRadius: "50%",
-            border: "none",
-            background: "#019839",
-            color: "#fff",
-            cursor: "pointer",
-            fontSize: 20,
             display: "flex",
-            alignItems: "center",
             justifyContent: "center",
+            alignItems: "center",
+            gap: 16,
+            padding: "48px 0 64px",
           }}
         >
-          ›
-        </button>
-      </div>
+          {paginationItems.map((p, i) => {
+            const isDots = typeof p === "string";
+            const isActive = p === page;
+            return (
+              <button
+                key={i}
+                onClick={() => !isDots && setPage(p)}
+                style={{
+                  width: isDots ? "auto" : 47,
+                  height: isDots ? "auto" : 47,
+                  minWidth: isDots ? 0 : 47,
+                  borderRadius: "50%",
+                  border: "none",
+                  background: isActive ? "#019839" : "transparent",
+                  color: isActive ? "#fff" : "#019839",
+                  fontSize: 18,
+                  fontWeight: 500,
+                  cursor: isDots ? "default" : "pointer",
+                  fontFamily: "'Bebas Kai',sans-serif",
+                  letterSpacing: isDots ? "0.2em" : 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {p}
+              </button>
+            );
+          })}
+          <button
+            onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+            style={{
+              width: 47,
+              height: 47,
+              borderRadius: "50%",
+              border: "none",
+              background: "#019839",
+              color: "#fff",
+              cursor: "pointer",
+              fontSize: 20,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            ›
+          </button>
+        </div>
+      )}
     </section>
   );
 }
@@ -1414,8 +1388,12 @@ function FAQ() {
   }, [i18n.language]);
 
   const Item = ({ faq, idx }: { faq: FaqItem; idx: number }) => (
-    <div
+    <motion.div
       className="track-faq-question"
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: true }}
       onClick={() => setOpen(open === idx ? null : idx)}
       style={{
         border: "1px solid #CCC",
@@ -1423,7 +1401,7 @@ function FAQ() {
         padding: "0 24px",
         cursor: "pointer",
         overflow: "hidden",
-        transition: "all .25s",
+        transition: "border-color .25s",
         marginBottom: 16,
         textAlign: "start",
       }}
@@ -1468,7 +1446,10 @@ function FAQ() {
         </span>
       </div>
       {open === idx && (
-        <p
+        <motion.p
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
           style={{
             fontSize: 16,
             color: "rgba(0,0,0,0.65)",
@@ -1478,19 +1459,19 @@ function FAQ() {
           }}
         >
           {faq.a}
-        </p>
+        </motion.p>
       )}
-    </div>
+    </motion.div>
   );
 
   return (
     <section
-      className="track-faq-section"
-      style={{ background: "#EAF4FF", padding: "80px 82px" }}
+      className="track-faq-section w-full px-4 pb-16 text-center sm:px-6 md:px-10 lg:px-16 lg:pb-28 xl:px-20 2xl:px-24"
+      style={{ background: "#EAF4FF" }}
     >
       <h2
-        className="bebas track-faq-title"
-        style={{ fontSize: 50, textAlign: "center", marginBottom: 12 }}
+        className="bebas track-faq-title text-[34px] md:text-[42px] lg:text-[50px]"
+        style={{ textAlign: "center", marginBottom: 12 }}
       >
         {t("public.tracks.faq.title")}
       </h2>
