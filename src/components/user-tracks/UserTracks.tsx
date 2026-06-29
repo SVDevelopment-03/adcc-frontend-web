@@ -852,7 +852,12 @@ function TrackCard({
               alt="Location"
               width={18}
               height={18}
-              style={{ display: "inline-block", verticalAlign: "middle" }}
+              style={{
+                display: "inline-block",
+                verticalAlign: "middle",
+                filter: isHovered ? "brightness(0) invert(1)" : undefined,
+                transition: "filter .3s",
+              }}
             />
           </span>
           <span style={{ fontSize: 14, fontWeight: 400, color: mutedText }}>
@@ -922,6 +927,12 @@ function TrackCard({
           variant="outline"
           size="sm"
           className="track-card-button"
+          style={isHovered ? ({
+            "--adcc-btn-bg": "#fff",
+            "--adcc-btn-border": "transparent",
+            "--adcc-btn-color": "#019839",
+            "--adcc-btn-hover-fill": "#019839",
+          } as React.CSSProperties) : {}}
           onClick={() => navigate(`/user-tracks/${encodeURIComponent(track.id)}`)}
         >
           {t("public.common.viewDetails")}
