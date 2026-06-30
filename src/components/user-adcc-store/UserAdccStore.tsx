@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   Cloud,
   Search,
@@ -9,25 +10,63 @@ import {
   MapPin,
   Apple,
 } from "lucide-react";
+import { getMerchandiseProducts } from "../../services/merchandiseApi";
+import type { Product } from "../merchandise/merchandiseData";
 
-const products = [
-  ["Ivan Njuki", "25000 AED", true, "/img/image 2970.png"],
-  ["Colnago Be", "15000 AED", false, "/img/image 3069.png"],
-  ["Tacx Galaxia Rollers Bike", "800 AED", false, "/img/image 2973.png"],
-  [
-    "Trek Domane SL 6 - Like New",
-    "12,000 AED",
-    false,
-    "/img/image 2970 (1).png",
-  ],
-  ["Shimano Ultegra Groupset", "3,500 AED", false, "/img/image 2972.png"],
-  ["Shimano Ultegra Groupset", "3,500 AED", false, "/img/image 2973.png"],
+const cyclingEquipment = [
+  ["Ivan Njuki", "25,000 AED", "/img/image 2970.png"],
+  ["Colnago Be", "15,000 AED", "/img/image 3069.png"],
+  ["Tacx Galaxia Rollers Bike", "800 AED", "/img/image 2973.png"],
+  ["Trek Domane SL 6 - Like New", "12,000 AED", "/img/image 2970 (1).png"],
+  ["Shimano Ultegra Groupset", "3,500 AED", "/img/image 2972.png"],
+  ["Shimano Ultegra Groupset", "3,500 AED", "/img/image 2973.png"],
 ];
 
+function ProductCard({ name, price, image }: { name: string; price: string; image: string }) {
+  return (
+    <div className="min-h-[381px] rounded-[10px] border border-black/5 p-8 shadow-inner transition-all duration-300 hover:border-[#435974] hover:bg-[#435974] hover:text-white">
+      <h3 className="text-[24px] uppercase">{name}</h3>
+      <p className="mt-1 text-[18px]">{price}</p>
+      <img
+        src={image}
+        alt={name}
+        className="mt-8 h-[240px] w-full object-contain mix-blend-multiply"
+      />
+    </div>
+  );
+}
+
+function MerchandiseCard({ product }: { product: Product }) {
+  const image = product.images?.[0] ?? "";
+  const price = `${product.price.toLocaleString()} AED`;
+  return (
+    <div className="min-h-[381px] rounded-[10px] border border-black/5 p-8 shadow-inner transition-all duration-300 hover:border-[#435974] hover:bg-[#435974] hover:text-white">
+      <h3 className="text-[24px] uppercase">{product.name}</h3>
+      <p className="mt-1 text-[18px]">{price}</p>
+      {image && (
+        <img
+          src={image}
+          alt={product.name}
+          className="mt-8 h-[240px] w-full object-contain mix-blend-multiply"
+        />
+      )}
+    </div>
+  );
+}
+
 export default function AdccStorePage() {
+  const [merchandiseProducts, setMerchandiseProducts] = useState<Product[]>([]);
+  const [merchandiseLoading, setMerchandiseLoading] = useState(true);
+
+  useEffect(() => {
+    getMerchandiseProducts({ source: "adcc", status: "published" })
+      .then(setMerchandiseProducts)
+      .catch(() => setMerchandiseProducts([]))
+      .finally(() => setMerchandiseLoading(false));
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#eaf4ff] text-black">
-      {/* <header className="h-[134px] flex items-center justify-between px-10 md:px-20"> */}
       <header className="flex h-[78px] items-center justify-between px-4 sm:h-[96px] sm:px-6 md:px-10 lg:h-[134px] lg:px-20">
         <img
           src="/ADCC-Logo.png"
@@ -68,13 +107,13 @@ export default function AdccStorePage() {
 
       <section className="w-full px-4 py-28 sm:px-6 md:px-10 lg:px-20">
         <h2 className="text-center text-[50px] font-black uppercase">
-          Browse Our Cycling Collection
+          Browse Our Collection
         </h2>
 
         <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_292px_292px_156px]">
           <div className="flex h-[66px] items-center rounded-full border border-[#CBCBCB] bg-white px-8">
             <input
-              placeholder="Search Communities"
+              placeholder="Search products"
               className="flex-1 bg-transparent text-[18px] outline-none"
             />
             <Search size={24} />
@@ -93,26 +132,45 @@ export default function AdccStorePage() {
           </button>
         </div>
 
-        <div className="mt-20 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {products.map(([name, price, active, image]) => (
-            <div
-              key={`${name}-${price}`}
-              // className={`min-h-[381px] rounded-[10px] border p-8 shadow-inner ${
-              //   active ? "bg-[#435974] text-white border-[#727272]" : "border-black/5"
-              // }`}
-              className="min-h-[381px] rounded-[10px] border border-black/5 p-8 shadow-inner transition-all duration-300 hover:border-[#727272] hover:bg-[#435974] hover:border-[#435974] hover:text-white"
-            >
-              <h3 className="text-[24px] font-black uppercase">{name}</h3>
-              <p className="mt-1 text-[18px] font-bold">{price}</p>
-
-              <img
-                src={image}
-                alt={name}
-                className="mt-8 h-[240px] w-full object-contain mix-blend-multiply"
-              />
-            </div>
+        {/* Cycling Equipment */}
+        <div className="mt-20 flex items-center gap-6">
+          <h3 className="text-[32px] font-black uppercase">Cycling Equipment</h3>
+          <span className="rounded-full bg-[#019839]/10 px-4 py-1 text-[14px] font-bold text-[#019839]">
+            {cyclingEquipment.length} items
+          </span>
+        </div>
+        <div className="mt-2 h-px bg-black/10" />
+        <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {cyclingEquipment.map(([name, price, image]) => (
+            <ProductCard key={`eq-${name}-${price}`} name={name} price={price} image={image} />
           ))}
         </div>
+
+        {/* Club Merchandise */}
+        <div className="mt-20 flex items-center gap-6">
+          <h3 className="text-[32px] font-black uppercase">Club Merchandise</h3>
+          {!merchandiseLoading && (
+            <span className="rounded-full bg-[#435974]/10 px-4 py-1 text-[14px] font-bold text-[#435974]">
+              {merchandiseProducts.length} items
+            </span>
+          )}
+        </div>
+        <div className="mt-2 h-px bg-black/10" />
+        {merchandiseLoading ? (
+          <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="min-h-[381px] animate-pulse rounded-[10px] bg-black/5" />
+            ))}
+          </div>
+        ) : merchandiseProducts.length === 0 ? (
+          <p className="mt-8 text-[18px] text-black/50">No merchandise available at the moment.</p>
+        ) : (
+          <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {merchandiseProducts.map((product) => (
+              <MerchandiseCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
 
         <div className="mt-20 flex items-center justify-center gap-8 text-[#019839] text-[20px] font-medium">
           <button className="flex h-12 w-12 items-center justify-center rounded-full bg-[#019839] text-white">
@@ -129,7 +187,6 @@ export default function AdccStorePage() {
         </div>
       </section>
 
-      {/* <section className="mx-auto relative grid max-w-[1268px] grid-cols-1 items-end overflow-hidden gap-16 px-10 pb-28 lg:grid-cols-2"> */}
       <section className="pt-10 relative grid w-full grid-cols-1 items-end gap-16 overflow-hidden px-4 pb-28 sm:px-6 md:px-10 lg:grid-cols-2 lg:px-20">
         <div>
           <h2 className="max-w-[516px] text-[50px] font-normal font-[#000000] uppercase leading-[60px]">
@@ -140,7 +197,7 @@ export default function AdccStorePage() {
 
           <p className="mt-12 max-w-[615px] text-[24px] font-normal leading-[30px]">
             Explore a curated collection of cycling gear, apparel, and
-            accessories designed for performance and comfort. Whether you’re
+            accessories designed for performance and comfort. Whether you're
             training, racing, or riding for leisure, find everything you need to
             elevate your cycling experience.
           </p>
@@ -150,39 +207,12 @@ export default function AdccStorePage() {
           </button>
         </div>
 
-        {/* <div className="relative flex h-[568px] mt-[10px] items-end justify-end"> */}
         <img
           src="/img/image 30691.png"
           alt="Cycling essentials"
-          // className="h-[568px] w-[686px] object-contain absolute bottom-[-27px] right-[-223px]"
           className="h-[568px] w-full max-w-[686px] object-contain lg:absolute lg:bottom-[-25px] lg:right-0"
         />
-        {/* </div> */}
       </section>
-
-      {/* <section
-        className="flex h-[502px] items-center justify-center bg-cover bg-center text-center text-white"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.35)),url('https://images.unsplash.com/photo-1511994298241-608e28f14fde?q=80&w=1600&auto=format&fit=crop')",
-        }}
-      >
-        <div>
-          <h2 className="text-[80px] font-black uppercase">Start Your Ride Today</h2>
-          <p className="mt-7 text-[26px]">
-            Download the ADCC app and join the cycling community.
-          </p>
-
-          <div className="mt-10 flex justify-center gap-5">
-            <button className="rounded-full bg-white px-9 py-4 text-black">
-              <span className="text-xs">GET IT ON</span> <b>Google Play</b>
-            </button>
-            <button className="flex items-center gap-3 rounded-full bg-white px-9 py-4 text-black">
-              <Apple size={24} /> <b>App Store</b>
-            </button>
-          </div>
-        </div>
-      </section> */}
 
       <footer className="w-full px-4 py-24 sm:px-6 md:px-10 lg:px-20">
         <div className="grid grid-cols-1 gap-16 md:grid-cols-3">
@@ -215,7 +245,7 @@ export default function AdccStorePage() {
               <li>About Us</li>
               <li>Rides</li>
               <li>Events</li>
-              <li>Cyclist’s Corner</li>
+              <li>Cyclist's Corner</li>
               <li>Contact Us</li>
             </ul>
           </div>
@@ -243,7 +273,6 @@ export default function AdccStorePage() {
         <div className="mt-20 border-t border-[#d5d5d5] pt-8 text-center text-[18px] text-black/70">
           Copyright 2026. Abu Dhabi Cycling Club
         </div>
-
       </footer>
     </div>
   );

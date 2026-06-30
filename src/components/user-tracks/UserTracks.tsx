@@ -952,7 +952,6 @@ function TracksGrid() {
   const [openDropdown, setOpenDropdown] = useState<keyof TrackFilters | null>(
     null,
   );
-  const [active, setActive] = useState(filters);
   const [page, setPage] = useState(1);
   const [tracks, setTracks] = useState<PublicTrackCard[]>([]);
   const [totalResults, setTotalResults] = useState(0);
@@ -988,9 +987,9 @@ function TracksGrid() {
         const response = await getTracksPageEn({
           page,
           limit: PAGE_SIZE,
-          city: active.city === ALL_FILTER_VALUE ? undefined : active.city,
+          city: filters.city === ALL_FILTER_VALUE ? undefined : filters.city,
           difficulty:
-            active.level === ALL_FILTER_VALUE ? undefined : active.level,
+            filters.level === ALL_FILTER_VALUE ? undefined : filters.level,
           publicOnly: true,
         });
 
@@ -1017,7 +1016,7 @@ function TracksGrid() {
     return () => {
       mounted = false;
     };
-  }, [active, page, t]);
+  }, [filters, page, t]);
 
   const ChevronDown = ({ open = false }: { open?: boolean }) => (
     <svg
@@ -1132,6 +1131,7 @@ function TracksGrid() {
                     ...previous,
                     [key]: option.value,
                   }));
+                  setPage(1);
                   setOpenDropdown(null);
                 }}
                 style={{
@@ -1263,7 +1263,6 @@ function TracksGrid() {
             }}
             viewport={{ once: true }}
             onClick={() => {
-              setActive(filters);
               setPage(1);
             }}
             style={{

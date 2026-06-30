@@ -296,13 +296,11 @@ type FilterOption = { value: string; label: string };
 
 function FilterBar({
   filters,
-  setFilters,
-  onSearch,
+  onFilterChange,
   loading,
 }: {
   filters: EventFilters;
-  setFilters: Dispatch<SetStateAction<EventFilters>>;
-  onSearch: () => void;
+  onFilterChange: (key: keyof EventFilters, value: string) => void;
   loading: boolean;
 }) {
   const { t } = useTranslation();
@@ -496,10 +494,7 @@ function FilterBar({
                 key={option.value}
                 type="button"
                 onClick={() => {
-                  setFilters((previous) => ({
-                    ...previous,
-                    [filter.key]: option.value,
-                  }));
+                  onFilterChange(filter.key, option.value);
                   setOpenDropdown(null);
                 }}
                 style={{
@@ -559,7 +554,7 @@ function FilterBar({
           ease: "easeOut",
         }}
         viewport={{ once: true }}
-        onClick={onSearch}
+        disabled={loading}
         style={{
           width: 156,
           height: 66,
@@ -569,8 +564,9 @@ function FilterBar({
           borderRadius: 40,
           fontSize: 20,
           fontWeight: 700,
-          cursor: "pointer",
+          cursor: loading ? "not-allowed" : "pointer",
           fontFamily: "'Bebas Kai',sans-serif",
+          opacity: loading ? 0.7 : 1,
           transition: "opacity .2s",
         }}
       >
@@ -790,8 +786,6 @@ function EventsGrid() {
   const { t } = useTranslation();
   const [filters, setFilters] = useState<EventFilters>(DEFAULT_FILTERS);
   const [page, setPage] = useState(1);
-  const [activeFilters, setActiveFilters] =
-    useState<EventFilters>(DEFAULT_FILTERS);
   const [events, setEvents] = useState<EventApiResponse[]>([]);
   const [totalResults, setTotalResults] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -800,16 +794,17 @@ function EventsGrid() {
 
   const queryParams = useMemo<GetEventsParams>(() => {
     const params: GetEventsParams = { page, limit: PAGE_SIZE };
-    if (activeFilters.city !== ALL_FILTER_VALUE)
-      params.city = activeFilters.city;
-    if (activeFilters.category !== ALL_FILTER_VALUE)
-      params.category = activeFilters.category;
-    if (activeFilters.level !== ALL_FILTER_VALUE)
-      params.level = activeFilters.level;
-    if (activeFilters.status !== ALL_FILTER_VALUE)
-      params.status = activeFilters.status;
+    if (filters.city !== ALL_FILTER_VALUE) params.city = filters.city;
+    if (filters.category !== ALL_FILTER_VALUE) params.category = filters.category;
+    if (filters.level !== ALL_FILTER_VALUE) params.level = filters.level;
+    if (filters.status !== ALL_FILTER_VALUE) params.status = filters.status;
     return params;
-  }, [activeFilters, page]);
+  }, [filters, page]);
+
+  const handleFilterChange = (key: keyof EventFilters, value: string) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+    setPage(1);
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -844,12 +839,8 @@ function EventsGrid() {
     <>
       <FilterBar
         filters={filters}
-        setFilters={setFilters}
+        onFilterChange={handleFilterChange}
         loading={loading}
-        onSearch={() => {
-          setActiveFilters(filters);
-          setPage(1);
-        }}
       />
       <div className="event-grid-wrap" style={{ padding: "0 82px 80px" }}>
         <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 20 }}>
