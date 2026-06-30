@@ -1,4 +1,4 @@
-import { api } from "./api";
+import { api, publicApi } from "./api";
 import { getCached, setCache, invalidateCache } from "../utils/apiCache";
 import type { EventApiResponse } from "./eventsApi";
 
@@ -376,7 +376,7 @@ export const getAllTracksEn = async (params?: {
 // Get track by ID
 export const getTrackById = async (trackId: string): Promise<Track> => {
   try {
-    const response = await api.get<any>(`/v1/tracks/${trackId}`);
+    const response = await publicApi.get<any>(`/v1/tracks/${trackId}`);
     // console.log('getTrackById response:', response.data);
     if ((response.data as any).data) {
       return (response.data as any).data;

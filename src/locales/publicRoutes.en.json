@@ -71,7 +71,21 @@
       "breadcrumb": ["Home", "/", "About Us"]
     },
     "stats": {
-      "titleWords": ["We", "are", "cyclists", "committed", "to", "pushing", "limits", "and", "inspiring", "a", "stronger", "cycling", "community."],
+      "titleWords": [
+        "We",
+        "are",
+        "cyclists",
+        "committed",
+        "to",
+        "pushing",
+        "limits",
+        "and",
+        "inspiring",
+        "a",
+        "stronger",
+        "cycling",
+        "community."
+      ],
       "activeMembers": "Active Riders &\nMembers",
       "eventsOrganized": "Cycling Events\nOrganized",
       "communityRides": "Community Rides\nMonthly",
@@ -79,7 +93,16 @@
       "body": "Abu Dhabi Cycling Club unites riders of all levels with community rides and training programs."
     },
     "mission": {
-      "titleWords": ["Driving", "the", "Future", "of", "Cycling", "in", "Abu", "Dhabi"],
+      "titleWords": [
+        "Driving",
+        "the",
+        "Future",
+        "of",
+        "Cycling",
+        "in",
+        "Abu",
+        "Dhabi"
+      ],
       "intro": "At Abu Dhabi Cycling Club, our mission is to inspire riders, develop athletes, and build a thriving cycling culture across the emirate.",
       "heading": "01. Our Mission",
       "body": "To promote cycling as a healthy lifestyle and competitive sport by creating opportunities for riders to train, participate in events, and connect with the cycling community across Abu Dhabi.",
@@ -88,7 +111,15 @@
     },
     "values": {
       "eyebrow": "Our values",
-      "titleWords": ["The", "Principles", "That", "Drive", "Our", "Cycling", "Community"],
+      "titleWords": [
+        "The",
+        "Principles",
+        "That",
+        "Drive",
+        "Our",
+        "Cycling",
+        "Community"
+      ],
       "discoverCommunity": "Discover the Community",
       "items": {
         "community": {
@@ -123,7 +154,17 @@
       "breadcrumb": ["Home", "/", "Events"]
     },
     "intro": {
-      "titleWords": ["Join", "the", "Most", "Exciting", "Cycling", "Events", "in", "Abu", "Dhabi"],
+      "titleWords": [
+        "Join",
+        "the",
+        "Most",
+        "Exciting",
+        "Cycling",
+        "Events",
+        "in",
+        "Abu",
+        "Dhabi"
+      ],
       "body": "Explore races, community rides, and challenges by Abu Dhabi Cycling Club. Find events for your location and skill."
     }
   },
@@ -133,7 +174,14 @@
       "breadcrumb": ["Home", "/", "Tracks"]
     },
     "intro": {
-      "titleWords": ["Explore", "Abu", "Dhabi's", "Premier", "Cycling", "Tracks"],
+      "titleWords": [
+        "Explore",
+        "Abu",
+        "Dhabi's",
+        "Premier",
+        "Cycling",
+        "Tracks"
+      ],
       "body": "From scenic coastal rides to high-performance cycling circuits, Abu Dhabi offers world-class tracks designed for every rider. Whether you're training for endurance, improving speed, or enjoying a casual ride, discover routes that match your level and ambition."
     },
     "why": {
@@ -164,7 +212,17 @@
       "breadcrumb": ["Home", "/", "Challenges"]
     },
     "intro": {
-      "titleWords": ["Push", "Your", "Limits", "with", "ADCC", "Challenges", "in", "Abu", "Dhabi"],
+      "titleWords": [
+        "Push",
+        "Your",
+        "Limits",
+        "with",
+        "ADCC",
+        "Challenges",
+        "in",
+        "Abu",
+        "Dhabi"
+      ],
       "body": "Abu Dhabi Cycling Club provides exciting opportunities for endurance rides and competitive challenges. Whether chasing distance, speed, or competing, our challenges keep you motivated."
     },
     "stats": {
@@ -193,7 +251,14 @@
       "breadcrumb": ["Home", "/", "Communities"]
     },
     "intro": {
-      "titleWords": ["Connect", "with", "Abu", "Dhabi's", "Cycling", "Community"],
+      "titleWords": [
+        "Connect",
+        "with",
+        "Abu",
+        "Dhabi's",
+        "Cycling",
+        "Community"
+      ],
       "body": "Join groups of riders who share your passion. From training clubs to social rides, find your place in the ADCC community."
     },
     "types": {
@@ -236,7 +301,7 @@
     },
     "form": {
       "title": "Get In Touch",
-      "description": "Fill in the form and we'll respond as soon as possible.",
+      "description": "Reach out to us for any inquiries about cycling activities, events, or community support.",
       "firstName": "First Name",
       "email": "Email Address",
       "phone": "Phone Number",
@@ -246,7 +311,18 @@
       "phonePlaceholder": "+971",
       "messagePlaceholder": "How can we help?",
       "privacy": "I agree to the privacy policy.",
-      "submit": "Send Enquiry"
+      "submit": "Send Enquiry",
+      "submitting": "Sending...",
+      "successMessage": "Your message has been sent successfully!",
+      "errorMessage": "Failed to send message. Please try again.",
+      "errors": {
+        "firstNameRequired": "First name is required.",
+        "emailRequired": "Email is required.",
+        "emailInvalid": "Please enter a valid email address.",
+        "phoneInvalid": "Please enter a valid phone number.",
+        "messageRequired": "Message is required.",
+        "privacyRequired": "You must agree to the privacy policy."
+      }
     },
     "imageAlt": "Cycling group"
   }

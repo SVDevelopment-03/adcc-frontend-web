@@ -2127,7 +2127,7 @@
         "titleLine1": "Begin Your",
         "titleLine2": "Cycling Journey",
         "text": "Choose how you want to ride with ADCC. Discover routes, join challenges, and be part of a growing cycling community.",
-        "exploreRoutes": "Explore all Routes",
+        "exploreRoutes": "Explore all Tracks",
         "riderAlt": "ADCC cyclist",
         "cards": {
           "tracks": "Find Cycling\nTracks",
@@ -2137,19 +2137,8 @@
         }
       },
       "app": {
-        "titleWords": [
-          "Everything",
-          "You",
-          "Need.",
-          "In",
-          "One",
-          "App."
-        ],
-        "downloadLabelWords": [
-          "Download",
-          "the",
-          "App"
-        ],
+        "titleWords": ["Everything", "You", "Need.", "In", "One", "App."],
+        "downloadLabelWords": ["Download", "the", "App"],
         "phoneAlt": "ADCC mobile app",
         "features": {
           "track": "Track Performance\nand Rides",
@@ -2212,13 +2201,7 @@
         }
       },
       "about": {
-        "titleWords": [
-          "About",
-          "Abu",
-          "Dhabi",
-          "Cycling",
-          "Club"
-        ],
+        "titleWords": ["About", "Abu", "Dhabi", "Cycling", "Club"],
         "text": "At Abu Dhabi Cycling Club, every ride is a step toward building a stronger, healthier, and more connected society. We are the heart of the UAE's cycling movement uniting enthusiasts, athletes, and families through the shared joy of cycling.",
         "stats": {
           "riders": "Riders",
@@ -2281,15 +2264,8 @@
         ]
       },
       "hero": {
-        "titleWords": [
-          "Cycling",
-          "Tracks"
-        ],
-        "breadcrumb": [
-          "Home",
-          "/",
-          "Tracks"
-        ]
+        "titleWords": ["Cycling", "Tracks"],
+        "breadcrumb": ["Home", "/", "Tracks"]
       }
     },
     "common": {
@@ -2345,13 +2321,7 @@
       },
       "journeyCard": {
         "eyebrow": "New to cycling?",
-        "title": [
-          "Start",
-          "Your",
-          "Journey",
-          "With",
-          "ADCC"
-        ],
+        "title": ["Start", "Your", "Journey", "With", "ADCC"],
         "community": "+5K in the community",
         "cta": "Get In Touch",
         "riderAlt": "ADCC rider"
@@ -2360,22 +2330,11 @@
     },
     "events": {
       "hero": {
-        "titleWords": [
-          "Events",
-          "&",
-          "Races"
-        ],
-        "breadcrumb": [
-          "Home",
-          "/",
-          "Events"
-        ]
+        "titleWords": ["Events", "&", "Races"],
+        "breadcrumb": ["Home", "/", "Events"]
       },
       "intro": {
-        "titleWords": [
-          "Upcoming",
-          "Events"
-        ],
+        "titleWords": ["Upcoming", "Events"],
         "body": "Discover and join cycling events across Abu Dhabi and the UAE."
       }
     }

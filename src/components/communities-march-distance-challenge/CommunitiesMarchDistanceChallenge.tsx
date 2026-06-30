@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { ArrowRight, CalendarDays, Plus } from "lucide-react";
+import { Award, CalendarDays, Plus, Star, Trophy, Users } from "lucide-react";
 import { Challenge, getChallengeById } from "../../services/challengesApi";
 
 const FALLBACK_CHALLENGE: Challenge = {
@@ -113,8 +113,11 @@ export default function ChallengeDetailPage() {
   if (loading) return <main className="min-h-[420px] bg-[#eaf4ff] px-10 py-24 text-center"><p className="text-[22px] text-black/70">Loading challenge details...</p></main>;
   if (error) return <main className="min-h-[420px] bg-[#eaf4ff] px-10 py-24 text-center"><h1 className="text-[50px] font-normal uppercase">Challenge Details</h1><p className="mt-4 text-[20px] text-black/70">{error}</p></main>;
 
+  const heroImage = (challenge.image || FALLBACK_CHALLENGE.image).replace(/^['"]+|['"]+$/g, "");
+
   return (
     <div className="font-satoshi min-h-screen bg-[#eaf4ff] text-black">
+      <style>{`.challenge-guide-section { background-image: url('/img/image 3518.png'); background-size: cover; background-position: center; background-repeat: no-repeat; }`}</style>
       {/* Hero — full-width, consistent with other inner pages */}
       <section
         className="relative w-full overflow-hidden"
@@ -123,7 +126,7 @@ export default function ChallengeDetailPage() {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url(‘${challenge.image || FALLBACK_CHALLENGE.image}’)`,
+            backgroundImage: `linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url("${heroImage}")`,
           }}
           aria-hidden
         />
@@ -146,55 +149,63 @@ export default function ChallengeDetailPage() {
           {challenge.description}
         </p>
         <button className="mt-8 inline-flex items-center gap-3 rounded-full bg-[#019839] px-6 py-3 text-[16px] font-bold text-white sm:px-8 sm:py-4 sm:text-[18px]">
-          Join this Challenge <ArrowRight size={18} />
+          Join this Challenge <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
         </button>
       </section>
 
       {/* Stats strip */}
-      <section className="mx-auto mb-16 grid max-w-[1140px] grid-cols-1 gap-4 rounded-2xl bg-[#323232] p-4 lg:grid-cols-[528px_repeat(3,1fr)]">
-        <div className="grid rounded-2xl bg-[#435974] p-5 text-white sm:p-8 md:grid-cols-[190px_1fr]">
-          <div>
+      <section className="mx-auto mb-16 max-w-[min(1192px,calc(100vw-2rem))] rounded-2xl bg-[#A2BFDB] p-4 lg:mb-28">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_repeat(3,180px)]">
+          <div className="rounded-2xl bg-[#435974] p-5 text-white sm:p-8">
             <p className="text-[13px] text-white/70 sm:text-[14px]">• Join Challenge</p>
-            <h3 className="mt-4 text-[20px] font-normal uppercase leading-tight sm:mt-8 sm:text-[28px] lg:text-[36px]">
-              Track your progress. Reach {challenge.target} {challenge.unit}.
-            </h3>
-          </div>
-          <div className="mt-5 border-white/30 sm:mt-8 md:mt-0 md:border-l md:pl-8">
-            <h4 className="text-[16px] font-normal uppercase sm:text-[20px] lg:text-[24px]">Rewards</h4>
-            <div className="mt-3 grid grid-cols-2 gap-3 text-[13px] text-white/70 sm:mt-4 sm:gap-4 sm:text-[15px]">
-              <p>{reward}</p>
-              <p>Digital Badge</p>
-              <p>Leaderboard Recognition</p>
+            <div className="mt-4 sm:mt-8 sm:flex sm:gap-8">
+              <h3 className="flex-1 text-[22px] font-bold uppercase leading-tight sm:text-[26px] lg:text-[32px]">
+                Track your ride. Reach {challenge.target} {challenge.unit}.
+              </h3>
+              <div className="my-5 h-px bg-white/20 sm:my-0 sm:h-auto sm:w-px sm:self-stretch" />
+              <div className="min-w-0 flex-1">
+                <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/60 sm:text-[12px]">Rewards</h4>
+                <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 sm:mt-4 sm:gap-y-4">
+                  {([
+                    [Trophy, reward],
+                    [Award, "Digital Badge"],
+                    [Star, "Leaderboard Recognition"],
+                  ] as [typeof Trophy, string][]).map(([Icon, label]) => (
+                    <p key={label} className="flex items-center gap-2 text-[12px] text-white/80 sm:text-[14px]">
+                      <Icon size={13} className="shrink-0 opacity-70" />
+                      {label}
+                    </p>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
+          {([
+            [Users, String(challenge.participants), "Participants"],
+            [CalendarDays, formatDate(challenge.endDate), "Ends"],
+            [Trophy, reward, "Prize"],
+          ] as [typeof Users, string, string][]).map(([Icon, value, label]) => (
+            <div key={label} className="rounded-xl bg-[#435974] p-5 text-white sm:p-8">
+              <span className="inline-flex rounded-full bg-white p-3 text-[#019839] sm:p-4">
+                <Icon size={20} className="sm:hidden" />
+                <Icon size={25} className="hidden sm:block" />
+              </span>
+              <h3 className="mt-10 text-[22px] font-normal uppercase sm:mt-20 sm:text-[26px] lg:text-[30px]">{value}</h3>
+              <p className="text-[13px] text-white/60 sm:text-[17px] lg:text-[20px]">{label}</p>
+            </div>
+          ))}
         </div>
-        {[
-          [String(challenge.participants), "Participants"],
-          [formatDate(challenge.endDate), "Ends"],
-          [reward, "Prize"],
-        ].map(([value, label]) => (
-          <div key={label} className="rounded-xl bg-[#435974] p-5 text-white sm:p-8">
-            <span className="inline-flex rounded-full bg-white p-3 text-[#019839]">
-              <CalendarDays size={20} />
-            </span>
-            <h3 className="mt-8 text-[18px] font-normal uppercase sm:mt-16 sm:text-[24px] lg:text-[28px]">{value}</h3>
-            <p className="text-[13px] text-white/60 sm:text-[16px] lg:text-[18px]">{label}</p>
-          </div>
-        ))}
       </section>
 
       {/* Guide section */}
-      <section
-        className="bg-cover bg-center bg-no-repeat px-4 py-14 sm:px-6 sm:py-16 md:px-10 lg:py-20"
-        style={{ backgroundImage: "url(‘/img/image 3517.png’)", background: "linear-gradient(to bottom, #d8ebff, #adc7df)" }}
-      >
+      <section className="challenge-guide-section px-4 py-14 sm:px-6 sm:py-16 md:px-10 lg:py-20">
         <div className="mx-auto max-w-[1268px]">
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
             <h2 className="max-w-[487px] text-[22px] font-normal uppercase leading-tight sm:text-[30px] lg:text-[46px]">
               Your Guide to Completing the Challenge
             </h2>
-            <button className="h-fit rounded-full bg-[#019839] px-5 py-2.5 text-[14px] font-bold text-white sm:px-8 sm:py-4 sm:text-[16px]">
-              Join this Challenge
+            <button className="inline-flex h-fit items-center gap-3 rounded-full bg-[#019839] px-5 py-2.5 text-[14px] font-bold text-white sm:px-8 sm:py-4 sm:text-[16px]">
+              Join this Challenge <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
             </button>
           </div>
           <div className="mt-8 grid grid-cols-1 gap-5 sm:mt-14 lg:grid-cols-[554px_1fr_1fr]">
@@ -205,17 +216,17 @@ export default function ChallengeDetailPage() {
             />
             <div className="grid gap-4 sm:gap-5">
               {steps.slice(0, 2).map((step, index) => (
-                <div key={step} className="rounded-xl bg-black/20 p-5 text-white backdrop-blur sm:p-8">
-                  <p className="font-satoshi text-xs sm:text-sm">//00{index + 1}</p>
-                  <h3 className="font-satoshi mt-4 text-[14px] font-normal leading-snug sm:mt-8 sm:text-[18px] lg:text-[22px]">{step}</h3>
+                <div key={step} className="font-satoshi rounded-xl bg-black/20 p-5 text-white backdrop-blur sm:p-8">
+                  <p className="text-xs sm:text-sm">//00{index + 1}</p>
+                  <h3 className="mt-4 text-[14px] font-normal leading-snug sm:mt-8 sm:text-[18px] lg:text-[22px]">{step}</h3>
                 </div>
               ))}
             </div>
             <div className="grid gap-4 sm:gap-5">
               {steps.slice(2).map((step, index) => (
-                <div key={step} className="rounded-xl bg-black/20 p-5 text-white backdrop-blur sm:p-8">
-                  <p className="font-satoshi text-xs sm:text-sm">//00{index + 3}</p>
-                  <h3 className="font-satoshi mt-4 text-[14px] font-normal leading-snug sm:mt-8 sm:text-[18px] lg:text-[22px]">{step}</h3>
+                <div key={step} className="font-satoshi rounded-xl bg-black/20 p-5 text-white backdrop-blur sm:p-8">
+                  <p className="text-xs sm:text-sm">//00{index + 3}</p>
+                  <h3 className="mt-4 text-[14px] font-normal leading-snug sm:mt-8 sm:text-[18px] lg:text-[22px]">{step}</h3>
                 </div>
               ))}
             </div>

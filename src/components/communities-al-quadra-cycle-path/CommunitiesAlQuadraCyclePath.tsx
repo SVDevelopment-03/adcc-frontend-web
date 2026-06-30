@@ -1,15 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
-  ArrowRight,
   Bike,
   CalendarDays,
+  Clock,
+  Cloud,
   Cross,
   Droplets,
   Gauge,
   MapPin,
   ParkingCircle,
   Plus,
+  Shield,
   Users,
   Wrench,
 } from "lucide-react";
@@ -190,47 +192,61 @@ function AboutSection({ track }: { track: Track }) {
       </p>
 
       <button className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#019839] px-6 py-3 text-[15px] font-bold text-white sm:mt-8 sm:px-8 sm:py-4 sm:text-[18px]">
-        Start Ride <ArrowRight size={18} />
+        Start Ride <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
       </button>
     </section>
   );
 }
 
 function StatsSection({ track }: { track: Track }) {
-  const stats = [
-    [`${track.distance ?? "TBA"}${typeof track.distance === "number" ? " km" : ""}`, "Distance"],
-    [titleCase(track.difficulty), "Level"],
-    [titleCase(track.trackType), "Type"],
+  const stats: [typeof CalendarDays, string, string][] = [
+    [CalendarDays, `${track.distance ?? "TBA"}${typeof track.distance === "number" ? " km" : ""}`, "Distance"],
+    [CalendarDays, titleCase(track.difficulty), "Level"],
+    [CalendarDays, titleCase(track.trackType), "Type"],
   ];
 
   return (
-    <section className="mx-auto mb-16 grid max-w-[1108px] grid-cols-1 gap-4 rounded-2xl bg-[#323232] p-4 lg:mb-28 lg:grid-cols-[430px_repeat(3,1fr)]">
-      <div className="rounded-2xl bg-[#435974] p-5 text-white sm:p-8">
-        <p className="text-[13px] text-white/70 sm:text-[14px]">• Start Your Ride</p>
-        <h3 className="mt-4 text-[22px] font-normal uppercase leading-tight sm:mt-8 sm:text-[30px] lg:text-[36px]">
-          Track your progress with the ADCC app
-        </h3>
-
-        <div className="mt-5 grid grid-cols-2 gap-3 text-[13px] text-white/80 sm:mt-8 sm:text-[14px]">
-          <p>Safety Notes</p>
-          <p>{track.safetyNotes || "Follow posted track guidance"}</p>
-          <p>Helmet Required</p>
-          <p>{track.helmetRequired ? "Yes" : "No"}</p>
-          <p>Night Riding</p>
-          <p>{track.nightRidingAllowed ? "Allowed" : "Not listed"}</p>
+    <section className="mx-auto mb-16 max-w-[min(1192px,calc(100vw-2rem))] rounded-2xl bg-[#A2BFDB] p-4 lg:mb-28">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_repeat(3,180px)]">
+        <div className="rounded-2xl bg-[#435974] p-5 text-white sm:p-8">
+          <p className="text-[13px] text-white/70 sm:text-[14px]">• Start Your Ride</p>
+          <div className="mt-4 sm:mt-8 sm:flex sm:gap-8">
+            <h3 className="flex-1 text-[22px] font-bold uppercase leading-tight sm:text-[26px] lg:text-[32px]">
+              Track your progress with the ADCC app
+            </h3>
+            <div className="my-5 h-px bg-white/20 sm:my-0 sm:h-auto sm:w-px sm:self-stretch" />
+            <div className="min-w-0 flex-1">
+              <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/60 sm:text-[12px]">
+                Safety Tips
+              </h4>
+              <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 sm:mt-4 sm:gap-y-4">
+                {([
+                  [Shield, "Always wear a helmet"],
+                  [Droplets, "Carry sufficient water"],
+                  [Cloud, "Check weather conditions"],
+                  [Clock, "Ride during cooler hours"],
+                ] as [typeof Shield, string][]).map(([Icon, label]) => (
+                  <p key={label} className="flex items-center gap-2 text-[12px] text-white/80 sm:text-[14px]">
+                    <Icon size={13} className="shrink-0 opacity-70" />
+                    {label}
+                  </p>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
+
+        {stats.map(([Icon, value, label]) => (
+          <div key={label} className="rounded-xl bg-[#435974] p-5 text-white sm:p-8">
+            <span className="inline-flex rounded-full bg-white p-3 text-[#019839] sm:p-4">
+              <Icon size={20} className="sm:hidden" />
+              <Icon size={25} className="hidden sm:block" />
+            </span>
+            <h3 className="mt-10 text-[22px] font-normal uppercase sm:mt-20 sm:text-[26px] lg:text-[30px]">{value}</h3>
+            <p className="text-[13px] text-white/60 sm:text-[17px] lg:text-[20px]">{label}</p>
+          </div>
+        ))}
       </div>
-
-      {stats.map(([value, label]) => (
-        <div key={label} className="rounded-xl bg-[#435974] p-5 text-white sm:p-8">
-          <span className="inline-flex rounded-full bg-white p-3 text-[#019839] sm:p-4">
-            <CalendarDays size={20} className="sm:hidden" />
-            <CalendarDays size={25} className="hidden sm:block" />
-          </span>
-          <h3 className="mt-10 text-[22px] font-normal uppercase sm:mt-20 sm:text-[26px] lg:text-[30px]">{value}</h3>
-          <p className="text-[13px] text-white/60 sm:text-[17px] lg:text-[20px]">{label}</p>
-        </div>
-      ))}
     </section>
   );
 }
@@ -240,43 +256,45 @@ function FacilitiesSection({ facilities }: { facilities: FacilityCard[] }) {
 
   return (
     <section
-      className="bg-cover bg-center bg-no-repeat px-4 py-12 sm:px-6 sm:py-16 md:px-10 lg:py-20"
+      className="bg-cover bg-center bg-no-repeat py-12 sm:py-16 lg:py-20"
       style={{
         backgroundImage: `url('${FACILITIES_BG}')`,
       }}
     >
-      <div className="mx-auto max-w-[1268px]">
+      <div className="mx-auto max-w-[1268px] px-4 sm:px-6 md:px-10">
         <div className="flex justify-between gap-8 max-lg:flex-col">
           <h2 className="max-w-[580px] text-[26px] font-normal uppercase leading-tight sm:text-[34px] lg:text-[44px]">
             Everything You Need for a Seamless Ride Experience
           </h2>
-          <button className="h-fit rounded-full bg-[#019839] px-8 py-4 font-bold text-white">
+          <Link to="/contact-us" className="inline-flex h-fit cursor-pointer items-center gap-2 rounded-full bg-[#019839] px-8 py-4 font-bold text-white">
             Get in Touch
-          </button>
+            <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
+          </Link>
         </div>
+      </div>
 
-        <div className="mt-14 flex gap-5 overflow-x-auto pb-4">
-          {facilities.map(({ title, icon: Icon, active }) => (
-            <div
-              key={title}
-              className={`min-w-[260px] rounded-xl p-5 ${
-                active ? "bg-white text-[#333]" : "bg-white/30 text-white"
-              }`}
-            >
-              <div className="flex items-center gap-5">
-                <span
-                  className={`rounded-lg p-3 ${
-                    active ? "bg-[#019839] text-white" : "bg-white text-[#333]"
-                  }`}
-                >
-                  <Icon size={26} />
-                </span>
-                <b className="text-[20px]">{title}</b>
-              </div>
-              {active && <div className="mt-5 h-[5px] bg-[#019839]" />}
+      <div
+        className="mt-14 flex gap-5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pl-4 sm:pl-6 md:pl-10 lg:pl-[max(2.5rem,calc((100vw-1268px)/2))]"
+        style={{
+          maskImage: "linear-gradient(to right, black 85%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to right, black 85%, transparent 100%)",
+        }}
+      >
+        {facilities.map(({ title, icon: Icon }) => (
+          <div
+            key={title}
+            className="group relative shrink-0 min-w-[200px] cursor-pointer rounded-xl bg-white/30 p-5 pb-6 text-white transition-colors duration-200 hover:bg-white hover:text-[#333]"
+          >
+            <div className="flex items-center gap-4">
+              <span className="shrink-0 rounded-lg bg-white p-3 text-[#333] transition-colors duration-200 group-hover:bg-[#019839] group-hover:text-white">
+                <Icon size={26} />
+              </span>
+              <b className="text-[18px] leading-tight">{title}</b>
             </div>
-          ))}
-        </div>
+            <div className="absolute bottom-0 left-0 h-[4px] w-full rounded-b-xl bg-transparent transition-colors duration-200 group-hover:bg-[#019839]" />
+          </div>
+        ))}
+        <div className="shrink-0 w-4" aria-hidden />
       </div>
     </section>
   );
@@ -515,9 +533,6 @@ export default function TrackDetailPage() {
       <TrackMediaSection track={track} />
       <UpcomingEventsSection events={events} />
       <FaqSection track={track} />
-      <button className="fixed bottom-10 right-10 rounded-full bg-[#019839] p-4 text-white shadow-lg">
-        <Bike size={28} />
-      </button>
     </main>
   );
 }

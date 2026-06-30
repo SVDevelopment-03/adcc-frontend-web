@@ -4,7 +4,6 @@ import {
   MapPin,
   Phone,
   Share2,
-  Bike,
   Apple,
   Mail,
 } from "lucide-react";
@@ -287,9 +286,6 @@ export default function StoreDetailPage() {
           Copyright 2026. Abu Dhabi Cycling Club
         </div>
 
-        <button className="fixed bottom-10 right-10 rounded-full bg-[#019839] p-4 text-white shadow-lg">
-          <Bike size={28} />
-        </button>
       </footer>
     </div>
   );

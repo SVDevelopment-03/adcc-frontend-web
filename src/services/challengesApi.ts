@@ -1,4 +1,4 @@
-import api from './api';
+import api, { publicApi } from './api';
 import { getCached, setCache, invalidateCache } from '../utils/apiCache';
 
 /** Challenge type matching backend and UI */
@@ -190,7 +190,7 @@ export const getChallengeById = async (id: string): Promise<Challenge> => {
   const cached = getCached<Challenge>(cacheKey);
   if (cached) return cached;
 
-  const response = await api.get<GetChallengeResponse>(`/v1/challenges/${id}`);
+  const response = await publicApi.get<GetChallengeResponse>(`/v1/challenges/${id}`);
   const body = response.data as GetChallengeResponse & ChallengeApiRaw;
   const raw = body.data ?? (body.id || body._id ? body : null);
   if (!raw) throw new Error('Challenge not found');

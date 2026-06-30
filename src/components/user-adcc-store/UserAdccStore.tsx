@@ -1,13 +1,25 @@
 import {
-  Cloud, Search, ChevronDown, ChevronRight, ArrowRight,
-  Phone, Mail, MapPin, Bike, Apple
+  Cloud,
+  Search,
+  ChevronDown,
+  ChevronRight,
+  ArrowRight,
+  Phone,
+  Mail,
+  MapPin,
+  Apple,
 } from "lucide-react";
 
 const products = [
   ["Ivan Njuki", "25000 AED", true, "/img/image 2970.png"],
   ["Colnago Be", "15000 AED", false, "/img/image 3069.png"],
   ["Tacx Galaxia Rollers Bike", "800 AED", false, "/img/image 2973.png"],
-  ["Trek Domane SL 6 - Like New", "12,000 AED", false, "/img/image 2970 (1).png"],
+  [
+    "Trek Domane SL 6 - Like New",
+    "12,000 AED",
+    false,
+    "/img/image 2970 (1).png",
+  ],
   ["Shimano Ultegra Groupset", "3,500 AED", false, "/img/image 2972.png"],
   ["Shimano Ultegra Groupset", "3,500 AED", false, "/img/image 2973.png"],
 ];
@@ -17,7 +29,11 @@ export default function AdccStorePage() {
     <div className="min-h-screen bg-[#eaf4ff] text-black">
       {/* <header className="h-[134px] flex items-center justify-between px-10 md:px-20"> */}
       <header className="flex h-[78px] items-center justify-between px-4 sm:h-[96px] sm:px-6 md:px-10 lg:h-[134px] lg:px-20">
-        <img src="/ADCC-Logo.png" alt="ADCC" className="h-[57px] w-[135px] object-contain" />
+        <img
+          src="/ADCC-Logo.png"
+          alt="ADCC"
+          className="h-[57px] w-[135px] object-contain"
+        />
 
         <nav className="hidden lg:flex gap-12 text-[20px] font-medium">
           <span>About Us</span>
@@ -43,7 +59,9 @@ export default function AdccStorePage() {
         }}
       >
         <div className="absolute bottom-20 left-4 text-white sm:left-6 md:left-10 lg:left-20">
-          <h1 className="text-[60px] font-black uppercase leading-none">ADCC Store</h1>
+          <h1 className="text-[60px] font-black uppercase leading-none">
+            ADCC Store
+          </h1>
           <p className="mt-4 text-[24px]">Home / ADCC Store</p>
         </div>
       </section>
@@ -112,7 +130,7 @@ export default function AdccStorePage() {
       </section>
 
       {/* <section className="mx-auto relative grid max-w-[1268px] grid-cols-1 items-end overflow-hidden gap-16 px-10 pb-28 lg:grid-cols-2"> */}
-      <section className="relative grid w-full grid-cols-1 items-end gap-16 overflow-hidden px-4 pb-28 sm:px-6 md:px-10 lg:grid-cols-2 lg:px-20">
+      <section className="pt-10 relative grid w-full grid-cols-1 items-end gap-16 overflow-hidden px-4 pb-28 sm:px-6 md:px-10 lg:grid-cols-2 lg:px-20">
         <div>
           <h2 className="max-w-[516px] text-[50px] font-normal font-[#000000] uppercase leading-[60px]">
             Gear Up with Official&nbsp;Cycling
@@ -121,9 +139,10 @@ export default function AdccStorePage() {
           </h2>
 
           <p className="mt-12 max-w-[615px] text-[24px] font-normal leading-[30px]">
-            Explore a curated collection of cycling gear, apparel, and accessories
-            designed for performance and comfort. Whether you’re training, racing, or
-            riding for leisure, find everything you need to elevate your cycling experience.
+            Explore a curated collection of cycling gear, apparel, and
+            accessories designed for performance and comfort. Whether you’re
+            training, racing, or riding for leisure, find everything you need to
+            elevate your cycling experience.
           </p>
 
           <button className="mt-10 inline-flex items-center gap-3 rounded-full bg-[#019839] px-8 py-4 text-[18px] font-bold text-white">
@@ -132,12 +151,12 @@ export default function AdccStorePage() {
         </div>
 
         {/* <div className="relative flex h-[568px] mt-[10px] items-end justify-end"> */}
-          <img
-            src="/img/image 30691.png"
-            alt="Cycling essentials"
-            // className="h-[568px] w-[686px] object-contain absolute bottom-[-27px] right-[-223px]"
-            className="h-[568px] w-full max-w-[686px] object-contain lg:absolute lg:bottom-[-27px] lg:right-0"
-          />
+        <img
+          src="/img/image 30691.png"
+          alt="Cycling essentials"
+          // className="h-[568px] w-[686px] object-contain absolute bottom-[-27px] right-[-223px]"
+          className="h-[568px] w-full max-w-[686px] object-contain lg:absolute lg:bottom-[-25px] lg:right-0"
+        />
         {/* </div> */}
       </section>
 
@@ -168,10 +187,15 @@ export default function AdccStorePage() {
       <footer className="w-full px-4 py-24 sm:px-6 md:px-10 lg:px-20">
         <div className="grid grid-cols-1 gap-16 md:grid-cols-3">
           <div>
-            <img src="/ADCC-Logo.png" alt="ADCC" className="h-[63px] w-[149px] object-contain" />
+            <img
+              src="/ADCC-Logo.png"
+              alt="ADCC"
+              className="h-[63px] w-[149px] object-contain"
+            />
             <p className="mt-8 max-w-[402px] text-[18px] leading-[23px]">
-              From weekend warriors to elite athletes, we unite cyclists who share a passion
-              for riding. ADCC is where your cycling journey thrives...
+              From weekend warriors to elite athletes, we unite cyclists who
+              share a passion for riding. ADCC is where your cycling journey
+              thrives...
             </p>
 
             <div className="mt-8 flex h-[57px] max-w-[367px] rounded-lg bg-[#8DDF93] p-[6px]">
@@ -199,12 +223,19 @@ export default function AdccStorePage() {
           <div>
             <h4 className="text-[24px] font-black uppercase">Contact Us</h4>
             <ul className="mt-8 space-y-4 text-[18px]">
-              <li className="flex gap-3"><Phone size={22} /> +971 2 654 5645</li>
-              <li className="flex gap-3"><Phone size={22} /> 144226</li>
               <li className="flex gap-3">
-                <Mail size={22} /> Abu Dhabi, Yas island, yas marina circuit, Villa 18.
+                <Phone size={22} /> +971 2 654 5645
               </li>
-              <li className="flex gap-3"><MapPin size={22} /> info@adcyclingclub.ae</li>
+              <li className="flex gap-3">
+                <Phone size={22} /> 144226
+              </li>
+              <li className="flex gap-3">
+                <Mail size={22} /> Abu Dhabi, Yas island, yas marina circuit,
+                Villa 18.
+              </li>
+              <li className="flex gap-3">
+                <MapPin size={22} /> info@adcyclingclub.ae
+              </li>
             </ul>
           </div>
         </div>
@@ -213,9 +244,6 @@ export default function AdccStorePage() {
           Copyright 2026. Abu Dhabi Cycling Club
         </div>
 
-        <button className="fixed bottom-10 right-10 rounded-full bg-[#019839] p-4 text-white shadow-lg">
-          <Bike size={28} />
-        </button>
       </footer>
     </div>
   );

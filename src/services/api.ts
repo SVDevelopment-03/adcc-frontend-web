@@ -424,4 +424,23 @@ api.interceptors.response.use(
   }
 );
 
+// Public API instance — no auth headers, no token refresh, locale-aware
+export const publicApi = axios.create({
+  baseURL: BASE_URL,
+  headers: { 'Content-Type': 'application/json' },
+});
+
+publicApi.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    const locale = localStorage.getItem('locale') || 'en';
+    const lang = locale === 'ar' ? 'ar' : 'en';
+    config.headers['Accept-Language'] = lang;
+    if (config.url && /^\/v1\//.test(config.url) && !/^\/v1\/(en|ar)\//.test(config.url)) {
+      config.url = config.url.replace(/^\/v1\//, `/v1/${lang}/`);
+    }
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
+
 export default api;

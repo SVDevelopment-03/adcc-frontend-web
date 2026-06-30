@@ -1,4 +1,4 @@
-import api from './api';
+import api, { publicApi } from './api';
 import { getCached, setCache, invalidateCache } from '../utils/apiCache';
 export interface EventApiResponse {
   _id?: string;
@@ -128,7 +128,7 @@ export const getAllEvents = async (params?: GetEventsParams): Promise<EventApiRe
 // Get event by ID
 export const getEventById = async (id: string): Promise<EventApiResponse> => {
   try {
-    const response = await api.get<any>(`/v1/events/${id}`);
+    const response = await publicApi.get<any>(`/v1/events/${id}`);
     // console.log('📋 getEventById called with id:', id);
     console.log('📥 getEventById response:', response.data);
 

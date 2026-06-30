@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
-  ArrowRight,
-  Bike,
   CalendarDays,
   Gauge,
   MapPin,
@@ -16,31 +14,11 @@ import {
 } from "../../services/communitiesApi";
 import { EventApiResponse, getEventsPage } from "../../services/eventsApi";
 
-type CommunityTrack = {
-  _id?: string;
-  id?: string;
-  title?: string;
-  titleAr?: string;
-  distance?: number;
-  difficulty?: string;
-  trackType?: string;
-  category?: string;
-  image?: string;
-  city?: string;
-  description?: string;
-  descriptionAr?: string;
-};
 
 const TARGET_COMMUNITY_TITLE = "Abu Dhabi Cycling Community";
 const TARGET_COMMUNITY_SLUG = "abu-dhabi-cycling-community";
 const FALLBACK_HERO_IMAGE = "/img/pexels-ander-garcia-1317358711-25016478 1.png";
-const FALLBACK_TRACK_IMAGE = "/img/image 3049.png";
 
-const FALLBACK_TRACKS: CommunityTrack[] = [
-  { id: "dubai-marina-loop", title: "Dubai Marina Loop", city: "Abu Dhabi", distance: 25, difficulty: "Easy", trackType: "Loop", image: "/img/pexels-stephen-noulton-421904730-17272198 1 (1).png" },
-  { id: "yas-island-circuit", title: "Yas Island Circuit", city: "Abu Dhabi", distance: 45, difficulty: "Intermediate", trackType: "Circuit", image: FALLBACK_TRACK_IMAGE },
-  { id: "sharjah-corniche", title: "Sharjah Corniche", city: "Abu Dhabi", distance: 18, difficulty: "Easy", trackType: "Road", image: FALLBACK_TRACK_IMAGE },
-];
 
 const FALLBACK_COMMUNITY: CommunityApiResponse = {
   id: TARGET_COMMUNITY_SLUG,
@@ -62,7 +40,6 @@ const FALLBACK_COMMUNITY: CommunityApiResponse = {
   distance: 45000,
   terrain: "Road",
   allowPosts: true,
-  trackId: FALLBACK_TRACKS,
 };
 
 const FALLBACK_EVENTS: EventApiResponse[] = [
@@ -107,15 +84,6 @@ const titleCase = (value?: string) =>
     .trim()
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
-const getTrackList = (community?: CommunityApiResponse | null): CommunityTrack[] => {
-  const tracks = community?.trackId;
-  if (!tracks) return [];
-  const list = Array.isArray(tracks) ? tracks : [tracks];
-
-  return list
-    .filter((track): track is CommunityTrack => typeof track === "object" && track !== null)
-    .filter((track) => track.title || track._id || track.id);
-};
 
 const getFaqs = (community: CommunityApiResponse) => [
   `How do I join ${community.title}?`,
@@ -181,7 +149,7 @@ function AboutSection({ community }: { community: CommunityApiResponse }) {
       </p>
 
       <button className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#019839] px-6 py-3 text-[15px] font-bold text-white sm:mt-8 sm:px-8 sm:py-4 sm:text-[18px]">
-        Join this Community <ArrowRight size={18} />
+        Join this Community <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
       </button>
     </section>
   );
@@ -189,55 +157,65 @@ function AboutSection({ community }: { community: CommunityApiResponse }) {
 
 function StatsSection({ community }: { community: CommunityApiResponse }) {
   const memberCount = toNumber(community.memberCount ?? community.stats?.members);
-  const upcomingEventCount = toNumber(
-    community.upcomingEventCount ?? community.eventsCount ?? community.stats?.upcomingEvents,
+  const eventsOrganized = toNumber(
+    (community as unknown as Record<string, unknown>).eventsOrganized ??
+    community.upcomingEventCount ??
+    community.eventsCount ??
+    community.stats?.upcomingEvents,
   );
   const weeklyRides = community.weeklyRides || community.stats?.weeklyRides || "TBA";
-  const ridesThisMonth = community.ridesThisMonth || community.stats?.ridesThisMonth || "TBA";
-  const distance = community.distance ? `${community.distance} km` : community.terrain || "TBA";
+  const avgGroupSize =
+    ((community as unknown as Record<string, unknown>).avgGroupSize as string) ||
+    ((community as unknown as Record<string, unknown>).stats as Record<string, unknown>)?.avgGroupSize as string ||
+    "TBA";
+  const distance = community.distance
+    ? `${community.distance.toLocaleString()} km`
+    : community.terrain || "TBA";
 
   return (
-    <section className="mx-auto mb-16 grid max-w-[1108px] grid-cols-1 gap-4 rounded-2xl bg-[#323232] p-4 lg:mb-32 lg:grid-cols-[610px_220px_220px]">
-      <div className="grid rounded-2xl bg-[#435974] p-5 text-white sm:p-8 md:grid-cols-[240px_1fr]">
-        <div>
+    <section className="mx-auto mb-16 max-w-[min(1192px,calc(100vw-2rem))] rounded-2xl bg-[#A2BFDB] p-4 lg:mb-32">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_210px_210px]">
+        <div className="rounded-2xl bg-[#435974] p-5 text-white sm:p-8">
           <p className="text-[13px] text-white/70 sm:text-[14px]">• Join Community</p>
-          <h3 className="mt-4 text-[22px] font-normal uppercase leading-tight sm:mt-8 sm:text-[30px] lg:text-[36px]">
-            Become part of {community.title}
-          </h3>
-        </div>
-
-        <div className="mt-5 border-white/30 sm:mt-8 md:mt-0 md:border-l md:pl-10">
-          <h4 className="text-[17px] font-normal uppercase sm:text-[20px] lg:text-[24px]">Community Stats</h4>
-          <div className="mt-4 space-y-3 text-[13px] sm:mt-6 sm:space-y-5 sm:text-[16px]">
-            <p className="flex justify-between">
-              <span>Weekly Rides</span>
-              <b>{weeklyRides}</b>
-            </p>
-            <p className="flex justify-between">
-              <span>Rides This Month</span>
-              <b>{ridesThisMonth}</b>
-            </p>
-            <p className="flex justify-between">
-              <span>Distance / Terrain</span>
-              <b>{distance}</b>
-            </p>
+          <div className="mt-4 sm:mt-8 sm:flex sm:gap-8">
+            <h3 className="flex-1 text-[22px] font-bold uppercase leading-tight sm:text-[26px] lg:text-[32px]">
+              Become part of our growing cycling family
+            </h3>
+            <div className="my-5 h-px bg-white/20 sm:my-0 sm:h-auto sm:w-px sm:self-stretch" />
+            <div className="min-w-0 flex-1">
+              <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/60 sm:text-[12px]">
+                Community Stats
+              </h4>
+              <div className="mt-3 space-y-3 sm:mt-4">
+                {[
+                  ["Weekly Rides", weeklyRides],
+                  ["Avg Group Size", avgGroupSize === "TBA" ? "25 riders" : avgGroupSize],
+                  ["Total Distance", distance],
+                ].map(([label, value]) => (
+                  <div key={label} className="flex items-center justify-between gap-2 text-[13px] sm:text-[14px]">
+                    <span className="text-white/70">{label}</span>
+                    <span className="font-bold">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      {[
-        [String(memberCount), "Active Members"],
-        [String(upcomingEventCount), "Upcoming Events"],
-      ].map(([value, label]) => (
-        <div key={label} className="rounded-xl bg-[#435974] p-5 text-white sm:p-8">
-          <span className="inline-flex rounded-full bg-white p-3 text-[#019839] sm:p-4">
-            <CalendarDays size={20} className="sm:hidden" />
-            <CalendarDays size={25} className="hidden sm:block" />
-          </span>
-          <h3 className="mt-10 text-[22px] font-normal uppercase sm:mt-20 sm:text-[28px]">{value}</h3>
-          <p className="text-[14px] text-white/60 sm:text-[18px]">{label}</p>
-        </div>
-      ))}
+        {[
+          [String(memberCount), "Active Members"],
+          [String(eventsOrganized), "Events Organized"],
+        ].map(([value, label]) => (
+          <div key={label} className="rounded-xl bg-[#435974] p-5 text-white sm:p-8">
+            <span className="inline-flex rounded-full bg-white p-3 text-[#019839] sm:p-4">
+              <CalendarDays size={20} className="sm:hidden" />
+              <CalendarDays size={25} className="hidden sm:block" />
+            </span>
+            <h3 className="mt-10 text-[28px] font-normal uppercase sm:mt-20 sm:text-[34px] lg:text-[40px]">{value}</h3>
+            <p className="text-[14px] text-white/60 sm:text-[18px] lg:text-[20px]">{label}</p>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
@@ -284,84 +262,15 @@ function UpcomingEventsSection({ events }: { events: EventApiResponse[] }) {
   return (
     <section className="mx-auto max-w-[1269px] px-4 pb-12 pt-14 sm:px-6 sm:pb-16 sm:pt-16 md:px-10 lg:pb-28 lg:pt-20">
       <h2 className="mb-8 text-center text-[26px] font-normal uppercase sm:text-[34px] md:text-[42px] lg:text-[50px] lg:mb-16">Upcoming Events</h2>
-
-      {events.length === 0 ? (
-        <p className="text-center text-[20px] font-medium text-black/60">
-          No upcoming events are linked with this community yet.
-        </p>
-      ) : (
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          {events.map((event) => (
-            <EventCard key={event._id || event.id || event.title} event={event} />
-          ))}
-        </div>
-      )}
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        {events.map((event) => (
+          <EventCard key={event._id || event.id || event.title} event={event} />
+        ))}
+      </div>
     </section>
   );
 }
 
-function TracksSection({ tracks }: { tracks: CommunityTrack[] }) {
-  return (
-    <section className="bg-[#777] px-4 py-12 sm:px-6 sm:py-16 md:px-10 lg:py-24">
-      <h2 className="mb-8 text-center text-[26px] font-normal uppercase text-white sm:text-[34px] md:text-[42px] lg:text-[50px] lg:mb-16">
-        Community Tracks
-      </h2>
-
-      {tracks.length === 0 ? (
-        <p className="text-center text-[20px] font-medium text-white/80">
-          No tracks are linked with this community yet.
-        </p>
-      ) : (
-        <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-10 lg:grid-cols-3">
-          {tracks.map((track) => (
-            <div
-              key={track._id || track.id || track.title}
-              className="group flex min-h-[645px] flex-col rounded-xl bg-[#FFFFFF] p-3 text-black transition-colors duration-300 hover:bg-[#323232] hover:text-white"
-            >
-              <img
-                src={track.image || FALLBACK_TRACK_IMAGE}
-                alt={track.title || "Community track"}
-                className="h-[363px] w-full rounded-lg object-cover"
-              />
-
-              <div className="flex flex-1 flex-col p-4">
-                <p className="flex gap-2 text-sm opacity-80">
-                  <MapPin size={18} /> {track.city || "Location TBA"}
-                </p>
-                <h3 className="mt-4 text-[26px] font-normal uppercase">
-                  {track.title || "Untitled Track"}
-                </h3>
-
-                <div className="mt-6 grid grid-cols-3 gap-2 text-center">
-                  {[
-                    ["Distance", typeof track.distance === "number" ? `${track.distance} km` : "TBA"],
-                    ["Type", track.trackType || track.category || "TBA"],
-                    ["Level", titleCase(track.difficulty)],
-                  ].map(([label, value]) => (
-                    <div
-                      key={label}
-                      className="rounded border border-white/20 bg-[#323232] p-3 text-white"
-                    >
-                      <p className="text-[14px]">{label}</p>
-                      <b className="text-[16px]">{value}</b>
-                    </div>
-                  ))}
-                </div>
-
-                <button
-                  type="button"
-                  className="mt-[30px] flex h-[50px] w-[157px] items-center justify-center rounded-[30px] border border-black/50 bg-transparent text-[16px] font-bold capitalize leading-[22px] text-black/50 transition-colors duration-300 group-hover:border-[#019839] group-hover:bg-[#019839] group-hover:text-white"
-                >
-                  View Details
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </section>
-  );
-}
 
 function FaqSection({ community }: { community: CommunityApiResponse }) {
   const faqs = getFaqs(community);
@@ -498,8 +407,6 @@ export default function CommunityDetailPage() {
     };
   }, [selectedCommunityId]);
 
-  const tracks = useMemo(() => getTrackList(community), [community]);
-
   if (loading) return <LoadingState />;
   if (error || !community) return <ErrorState message={error || "Community not found."} />;
 
@@ -508,12 +415,8 @@ export default function CommunityDetailPage() {
       <HeroSection community={community} />
       <AboutSection community={community} />
       <StatsSection community={community} />
-      <UpcomingEventsSection events={events} />
-      <TracksSection tracks={tracks} />
+      {events.length > 0 && <UpcomingEventsSection events={events} />}
       <FaqSection community={community} />
-      <button className="fixed bottom-10 right-10 rounded-full bg-[#019839] p-4 text-white shadow-lg">
-        <Bike size={28} />
-      </button>
     </main>
   );
 }

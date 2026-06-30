@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
-  ArrowRight,
   Bike,
   CalendarDays,
   Cross,
@@ -15,7 +14,7 @@ import {
   Users,
   Wrench,
 } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { EventApiResponse, getEventById, getEventsPage } from "../../services/eventsApi";
 
 type StatCard = {
@@ -261,10 +260,8 @@ const FontLoader = () => (
     }
 
     /* Facility scrollbar */
-    .facility-scroll::-webkit-scrollbar { height: 5px; }
-    .facility-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.2); border-radius: 4px; }
-    .facility-scroll::-webkit-scrollbar-thumb { background: #019839; border-radius: 4px; }
-    .facility-scroll { scrollbar-width: thin; scrollbar-color: #019839 rgba(255,255,255,0.2); }
+    .facility-scroll::-webkit-scrollbar { display: none; }
+    .facility-scroll { scrollbar-width: none; }
 
     /* FAQ font */
     .grand-prix-faq-item {
@@ -324,7 +321,7 @@ function AboutSection({ event }: { event: GrandPrixEvent }) {
         className="mt-5 inline-flex h-[44px] items-center justify-center gap-3 rounded-full bg-[#019839] px-6 text-[15px] font-bold leading-none text-white transition hover:bg-[#017a2e] sm:h-[49px] sm:px-[28px] sm:text-[18px]"
       >
         Join this Event
-        <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
+        <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
       </button>
     </section>
   );
@@ -383,7 +380,7 @@ function RegisterCard({ event }: { event: GrandPrixEvent }) {
 
 function StatsStrip({ event, stats }: { event: GrandPrixEvent; stats: StatCard[] }) {
   return (
-    <section className="grand-prix-section mx-auto mt-10 max-w-[calc(100vw-32px)] overflow-x-auto rounded-2xl bg-[#323232] p-3 lg:mt-[60px] lg:overflow-visible">
+    <section className="grand-prix-section mx-auto mt-10 max-w-[1192px] overflow-x-auto rounded-2xl bg-[#A2BFDB] p-3 lg:mt-[60px] lg:overflow-visible">
       <div className="flex w-max gap-2 lg:gap-3">
         <RegisterCard event={event} />
         {stats.map(({ icon: Icon, title, label }) => (
@@ -422,31 +419,39 @@ function FacilitiesSection({ facilities }: { facilities: Facility[] }) {
           <h2 className="grand-prix-bebas max-w-[579px] text-[32px] uppercase leading-tight text-[#000000] sm:text-[38px] lg:text-[44px]">
             Everything You Need for a Seamless Ride Experience
           </h2>
-          <button
-            type="button"
+          <Link
+            to="/contact-us"
             className="mt-[35px] inline-flex h-[50px] items-center justify-center gap-[14px] rounded-full bg-[#019839] px-[27px] text-[18px] font-bold leading-none text-white transition hover:bg-[#017a2e] max-lg:mt-0"
           >
             Get in Touch
-            <ArrowRight className="h-5 w-5" />
-          </button>
+            <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
+          </Link>
         </div>
 
-        <div className="facility-scroll mt-[42px] flex gap-5 overflow-x-auto pb-3">
-          {facilities.map(({ title, icon: Icon }) => (
-            <article
-              key={title}
-              className="relative h-[97px] w-[240px] shrink-0 rounded-[10px] bg-white text-[#333] sm:w-[260px]"
-            >
-              <span className="absolute left-[19px] top-5 flex h-[50px] w-[50px] items-center justify-center rounded-[10px] bg-[#019839] text-white">
-                <Icon className="h-[26px] w-[26px]" />
-              </span>
-              <b className="absolute left-[86px] top-5 flex h-[50px] max-w-[130px] items-center text-[18px] font-bold leading-[22px] sm:text-[20px]">
-                {title}
-              </b>
-              <span className="absolute bottom-0 left-0 h-[4px] w-full rounded-b-[10px] bg-[#019839]" />
-            </article>
-          ))}
-        </div>
+      </div>
+
+      <div
+        className="facility-scroll mt-[42px] flex gap-5 overflow-x-auto pl-3 md:pl-6 lg:pl-[max(1.5rem,calc((100vw-1268px)/2))]"
+        style={{
+          maskImage: "linear-gradient(to right, black 85%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to right, black 85%, transparent 100%)",
+        }}
+      >
+        {facilities.map(({ title, icon: Icon }) => (
+          <article
+            key={title}
+            className="group relative h-[97px] w-[240px] shrink-0 cursor-pointer rounded-[10px] bg-[#76767666] text-white transition-colors duration-200 hover:bg-white hover:text-[#333] sm:w-[260px]"
+          >
+            <span className="absolute left-[19px] top-5 flex h-[50px] w-[50px] items-center justify-center rounded-[10px] bg-white text-[#333] transition-colors duration-200 group-hover:bg-[#019839] group-hover:text-white">
+              <Icon className="h-[26px] w-[26px]" />
+            </span>
+            <b className="absolute left-[86px] top-5 flex h-[50px] max-w-[130px] items-center text-[18px] font-bold leading-[22px] sm:text-[20px]">
+              {title}
+            </b>
+            <span className="absolute bottom-0 left-0 h-[4px] w-full rounded-b-[10px] bg-transparent transition-colors duration-200 group-hover:bg-[#019839]" />
+          </article>
+        ))}
+        <div className="shrink-0 w-4" aria-hidden />
       </div>
     </section>
   );

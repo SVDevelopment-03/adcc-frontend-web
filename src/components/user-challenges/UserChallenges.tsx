@@ -395,36 +395,10 @@ justify-content: center !important;}
           {loading ? t("public.common.loadingChallenges") : getShowingText()}
         </p>
 
-        <motion.div
-          key={`challenges-grid-${status}-${page}`}
-          initial="hidden"
-          animate="visible"
-          variants={{
-            visible: {
-              transition: {
-                staggerChildren: 0.12,
-              },
-            },
-          }}
-          className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8"
-        >
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
           {challenges.map((item) => (
-            <motion.div
+            <div
               key={item.id}
-              variants={{
-                hidden: {
-                  opacity: 0,
-                  y: "120%",
-                },
-                visible: {
-                  opacity: 1,
-                  y: "0%",
-                },
-              }}
-              transition={{
-                duration: 0.85,
-                ease: [0.22, 1, 0.36, 1],
-              }}
               className="group challenge-card overflow-hidden rounded-xl border border-[#cad8e6] bg-[#eef7ff] transition-all duration-300 hover:bg-[#435974] hover:text-white"
             >
               <div className="adcc-image overflow-hidden">
@@ -473,9 +447,9 @@ justify-content: center !important;}
                   </Link>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
 
         {!loading && loadError && (
           <p className="pt-8 text-[16px] font-medium text-red-700">

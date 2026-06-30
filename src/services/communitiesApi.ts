@@ -1,4 +1,4 @@
-import api from './api';
+import api, { publicApi } from './api';
 import { getCached, setCache, invalidateCache } from '../utils/apiCache';
 
 export interface CommunitiesPagination {
@@ -163,7 +163,7 @@ export const getCommunityById = async (id: string, options?: { lang?: string }):
     if (options?.lang) {
       headers['Accept-Language'] = options.lang;
     }
-    const response = await api.get<any>(`/v1/communities/${id}`, { headers });
+    const response = await publicApi.get<any>(`/v1/communities/${id}`, { headers });
     // console.log('📥 getCommunityById response:', response.data);
 
     // Handle nested response structure

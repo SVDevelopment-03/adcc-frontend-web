@@ -853,7 +853,7 @@ font-family: var(--font-satoshi) !important;}
   }
   .home-about-rider {
     position: absolute;
-    bottom: -28px;
+    bottom: -5px;
     inset-inline-end: 0;
     width: 652px;
     height: 431px;
@@ -3199,7 +3199,7 @@ function CommunitySection() {
 
       <AnimatedButton
         className="home-community-start-btn"
-        onClick={() => navigate("/login")}
+        onClick={() => navigate("/user-event")}
       >
         {t("public.home.community.startRiding")}
       </AnimatedButton>
