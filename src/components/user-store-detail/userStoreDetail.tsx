@@ -54,7 +54,7 @@ export default function StoreDetailPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1268px] px-10 py-20">
+      <main className="mx-auto max-w-[1268px] px-10 py-20 pt-28 lg:pt-32">
         {/* <section className="grid grid-cols-1 gap-16 lg:grid-cols-[574px_1fr]"> */}
         <section className="grid grid-cols-1 items-start gap-16 lg:grid-cols-[574px_1fr]">
           <div>

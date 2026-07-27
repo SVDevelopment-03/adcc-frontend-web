@@ -105,7 +105,8 @@ export function PublicPageHero({
       style={{
         position: "relative",
         width: "100%",
-        height: 640,
+        height: "100vh",
+        minHeight: 480,
         overflow: "hidden",
       }}
     >

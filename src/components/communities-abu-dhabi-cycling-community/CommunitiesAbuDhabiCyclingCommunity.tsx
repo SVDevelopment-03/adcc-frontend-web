@@ -117,7 +117,7 @@ function HeroSection({ community }: { community: CommunityApiResponse }) {
   return (
     <section
       className="relative w-full overflow-hidden public-hero-bleed"
-      style={{ height: "clamp(300px, 45vw, 500px)" }}
+      style={{ height: "100vh", minHeight: 480 }}
     >
       <div
         className="absolute inset-0 bg-cover bg-center"

@@ -4,9 +4,9 @@
  */
 
 /* ─── Public layout header ─── */
-.public-header {
-  padding-inline: 86px !important;
-  padding-block: 8px !important;
+.public-header-bar {
+  padding-inline: 15px !important;
+  padding-block: 6px !important;
 }
 
 /* ─── Hero content (all public routes) ─── */
@@ -309,8 +309,8 @@ html[dir='rtl'] .communities-page .text-left {
 
 /* ─── Responsive ─── */
 @media (max-width: 1024px) {
-  .public-header {
-    padding-inline: 32px !important;
+  .public-header-bar {
+    padding-inline: 15px !important;
   }
 
   [class*='-page-hero-content'],
@@ -357,8 +357,8 @@ html[dir='rtl'] .communities-page .text-left {
 }
 
 @media (max-width: 768px) {
-  .public-header {
-    padding-inline: 18px !important;
+  .public-header-bar {
+    padding-inline: 15px !important;
   }
 
   [class*='-page-hero-content'],

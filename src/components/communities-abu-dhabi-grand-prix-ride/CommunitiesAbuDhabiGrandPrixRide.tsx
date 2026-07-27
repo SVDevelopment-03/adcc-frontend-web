@@ -269,10 +269,10 @@ const FontLoader = () => (
     }
 
     @media (max-width: 640px) {
-      .grand-prix-hero { height: 300px !important; }
+      .grand-prix-hero { height: 100vh !important; min-height: 420px !important; }
     }
     @media (min-width: 641px) and (max-width: 1023px) {
-      .grand-prix-hero { height: 400px !important; }
+      .grand-prix-hero { height: 100vh !important; min-height: 460px !important; }
     }
   `}</style>
 );
@@ -281,7 +281,7 @@ function HeroSection({ event }: { event: GrandPrixEvent }) {
   const tags = [event.category, event.city].filter(Boolean);
 
   return (
-    <section className="grand-prix-hero public-hero-bleed relative w-full overflow-hidden" style={{ height: 500 }}>
+    <section className="grand-prix-hero public-hero-bleed relative w-full overflow-hidden" style={{ height: "100vh", minHeight: 480 }}>
       <img
         src={getImage(event)}
         alt={event.title}

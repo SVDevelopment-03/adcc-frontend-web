@@ -91,7 +91,7 @@ export default function AdccStorePage() {
       </header>
 
       <section
-        className="relative h-[640px] bg-cover bg-center"
+        className="public-hero-bleed relative h-screen min-h-[480px] bg-cover bg-center"
         style={{
           backgroundImage:
             "linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url('/img/pexels-zakhar-36955801 1.png')",

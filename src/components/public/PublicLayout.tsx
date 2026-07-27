@@ -61,7 +61,7 @@ function Logo({ compact = false }: { compact?: boolean }) {
       className={
         compact
           ? "h-14 w-34 object-contain sm:h-16 sm:w-38 cursor-pointer"
-          : "h-13 w-32 object-contain sm:h-15 sm:w-36 lg:h-17 lg:w-42 xl:h-19 xl:w-45 cursor-pointer"
+          : "h-8 w-20 object-contain object-left sm:h-9 sm:w-22 lg:h-10 lg:w-24 xl:h-11 xl:w-28 cursor-pointer"
       }
     />
   );
@@ -113,42 +113,28 @@ function PublicHeader() {
 
   return (
     <header
-      className={`public-header fixed top-0 inset-x-0 z-[100] flex h-20 w-full items-center justify-between bg-black/30 backdrop-blur-[2px] px-5 py-2 transition-transform duration-300 ease-in-out sm:h-22 sm:px-6 md:px-10! lg:h-24 lg:px-14! xl:h-28 xl:px-22! ${
+      className={`public-header fixed top-0 inset-x-0 z-[100] flex h-16 w-full items-center justify-center transition-transform duration-300 ease-in-out sm:h-18 lg:h-20 xl:h-22 ${
         headerVisible ? "translate-y-0" : "-translate-y-full"
       }`}
     >
       <style>{`
-        .public-layout-content {
-          padding-top: 80px;
+        .public-header-bar {
+          border-radius: 100px;
+          margin-top: 30px;
         }
-        @media (min-width: 640px) {
-          .public-layout-content { padding-top: 88px; }
+        .public-header-logo-wrap img {
+          filter: brightness(0) invert(1);
         }
-        @media (min-width: 1024px) {
-          .public-layout-content { padding-top: 96px; }
-        }
-        @media (min-width: 1280px) {
-          .public-layout-content { padding-top: 112px; }
-        }
-        .public-hero-bleed {
-          margin-top: -80px;
-        }
-        @media (min-width: 640px) {
-          .public-hero-bleed { margin-top: -88px; }
-        }
-        @media (min-width: 1024px) {
-          .public-hero-bleed { margin-top: -96px; }
-        }
-        @media (min-width: 1280px) {
-          .public-hero-bleed { margin-top: -112px; }
+        .pub-nav-link {
+          white-space: nowrap;
         }
         @media (max-width: 640px) {
           .public-header {
             min-height: 92px !important;
-            padding: 14px 10px !important;
           }
-          .public-layout-content { padding-top: 92px !important; }
-          .public-hero-bleed { margin-top: -92px !important; }
+          .public-header-bar {
+            padding: 10px 14px !important;
+          }
           .public-header-logo-wrap img {
             width: 132px !important;
             height: auto !important;
@@ -215,90 +201,92 @@ function PublicHeader() {
           width: 100%;
         }
       `}</style>
-      <div className="public-header-logo-wrap flex items-center gap-3">
-        <Logo />
-        <LanguageSwitcher className="md:hidden" />
-      </div>
-
-      <nav className="hidden items-center gap-6 text-[17px] font-medium xl:flex 2xl:gap-10 2xl:text-[20px]">
-        {navItems.map((item) => {
-          const isActive = item.match.some(
-            (path) =>
-              location.pathname === path ||
-              location.pathname.startsWith(`${path}/`),
-          );
-          return (
-            <NavLink
-              key={item.labelKey}
-              to={item.to}
-              className={`pub-nav-link inline-block ${
-                isActive ? "!text-[#019839]" : "!text-white"
-              }`}
-            >
-              {t(item.labelKey)}
-            </NavLink>
-          );
-        })}
-      </nav>
-
-      <div className="public-header-actions flex items-center gap-3 sm:gap-4 lg:gap-5 xl:gap-7">
-        <HeaderWeather />
-        <LanguageSwitcher />
-        <button
-          type="button"
-          aria-expanded={menuOpen}
-          aria-label={t("public.auth.toggleMenu")}
-          onClick={() => setMenuOpen((value) => !value)}
-          className="public-menu-toggle flex h-11 w-11 items-center justify-center rounded-full bg-[#019839] text-white transition-colors hover:bg-black sm:h-11 sm:w-11 xl:hidden"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
-      </div>
-
-      {menuOpen && (
-        <div className="public-mobile-menu absolute left-0 right-0 top-full max-h-[calc(100vh-80px)] overflow-y-auto border-t border-black/10 bg-white px-5 py-5 shadow-lg sm:px-6 md:px-10 xl:hidden">
-          <nav className="flex flex-col gap-2 text-[16px] font-semibold">
-            {navItems.map((item) => {
-              const isActive = item.match.some(
-                (path) =>
-                  location.pathname === path ||
-                  location.pathname.startsWith(`${path}/`),
-              );
-              return (
-                <NavLink
-                  key={item.labelKey}
-                  to={item.to}
-                  onClick={() => setMenuOpen(false)}
-                  className={`pub-nav-link px-4 py-2.5 ${
-                    isActive ? "!text-[#019839]" : "!text-black"
-                  }`}
-                >
-                  {t(item.labelKey)}
-                </NavLink>
-              );
-            })}
-            <button
-              type="button"
-              onClick={() => {
-                setMenuOpen(false);
-                void handleAuthAction();
-              }}
-              className={`public-auth-button mt-3 flex items-center gap-3 rounded-md bg-[#019839] py-3.5 ps-7 pe-5 text-[16px] font-bold text-white transition-colors hover:bg-black ${isRtl ? "flex-row-reverse" : ""}`}
-            >
-              {isAuthenticated ? (
-                <LogOut className="h-5 w-5 shrink-0" />
-              ) : (
-                <LogIn className="h-5 w-5 shrink-0" />
-              )}
-              <span>
-                {isAuthenticated
-                  ? t("public.auth.logout")
-                  : t("public.auth.login")}
-              </span>
-            </button>
-          </nav>
+      <div className="public-header-bar relative mx-auto flex h-full w-full max-w-[1400px] items-center justify-between bg-black/30 backdrop-blur-[2px] px-5 py-2 md:px-10! lg:px-14! xl:px-22!">
+        <div className="public-header-logo-wrap flex items-center gap-3">
+          <Logo />
+          <LanguageSwitcher className="md:hidden" />
         </div>
-      )}
+
+        <nav className="hidden items-center gap-4 text-[15px] font-medium xl:flex 2xl:gap-6 2xl:text-[17px]">
+          {navItems.map((item) => {
+            const isActive = item.match.some(
+              (path) =>
+                location.pathname === path ||
+                location.pathname.startsWith(`${path}/`),
+            );
+            return (
+              <NavLink
+                key={item.labelKey}
+                to={item.to}
+                className={`pub-nav-link inline-block ${
+                  isActive ? "!text-[#019839]" : "!text-white"
+                }`}
+              >
+                {t(item.labelKey)}
+              </NavLink>
+            );
+          })}
+        </nav>
+
+        <div className="public-header-actions flex items-center gap-3 sm:gap-4 lg:gap-5 xl:gap-7">
+          <HeaderWeather />
+          <LanguageSwitcher />
+          <button
+            type="button"
+            aria-expanded={menuOpen}
+            aria-label={t("public.auth.toggleMenu")}
+            onClick={() => setMenuOpen((value) => !value)}
+            className="public-menu-toggle flex h-11 w-11 items-center justify-center rounded-full bg-[#019839] text-white transition-colors hover:bg-black sm:h-11 sm:w-11 xl:hidden"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        </div>
+
+        {menuOpen && (
+          <div className="public-mobile-menu absolute left-0 right-0 top-full max-h-[calc(100vh-80px)] overflow-y-auto border-t border-black/10 bg-white px-5 py-5 shadow-lg sm:px-6 md:px-10 xl:hidden">
+            <nav className="flex flex-col gap-2 text-[16px] font-semibold">
+              {navItems.map((item) => {
+                const isActive = item.match.some(
+                  (path) =>
+                    location.pathname === path ||
+                    location.pathname.startsWith(`${path}/`),
+                );
+                return (
+                  <NavLink
+                    key={item.labelKey}
+                    to={item.to}
+                    onClick={() => setMenuOpen(false)}
+                    className={`pub-nav-link px-4 py-2.5 ${
+                      isActive ? "!text-[#019839]" : "!text-black"
+                    }`}
+                  >
+                    {t(item.labelKey)}
+                  </NavLink>
+                );
+              })}
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  void handleAuthAction();
+                }}
+                className={`public-auth-button mt-3 flex items-center gap-3 rounded-md bg-[#019839] py-3.5 ps-7 pe-5 text-[16px] font-bold text-white transition-colors hover:bg-black ${isRtl ? "flex-row-reverse" : ""}`}
+              >
+                {isAuthenticated ? (
+                  <LogOut className="h-5 w-5 shrink-0" />
+                ) : (
+                  <LogIn className="h-5 w-5 shrink-0" />
+                )}
+                <span>
+                  {isAuthenticated
+                    ? t("public.auth.logout")
+                    : t("public.auth.login")}
+                </span>
+              </button>
+            </nav>
+          </div>
+        )}
+      </div>
     </header>
   );
 }
