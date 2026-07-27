@@ -120,7 +120,7 @@ export default function ChallengeDetailPage() {
       <style>{`.challenge-guide-section { background-image: url('/img/image 3518.png'); background-size: cover; background-position: center; background-repeat: no-repeat; }`}</style>
       {/* Hero — full-width, consistent with other inner pages */}
       <section
-        className="relative w-full overflow-hidden"
+        className="relative w-full overflow-hidden public-hero-bleed"
         style={{ height: "clamp(300px, 45vw, 500px)" }}
       >
         <div

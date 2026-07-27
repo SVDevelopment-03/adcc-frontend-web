@@ -156,7 +156,7 @@ function ErrorState({ message }: { message: string }) {
 function HeroSection({ track }: { track: Track }) {
   return (
     <section
-      className="relative w-full overflow-hidden"
+      className="relative w-full overflow-hidden public-hero-bleed"
       style={{ height: "clamp(300px, 45vw, 500px)" }}
     >
       <div

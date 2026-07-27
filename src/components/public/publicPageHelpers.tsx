@@ -101,7 +101,7 @@ export function PublicPageHero({
 }) {
   return (
     <section
-      className={`${classPrefix}-hero`}
+      className={`${classPrefix}-hero public-hero-bleed`}
       style={{
         position: "relative",
         width: "100%",

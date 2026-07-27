@@ -69,6 +69,7 @@ function Logo({ compact = false }: { compact?: boolean }) {
 
 function PublicHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [headerVisible, setHeaderVisible] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useAuth();
@@ -85,14 +86,69 @@ function PublicHeader() {
     navigate("/login");
   };
 
+  useEffect(() => {
+    let hideTimer: ReturnType<typeof setTimeout>;
+
+    const handleScroll = () => {
+      if (window.scrollY <= 10) {
+        setHeaderVisible(true);
+        return;
+      }
+
+      setHeaderVisible(false);
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => setHeaderVisible(true), 200);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      clearTimeout(hideTimer);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (menuOpen) setHeaderVisible(true);
+  }, [menuOpen]);
+
   return (
-    <header className="public-header sticky top-0 z-[100] flex h-20 w-full items-center justify-between bg-[#EAF4FF] px-5 py-2 shadow-sm sm:h-22 sm:px-6 md:px-10! lg:h-24 lg:px-14! xl:h-28 xl:px-22!">
+    <header
+      className={`public-header fixed top-0 inset-x-0 z-[100] flex h-20 w-full items-center justify-between bg-black/30 backdrop-blur-[2px] px-5 py-2 transition-transform duration-300 ease-in-out sm:h-22 sm:px-6 md:px-10! lg:h-24 lg:px-14! xl:h-28 xl:px-22! ${
+        headerVisible ? "translate-y-0" : "-translate-y-full"
+      }`}
+    >
       <style>{`
+        .public-layout-content {
+          padding-top: 80px;
+        }
+        @media (min-width: 640px) {
+          .public-layout-content { padding-top: 88px; }
+        }
+        @media (min-width: 1024px) {
+          .public-layout-content { padding-top: 96px; }
+        }
+        @media (min-width: 1280px) {
+          .public-layout-content { padding-top: 112px; }
+        }
+        .public-hero-bleed {
+          margin-top: -80px;
+        }
+        @media (min-width: 640px) {
+          .public-hero-bleed { margin-top: -88px; }
+        }
+        @media (min-width: 1024px) {
+          .public-hero-bleed { margin-top: -96px; }
+        }
+        @media (min-width: 1280px) {
+          .public-hero-bleed { margin-top: -112px; }
+        }
         @media (max-width: 640px) {
           .public-header {
             min-height: 92px !important;
             padding: 14px 10px !important;
           }
+          .public-layout-content { padding-top: 92px !important; }
+          .public-hero-bleed { margin-top: -92px !important; }
           .public-header-logo-wrap img {
             width: 132px !important;
             height: auto !important;
@@ -176,7 +232,7 @@ function PublicHeader() {
               key={item.labelKey}
               to={item.to}
               className={`pub-nav-link inline-block ${
-                isActive ? "!text-[#019839]" : "!text-black"
+                isActive ? "!text-[#019839]" : "!text-white"
               }`}
             >
               {t(item.labelKey)}

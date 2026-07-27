@@ -281,7 +281,7 @@ function HeroSection({ event }: { event: GrandPrixEvent }) {
   const tags = [event.category, event.city].filter(Boolean);
 
   return (
-    <section className="grand-prix-hero relative w-full overflow-hidden" style={{ height: 500 }}>
+    <section className="grand-prix-hero public-hero-bleed relative w-full overflow-hidden" style={{ height: 500 }}>
       <img
         src={getImage(event)}
         alt={event.title}

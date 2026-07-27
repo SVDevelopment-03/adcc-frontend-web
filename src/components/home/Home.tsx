@@ -133,7 +133,7 @@ const CSS = `
   .home-hero {
     position: relative;
     width: 100%;
-    height: calc(100vh - 112px);
+    height: 100vh;
     min-height: 480px;
     max-height: none;
     overflow: hidden;
@@ -1362,7 +1362,7 @@ font-family: var(--font-satoshi) !important;}
       font-size: 15px !important;
     }
     .home-hero {
-      height: calc(100vh - 96px) !important;
+      height: 100vh !important;
       min-height: 440px !important;
       max-height: none !important;
     }
@@ -1618,7 +1618,7 @@ font-family: var(--font-satoshi) !important;}
       font-size: 14px !important;
     }
     .home-hero {
-      height: calc(100vh - 80px) !important;
+      height: 100vh !important;
       min-height: 400px !important;
       max-height: none !important;
     }
@@ -2444,7 +2444,7 @@ function HeroSection() {
   };
 
   return (
-    <section className="home-hero">
+    <section className="home-hero public-hero-bleed">
       <div className="home-hero-bg" aria-hidden />
       <div className="home-hero-content">
         <motion.h1

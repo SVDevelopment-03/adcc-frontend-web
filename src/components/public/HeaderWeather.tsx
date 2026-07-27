@@ -113,7 +113,7 @@ export function HeaderWeather() {
         />
       )}
       {!loading && tempLabel && (
-        <span className="shrink-0 text-[12px] font-semibold tabular-nums leading-none text-black/80 sm:text-[13px]">
+        <span className="shrink-0 text-[12px] font-semibold tabular-nums leading-none text-white/90 sm:text-[13px]">
           {tempLabel}
         </span>
       )}

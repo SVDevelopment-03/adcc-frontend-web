@@ -43,7 +43,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
-        className="flex items-center gap-1.5 rounded-md px-1 py-1 text-[15px] font-medium text-black transition-colors hover:text-[#019839] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#019839]/40"
+        className="flex items-center gap-1.5 rounded-md px-1 py-1 text-[15px] font-medium text-white transition-colors hover:text-[#019839] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#019839]/40"
       >
         <span>{currentLabel}</span>
         <ChevronDown
