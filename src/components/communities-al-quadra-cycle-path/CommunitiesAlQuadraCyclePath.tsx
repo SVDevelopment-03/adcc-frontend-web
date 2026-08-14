@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Bike,
   CalendarDays,
@@ -81,10 +82,23 @@ const titleCase = (value?: string) =>
     .trim()
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
-const formatDate = (date?: string) => {
-  if (!date) return "Date TBA";
+const DIFFICULTY_FILTER_KEYS = ["easy", "medium", "hard"];
+
+const translateDifficulty = (
+  difficulty: string | undefined,
+  t: (key: string) => string,
+) => {
+  const raw = (difficulty || "").toLowerCase();
+  if (DIFFICULTY_FILTER_KEYS.includes(raw)) {
+    return t(`public.common.filters.${raw}`);
+  }
+  return titleCase(difficulty);
+};
+
+const formatDate = (date?: string, fallback = "Date TBA") => {
+  if (!date) return fallback;
   const parsed = new Date(date);
-  if (Number.isNaN(parsed.getTime())) return "Date TBA";
+  if (Number.isNaN(parsed.getTime())) return fallback;
   return new Intl.DateTimeFormat("en", {
     month: "long",
     day: "numeric",
@@ -127,19 +141,20 @@ const getFacilityIcon = (name: string): LucideIcon => {
   return Bike;
 };
 
-const getFaqs = (track: Track) => [
-  `Where is ${track.title} located?`,
-  `What is the distance of ${track.title}?`,
-  `What is the difficulty level of ${track.title}?`,
-  `Is helmet use required on ${track.title}?`,
-  `Can I ride ${track.title} at night?`,
-  `Which facilities are available on ${track.title}?`,
+const getFaqs = (track: Track, t: (key: string, options?: Record<string, unknown>) => string) => [
+  t("public.tracks.detail.faqQuestions.location", { track: track.title }),
+  t("public.tracks.detail.faqQuestions.distance", { track: track.title }),
+  t("public.tracks.detail.faqQuestions.difficulty", { track: track.title }),
+  t("public.tracks.detail.faqQuestions.helmet", { track: track.title }),
+  t("public.tracks.detail.faqQuestions.night", { track: track.title }),
+  t("public.tracks.detail.faqQuestions.facilities", { track: track.title }),
 ];
 
 function LoadingState() {
+  const { t } = useTranslation();
   return (
     <main className="min-h-[420px] bg-[#eaf4ff] px-10 py-24 text-center text-black">
-      <p className="text-[22px] font-medium text-black/70">Loading track details...</p>
+      <p className="text-[22px] font-medium text-black/70">{t("public.tracks.detail.loadingDetails")}</p>
     </main>
   );
 }
@@ -154,6 +169,7 @@ function ErrorState({ message }: { message: string }) {
 }
 
 function HeroSection({ track }: { track: Track }) {
+  const { t } = useTranslation();
   return (
     <section
       className="relative w-full overflow-hidden public-hero-bleed"
@@ -169,7 +185,7 @@ function HeroSection({ track }: { track: Track }) {
       <div className="public-hero-content-pos">
         <div className="mb-3 flex flex-wrap gap-2">
           <span className="rounded-full bg-white/30 px-5 py-2 text-[14px] font-medium text-white backdrop-blur sm:text-[16px]">
-            {track.city || "Location TBA"}
+            {track.city || t("public.tracks.detail.locationTBA")}
           </span>
           <span className="rounded-full bg-white/30 px-5 py-2 text-[14px] font-medium text-white backdrop-blur sm:text-[16px]">
             {titleCase(track.trackType)}
@@ -184,47 +200,49 @@ function HeroSection({ track }: { track: Track }) {
 }
 
 function AboutSection({ track }: { track: Track }) {
+  const { t } = useTranslation();
   return (
     <section className="px-10 py-24 text-center max-md:px-5 max-md:py-14 max-sm:px-4 max-sm:py-10">
-      <h2 className="text-[28px] font-normal uppercase sm:text-[38px] md:text-[48px] lg:text-[60px]">About This Track</h2>
+      <h2 className="text-[28px] font-normal uppercase sm:text-[38px] md:text-[48px] lg:text-[60px]">{t("public.tracks.detail.aboutHeading")}</h2>
       <p className="mx-auto mt-4 max-w-[851px] text-[14px] leading-relaxed sm:mt-6 sm:text-[17px] md:text-[20px] lg:text-[24px]">
-        {track.shortDescription || (track as any).description || track.safetyNotes || "Track details are coming soon."}
+        {track.shortDescription || (track as any).description || track.safetyNotes || t("public.tracks.detail.detailsComingSoon")}
       </p>
 
       <button className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#019839] px-6 py-3 text-[15px] font-bold text-white sm:mt-8 sm:px-8 sm:py-4 sm:text-[18px]">
-        Start Ride <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
+        {t("public.tracks.detail.startRide")} <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
       </button>
     </section>
   );
 }
 
 function StatsSection({ track }: { track: Track }) {
+  const { t } = useTranslation();
   const stats: [typeof CalendarDays, string, string][] = [
-    [CalendarDays, `${track.distance ?? "TBA"}${typeof track.distance === "number" ? " km" : ""}`, "Distance"],
-    [CalendarDays, titleCase(track.difficulty), "Level"],
-    [CalendarDays, titleCase(track.trackType), "Type"],
+    [CalendarDays, `${track.distance ?? t("public.tracks.detail.tba")}${typeof track.distance === "number" ? " km" : ""}`, t("public.tracks.detail.distance")],
+    [CalendarDays, translateDifficulty(track.difficulty, t), t("public.tracks.detail.level")],
+    [CalendarDays, titleCase(track.trackType), t("public.tracks.detail.type")],
   ];
 
   return (
     <section className="mx-auto mb-16 max-w-[min(1192px,calc(100vw-2rem))] rounded-2xl bg-[#A2BFDB] p-4 lg:mb-28">
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_repeat(3,180px)]">
         <div className="rounded-2xl bg-[#435974] p-5 text-white sm:p-8">
-          <p className="text-[13px] text-white/70 sm:text-[14px]">• Start Your Ride</p>
+          <p className="text-[13px] text-white/70 sm:text-[14px]">• {t("public.tracks.detail.startYourRide")}</p>
           <div className="mt-4 sm:mt-8 sm:flex sm:gap-8">
             <h3 className="flex-1 text-[22px] font-bold uppercase leading-tight sm:text-[26px] lg:text-[32px]">
-              Track your progress with the ADCC app
+              {t("public.tracks.detail.trackProgress")}
             </h3>
             <div className="my-5 h-px bg-white/20 sm:my-0 sm:h-auto sm:w-px sm:self-stretch" />
             <div className="min-w-0 flex-1">
               <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/60 sm:text-[12px]">
-                Safety Tips
+                {t("public.tracks.detail.safetyTips")}
               </h4>
               <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 sm:mt-4 sm:gap-y-4">
                 {([
-                  [Shield, "Always wear a helmet"],
-                  [Droplets, "Carry sufficient water"],
-                  [Cloud, "Check weather conditions"],
-                  [Clock, "Ride during cooler hours"],
+                  [Shield, t("public.tracks.detail.safetyHelmet")],
+                  [Droplets, t("public.tracks.detail.safetyWater")],
+                  [Cloud, t("public.tracks.detail.safetyWeather")],
+                  [Clock, t("public.tracks.detail.safetyHours")],
                 ] as [typeof Shield, string][]).map(([Icon, label]) => (
                   <p key={label} className="flex items-center gap-2 text-[12px] text-white/80 sm:text-[14px]">
                     <Icon size={13} className="shrink-0 opacity-70" />
@@ -252,6 +270,7 @@ function StatsSection({ track }: { track: Track }) {
 }
 
 function FacilitiesSection({ facilities }: { facilities: FacilityCard[] }) {
+  const { t } = useTranslation();
   if (facilities.length === 0) return null;
 
   return (
@@ -264,10 +283,10 @@ function FacilitiesSection({ facilities }: { facilities: FacilityCard[] }) {
       <div className="mx-auto max-w-[1268px] px-4 sm:px-6 md:px-10">
         <div className="flex justify-between gap-8 max-lg:flex-col">
           <h2 className="max-w-[580px] text-[26px] font-normal uppercase leading-tight sm:text-[34px] lg:text-[44px]">
-            Everything You Need for a Seamless Ride Experience
+            {t("public.tracks.detail.facilitiesHeading")}
           </h2>
           <Link to="/contact-us" className="inline-flex h-fit cursor-pointer items-center gap-2 rounded-full bg-[#019839] px-8 py-4 font-bold text-white">
-            Get in Touch
+            {t("public.common.getInTouch")}
             <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
           </Link>
         </div>
@@ -315,6 +334,7 @@ function TrackMediaSection({ track }: { track: Track }) {
 }
 
 function EventCard({ event }: { event: EventApiResponse }) {
+  const { t } = useTranslation();
   const image =
     event.eventImage ||
     event.mainImage ||
@@ -329,7 +349,7 @@ function EventCard({ event }: { event: EventApiResponse }) {
         <img src={image} alt={event.title} className="h-full w-full object-cover" />
 
         <span className="absolute right-6 top-6 rounded-full bg-black/40 px-6 py-2 text-white">
-          {event.category || "Event"}
+          {event.category || t("public.common.eventFallback")}
         </span>
       </div>
 
@@ -337,17 +357,17 @@ function EventCard({ event }: { event: EventApiResponse }) {
 
       <div className="mt-5 grid grid-cols-2 gap-y-4 text-[18px] text-black/70">
         <p className="flex gap-2">
-          <CalendarDays size={20} /> {formatDate(event.eventDate)}
+          <CalendarDays size={20} /> {formatDate(event.eventDate, t("public.common.dateTBA"))}
         </p>
         <p className="flex gap-2">
           <Gauge size={20} />{" "}
-          {typeof event.distance === "number" ? `${event.distance} km` : "Distance TBA"}
+          {typeof event.distance === "number" ? `${event.distance} km` : t("public.common.distanceTBA")}
         </p>
         <p className="flex gap-2">
-          <Users size={20} /> {participants} participants
+          <Users size={20} /> {t("public.common.participants", { count: participants, formattedCount: participants })}
         </p>
         <p className="flex gap-2">
-          <MapPin size={20} /> {event.city || event.address || "Location TBA"}
+          <MapPin size={20} /> {event.city || event.address || t("public.tracks.detail.locationTBA")}
         </p>
       </div>
 
@@ -359,20 +379,21 @@ function EventCard({ event }: { event: EventApiResponse }) {
         }
         className="mt-[27px] flex h-[50px] w-[157px] items-center justify-center rounded-[30px] border border-[#019839] bg-transparent text-[16px] font-bold capitalize leading-[22px] text-[#019839] transition-colors hover:bg-[#019839] hover:text-white"
       >
-        View Details
+        {t("public.common.viewDetails")}
       </Link>
     </div>
   );
 }
 
 function UpcomingEventsSection({ events }: { events: EventApiResponse[] }) {
+  const { t } = useTranslation();
   return (
     <section className="mx-auto max-w-[1269px] px-10 py-32 max-md:px-5 max-md:py-16 max-sm:px-4 max-sm:py-12">
-      <h2 className="mb-8 text-center text-[26px] font-normal uppercase sm:text-[34px] md:text-[42px] lg:text-[50px] lg:mb-16">Upcoming Events</h2>
+      <h2 className="mb-8 text-center text-[26px] font-normal uppercase sm:text-[34px] md:text-[42px] lg:text-[50px] lg:mb-16">{t("public.tracks.detail.upcomingEvents")}</h2>
 
       {events.length === 0 ? (
         <p className="text-center text-[20px] font-medium text-black/60">
-          No upcoming events are linked with this track yet.
+          {t("public.tracks.detail.noUpcomingEvents")}
         </p>
       ) : (
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -386,7 +407,8 @@ function UpcomingEventsSection({ events }: { events: EventApiResponse[] }) {
 }
 
 function FaqSection({ track }: { track: Track }) {
-  const faqs = getFaqs(track);
+  const { t } = useTranslation();
+  const faqs = getFaqs(track, t);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const toggle = useCallback((idx: number) => {
     setOpenIndex((prev) => (prev === idx ? null : idx));
@@ -394,8 +416,8 @@ function FaqSection({ track }: { track: Track }) {
 
   return (
     <section className="w-full px-4 pb-16 text-center sm:px-6 md:px-10 lg:px-16 lg:pb-28 xl:px-20 2xl:px-24">
-      <h2 className="text-[30px] font-normal uppercase sm:text-[38px] lg:text-[46px]">Frequently Asked Questions</h2>
-      <p className="mt-3 text-[15px] text-black/70 sm:text-[16px]">Got questions before hitting the road? We've got you covered.</p>
+      <h2 className="text-[30px] font-normal uppercase sm:text-[38px] lg:text-[46px]">{t("public.tracks.faq.title")}</h2>
+      <p className="mt-3 text-[15px] text-black/70 sm:text-[16px]">{t("public.tracks.faq.subtitle")}</p>
 
       <div className="mx-auto mt-8 grid max-w-[1098px] grid-cols-1 gap-4 sm:mt-10 md:grid-cols-2 md:gap-5">
         {faqs.map((faq, index) => (
@@ -415,7 +437,7 @@ function FaqSection({ track }: { track: Track }) {
             </div>
             {openIndex === index && (
               <p className="pb-5 text-[16px] font-normal leading-7 text-black/65">
-                For more information about this topic, please contact our support team or refer to the track guidelines.
+                {t("public.tracks.detail.faqDefaultAnswer")}
               </p>
             )}
           </div>
@@ -426,6 +448,7 @@ function FaqSection({ track }: { track: Track }) {
 }
 
 export default function TrackDetailPage() {
+  const { t } = useTranslation();
   const { trackId = "" } = useParams<{ trackId: string }>();
   const selectedTrackId = trackId.trim();
   const [track, setTrack] = useState<Track>(FALLBACK_TRACK);
@@ -501,7 +524,7 @@ export default function TrackDetailPage() {
         if (!cancelled) {
           console.error("Failed to load Al Qudra track page:", err);
           if (selectedTrackId) {
-            setError("The selected track details could not be loaded right now.");
+            setError(t("public.tracks.detail.loadError"));
           } else {
             setTrack(FALLBACK_TRACK);
             setEvents(FALLBACK_EVENTS);
@@ -517,12 +540,12 @@ export default function TrackDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [selectedTrackId]);
+  }, [selectedTrackId, t]);
 
   const facilities = useMemo(() => normalizeFacilities(track), [track]);
 
   if (loading) return <LoadingState />;
-  if (error || !track) return <ErrorState message={error || "Track not found."} />;
+  if (error || !track) return <ErrorState message={error || t("public.tracks.detail.notFound")} />;
 
   return (
     <main className="font-satoshi min-h-screen bg-[#eaf4ff] text-black">

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   Cloud,
   Star,
@@ -7,6 +8,7 @@ import {
   Apple,
   Mail,
 } from "lucide-react";
+import { AnimatedWords, useWordList } from "../public/publicPageHelpers";
 
 // const similarProducts = [
 //   ["Trek Domane SL 6 - Like New", "12,000 AED"],
@@ -33,23 +35,32 @@ const similarProducts = [
 ];
 
 export default function StoreDetailPage() {
+  const { t } = useTranslation();
+  const similarTitleWords = useWordList("public.store.detail.similarTitleWords");
+  const infoRows: [string, string][] = [
+    [t("public.store.detail.fields.category"), "Bikes"],
+    [t("public.store.detail.fields.condition"), "Excellent"],
+    [t("public.store.detail.fields.location"), "Abu Dhabi, UAE"],
+    [t("public.store.detail.fields.posted"), "2 days ago"],
+  ];
+
   return (
     <div className="min-h-screen bg-[#eaf4ff] text-black">
       <header className="h-[134px] flex items-center justify-between px-10 md:px-20">
         <img src="/ADCC-Logo.png" alt="ADCC" className="h-[57px] w-[135px] object-contain" />
 
         <nav className="hidden lg:flex gap-12 text-[20px] font-medium">
-          <span>About Us</span>
-          <span>Events</span>
-          <span>Community</span>
-          <span>Tracks</span>
+          <span>{t("public.nav.aboutUs")}</span>
+          <span>{t("public.nav.events")}</span>
+          <span>{t("public.nav.community")}</span>
+          <span>{t("public.nav.tracks")}</span>
         </nav>
 
         <div className="flex items-center gap-6">
           <Cloud size={24} />
-          <span className="text-[17px]">English</span>
+          <span className="text-[17px]">{t("public.language.english")}</span>
           <button className="rounded-full bg-black px-8 py-4 text-[18px] font-bold text-white">
-            Menu
+            {t("public.auth.menu")}
           </button>
         </div>
       </header>
@@ -78,7 +89,7 @@ export default function StoreDetailPage() {
                 >
                   <img
                     src={image}
-                    alt="Product preview"
+                    alt={t("public.store.detail.thumbnailAlt")}
                     className="h-full w-full object-cover"
                   />
                 </div>
@@ -95,7 +106,7 @@ export default function StoreDetailPage() {
                 <Star key={star} size={26} fill="currentColor" />
               ))}
               <span className="ml-3 text-[21px] font-bold text-[#555]">
-                Trusted by 5,000+ Cyclists
+                {t("public.store.detail.trustedBy")}
               </span>
             </div>
 
@@ -112,7 +123,7 @@ export default function StoreDetailPage() {
               <div className="flex items-center gap-6">
                 <img
                   src="/img/ImageWithFallback.png"
-                  alt="Seller"
+                  alt={t("public.store.detail.sellerAlt")}
                   className="h-[90px] w-[90px] rounded-full object-cover"
                 />
                 <div>
@@ -124,12 +135,7 @@ export default function StoreDetailPage() {
               </div>
 
               <div className="mt-8 space-y-5 text-[17px]">
-                {[
-                  ["Category", "Bikes"],
-                  ["Condition", "Excellent"],
-                  ["Location", "Abu Dhabi, UAE"],
-                  ["Posted", "2 days ago"],
-                ].map(([label, value]) => (
+                {infoRows.map(([label, value]) => (
                   <div
                     key={label}
                     className="flex justify-between border-b border-white/30 pb-4"
@@ -144,10 +150,10 @@ export default function StoreDetailPage() {
             {/* <div className="mt-10 flex gap-8"> */}
             <div className="mt-[42px] flex gap-8">
               <button className="flex h-[60px] items-center gap-4 rounded-full bg-[#019839] px-10 text-[22px] font-bold text-white">
-                <Phone size={24} /> Contact seller
+                <Phone size={24} /> {t("public.store.detail.contactSeller")}
               </button>
               <button className="flex h-[60px] items-center gap-4 rounded-full border border-[#019839] px-10 text-[22px] font-bold text-[#019839]">
-                <Share2 size={24} /> Share
+                <Share2 size={24} /> {t("public.store.detail.share")}
               </button>
             </div>
           </div>
@@ -156,17 +162,17 @@ export default function StoreDetailPage() {
         <section className="mt-28">
           <div className="grid grid-cols-4 border-b border-[#ccc] text-[24px]">
             <button className="border-b-4 border-[#435974] pb-5 font-bold text-black">
-              Description
+              {t("public.store.detail.tabs.description")}
             </button>
-            <button className="pb-5 text-black/70">Specifications</button>
-            <button className="pb-5 text-black/70">Benefits</button>
-            <button className="pb-5 text-black/70">Shipping information</button>
+            <button className="pb-5 text-black/70">{t("public.store.detail.tabs.specifications")}</button>
+            <button className="pb-5 text-black/70">{t("public.store.detail.tabs.benefits")}</button>
+            <button className="pb-5 text-black/70">{t("public.store.detail.tabs.shippingInfo")}</button>
           </div>
 
           <div className="mt-16 grid grid-cols-1 gap-20 lg:grid-cols-2">
             <div>
               <h2 className="text-[40px] font-black uppercase text-[#333]">
-                About This Product
+                {t("public.store.detail.aboutHeading")}
               </h2>
               <p className="mt-8 text-[18px] leading-[23px] text-black/80">
                 The DMT KR0 road cycling shoes are designed for riders who demand
@@ -184,15 +190,15 @@ export default function StoreDetailPage() {
 
             <img
               src="/img/image 3073.png"
-              alt="Product detail"
+              alt={t("public.store.detail.productDetailAlt")}
               className="h-[414px] w-full rounded-md object-cover"
             />
           </div>
         </section>
 
         <section className="mt-32">
-          <h2 className="text-center text-[50px] font-black uppercase">
-            Similar Collections
+          <h2 className="flex justify-center overflow-hidden text-center text-[50px] font-black uppercase">
+            <AnimatedWords words={similarTitleWords} gap={16} />
           </h2>
 
           <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-3">
@@ -222,17 +228,17 @@ export default function StoreDetailPage() {
         }}
       >
         <div>
-          <h2 className="text-[80px] font-black uppercase">Start Your Ride Today</h2>
+          <h2 className="text-[80px] font-black uppercase">{t("public.footer.ctaTitle")}</h2>
           <p className="mt-7 text-[26px]">
-            Download the ADCC app and join the cycling community.
+            {t("public.footer.ctaSubtitle")}
           </p>
 
           <div className="mt-10 flex justify-center gap-5">
             <button className="rounded-full bg-white px-9 py-4 text-black">
-              <span className="text-xs">GET IT ON</span> <b>Google Play</b>
+              <span className="text-xs">{t("public.footer.getItOn")}</span> <b>{t("public.footer.googlePlay")}</b>
             </button>
             <button className="flex items-center gap-3 rounded-full bg-white px-9 py-4 text-black">
-              <Apple size={24} /> <b>App Store</b>
+              <Apple size={24} /> <b>{t("public.footer.appStore")}</b>
             </button>
           </div>
         </div>
@@ -243,39 +249,38 @@ export default function StoreDetailPage() {
           <div>
             <img src="/ADCC-Logo.png" alt="ADCC" className="h-[63px] w-[149px] object-contain" />
             <p className="mt-8 max-w-[402px] text-[18px] leading-[23px]">
-              From weekend warriors to elite athletes, we unite cyclists who share a
-              passion for riding. ADCC is where your cycling journey thrives...
+              {t("public.footer.brandText")}
             </p>
 
             <div className="mt-8 flex h-[57px] max-w-[367px] rounded-lg bg-[#8DDF93] p-[6px]">
               <input
-                placeholder="Enter your email"
+                placeholder={t("public.footer.emailPlaceholder")}
                 className="flex-1 bg-transparent px-4 outline-none"
               />
               <button className="rounded-lg bg-[#019839] px-7 text-white">
-                Submit
+                {t("public.footer.submit")}
               </button>
             </div>
           </div>
 
           <div>
-            <h4 className="text-[24px] font-black uppercase">Quick Links</h4>
+            <h4 className="text-[24px] font-black uppercase">{t("public.footer.quickLinks")}</h4>
             <ul className="mt-8 space-y-4 text-[18px]">
-              <li>About Us</li>
-              <li>Rides</li>
-              <li>Events</li>
-              <li>Cyclist’s Corner</li>
-              <li>Contact Us</li>
+              <li>{t("public.nav.aboutUs")}</li>
+              <li>{t("public.footer.rides")}</li>
+              <li>{t("public.nav.events")}</li>
+              <li>{t("public.footer.cyclistsCorner")}</li>
+              <li>{t("public.footer.contactUs")}</li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-[24px] font-black uppercase">Contact Us</h4>
+            <h4 className="text-[24px] font-black uppercase">{t("public.footer.contactUs")}</h4>
             <ul className="mt-8 space-y-4 text-[18px]">
               <li className="flex gap-3"><Phone size={22} /> +971 2 654 5645</li>
               <li className="flex gap-3"><Phone size={22} /> 144226</li>
               <li className="flex gap-3">
-                <Mail size={22} /> Abu Dhabi, Yas island, yas marina circuit, Villa 18.
+                <Mail size={22} /> {t("public.store.detail.footer.address")}
               </li>
               <li className="flex gap-3"><MapPin size={22} /> info@adcyclingclub.ae</li>
             </ul>
@@ -283,7 +288,7 @@ export default function StoreDetailPage() {
         </div>
 
         <div className="mt-20 border-t border-[#d5d5d5] pt-8 text-center text-[18px] text-black/70">
-          Copyright 2026. Abu Dhabi Cycling Club
+          {t("public.footer.copyright")}
         </div>
 
       </footer>

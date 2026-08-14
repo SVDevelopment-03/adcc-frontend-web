@@ -2080,13 +2080,17 @@
       "events": "Events",
       "community": "Community",
       "challenges": "Challenges",
-      "tracks": "Tracks"
+      "tracks": "Tracks",
+      "logoAlt": "Abu Dhabi Cycling Club"
     },
     "auth": {
       "menu": "Menu",
       "login": "Login",
       "logout": "Logout",
       "toggleMenu": "Toggle navigation menu"
+    },
+    "layout": {
+      "scrollToTop": "Scroll to top"
     },
     "footer": {
       "ctaTitle": "Start Your Ride Today",
@@ -2108,7 +2112,8 @@
       "rides": "Rides",
       "cyclistsCorner": "Cyclist's Corner",
       "copyright": "Copyright 2026. Abu Dhabi Cycling Club",
-      "cyclingShortcut": "Cycling shortcut"
+      "cyclingShortcut": "Cycling shortcut",
+      "address": "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18."
     },
     "home": {
       "hero": {
@@ -2129,6 +2134,8 @@
         "text": "Choose how you want to ride with ADCC. Discover routes, join challenges, and be part of a growing cycling community.",
         "exploreRoutes": "Explore all Tracks",
         "riderAlt": "ADCC cyclist",
+        "scrollLeft": "Scroll left",
+        "scrollRight": "Scroll right",
         "cards": {
           "tracks": "Find Cycling\nTracks",
           "events": "Discover\nEvents",
@@ -2206,7 +2213,10 @@
         "stats": {
           "riders": "Riders",
           "events": "Events",
-          "years": "Years"
+          "years": "Years",
+          "ridersValue": "15K+",
+          "eventsValue": "100+",
+          "yearsValue": "10+"
         },
         "readMore": "Read More",
         "cyclistsAlt": "ADCC cyclists",
@@ -2232,7 +2242,106 @@
         "subscribeError": "Failed to subscribe."
       }
     },
+    "store": {
+      "listing": {
+        "hero": {
+          "titleWords": ["ADCC", "Store"],
+          "breadcrumb": "Home / ADCC Store"
+        },
+        "browseTitleWords": ["Browse", "Our", "Collection"],
+        "searchPlaceholder": "Search products",
+        "allCategories": "All Categories",
+        "allConditions": "All Conditions",
+        "cyclingEquipmentHeading": "Cycling Equipment",
+        "itemsCount": "{{count}} items",
+        "clubMerchandiseHeading": "Club Merchandise",
+        "noMerchandise": "No merchandise available at the moment.",
+        "gearUp": {
+          "titleWords": ["Gear", "Up", "with", "Official", "Cycling", "Essentials", "from", "ADCC"],
+          "body": "Explore a curated collection of cycling gear, apparel, and accessories designed for performance and comfort. Whether you're training, racing, or riding for leisure, find everything you need to elevate your cycling experience.",
+          "imageAlt": "Cycling essentials"
+        },
+        "footer": {
+          "address": "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18."
+        }
+      },
+      "detail": {
+        "thumbnailAlt": "Product preview",
+        "trustedBy": "Trusted by 5,000+ Cyclists",
+        "sellerAlt": "Seller",
+        "fields": {
+          "category": "Category",
+          "condition": "Condition",
+          "location": "Location",
+          "posted": "Posted"
+        },
+        "contactSeller": "Contact seller",
+        "share": "Share",
+        "tabs": {
+          "description": "Description",
+          "specifications": "Specifications",
+          "benefits": "Benefits",
+          "shippingInfo": "Shipping information"
+        },
+        "aboutHeading": "About This Product",
+        "productDetailAlt": "Product detail",
+        "similarTitleWords": ["Similar", "Collections"],
+        "footer": {
+          "address": "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18."
+        }
+      }
+    },
     "tracks": {
+      "detail": {
+        "aboutHeading": "About This Track",
+        "startRide": "Start Ride",
+        "startYourRide": "Start Your Ride",
+        "trackProgress": "Track your progress with the ADCC app",
+        "distance": "Distance",
+        "level": "Level",
+        "type": "Type",
+        "facilitiesHeading": "Everything You Need for a Seamless Ride Experience",
+        "upcomingEvents": "Upcoming Events",
+        "loadingDetails": "Loading track details...",
+        "notFound": "Track not found.",
+        "loadError": "The selected track details could not be loaded right now.",
+        "locationTBA": "Location TBA",
+        "tba": "TBA",
+        "detailsComingSoon": "Track details are coming soon.",
+        "safetyTips": "Safety Tips",
+        "safetyHelmet": "Always wear a helmet",
+        "safetyWater": "Carry sufficient water",
+        "safetyWeather": "Check weather conditions",
+        "safetyHours": "Ride during cooler hours",
+        "noUpcomingEvents": "No upcoming events are linked with this track yet.",
+        "faqDefaultAnswer": "For more information about this topic, please contact our support team or refer to the track guidelines.",
+        "faqQuestions": {
+          "location": "Where is {{track}} located?",
+          "distance": "What is the distance of {{track}}?",
+          "difficulty": "What is the difficulty level of {{track}}?",
+          "helmet": "Is helmet use required on {{track}}?",
+          "night": "Can I ride {{track}} at night?",
+          "facilities": "Which facilities are available on {{track}}?"
+        }
+      },
+      "listing": {
+        "uaeFallback": "UAE",
+        "locationIconAlt": "Location",
+        "cta": {
+          "title": "Start Your Ride Today",
+          "subtitle": "Download the ADCC app and join the cycling community."
+        },
+        "footer": {
+          "about": "From weekend warriors to elite athletes, we unite cyclists who share a passion for riding. ADCC is where your cycling journey thrives…",
+          "emailPlaceholder": "Enter your email",
+          "submit": "Submit",
+          "quickLinks": "Quick Links",
+          "links": ["About Us", "Rides", "Events", "Cyclist's Corner", "Contact Us"],
+          "contactUs": "Contact Us",
+          "address": "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18.",
+          "copyright": "Copyright 2026. Abu Dhabi Cycling Club"
+        }
+      },
       "faq": {
         "title": "Frequently Asked Questions",
         "subtitle": "Got questions before hitting the road? We've got you covered.",

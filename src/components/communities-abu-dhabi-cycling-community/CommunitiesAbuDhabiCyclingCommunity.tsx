@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   CalendarDays,
   Gauge,
@@ -77,27 +78,28 @@ const formatDate = (date?: string) => {
   }).format(parsed);
 };
 
-const titleCase = (value?: string) =>
-  (value || "TBA")
+const titleCase = (value?: string, fallback = "TBA") =>
+  (value || fallback)
     .replace(/[-_]+/g, " ")
     .replace(/\s+/g, " ")
     .trim()
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
 
-const getFaqs = (community: CommunityApiResponse) => [
-  `How do I join ${community.title}?`,
-  `Where is ${community.title} based?`,
-  `What type of rides does ${community.title} organize?`,
-  `How many members are active in ${community.title}?`,
-  `Are posts enabled for ${community.title}?`,
-  `Which tracks are linked with ${community.title}?`,
+const getFaqs = (community: CommunityApiResponse, t: (key: string, options?: Record<string, unknown>) => string) => [
+  t("public.communities.detail.faq.questions.join", { title: community.title }),
+  t("public.communities.detail.faq.questions.location", { title: community.title }),
+  t("public.communities.detail.faq.questions.rideType", { title: community.title }),
+  t("public.communities.detail.faq.questions.members", { title: community.title }),
+  t("public.communities.detail.faq.questions.posts", { title: community.title }),
+  t("public.communities.detail.faq.questions.tracks", { title: community.title }),
 ];
 
 function LoadingState() {
+  const { t } = useTranslation();
   return (
     <main className="min-h-[420px] bg-[#eaf4ff] px-10 py-24 text-center text-black">
-      <p className="text-[22px] font-medium text-black/70">Loading community details...</p>
+      <p className="text-[22px] font-medium text-black/70">{t("public.communities.detail.loading")}</p>
     </main>
   );
 }
@@ -112,7 +114,8 @@ function ErrorState({ message }: { message: string }) {
 }
 
 function HeroSection({ community }: { community: CommunityApiResponse }) {
-  const tag = community.category || titleCase(Array.isArray(community.type) ? community.type[0] : community.type);
+  const { t } = useTranslation();
+  const tag = community.category || titleCase(Array.isArray(community.type) ? community.type[0] : community.type, t("public.communities.detail.tba"));
 
   return (
     <section
@@ -129,7 +132,7 @@ function HeroSection({ community }: { community: CommunityApiResponse }) {
       <div className="public-hero-content-pos">
         <div className="mb-3 flex flex-wrap gap-2">
           <span className="rounded-full bg-white/30 px-5 py-2 text-[14px] font-medium text-white backdrop-blur sm:text-[16px]">
-            {tag || "Community"}
+            {tag || t("public.common.communityFallback")}
           </span>
         </div>
         <h1 className="text-[30px] font-normal uppercase leading-tight text-white sm:text-[40px] lg:text-[50px]">
@@ -141,21 +144,24 @@ function HeroSection({ community }: { community: CommunityApiResponse }) {
 }
 
 function AboutSection({ community }: { community: CommunityApiResponse }) {
+  const { t } = useTranslation();
   return (
     <section className="px-10 py-24 text-center max-md:px-5 max-md:py-14 max-sm:px-4 max-sm:py-10">
-      <h2 className="text-[28px] font-normal uppercase sm:text-[38px] md:text-[48px] lg:text-[60px]">About This Community</h2>
+      <h2 className="text-[28px] font-normal uppercase sm:text-[38px] md:text-[48px] lg:text-[60px]">{t("public.communities.detail.about.heading")}</h2>
       <p className="mx-auto mt-4 max-w-[851px] text-[14px] leading-relaxed sm:mt-6 sm:text-[17px] md:text-[20px] lg:text-[24px]">
         {community.description}
       </p>
 
       <button className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#019839] px-6 py-3 text-[15px] font-bold text-white sm:mt-8 sm:px-8 sm:py-4 sm:text-[18px]">
-        Join this Community <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
+        {t("public.communities.detail.about.joinButton")} <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
       </button>
     </section>
   );
 }
 
 function StatsSection({ community }: { community: CommunityApiResponse }) {
+  const { t } = useTranslation();
+  const tba = t("public.communities.detail.tba");
   const memberCount = toNumber(community.memberCount ?? community.stats?.members);
   const eventsOrganized = toNumber(
     (community as unknown as Record<string, unknown>).eventsOrganized ??
@@ -163,34 +169,34 @@ function StatsSection({ community }: { community: CommunityApiResponse }) {
     community.eventsCount ??
     community.stats?.upcomingEvents,
   );
-  const weeklyRides = community.weeklyRides || community.stats?.weeklyRides || "TBA";
+  const weeklyRides = community.weeklyRides || community.stats?.weeklyRides || tba;
   const avgGroupSize =
     ((community as unknown as Record<string, unknown>).avgGroupSize as string) ||
     ((community as unknown as Record<string, unknown>).stats as Record<string, unknown>)?.avgGroupSize as string ||
-    "TBA";
+    tba;
   const distance = community.distance
     ? `${community.distance.toLocaleString()} km`
-    : community.terrain || "TBA";
+    : community.terrain || tba;
 
   return (
     <section className="mx-auto mb-16 max-w-[min(1192px,calc(100vw-2rem))] rounded-2xl bg-[#A2BFDB] p-4 lg:mb-32">
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_210px_210px]">
         <div className="rounded-2xl bg-[#435974] p-5 text-white sm:p-8">
-          <p className="text-[13px] text-white/70 sm:text-[14px]">• Join Community</p>
+          <p className="text-[13px] text-white/70 sm:text-[14px]">• {t("public.communities.detail.stats.joinCommunityEyebrow")}</p>
           <div className="mt-4 sm:mt-8 sm:flex sm:gap-8">
             <h3 className="flex-1 text-[22px] font-bold uppercase leading-tight sm:text-[26px] lg:text-[32px]">
-              Become part of our growing cycling family
+              {t("public.communities.detail.stats.growingFamily")}
             </h3>
             <div className="my-5 h-px bg-white/20 sm:my-0 sm:h-auto sm:w-px sm:self-stretch" />
             <div className="min-w-0 flex-1">
               <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/60 sm:text-[12px]">
-                Community Stats
+                {t("public.communities.detail.stats.communityStatsLabel")}
               </h4>
               <div className="mt-3 space-y-3 sm:mt-4">
                 {[
-                  ["Weekly Rides", weeklyRides],
-                  ["Avg Group Size", avgGroupSize === "TBA" ? "25 riders" : avgGroupSize],
-                  ["Total Distance", distance],
+                  [t("public.communities.detail.stats.weeklyRides"), weeklyRides],
+                  [t("public.communities.detail.stats.avgGroupSize"), avgGroupSize === tba ? t("public.communities.detail.stats.avgGroupSizeFallback") : avgGroupSize],
+                  [t("public.communities.detail.stats.totalDistance"), distance],
                 ].map(([label, value]) => (
                   <div key={label} className="flex items-center justify-between gap-2 text-[13px] sm:text-[14px]">
                     <span className="text-white/70">{label}</span>
@@ -203,8 +209,8 @@ function StatsSection({ community }: { community: CommunityApiResponse }) {
         </div>
 
         {[
-          [String(memberCount), "Active Members"],
-          [String(eventsOrganized), "Events Organized"],
+          [String(memberCount), t("public.communities.detail.stats.activeMembers")],
+          [String(eventsOrganized), t("public.communities.detail.stats.eventsOrganized")],
         ].map(([value, label]) => (
           <div key={label} className="rounded-xl bg-[#435974] p-5 text-white sm:p-8">
             <span className="inline-flex rounded-full bg-white p-3 text-[#019839] sm:p-4">
@@ -221,19 +227,21 @@ function StatsSection({ community }: { community: CommunityApiResponse }) {
 }
 
 function EventCard({ event }: { event: EventApiResponse }) {
+  const { t, i18n } = useTranslation();
   const image =
     event.eventImage ||
     event.mainImage ||
     event.galleryImages?.[0] ||
     "/img/Frame 2147226042.png";
   const participants = event.currentParticipants ?? event.registrations ?? 0;
+  const formattedParticipants = Number(participants).toLocaleString(i18n.language);
 
   return (
     <div>
       <div className="relative h-[397px] overflow-hidden rounded-[14px] bg-white">
         <img src={image} alt={event.title} className="h-full w-full object-cover" />
         <span className="absolute right-6 top-6 rounded-full bg-black/40 px-6 py-2 text-white">
-          {event.category || "Event"}
+          {event.category || t("public.common.eventFallback")}
         </span>
       </div>
 
@@ -241,17 +249,17 @@ function EventCard({ event }: { event: EventApiResponse }) {
 
       <div className="mt-5 grid grid-cols-2 gap-y-4 text-[18px] text-black/70">
         <p className="flex gap-2">
-          <CalendarDays size={20} /> {formatDate(event.eventDate)}
+          <CalendarDays size={20} /> {formatDate(event.eventDate, t("public.common.dateTBA"))}
         </p>
         <p className="flex gap-2">
           <Gauge size={20} />{" "}
-          {typeof event.distance === "number" ? `${event.distance} km` : "Distance TBA"}
+          {typeof event.distance === "number" ? `${event.distance} km` : t("public.common.distanceTBA")}
         </p>
         <p className="flex gap-2">
-          <Users size={20} /> {participants} participants
+          <Users size={20} /> {t("public.common.participants", { count: participants, formattedCount: formattedParticipants })}
         </p>
         <p className="flex gap-2">
-          <MapPin size={20} /> {event.city || event.address || "Location TBA"}
+          <MapPin size={20} /> {event.city || event.address || t("public.communities.detail.locationTBA")}
         </p>
       </div>
     </div>
@@ -259,9 +267,10 @@ function EventCard({ event }: { event: EventApiResponse }) {
 }
 
 function UpcomingEventsSection({ events }: { events: EventApiResponse[] }) {
+  const { t } = useTranslation();
   return (
     <section className="mx-auto max-w-[1269px] px-4 pb-12 pt-14 sm:px-6 sm:pb-16 sm:pt-16 md:px-10 lg:pb-28 lg:pt-20">
-      <h2 className="mb-8 text-center text-[26px] font-normal uppercase sm:text-[34px] md:text-[42px] lg:text-[50px] lg:mb-16">Upcoming Events</h2>
+      <h2 className="mb-8 text-center text-[26px] font-normal uppercase sm:text-[34px] md:text-[42px] lg:text-[50px] lg:mb-16">{t("public.communities.detail.stats.upcomingEvents")}</h2>
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {events.map((event) => (
           <EventCard key={event._id || event.id || event.title} event={event} />
@@ -273,7 +282,8 @@ function UpcomingEventsSection({ events }: { events: EventApiResponse[] }) {
 
 
 function FaqSection({ community }: { community: CommunityApiResponse }) {
-  const faqs = getFaqs(community);
+  const { t } = useTranslation();
+  const faqs = getFaqs(community, t);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const toggle = useCallback((idx: number) => {
     setOpenIndex((prev) => (prev === idx ? null : idx));
@@ -281,9 +291,9 @@ function FaqSection({ community }: { community: CommunityApiResponse }) {
 
   return (
     <section className="w-full px-4 pb-16 pt-14 text-center sm:px-6 sm:pt-16 md:px-10 lg:px-16 lg:pb-28 lg:pt-20 xl:px-20 2xl:px-24">
-      <h2 className="text-[30px] font-normal uppercase sm:text-[38px] lg:text-[46px]">Frequently Asked Questions</h2>
+      <h2 className="text-[30px] font-normal uppercase sm:text-[38px] lg:text-[46px]">{t("public.communities.detail.faq.title")}</h2>
       <p className="mt-3 text-[15px] text-black/70 sm:text-[16px]">
-        Got questions before hitting the road? We've got you covered.
+        {t("public.communities.detail.faq.subtitle")}
       </p>
 
       <div className="mx-auto mt-8 grid max-w-[1098px] grid-cols-1 gap-4 sm:mt-10 md:grid-cols-2 md:gap-5">
@@ -304,7 +314,7 @@ function FaqSection({ community }: { community: CommunityApiResponse }) {
             </div>
             {openIndex === index && (
               <p className="pb-5 text-[16px] font-normal leading-7 text-black/65">
-                For more information, please contact our community team or check the community guidelines.
+                {t("public.communities.detail.faq.genericAnswer")}
               </p>
             )}
           </div>
@@ -315,6 +325,7 @@ function FaqSection({ community }: { community: CommunityApiResponse }) {
 }
 
 export default function CommunityDetailPage() {
+  const { t } = useTranslation();
   const { communityId = "" } = useParams<{ communityId: string }>();
   const selectedCommunityId = communityId.trim();
   const [community, setCommunity] = useState<CommunityApiResponse>(FALLBACK_COMMUNITY);
@@ -389,7 +400,7 @@ export default function CommunityDetailPage() {
         if (!cancelled) {
           console.error("Failed to load cycling community page:", err);
           if (selectedCommunityId) {
-            setError("The selected community details could not be loaded right now.");
+            setError(t("public.communities.detail.errors.selectedLoadFailed"));
           } else {
             setCommunity(FALLBACK_COMMUNITY);
             setEvents(FALLBACK_EVENTS);
@@ -405,10 +416,10 @@ export default function CommunityDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [selectedCommunityId]);
+  }, [selectedCommunityId, t]);
 
   if (loading) return <LoadingState />;
-  if (error || !community) return <ErrorState message={error || "Community not found."} />;
+  if (error || !community) return <ErrorState message={error || t("public.communities.detail.notFound")} />;
 
   return (
     <main className="font-satoshi min-h-screen bg-[#eaf4ff] text-black">

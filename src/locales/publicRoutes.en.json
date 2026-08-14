@@ -166,6 +166,85 @@
         "Dhabi"
       ],
       "body": "Explore races, community rides, and challenges by Abu Dhabi Cycling Club. Find events for your location and skill."
+    },
+    "listing": {
+      "filters": {
+        "cities": {
+          "abuDhabi": "Abu Dhabi",
+          "dubai": "Dubai",
+          "sharjah": "Sharjah",
+          "alAin": "Al Ain"
+        },
+        "categories": {
+          "race": "Race",
+          "communityRide": "Community Ride",
+          "trainingClinics": "Training & Clinics",
+          "awarenessRides": "Awareness Rides",
+          "familyKids": "Family & Kids",
+          "corporateEvents": "Corporate Events",
+          "nationalEvents": "National Events"
+        },
+        "levels": {
+          "beginner": "Beginner",
+          "intermediate": "Intermediate",
+          "advanced": "Advanced",
+          "all": "All"
+        },
+        "status": {
+          "upcoming": "Upcoming",
+          "ongoing": "Ongoing",
+          "completed": "Completed"
+        }
+      },
+      "card": {
+        "calendarAlt": "Calendar",
+        "distanceAlt": "Distance",
+        "participantsAlt": "Participants",
+        "locationAlt": "Location"
+      }
+    },
+    "detail": {
+      "loading": "Loading event details...",
+      "loadErrorSelected": "The selected event details could not be loaded right now.",
+      "aboutHeading": "About This Event",
+      "joinEvent": "Join this Event",
+      "register": {
+        "registerNow": "Register Now",
+        "free": "Free",
+        "paid": "Paid",
+        "loading": "Loading",
+        "spotsAvailable": "{{count}} spots available",
+        "openRegistration": "Open registration",
+        "organizedBy": "Organized by",
+        "saveEvent": "Save event",
+        "shareEvent": "Share event"
+      },
+      "stats": {
+        "date": "Date",
+        "ridersCount": "{{count}} riders",
+        "participantsLabel": "Participants"
+      },
+      "schedule": {
+        "titleSuffix": "{{title}} Schedule",
+        "subtitleFallback": "Event schedule details",
+        "participantAlt": "{{title}} participant",
+        "riderAlt": "Rider",
+        "timeTBA": "Time TBA",
+        "eventStart": "Event Start",
+        "eventEnd": "Event End",
+        "locationTBA": "Location TBA",
+        "currentStatus": "Current status: {{status}}"
+      },
+      "faq": {
+        "whenScheduled": "When is {{title}} scheduled?",
+        "whereTakingPlace": "Where is {{title}} taking place?",
+        "riderLevel": "What is the {{level}} rider level for this event?",
+        "registrationFee": "Is registration {{fee}} for {{title}}?",
+        "howManyRiders": "How many riders can participate in {{title}}?",
+        "whatToKnow": "What should I know before riding in {{location}}?",
+        "locationFallback": "the event location",
+        "genericAnswer": "For more information about this topic, please contact our support team or refer to the event guidelines."
+      }
     }
   },
   "tracks": {
@@ -183,6 +262,16 @@
         "Tracks"
       ],
       "body": "From scenic coastal rides to high-performance cycling circuits, Abu Dhabi offers world-class tracks designed for every rider. Whether you're training for endurance, improving speed, or enjoying a casual ride, discover routes that match your level and ambition."
+    },
+    "grid": {
+      "titleWords": [
+        "Explore",
+        "Certified",
+        "Routes",
+        "Across",
+        "the",
+        "UAE"
+      ]
     },
     "why": {
       "title": "Why Use ADCC Tracks?",
@@ -243,7 +332,45 @@
     "noUpcoming": "No upcoming challenges found.",
     "noCompleted": "No completed challenges found.",
     "flagAlt": "ADCC Flag",
-    "descriptionFallback": "{{type}} challenge: complete {{target}} {{unit}}"
+    "descriptionFallback": "{{type}} challenge: complete {{target}} {{unit}}",
+    "listing": {
+      "videoFallback": "Your browser does not support the video tag."
+    },
+    "detail": {
+      "loading": "Loading challenge details...",
+      "errorHeading": "Challenge Details",
+      "loadError": "The selected challenge details could not be loaded right now.",
+      "aboutHeading": "About This Challenge",
+      "joinButton": "Join this Challenge",
+      "trackProgress": "Track your ride. Reach {{target}} {{unit}}.",
+      "rewardsHeading": "Rewards",
+      "rewardDigitalBadge": "Digital Badge",
+      "rewardLeaderboard": "Leaderboard Recognition",
+      "completionBadgeFallback": "Completion Badge",
+      "stats": {
+        "participants": "Participants",
+        "ends": "Ends",
+        "prize": "Prize"
+      },
+      "guideHeading": "Your Guide to Completing the Challenge",
+      "steps": {
+        "register": "Register before {{date}}",
+        "trackRides": "Track all rides using the ADCC mobile app",
+        "complete": "Complete {{target}} {{unit}} within the challenge period",
+        "eligibleActivities": "Only eligible {{type}} activities count towards your progress"
+      },
+      "faq": {
+        "answer": "For more information about this topic, please contact our support team or refer to the challenge guidelines.",
+        "questions": {
+          "join": "How do I join {{title}}?",
+          "target": "What is the {{target}} {{unit}} target?",
+          "end": "When does {{title}} end?",
+          "activities": "Which activities count for this {{type}} challenge?",
+          "trackProgress": "How do I track my progress in the ADCC app?",
+          "reward": "What reward will I receive after completing {{title}}?"
+        }
+      }
+    }
   },
   "communities": {
     "hero": {
@@ -283,7 +410,81 @@
     "explore": {
       "titleWords": ["Explore", "Communities"]
     },
-    "imageAlt": "Cycling community"
+    "imageAlt": "Cycling community",
+    "listing": {
+      "pageAria": "Page {{page}}"
+    },
+    "detail": {
+      "loading": "Loading community details...",
+      "notFound": "Community not found.",
+      "backToCommunities": "Back to Communities",
+      "communityDetailsHeading": "Community Details",
+      "communityDetailsHeadingWords": ["Community", "Details"],
+      "locationTBA": "Location TBA",
+      "tba": "TBA",
+      "errors": {
+        "missingId": "Community ID is missing.",
+        "loadFailed": "Community details could not be loaded right now.",
+        "selectedLoadFailed": "The selected community details could not be loaded right now."
+      },
+      "about": {
+        "headingWords": ["About", "This", "Community"],
+        "heading": "About This Community",
+        "joinButton": "Join this Community",
+        "infoHeading": "Community Info",
+        "type": "Type",
+        "category": "Category",
+        "manager": "Manager",
+        "founded": "Founded"
+      },
+      "stats": {
+        "activeMembers": "Active Members",
+        "upcomingEvents": "Upcoming Events",
+        "weeklyRides": "Weekly Rides",
+        "ridesThisMonth": "Rides This Month",
+        "eventsOrganized": "Events Organized",
+        "joinCommunityEyebrow": "Join Community",
+        "growingFamily": "Become part of our growing cycling family",
+        "communityStatsLabel": "Community Stats",
+        "avgGroupSize": "Avg Group Size",
+        "totalDistance": "Total Distance",
+        "avgGroupSizeFallback": "25 riders"
+      },
+      "location": {
+        "location": "Location",
+        "city": "City",
+        "area": "Area",
+        "country": "Country",
+        "purpose": "Purpose",
+        "terrain": "Terrain"
+      },
+      "tracks": {
+        "headingWords": ["Linked", "Tracks"],
+        "imageAlt": "Community track",
+        "fallbackTitle": "Track"
+      },
+      "events": {
+        "headingWords": ["Community", "Events"],
+        "empty": "No upcoming events are linked with this community yet."
+      },
+      "gallery": {
+        "heading": "Gallery",
+        "imageAlt": "{{title}} gallery {{index}}"
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "subtitle": "Got questions before hitting the road? We've got you covered.",
+        "genericAnswer": "For more information, please contact our community team or check the community guidelines.",
+        "questions": {
+          "join": "How do I join {{title}}?",
+          "location": "Where is {{title}} based?",
+          "rideType": "What type of rides does {{title}} organize?",
+          "members": "How many members are active in {{title}}?",
+          "posts": "Are posts enabled for {{title}}?",
+          "tracks": "Which tracks are linked with {{title}}?"
+        }
+      }
+    }
   },
   "contact": {
     "hero": {

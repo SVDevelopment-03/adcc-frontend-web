@@ -51,9 +51,42 @@ html[dir='rtl'] .home-platform-title {
   text-transform: none;
 }
 
+html[dir='rtl'] .home-hero-title {
+  font-size: clamp(28px, 3.4vw, 48px) !important;
+}
+
+html[dir='rtl'] .journey-title {
+  font-size: clamp(30px, 3.6vw, 48px) !important;
+}
+
+html[dir='rtl'] .home-community-title,
+html[dir='rtl'] .home-store-title,
+html[dir='rtl'] .home-about-title,
+html[dir='rtl'] .home-platform-title {
+  font-size: clamp(30px, 3.6vw, 48px) !important;
+}
+
+html[dir='rtl'] .home-cta-title {
+  font-size: clamp(32px, 4vw, 52px) !important;
+}
+
+html[dir='rtl'] .journey-card-label {
+  font-size: 19px !important;
+  line-height: 23px !important;
+}
+
 html[dir='rtl'] .home-download-label,
 html[dir='rtl'] .home-feature-list span {
   text-transform: none;
+}
+
+/* Shared PublicPageHero (About, Tracks, Events, Challenges, Communities, Contact) */
+html[dir='rtl'] [class*='-hero-title'] {
+  font-size: clamp(30px, 3.6vw, 48px) !important;
+}
+
+html[dir='rtl'] [class*='-hero-breadcrumb'] {
+  font-size: 17px !important;
 }
 
 /* Public route pages */
@@ -78,6 +111,60 @@ html[dir='rtl'] .contact-page h1,
 html[dir='rtl'] .contact-page h2,
 html[dir='rtl'] .contact-page .contact-intro-title {
   text-transform: none;
+}
+
+/* Large Bebas Kai section/CTA titles run oversized in Arabic's fallback
+   font, so cap them site-wide across the public pages. */
+html[dir='rtl'] .about-page [class*='-title'],
+html[dir='rtl'] .event-page [class*='-title'],
+html[dir='rtl'] .tracks-page [class*='-title'],
+html[dir='rtl'] .challenges-page h1,
+html[dir='rtl'] .challenges-page h2,
+html[dir='rtl'] .challenges-page [class*='-title'],
+html[dir='rtl'] .communities-page h1,
+html[dir='rtl'] .communities-page h2,
+html[dir='rtl'] .communities-page [class*='-title'],
+html[dir='rtl'] .contact-page h1,
+html[dir='rtl'] .contact-page h2,
+html[dir='rtl'] .contact-page [class*='-title'] {
+  font-size: clamp(26px, 3.4vw, 44px) !important;
+}
+
+/* CTA banners run noticeably larger than regular section titles */
+html[dir='rtl'] .about-page [class*='-cta-title'],
+html[dir='rtl'] .event-page [class*='-cta-title'],
+html[dir='rtl'] .tracks-page [class*='-cta-title'],
+html[dir='rtl'] .challenges-page [class*='-cta-title'],
+html[dir='rtl'] .communities-page [class*='-cta-title'],
+html[dir='rtl'] .contact-page [class*='-cta-title'] {
+  font-size: clamp(30px, 4vw, 52px) !important;
+}
+
+/* Arabic titles run cramped at the tight Latin line-height Bebas Kai uses
+   (~100%) since the fallback Arabic font has taller glyphs/diacritics.
+   Open up the leading for every title across the home page and the shared
+   public pages. */
+html[dir='rtl'] .home-hero-title,
+html[dir='rtl'] .journey-title,
+html[dir='rtl'] .home-community-title,
+html[dir='rtl'] .home-about-title,
+html[dir='rtl'] .home-store-title,
+html[dir='rtl'] .home-platform-title,
+html[dir='rtl'] .home-cta-title,
+html[dir='rtl'] [class*='-hero-title'],
+html[dir='rtl'] .about-page [class*='-title'],
+html[dir='rtl'] .event-page [class*='-title'],
+html[dir='rtl'] .tracks-page [class*='-title'],
+html[dir='rtl'] .challenges-page h1,
+html[dir='rtl'] .challenges-page h2,
+html[dir='rtl'] .challenges-page [class*='-title'],
+html[dir='rtl'] .communities-page h1,
+html[dir='rtl'] .communities-page h2,
+html[dir='rtl'] .communities-page [class*='-title'],
+html[dir='rtl'] .contact-page h1,
+html[dir='rtl'] .contact-page h2,
+html[dir='rtl'] .contact-page [class*='-title'] {
+  line-height: 1.35 !important;
 }
 
 html[dir='rtl'] .communities-page-hero-content,
@@ -138,6 +225,15 @@ html[dir='rtl'] .home-app-section {
 
 html[dir='rtl'] .home-app-copy {
   text-align: start;
+  flex: 0 1 460px !important;
+  max-width: 460px;
+  min-width: 300px;
+}
+
+html[dir='rtl'] .home-app-title {
+  font-size: 48px !important;
+  line-height: 1.35 !important;
+  white-space: normal !important;
 }
 
 html[dir='rtl'] .home-phone-stage {
@@ -145,6 +241,11 @@ html[dir='rtl'] .home-phone-stage {
   inset-inline-start: auto !important;
   right: auto !important;
   left: auto !important;
+}
+
+html[dir='rtl'] .app-phone-stage img {
+  width: 85% !important;
+  max-width: 480px !important;
 }
 
 html[dir='rtl'] .home-word-gap {
@@ -165,12 +266,36 @@ html[dir='rtl'] .home-platform-card-action {
   text-align: start;
 }
 
-html[dir='rtl'] .home-platform-card:first-child {
-  border-radius: 0 20px 20px 0;
+html[dir='rtl'] .home-platform-cards {
+  gap: 16px !important;
 }
 
-html[dir='rtl'] .home-platform-card:last-child {
-  border-radius: 20px 0 0 20px;
+html[dir='rtl'] .home-platform-card {
+  border-inline-start: none !important;
+  border-radius: 20px !important;
+}
+
+html[dir='rtl'] .home-platform-card-tag {
+  top: 24px !important;
+}
+
+html[dir='rtl'] .home-platform-card-content {
+  bottom: 32px !important;
+  inset-inline: 28px !important;
+}
+
+html[dir='rtl'] .home-platform-card-title {
+  font-size: 22px !important;
+  line-height: 1.35 !important;
+  margin: 0 0 12px !important;
+}
+
+html[dir='rtl'] .home-platform-card-action {
+  font-size: 17px !important;
+}
+
+html[dir='rtl'] .home-platform-card-tag span {
+  font-size: 15px !important;
 }
 
 html[dir='rtl'] .store-rail {
@@ -195,6 +320,7 @@ html[dir='rtl'] .store-featured-action {
 html[dir='rtl'] .store-featured-card.is-marketplace .store-featured-title,
 html[dir='rtl'] .store-featured-card.is-marketplace .store-featured-sub {
   text-align: center;
+  transform: translateX(50%) !important;
 }
 
 html[dir='rtl'] .store-carousel-button svg {
@@ -216,6 +342,20 @@ html[dir='rtl'] .home-about-stat-number {
 html[dir='rtl'] .home-about-rider img {
   object-position: left bottom;
   transform: rotate(0.6deg);
+}
+
+/* The decorative rider bleeds in from the section's logical end edge, which
+   flips to the left in RTL — right on top of the text/stat column that also
+   moved there. Push it further out and drop it behind the text so it stays
+   a corner flourish instead of covering the stat numbers. */
+html[dir='rtl'] .home-about-rider {
+  inset-inline-end: -140px;
+  z-index: 0;
+}
+
+html[dir='rtl'] .home-about-content {
+  position: relative;
+  z-index: 1;
 }
 
 @keyframes aboutSlideInRtl {
@@ -259,5 +399,81 @@ html[dir='rtl'] .home-floating-bike {
   html[dir='rtl'] .home-platform-section,
   html[dir='rtl'] .home-store-section {
     padding-inline: 18px !important;
+  }
+
+  /* Mobile Arabic type scale — headings */
+  html[dir='rtl'] .home-hero-title {
+    font-size: 26px !important;
+  }
+
+  html[dir='rtl'] .journey-title,
+  html[dir='rtl'] .home-community-title,
+  html[dir='rtl'] .home-store-title,
+  html[dir='rtl'] .home-about-title,
+  html[dir='rtl'] .home-platform-title,
+  html[dir='rtl'] [class*='-hero-title'],
+  html[dir='rtl'] .about-page [class*='-title'],
+  html[dir='rtl'] .event-page [class*='-title'],
+  html[dir='rtl'] .tracks-page [class*='-title'],
+  html[dir='rtl'] .challenges-page h1,
+  html[dir='rtl'] .challenges-page h2,
+  html[dir='rtl'] .challenges-page [class*='-title'],
+  html[dir='rtl'] .communities-page h1,
+  html[dir='rtl'] .communities-page h2,
+  html[dir='rtl'] .communities-page [class*='-title'],
+  html[dir='rtl'] .contact-page h1,
+  html[dir='rtl'] .contact-page h2,
+  html[dir='rtl'] .contact-page [class*='-title'] {
+    font-size: 24px !important;
+  }
+
+  html[dir='rtl'] .home-app-title {
+    font-size: 30px !important;
+  }
+
+  html[dir='rtl'] .home-cta-title,
+  html[dir='rtl'] .about-page [class*='-cta-title'],
+  html[dir='rtl'] .event-page [class*='-cta-title'],
+  html[dir='rtl'] .tracks-page [class*='-cta-title'],
+  html[dir='rtl'] .challenges-page [class*='-cta-title'],
+  html[dir='rtl'] .communities-page [class*='-cta-title'],
+  html[dir='rtl'] .contact-page [class*='-cta-title'] {
+    font-size: 28px !important;
+  }
+
+  html[dir='rtl'] .journey-card-label {
+    font-size: 16px !important;
+    line-height: 20px !important;
+  }
+
+  html[dir='rtl'] .home-platform-card-title {
+    font-size: 18px !important;
+  }
+
+  /* Mobile Arabic type scale — body copy */
+  html[dir='rtl'] .home-about-text,
+  html[dir='rtl'] .journey-text,
+  html[dir='rtl'] .home-community-subtitle {
+    font-size: 15px !important;
+    line-height: 22px !important;
+  }
+
+  html[dir='rtl'] .home-community-eyebrow,
+  html[dir='rtl'] .home-download-label,
+  html[dir='rtl'] [class*='-hero-breadcrumb'] {
+    font-size: 14px !important;
+  }
+
+  /* Mobile Arabic type scale — buttons */
+  html[dir='rtl'] .home-hero-download-btn,
+  html[dir='rtl'] .home-hero-download-btn .adcc-btn__label,
+  html[dir='rtl'] .hero-explore-btn,
+  html[dir='rtl'] .journey-button,
+  html[dir='rtl'] .journey-button .adcc-btn__label,
+  html[dir='rtl'] .home-community-start-btn,
+  html[dir='rtl'] .home-community-start-btn .adcc-btn__label,
+  html[dir='rtl'] .home-about-read-btn,
+  html[dir='rtl'] .home-about-read-btn .adcc-btn__label {
+    font-size: 14px !important;
   }
 }

@@ -221,6 +221,9 @@ margin-bottom: 3rem !important;}
       .about-hero {
         height: 360px !important;
       }
+      html[dir='rtl'] .about-hero {
+        padding-inline: 18px !important;
+      }
       .about-hero-bg {
         background-position: center center !important;
       }
@@ -1142,6 +1145,11 @@ function CoachesSection() {
 
 // ─── CTA BANNER ──────────────────────────────────────────────────────────────
 function CTABanner() {
+  const { t } = useTranslation();
+  const storeButtons = [
+    { key: "googlePlay", label: t("public.footer.googlePlay") },
+    { key: "appStore", label: t("public.footer.appStore") },
+  ];
   return (
     <section
       className="about-cta"
@@ -1179,7 +1187,7 @@ function CTABanner() {
             textTransform: "uppercase",
           }}
         >
-          Start Your Ride Today
+          {t("public.footer.ctaTitle")}
         </h2>
         {/* <p style={{ fontSize: 24, color: "#fff", marginTop: 16, marginBottom: 36, opacity: .95 }}> */}
         <p
@@ -1193,12 +1201,12 @@ function CTABanner() {
             opacity: 0.95,
           }}
         >
-          Download the ADCC app and join the cycling community.
+          {t("public.footer.ctaSubtitle")}
         </p>
         <div className="about-cta-buttons" style={{ display: "flex", gap: 20 }}>
-          {["Google Play", "App Store"].map((s) => (
+          {storeButtons.map((s) => (
             <button
-              key={s}
+              key={s.key}
               style={{
                 background: "#fff",
                 border: "none",
@@ -1213,7 +1221,7 @@ function CTABanner() {
                 gap: 10,
               }}
             >
-              {s === "Google Play" ? "▶" : ""} {s}
+              {s.key === "googlePlay" ? "▶" : ""} {s.label}
             </button>
           ))}
         </div>
@@ -1224,6 +1232,14 @@ function CTABanner() {
 
 // ─── FOOTER ───────────────────────────────────────────────────────────────────
 function Footer() {
+  const { t } = useTranslation();
+  const quickLinks = [
+    { key: "aboutUs", label: t("public.nav.aboutUs") },
+    { key: "rides", label: t("public.footer.rides") },
+    { key: "events", label: t("public.nav.events") },
+    { key: "cyclistsCorner", label: t("public.footer.cyclistsCorner") },
+    { key: "contactUs", label: t("public.footer.contactUs") },
+  ];
   return (
     <footer
       className="about-section"
@@ -1251,8 +1267,7 @@ function Footer() {
               marginBottom: 24,
             }}
           >
-            From weekend warriors to elite athletes, we unite cyclists who share
-            a passion for riding. ADCC is where your cycling journey thrives…
+            {t("public.footer.brandText")}
           </p>
           {/* email subscribe */}
           <div
@@ -1267,7 +1282,7 @@ function Footer() {
             }}
           >
             <input
-              placeholder="Enter your email"
+              placeholder={t("public.footer.emailPlaceholder")}
               style={{
                 flex: 1,
                 border: "none",
@@ -1291,7 +1306,7 @@ function Footer() {
                 borderRadius: "0 8px 8px 0",
               }}
             >
-              Submit
+              {t("public.footer.submit")}
             </button>
           </div>
         </div>
@@ -1306,18 +1321,12 @@ function Footer() {
               marginBottom: 18,
             }}
           >
-            Quick Links
+            {t("public.footer.quickLinks")}
           </div>
-          {[
-            "About Us",
-            "Rides",
-            "Events",
-            "Cyclist's Corner",
-            "Contact Us",
-          ].map((l) => (
-            <p key={l} style={{ fontSize: 17, marginBottom: 10 }}>
+          {quickLinks.map((l) => (
+            <p key={l.key} style={{ fontSize: 17, marginBottom: 10 }}>
               <a href="#" style={{ color: "#000", textDecoration: "none" }}>
-                {l}
+                {l.label}
               </a>
             </p>
           ))}
@@ -1333,7 +1342,7 @@ function Footer() {
               marginBottom: 18,
             }}
           >
-            Contact Us
+            {t("public.footer.contactUs")}
           </div>
           {[
             { icon: "📞", text: "+971 2 654 5645" },
@@ -1341,7 +1350,7 @@ function Footer() {
             { icon: "✉️", text: "info@adcyclingclub.ae" },
             {
               icon: "📍",
-              text: "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18.",
+              text: t("public.footer.address"),
             },
           ].map((c, i) => (
             <div
@@ -1370,7 +1379,7 @@ function Footer() {
         }}
       >
         <p style={{ fontSize: 17, color: "rgba(0,0,0,0.7)" }}>
-          Copyright 2026. Abu Dhabi Cycling Club
+          {t("public.footer.copyright")}
         </p>
         {/* scroll-to-top */}
         <button

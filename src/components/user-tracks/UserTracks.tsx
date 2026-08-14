@@ -49,6 +49,19 @@ const titleCase = (value?: string | null) =>
     .trim()
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
+const DIFFICULTY_FILTER_KEYS = ["easy", "medium", "hard"];
+
+const translateDifficulty = (
+  difficulty: string | undefined | null,
+  t: (key: string) => string,
+) => {
+  const raw = (difficulty || "").toLowerCase();
+  if (DIFFICULTY_FILTER_KEYS.includes(raw)) {
+    return t(`public.common.filters.${raw}`);
+  }
+  return titleCase(difficulty);
+};
+
 const getTrackId = (track: Track) =>
   String(track.id || (track as any)._id || track.slug || track.title);
 
@@ -74,13 +87,15 @@ const normalizeTrack = (
 ): PublicTrackCard => ({
   id: getTrackId(track),
   name: track.title || (track as any).name || t("public.common.untitledTrack"),
-  city: track.city || "UAE",
+  city: track.city || t("public.tracks.listing.uaeFallback"),
   difficulty: track.difficulty || "all",
   location:
-    [track.area, track.city].filter(Boolean).join(", ") || track.city || "UAE",
+    [track.area, track.city].filter(Boolean).join(", ") ||
+    track.city ||
+    t("public.tracks.listing.uaeFallback"),
   distance: formatDistance(track.distance, t("public.common.na")),
   elevation: track.elevation ? String(track.elevation) : t("public.common.na"),
-  level: titleCase(track.difficulty) || t("public.common.filters.allLevels"),
+  level: translateDifficulty(track.difficulty, t) || t("public.common.filters.allLevels"),
   featured: Boolean((track as any).featured || (track as any).isFeatured),
   img: getTrackImage(track),
 });
@@ -254,6 +269,9 @@ text-transform: Capitalize !important;}
       }
       .track-hero {
         height: 360px !important;
+      }
+      html[dir='rtl'] .track-hero {
+        padding-inline: 18px !important;
       }
       .track-hero-bg {
         background-position: center center !important;
@@ -849,7 +867,7 @@ function TrackCard({
           <span>
             <img
               src="/img/icons/map.svg"
-              alt="Location"
+              alt={t("public.tracks.listing.locationIconAlt")}
               width={18}
               height={18}
               style={{
@@ -945,6 +963,7 @@ function TrackCard({
 // ── Tracks grid ───────────────────────────────────────────────────────────────
 function TracksGrid() {
   const { t, i18n } = useTranslation();
+  const gridTitleWords = useWordList("public.tracks.grid.titleWords");
   const [filters, setFilters] = useState<TrackFilters>({
     city: ALL_FILTER_VALUE,
     level: ALL_FILTER_VALUE,
@@ -1203,7 +1222,7 @@ function TracksGrid() {
             },
           }}
         >
-          {["Explore", "Certified", "Routes", "Across", "the", "UAE"].map(
+          {gridTitleWords.map(
             (word, index) => (
               <span
                 key={`${word}-${index}`}
@@ -1513,6 +1532,7 @@ function FAQ() {
 
 // ── CTA Banner ────────────────────────────────────────────────────────────────
 function CTABanner() {
+  const { t } = useTranslation();
   return (
     <section
       className="track-cta"
@@ -1550,7 +1570,7 @@ function CTABanner() {
             textTransform: "uppercase",
           }}
         >
-          Start Your Ride Today
+          {t("public.tracks.listing.cta.title")}
         </h2>
         <p
           className="track-cta-text"
@@ -1561,7 +1581,7 @@ function CTABanner() {
             marginBottom: 36,
           }}
         >
-          Download the ADCC app and join the cycling community.
+          {t("public.tracks.listing.cta.subtitle")}
         </p>
         <div className="track-cta-buttons" style={{ display: "flex", gap: 20 }}>
           {[
@@ -1595,6 +1615,10 @@ function CTABanner() {
 
 // ── Footer ────────────────────────────────────────────────────────────────────
 function Footer() {
+  const { t } = useTranslation();
+  const quickLinks = t("public.tracks.listing.footer.links", {
+    returnObjects: true,
+  }) as string[];
   return (
     <footer
       className="track-footer"
@@ -1621,8 +1645,7 @@ function Footer() {
               marginBottom: 24,
             }}
           >
-            From weekend warriors to elite athletes, we unite cyclists who share
-            a passion for riding. ADCC is where your cycling journey thrives…
+            {t("public.tracks.listing.footer.about")}
           </p>
           <div
             className="track-newsletter"
@@ -1635,7 +1658,7 @@ function Footer() {
             }}
           >
             <input
-              placeholder="Enter your email"
+              placeholder={t("public.tracks.listing.footer.emailPlaceholder")}
               style={{
                 flex: 1,
                 border: "none",
@@ -1657,7 +1680,7 @@ function Footer() {
                 fontFamily: "'Bebas Kai',sans-serif",
               }}
             >
-              Submit
+              {t("public.tracks.listing.footer.submit")}
             </button>
           </div>
         </div>
@@ -1670,15 +1693,9 @@ function Footer() {
               marginBottom: 18,
             }}
           >
-            Quick Links
+            {t("public.tracks.listing.footer.quickLinks")}
           </div>
-          {[
-            "About Us",
-            "Rides",
-            "Events",
-            "Cyclist's Corner",
-            "Contact Us",
-          ].map((l) => (
+          {quickLinks.map((l) => (
             <p key={l} style={{ fontSize: 16, marginBottom: 10 }}>
               <a href="#" style={{ color: "#000" }}>
                 {l}
@@ -1695,7 +1712,7 @@ function Footer() {
               marginBottom: 18,
             }}
           >
-            Contact Us
+            {t("public.tracks.listing.footer.contactUs")}
           </div>
           {[
             { icon: "📞", text: "+971 2 654 5645" },
@@ -1703,7 +1720,7 @@ function Footer() {
             { icon: "✉️", text: "info@adcyclingclub.ae" },
             {
               icon: "📍",
-              text: "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18.",
+              text: t("public.tracks.listing.footer.address"),
             },
           ].map((c, i) => (
             <div
@@ -1730,7 +1747,7 @@ function Footer() {
         }}
       >
         <p style={{ fontSize: 16, color: "rgba(0,0,0,0.7)" }}>
-          Copyright 2026. Abu Dhabi Cycling Club
+          {t("public.tracks.listing.footer.copyright")}
         </p>
         <button
           className="track-footer-top-button"

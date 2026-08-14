@@ -15,7 +15,11 @@ import {
   Wrench,
 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import i18n from "../../i18n";
 import { EventApiResponse, getEventById, getEventsPage } from "../../services/eventsApi";
+
+type TFunction = (key: string, options?: Record<string, unknown>) => string;
 
 type StatCard = {
   icon: LucideIcon;
@@ -91,21 +95,21 @@ const FALLBACK_EVENT: GrandPrixEvent = {
   ],
 };
 
-const formatDate = (date?: string) => {
-  if (!date) return "Date TBA";
+const formatDate = (date: string | undefined, t: TFunction) => {
+  if (!date) return t("public.common.dateTBA");
   const parsed = new Date(date);
-  if (Number.isNaN(parsed.getTime())) return "Date TBA";
-  return new Intl.DateTimeFormat("en", {
+  if (Number.isNaN(parsed.getTime())) return t("public.common.dateTBA");
+  return new Intl.DateTimeFormat(i18n.language, {
     month: "short",
     day: "numeric",
   }).format(parsed);
 };
 
-const formatFee = (event?: GrandPrixEvent | null) => {
-  if (!event) return "Loading";
-  if (event.registrationFeeType !== "paid") return "Free";
+const formatFee = (event: GrandPrixEvent | null | undefined, t: TFunction) => {
+  if (!event) return t("public.events.detail.register.loading");
+  if (event.registrationFeeType !== "paid") return t("public.events.detail.register.free");
   const amount = event.registrationFeeAmount ?? 0;
-  return amount > 0 ? `AED ${amount}` : "Paid";
+  return amount > 0 ? `AED ${amount}` : t("public.events.detail.register.paid");
 };
 
 const getImage = (event?: GrandPrixEvent | null) =>
@@ -114,13 +118,17 @@ const getImage = (event?: GrandPrixEvent | null) =>
 const getParticipants = (event?: GrandPrixEvent | null) =>
   event?.currentParticipants ?? event?.registrations ?? 0;
 
-const getLevel = (event?: GrandPrixEvent | null) => {
+const getLevel = (event: GrandPrixEvent | null | undefined, t: TFunction) => {
   if (!event) return "Level TBA";
   if (event.difficulty) return event.difficulty;
   const eligibility = Array.isArray(event.eligibility)
     ? event.eligibility[0]
     : event.eligibility;
-  return eligibility?.experienceLevel || eligibility?.experinceLevel || "All Levels";
+  return (
+    eligibility?.experienceLevel ||
+    eligibility?.experinceLevel ||
+    t("public.common.filters.allLevels")
+  );
 };
 
 const titleCase = (value: string) =>
@@ -130,19 +138,30 @@ const titleCase = (value: string) =>
     .trim()
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
-const getStats = (event?: GrandPrixEvent | null): StatCard[] => [
-  { icon: CalendarDays, title: formatDate(event?.eventDate), label: "Date" },
+const getStats = (event: GrandPrixEvent | null | undefined, t: TFunction): StatCard[] => [
+  {
+    icon: CalendarDays,
+    title: formatDate(event?.eventDate, t),
+    label: t("public.events.detail.stats.date"),
+  },
   {
     icon: MapPin,
-    title: typeof event?.distance === "number" ? `${event.distance} km` : "TBA",
-    label: "Distance",
+    title:
+      typeof event?.distance === "number"
+        ? `${event.distance} km`
+        : t("public.common.distanceTBA"),
+    label: t("public.tracks.detail.distance"),
   },
   {
     icon: Users,
-    title: `${getParticipants(event)} riders`,
-    label: "Participants",
+    title: t("public.events.detail.stats.ridersCount", { count: getParticipants(event) }),
+    label: t("public.events.detail.stats.participantsLabel"),
   },
-  { icon: Trophy, title: titleCase(getLevel(event)), label: "Level" },
+  {
+    icon: Trophy,
+    title: titleCase(getLevel(event, t)),
+    label: t("public.tracks.detail.level"),
+  },
 ];
 
 const facilityIconMap: Array<{ match: RegExp; icon: LucideIcon }> = [
@@ -163,7 +182,7 @@ const getFacilities = (event?: GrandPrixEvent | null): Facility[] =>
     active: index === 0,
   }));
 
-const getSchedule = (event?: GrandPrixEvent | null): ScheduleItem[] => {
+const getSchedule = (event: GrandPrixEvent | null | undefined, t: TFunction): ScheduleItem[] => {
   const eventSchedule = event?.schedule || [];
   if (eventSchedule.length > 0) {
     return [...eventSchedule]
@@ -179,34 +198,42 @@ const getSchedule = (event?: GrandPrixEvent | null): ScheduleItem[] => {
 
   return [
     {
-      time: event.eventTime || "Time TBA",
-      title: "Event Start",
-      description: event.address || event.city || "Location TBA",
+      time: event.eventTime || t("public.events.detail.schedule.timeTBA"),
+      title: t("public.events.detail.schedule.eventStart"),
+      description:
+        event.address || event.city || t("public.events.detail.schedule.locationTBA"),
     },
     ...(event.endTime
       ? [
           {
             time: event.endTime,
-            title: "Event End",
-            description: event.status ? `Current status: ${titleCase(event.status)}` : "",
+            title: t("public.events.detail.schedule.eventEnd"),
+            description: event.status
+              ? t("public.events.detail.schedule.currentStatus", {
+                  status: titleCase(event.status),
+                })
+              : "",
           },
         ]
       : []),
   ];
 };
 
-const getFaqs = (event?: GrandPrixEvent | null) => {
+const getFaqs = (event: GrandPrixEvent | null | undefined, t: TFunction) => {
   if (!event) return [];
-  const fee = formatFee(event);
-  const level = titleCase(getLevel(event));
-  const location = event.city || event.address || "the event location";
+  const fee = formatFee(event, t);
+  const level = titleCase(getLevel(event, t));
+  const location = event.city || event.address || t("public.events.detail.faq.locationFallback");
   return [
-    `When is ${event.title} scheduled?`,
-    `Where is ${event.title} taking place?`,
-    `What is the ${level} rider level for this event?`,
-    `Is registration ${fee.toLowerCase()} for ${event.title}?`,
-    `How many riders can participate in ${event.title}?`,
-    `What should I know before riding in ${location}?`,
+    t("public.events.detail.faq.whenScheduled", { title: event.title }),
+    t("public.events.detail.faq.whereTakingPlace", { title: event.title }),
+    t("public.events.detail.faq.riderLevel", { level }),
+    t("public.events.detail.faq.registrationFee", {
+      fee: fee.toLowerCase(),
+      title: event.title,
+    }),
+    t("public.events.detail.faq.howManyRiders", { title: event.title }),
+    t("public.events.detail.faq.whatToKnow", { location }),
   ];
 };
 
@@ -308,10 +335,11 @@ function HeroSection({ event }: { event: GrandPrixEvent }) {
 }
 
 function AboutSection({ event }: { event: GrandPrixEvent }) {
+  const { t } = useTranslation();
   return (
     <section className="grand-prix-section px-4 pt-[103px] max-md:pt-14 max-sm:pt-10 text-center">
       <h2 className="grand-prix-bebas text-[28px] uppercase leading-tight sm:text-[38px] md:text-[48px] lg:text-[60px]">
-        About This Event
+        {t("public.events.detail.aboutHeading")}
       </h2>
       <p className="mx-auto mt-4 max-w-[851px] text-[14px] font-normal leading-relaxed text-black sm:text-[17px] md:text-[20px] lg:text-[24px]">
         {event.description}
@@ -320,7 +348,7 @@ function AboutSection({ event }: { event: GrandPrixEvent }) {
         type="button"
         className="mt-5 inline-flex h-[44px] items-center justify-center gap-3 rounded-full bg-[#019839] px-6 text-[15px] font-bold leading-none text-white transition hover:bg-[#017a2e] sm:h-[49px] sm:px-[28px] sm:text-[18px]"
       >
-        Join this Event
+        {t("public.events.detail.joinEvent")}
         <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
       </button>
     </section>
@@ -328,20 +356,25 @@ function AboutSection({ event }: { event: GrandPrixEvent }) {
 }
 
 function RegisterCard({ event }: { event: GrandPrixEvent }) {
+  const { t } = useTranslation();
   const total = event.maxParticipants ?? 0;
   const joined = getParticipants(event);
   const spotsText =
-    total > 0 ? `${Math.max(total - joined, 0)} spots available` : "Open registration";
+    total > 0
+      ? t("public.events.detail.register.spotsAvailable", {
+          count: Math.max(total - joined, 0),
+        })
+      : t("public.events.detail.register.openRegistration");
 
   return (
     <article className="relative h-[200px] w-[300px] shrink-0 rounded-2xl bg-[#435974] text-white lg:h-[236px] lg:w-[426px] max-sm:w-[calc(100vw-56px)]">
       <p className="absolute left-4 top-[14px] flex items-center gap-[6px] text-[12px] font-medium leading-[18px] lg:left-6 lg:top-[19px] lg:text-[14px]">
         <span className="h-[7px] w-[7px] rounded-full bg-white" />
-        Register Now
+        {t("public.events.detail.register.registerNow")}
       </p>
 
       <h3 className="grand-prix-bebas absolute left-4 top-[44px] text-[28px] uppercase leading-tight lg:left-6 lg:top-[56px] lg:text-[36px]">
-        {formatFee(event)}
+        {formatFee(event, t)}
       </h3>
       <p className="absolute left-4 top-[78px] text-[11px] leading-5 text-white/60 lg:left-6 lg:top-[96px] lg:text-[12px]">
         {spotsText}
@@ -350,7 +383,7 @@ function RegisterCard({ event }: { event: GrandPrixEvent }) {
       <div className="absolute bottom-[12px] left-4 right-4 h-[60px] border-t border-white/10 lg:bottom-[14px] lg:left-6 lg:right-6 lg:h-[71px]">
         <span className="absolute left-[10px] top-[24px] flex items-center gap-[6px] text-[11px] font-medium leading-5 lg:left-[13px] lg:top-[31px] lg:text-[13px]">
           <span className="h-[7px] w-[7px] rounded-full bg-white" />
-          Organized by
+          {t("public.events.detail.register.organizedBy")}
         </span>
         <div className="absolute right-0 top-[12px] flex h-9 items-center gap-2 lg:h-10 lg:top-[17px]">
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#019839] lg:h-10 lg:w-10">
@@ -362,14 +395,14 @@ function RegisterCard({ event }: { event: GrandPrixEvent }) {
 
       <button
         type="button"
-        aria-label="Save event"
+        aria-label={t("public.events.detail.register.saveEvent")}
         className="absolute right-4 top-[14px] flex h-[32px] w-[32px] items-center justify-center rounded-full bg-white text-[#C12D32] lg:right-5 lg:top-4 lg:h-[38px] lg:w-[38px]"
       >
         <Heart className="h-3 w-3 lg:h-4 lg:w-4" />
       </button>
       <button
         type="button"
-        aria-label="Share event"
+        aria-label={t("public.events.detail.register.shareEvent")}
         className="absolute right-4 top-[54px] flex h-[32px] w-[32px] items-center justify-center rounded-full bg-white text-[#019839] lg:right-5 lg:top-[56px] lg:h-[38px] lg:w-[38px]"
       >
         <Share2 className="h-3 w-3 lg:h-4 lg:w-4" />
@@ -405,6 +438,7 @@ function StatsStrip({ event, stats }: { event: GrandPrixEvent; stats: StatCard[]
 }
 
 function FacilitiesSection({ facilities }: { facilities: Facility[] }) {
+  const { t } = useTranslation();
   if (facilities.length === 0) return null;
 
   return (
@@ -417,13 +451,13 @@ function FacilitiesSection({ facilities }: { facilities: Facility[] }) {
       <div className="grand-prix-shell relative">
         <div className="flex items-start justify-between pt-16 max-lg:flex-col max-lg:gap-8 max-lg:pt-0">
           <h2 className="grand-prix-bebas max-w-[579px] text-[32px] uppercase leading-tight text-[#000000] sm:text-[38px] lg:text-[44px]">
-            Everything You Need for a Seamless Ride Experience
+            {t("public.tracks.detail.facilitiesHeading")}
           </h2>
           <Link
             to="/contact-us"
             className="mt-[35px] inline-flex h-[50px] items-center justify-center gap-[14px] rounded-full bg-[#019839] px-[27px] text-[18px] font-bold leading-none text-white transition hover:bg-[#017a2e] max-lg:mt-0"
           >
-            Get in Touch
+            {t("public.common.getInTouch")}
             <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
           </Link>
         </div>
@@ -464,6 +498,7 @@ function ScheduleSection({
   event: GrandPrixEvent;
   schedule: ScheduleItem[];
 }) {
+  const { t } = useTranslation();
   if (schedule.length === 0) return null;
 
   return (
@@ -472,11 +507,11 @@ function ScheduleSection({
       className="grand-prix-section relative z-10 block w-full bg-[#323232] pb-[78px] pt-[69px] text-white max-md:pb-12 max-md:pt-10"
     >
       <h2 className="grand-prix-bebas mx-auto max-w-[621px] text-center text-[26px] uppercase leading-tight sm:text-[34px] md:text-[42px] lg:text-[50px]">
-        {event.title} Schedule
+        {t("public.events.detail.schedule.titleSuffix", { title: event.title })}
       </h2>
 
       <p className="mx-auto mb-8 mt-3 max-w-[795px] text-center text-[13px] leading-relaxed text-white/70 sm:text-[16px] md:text-[18px] lg:text-[22px] lg:mb-[45px] lg:mt-[22px]">
-        {event.address || event.city || "Event schedule details"}
+        {event.address || event.city || t("public.events.detail.schedule.subtitleFallback")}
       </p>
 
       {/* <div className="grand-prix-shell mt-[45px] grid grid-cols-[460px_736px] gap-[53px] max-lg:grid-cols-1"> */}
@@ -486,7 +521,7 @@ function ScheduleSection({
 
           <img
             src={event.galleryImages?.[1] || SCHEDULE_IMAGE}
-            alt={`${event.title} participant`}
+            alt={t("public.events.detail.schedule.participantAlt", { title: event.title })}
             className="absolute bottom-0 left-[41px] h-[478px] w-[377px] object-contain"
           />
 
@@ -501,7 +536,7 @@ function ScheduleSection({
               <img
                 key={src}
                 src={src}
-                alt="Rider"
+                alt={t("public.events.detail.schedule.riderAlt")}
                 className="-ml-[29.16px] h-[58.33px] w-[58.33px] rounded-full border-2 border-white object-cover first:ml-0"
               />
             ))}
@@ -545,6 +580,7 @@ function ScheduleSection({
 }
 
 function FaqSection({ faqs }: { faqs: string[] }) {
+  const { t } = useTranslation();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const toggle = useCallback((idx: number) => {
     setOpenIndex((prev) => (prev === idx ? null : idx));
@@ -555,10 +591,10 @@ function FaqSection({ faqs }: { faqs: string[] }) {
   return (
     <section className="grand-prix-section px-4 pb-16 pt-14 text-center sm:pb-20 sm:pt-16 lg:pb-28 lg:pt-20">
       <h2 className="grand-prix-bebas text-[34px] uppercase leading-tight sm:text-[42px] lg:text-[50px]">
-        Frequently Asked Questions
+        {t("public.tracks.faq.title")}
       </h2>
       <p className="mx-auto mt-3 max-w-[563px] text-[15px] font-medium text-black/70 sm:text-[16px]">
-        Got questions before hitting the road? We've got you covered.
+        {t("public.tracks.faq.subtitle")}
       </p>
 
       <div className="mx-auto mt-8 grid max-w-[1098px] grid-cols-1 gap-4 sm:mt-10 md:grid-cols-2 md:gap-5">
@@ -579,7 +615,7 @@ function FaqSection({ faqs }: { faqs: string[] }) {
             </div>
             {openIndex === index && (
               <p className="pb-5 text-[16px] font-normal leading-7 text-black/65">
-                For more information about this topic, please contact our support team or refer to the event guidelines.
+                {t("public.events.detail.faq.genericAnswer")}
               </p>
             )}
           </div>
@@ -590,6 +626,7 @@ function FaqSection({ faqs }: { faqs: string[] }) {
 }
 
 export default function CommunitiesAbuDhabiGrandPrixRide() {
+  const { t } = useTranslation();
   const { eventId = "" } = useParams<{ eventId: string }>();
   const selectedEventId = eventId.trim();
   const [event, setEvent] = useState<GrandPrixEvent>(FALLBACK_EVENT);
@@ -610,7 +647,7 @@ export default function CommunitiesAbuDhabiGrandPrixRide() {
         .catch((err) => {
           if (cancelled) return;
           console.error("Failed to load selected event:", err);
-          setError("The selected event details could not be loaded right now.");
+          setError(t("public.events.detail.loadErrorSelected"));
         })
         .finally(() => {
           if (!cancelled) setLoading(false);
@@ -651,17 +688,17 @@ export default function CommunitiesAbuDhabiGrandPrixRide() {
     };
   }, [selectedEventId]);
 
-  const stats = useMemo(() => getStats(event), [event]);
+  const stats = useMemo(() => getStats(event, t), [event, t]);
   const facilities = useMemo(() => getFacilities(event), [event]);
-  const schedule = useMemo(() => getSchedule(event), [event]);
-  const faqs = useMemo(() => getFaqs(event), [event]);
+  const schedule = useMemo(() => getSchedule(event, t), [event, t]);
+  const faqs = useMemo(() => getFaqs(event, t), [event, t]);
 
   return (
     <div className="grand-prix-page">
       <FontLoader />
       {loading && (
         <section className="grand-prix-section grand-prix-shell py-24 text-center">
-          <p className="text-[22px] font-medium text-black/70">Loading event details...</p>
+          <p className="text-[22px] font-medium text-black/70">{t("public.events.detail.loading")}</p>
         </section>
       )}
       {!loading && error && (

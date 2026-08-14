@@ -13,7 +13,11 @@ export function AppStoreButton({ type }: { type: "google" | "apple" }) {
     >
       <img
         src={type === "google" ? "/img/google.png" : "/img/apple.png"}
-        alt={type === "google" ? "Google Play" : "App Store"}
+        alt={
+          type === "google"
+            ? t("public.footer.googlePlay")
+            : t("public.footer.appStore")
+        }
         className="h-[27px] w-[27px] shrink-0 object-contain sm:h-[31px] sm:w-[29px]"
       />
 

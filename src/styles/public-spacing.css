@@ -286,8 +286,8 @@ html[dir='rtl'] .tracks-page .tracks-grid-wrap {
 }
 
 html[dir='rtl'] .home-page .home-about-content {
-  padding-inline-start: min(280px, 24vw) !important;
-  padding-inline-end: 0 !important;
+  padding-inline-start: 0 !important;
+  padding-inline-end: min(280px, 24vw) !important;
 }
 
 html[dir='rtl'] .home-page .journey-section {
@@ -342,7 +342,8 @@ html[dir='rtl'] .communities-page .text-left {
     padding-inline: 32px !important;
   }
 
-  .home-page .journey-section {
+  .home-page .journey-section,
+  html[dir='rtl'] .home-page .journey-section {
     padding-inline: 32px !important;
   }
 
@@ -399,11 +400,13 @@ html[dir='rtl'] .communities-page .text-left {
   .home-page .home-store-section,
   .home-page .home-about-section,
   .home-page .home-app-section,
-  .home-page .journey-section {
+  .home-page .journey-section,
+  html[dir='rtl'] .home-page .journey-section {
     padding-inline: 18px !important;
   }
 
-  .home-page .home-about-content {
+  .home-page .home-about-content,
+  html[dir='rtl'] .home-page .home-about-content {
     padding-inline: 0 !important;
   }
 

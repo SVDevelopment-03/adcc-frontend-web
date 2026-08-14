@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Cloud,
   Search,
@@ -12,6 +13,7 @@ import {
 } from "lucide-react";
 import { getMerchandiseProducts } from "../../services/merchandiseApi";
 import type { Product } from "../merchandise/merchandiseData";
+import { AnimatedWords, useWordList } from "../public/publicPageHelpers";
 
 const cyclingEquipment = [
   ["Ivan Njuki", "25,000 AED", "/img/image 2970.png"],
@@ -55,6 +57,10 @@ function MerchandiseCard({ product }: { product: Product }) {
 }
 
 export default function AdccStorePage() {
+  const { t } = useTranslation();
+  const heroTitleWords = useWordList("public.store.listing.hero.titleWords");
+  const browseTitleWords = useWordList("public.store.listing.browseTitleWords");
+  const gearUpTitleWords = useWordList("public.store.listing.gearUp.titleWords");
   const [merchandiseProducts, setMerchandiseProducts] = useState<Product[]>([]);
   const [merchandiseLoading, setMerchandiseLoading] = useState(true);
 
@@ -75,17 +81,17 @@ export default function AdccStorePage() {
         />
 
         <nav className="hidden lg:flex gap-12 text-[20px] font-medium">
-          <span>About Us</span>
-          <span>Events</span>
-          <span>Community</span>
-          <span>Tracks</span>
+          <span>{t("public.nav.aboutUs")}</span>
+          <span>{t("public.nav.events")}</span>
+          <span>{t("public.nav.community")}</span>
+          <span>{t("public.nav.tracks")}</span>
         </nav>
 
         <div className="flex items-center gap-6">
           <Cloud size={24} />
-          <span className="text-[17px]">English</span>
+          <span className="text-[17px]">{t("public.language.english")}</span>
           <button className="rounded-full bg-black px-8 py-4 text-[18px] font-bold text-white">
-            Menu
+            {t("public.auth.menu")}
           </button>
         </div>
       </header>
@@ -98,45 +104,45 @@ export default function AdccStorePage() {
         }}
       >
         <div className="absolute bottom-20 left-4 text-white sm:left-6 md:left-10 lg:left-20">
-          <h1 className="text-[60px] font-black uppercase leading-none">
-            ADCC Store
+          <h1 className="text-[60px] font-black uppercase leading-none overflow-hidden">
+            <AnimatedWords words={heroTitleWords} gap={16} />
           </h1>
-          <p className="mt-4 text-[24px]">Home / ADCC Store</p>
+          <p className="mt-4 text-[24px]">{t("public.store.listing.hero.breadcrumb")}</p>
         </div>
       </section>
 
       <section className="w-full px-4 py-28 sm:px-6 md:px-10 lg:px-20">
-        <h2 className="text-center text-[50px] font-black uppercase">
-          Browse Our Collection
+        <h2 className="flex justify-center overflow-hidden text-center text-[50px] font-black uppercase">
+          <AnimatedWords words={browseTitleWords} gap={16} />
         </h2>
 
         <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_292px_292px_156px]">
           <div className="flex h-[66px] items-center rounded-full border border-[#CBCBCB] bg-white px-8">
             <input
-              placeholder="Search products"
+              placeholder={t("public.store.listing.searchPlaceholder")}
               className="flex-1 bg-transparent text-[18px] outline-none"
             />
             <Search size={24} />
           </div>
 
           <button className="flex h-[66px] items-center justify-between rounded-full border border-[#CBCBCB] bg-white px-8 text-[18px]">
-            All Categories <ChevronDown size={24} />
+            {t("public.store.listing.allCategories")} <ChevronDown size={24} />
           </button>
 
           <button className="flex h-[66px] items-center justify-between rounded-full border border-[#CBCBCB] bg-white px-8 text-[18px]">
-            All Conditions <ChevronDown size={24} />
+            {t("public.store.listing.allConditions")} <ChevronDown size={24} />
           </button>
 
           <button className="h-[66px] rounded-full bg-[#019839] text-[20px] font-bold text-white">
-            Search
+            {t("public.common.search")}
           </button>
         </div>
 
         {/* Cycling Equipment */}
         <div className="mt-20 flex items-center gap-6">
-          <h3 className="text-[32px] font-black uppercase">Cycling Equipment</h3>
+          <h3 className="text-[32px] font-black uppercase">{t("public.store.listing.cyclingEquipmentHeading")}</h3>
           <span className="rounded-full bg-[#019839]/10 px-4 py-1 text-[14px] font-bold text-[#019839]">
-            {cyclingEquipment.length} items
+            {t("public.store.listing.itemsCount", { count: cyclingEquipment.length })}
           </span>
         </div>
         <div className="mt-2 h-px bg-black/10" />
@@ -148,10 +154,10 @@ export default function AdccStorePage() {
 
         {/* Club Merchandise */}
         <div className="mt-20 flex items-center gap-6">
-          <h3 className="text-[32px] font-black uppercase">Club Merchandise</h3>
+          <h3 className="text-[32px] font-black uppercase">{t("public.store.listing.clubMerchandiseHeading")}</h3>
           {!merchandiseLoading && (
             <span className="rounded-full bg-[#435974]/10 px-4 py-1 text-[14px] font-bold text-[#435974]">
-              {merchandiseProducts.length} items
+              {t("public.store.listing.itemsCount", { count: merchandiseProducts.length })}
             </span>
           )}
         </div>
@@ -163,7 +169,7 @@ export default function AdccStorePage() {
             ))}
           </div>
         ) : merchandiseProducts.length === 0 ? (
-          <p className="mt-8 text-[18px] text-black/50">No merchandise available at the moment.</p>
+          <p className="mt-8 text-[18px] text-black/50">{t("public.store.listing.noMerchandise")}</p>
         ) : (
           <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
             {merchandiseProducts.map((product) => (
@@ -189,27 +195,22 @@ export default function AdccStorePage() {
 
       <section className="pt-10 relative grid w-full grid-cols-1 items-end gap-16 overflow-hidden px-4 pb-28 sm:px-6 md:px-10 lg:grid-cols-2 lg:px-20">
         <div>
-          <h2 className="max-w-[516px] text-[50px] font-normal font-[#000000] uppercase leading-[60px]">
-            Gear Up with Official&nbsp;Cycling
-            <br />
-            Essentials from ADCC
+          <h2 className="max-w-[516px] overflow-hidden text-[50px] font-normal font-[#000000] uppercase leading-[60px]">
+            <AnimatedWords words={gearUpTitleWords} gap={16} />
           </h2>
 
           <p className="mt-12 max-w-[615px] text-[24px] font-normal leading-[30px]">
-            Explore a curated collection of cycling gear, apparel, and
-            accessories designed for performance and comfort. Whether you're
-            training, racing, or riding for leisure, find everything you need to
-            elevate your cycling experience.
+            {t("public.store.listing.gearUp.body")}
           </p>
 
           <button className="mt-10 inline-flex items-center gap-3 rounded-full bg-[#019839] px-8 py-4 text-[18px] font-bold text-white">
-            Get In touch <ArrowRight size={20} />
+            {t("public.common.getInTouch")} <ArrowRight size={20} />
           </button>
         </div>
 
         <img
           src="/img/image 30691.png"
-          alt="Cycling essentials"
+          alt={t("public.store.listing.gearUp.imageAlt")}
           className="h-[568px] w-full max-w-[686px] object-contain lg:absolute lg:bottom-[-25px] lg:right-0"
         />
       </section>
@@ -223,35 +224,33 @@ export default function AdccStorePage() {
               className="h-[63px] w-[149px] object-contain"
             />
             <p className="mt-8 max-w-[402px] text-[18px] leading-[23px]">
-              From weekend warriors to elite athletes, we unite cyclists who
-              share a passion for riding. ADCC is where your cycling journey
-              thrives...
+              {t("public.footer.brandText")}
             </p>
 
             <div className="mt-8 flex h-[57px] max-w-[367px] rounded-lg bg-[#8DDF93] p-[6px]">
               <input
-                placeholder="Enter your email"
+                placeholder={t("public.footer.emailPlaceholder")}
                 className="flex-1 bg-transparent px-4 outline-none"
               />
               <button className="rounded-lg bg-[#019839] px-7 text-white">
-                Submit
+                {t("public.footer.submit")}
               </button>
             </div>
           </div>
 
           <div>
-            <h4 className="text-[24px] font-black uppercase">Quick Links</h4>
+            <h4 className="text-[24px] font-black uppercase">{t("public.footer.quickLinks")}</h4>
             <ul className="mt-8 space-y-4 text-[18px]">
-              <li>About Us</li>
-              <li>Rides</li>
-              <li>Events</li>
-              <li>Cyclist's Corner</li>
-              <li>Contact Us</li>
+              <li>{t("public.nav.aboutUs")}</li>
+              <li>{t("public.footer.rides")}</li>
+              <li>{t("public.nav.events")}</li>
+              <li>{t("public.footer.cyclistsCorner")}</li>
+              <li>{t("public.footer.contactUs")}</li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-[24px] font-black uppercase">Contact Us</h4>
+            <h4 className="text-[24px] font-black uppercase">{t("public.footer.contactUs")}</h4>
             <ul className="mt-8 space-y-4 text-[18px]">
               <li className="flex gap-3">
                 <Phone size={22} /> +971 2 654 5645
@@ -260,8 +259,7 @@ export default function AdccStorePage() {
                 <Phone size={22} /> 144226
               </li>
               <li className="flex gap-3">
-                <Mail size={22} /> Abu Dhabi, Yas island, yas marina circuit,
-                Villa 18.
+                <Mail size={22} /> {t("public.store.listing.footer.address")}
               </li>
               <li className="flex gap-3">
                 <MapPin size={22} /> info@adcyclingclub.ae
@@ -271,7 +269,7 @@ export default function AdccStorePage() {
         </div>
 
         <div className="mt-20 border-t border-[#d5d5d5] pt-8 text-center text-[18px] text-black/70">
-          Copyright 2026. Abu Dhabi Cycling Club
+          {t("public.footer.copyright")}
         </div>
       </footer>
     </div>

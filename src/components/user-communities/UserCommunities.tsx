@@ -177,7 +177,7 @@ export default function CommunitiesPage() {
       const formattedCount = Number.isFinite(count)
         ? count.toLocaleString(i18n.language)
         : "0";
-      return t(`public.common.${labelKey}`, { formattedCount });
+      return t(`public.common.${labelKey}`, { count, formattedCount });
     },
     [i18n.language, t],
   );
@@ -551,7 +551,7 @@ export default function CommunitiesPage() {
                   type="button"
                   onClick={() => setCurrentPage(page)}
                   disabled={loading}
-                  aria-label={`Page ${page}`}
+                  aria-label={t("public.communities.listing.pageAria", { page })}
                   aria-current={currentPage === page ? "page" : undefined}
                   className={`flex h-10 min-w-10 items-center justify-center rounded-full px-3 sm:h-12 sm:min-w-12 ${
                     currentPage === page

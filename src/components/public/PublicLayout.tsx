@@ -52,11 +52,12 @@ const navItems = [
 
 function Logo({ compact = false }: { compact?: boolean }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <img
       src="/images/adcc-logo.png"
-      alt="Abu Dhabi Cycling Club"
+      alt={t("public.nav.logoAlt")}
       onClick={() => navigate("/home")}
       className={
         compact
@@ -466,7 +467,7 @@ function PublicFooter() {
                   rel="noopener noreferrer"
                   className="transition-colors hover:text-[#019839]"
                 >
-                  Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18.
+                  {t("public.footer.address")}
                 </a>
               </li>
               <li className="flex gap-3">
@@ -493,6 +494,7 @@ function PublicFooter() {
 }
 
 function ScrollToTopButton() {
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -511,7 +513,7 @@ function ScrollToTopButton() {
     <button
       type="button"
       onClick={scrollToTop}
-      aria-label="Scroll to top"
+      aria-label={t("public.layout.scrollToTop")}
       className="fixed bottom-8 end-8 z-[200] flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-[#019839] text-white shadow-lg transition-all duration-300 hover:bg-black hover:scale-110 focus:outline-none"
     >
       <svg width="33" height="27" viewBox="0 0 33 27" fill="none" xmlns="http://www.w3.org/2000/svg">

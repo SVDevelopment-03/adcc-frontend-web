@@ -1367,7 +1367,7 @@ font-family: var(--font-satoshi) !important;}
       max-height: none !important;
     }
     .home-hero-bg {
-      background-position: 62% 28% !important;
+      background-position: center 28% !important;
     }
     .home-hero-content {
       inset-inline-start: 56px !important;
@@ -1623,11 +1623,11 @@ font-family: var(--font-satoshi) !important;}
       max-height: none !important;
     }
     .home-hero-bg {
-      background-position: 70% 30% !important;
+      background-position: center 30% !important;
     }
     .home-hero-content {
       inset-inline-start: 20px !important;
-      top: 40px !important;
+      top: 140px !important;
       width: min(340px, calc(100% - 36px)) !important;
       max-width: 340px !important;
     }
@@ -1742,12 +1742,14 @@ font-family: var(--font-satoshi) !important;}
       order: 0 !important;
     }
     .home-phone-stage img,
-    .app-phone-stage img {
+    .app-phone-stage img,
+    [dir="rtl"] .home-phone-stage img,
+    [dir="rtl"] .app-phone-stage img {
       width: 100% !important;
       max-height: 260px !important;
       object-fit: contain !important;
       left: 0 !important;
-      right: auto !important;
+      right: 0 !important;
       top: 0 !important;
     }
     .home-feature-list {
@@ -2334,13 +2336,14 @@ function QRCodePlaceholder() {
 
 /* ─── HEADER ─────────────────────────────────────────────────────────────────*/
 function Header() {
+  const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const navLinks = [
-    { label: "About Us", href: "#about" },
-    { label: "Events", href: "/user-event" },
-    { label: "Community", href: "#community", active: true },
-    { label: "Challenges", href: "/user-challenges" },
-    { label: "Tracks", href: "#platform" },
+    { label: t("public.nav.aboutUs"), href: "#about" },
+    { label: t("public.nav.events"), href: "/user-event" },
+    { label: t("public.nav.community"), href: "#community", active: true },
+    { label: t("public.nav.challenges"), href: "/user-challenges" },
+    { label: t("public.nav.tracks"), href: "#platform" },
   ];
   return (
     <header
@@ -2416,7 +2419,7 @@ function Header() {
             whiteSpace: "nowrap",
           }}
         >
-          English
+          {t("public.language.english")}
         </span>
         <AnimatedButton
           onClick={() => setMenuOpen((v) => !v)}
@@ -2424,7 +2427,7 @@ function Header() {
           className="home-menu-button w-[101px]"
           style={{ background: menuOpen ? "#017a2e" : undefined }}
         >
-          Menu
+          {t("public.auth.menu")}
         </AnimatedButton>
       </div>
     </header>
@@ -2435,8 +2438,11 @@ function Header() {
 function HeroSection() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { locale } = useLocale();
   const line1 = t("public.home.hero.line1");
   const line2 = t("public.home.hero.line2");
+  const heroImage =
+    locale === "ar" ? "/img/ar-home.png" : "/img/DSC04620.jpg 1.png";
 
   const lineVariants = {
     hidden: { y: "120%", opacity: 0 },
@@ -2445,7 +2451,11 @@ function HeroSection() {
 
   return (
     <section className="home-hero public-hero-bleed">
-      <div className="home-hero-bg" aria-hidden />
+      <div
+        className="home-hero-bg"
+        style={{ backgroundImage: `url('${heroImage}')` }}
+        aria-hidden
+      />
       <div className="home-hero-content">
         <motion.h1
           className="home-hero-title"
@@ -2701,7 +2711,7 @@ function CyclingJourneySection() {
           viewport={{ once: true }}
         >
           <img
-            src="/images/journey.png"
+            src={locale === "ar" ? "/images/journey-ar.png" : "/images/journey.png"}
             alt={t("public.home.journey.riderAlt")}
           />
         </motion.div>
@@ -2759,7 +2769,7 @@ function CyclingJourneySection() {
           <button
             className="journey-scroll-btn"
             onClick={() => scrollCards("left")}
-            aria-label="Scroll left"
+            aria-label={t("public.home.journey.scrollLeft")}
           >
             <svg
               width="14"
@@ -2780,7 +2790,7 @@ function CyclingJourneySection() {
           <button
             className="journey-scroll-btn"
             onClick={() => scrollCards("right")}
-            aria-label="Scroll right"
+            aria-label={t("public.home.journey.scrollRight")}
           >
             <svg
               width="14"
@@ -3449,9 +3459,9 @@ function AboutSection() {
     ? _titleWordsRaw
     : [];
   const stats = [
-    { num: "15K+", label: t("public.home.about.stats.riders") },
-    { num: "100+", label: t("public.home.about.stats.events") },
-    { num: "10+", label: t("public.home.about.stats.years") },
+    { num: t("public.home.about.stats.ridersValue"), label: t("public.home.about.stats.riders") },
+    { num: t("public.home.about.stats.eventsValue"), label: t("public.home.about.stats.events") },
+    { num: t("public.home.about.stats.yearsValue"), label: t("public.home.about.stats.years") },
   ];
 
   useEffect(() => {
@@ -3594,7 +3604,7 @@ function AboutSection() {
           bare
           fill
           zoom="subtle"
-          src="/images/right-cycle.png"
+          src={isRtl ? "/images/right-cycle-ar.png" : "/images/right-cycle.png"}
           alt={t("public.home.about.riderAlt")}
           style={{ width: "100%", height: "100%" }}
         />
@@ -3767,7 +3777,7 @@ function Footer() {
     { icon: "✉️", text: "info@adcyclingclub.ae" },
     {
       icon: "📍",
-      text: "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18.",
+      text: t("public.footer.address"),
     },
   ];
 

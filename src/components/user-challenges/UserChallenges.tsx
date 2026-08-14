@@ -326,7 +326,7 @@ justify-content: center !important;}
           playsInline
         >
           <source src="/img/videos/video.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
+          {t("public.challenges.listing.videoFallback")}
         </motion.video>
       </section>
 
@@ -427,6 +427,7 @@ justify-content: center !important;}
                     <p className="flex items-center gap-2">
                       <Users size={16} />{" "}
                       {t("public.common.participants", {
+                        count: item.participants ?? 0,
                         formattedCount: formatNumber(
                           item.participants ?? 0,
                           i18n.language,

@@ -63,6 +63,9 @@ font-family: 'Satoshi', sans-serif !important;
       .event-hero {
         height: 360px !important;
       }
+      html[dir='rtl'] .event-hero {
+        padding-inline: 18px !important;
+      }
       .event-hero-bg {
         background-position: center center !important;
       }
@@ -319,10 +322,10 @@ function FilterBar({
             value: ALL_FILTER_VALUE,
             label: t("public.common.filters.allCities"),
           },
-          { value: "Abu Dhabi", label: "Abu Dhabi" },
-          { value: "Dubai", label: "Dubai" },
-          { value: "Sharjah", label: "Sharjah" },
-          { value: "Al Ain", label: "Al Ain" },
+          { value: "Abu Dhabi", label: t("public.events.listing.filters.cities.abuDhabi") },
+          { value: "Dubai", label: t("public.events.listing.filters.cities.dubai") },
+          { value: "Sharjah", label: t("public.events.listing.filters.cities.sharjah") },
+          { value: "Al Ain", label: t("public.events.listing.filters.cities.alAin") },
         ],
       },
       {
@@ -332,13 +335,31 @@ function FilterBar({
             value: ALL_FILTER_VALUE,
             label: t("public.common.filters.allCategories"),
           },
-          { value: "Race", label: "Race" },
-          { value: "Community Ride", label: "Community Ride" },
-          { value: "Training & Clinics", label: "Training & Clinics" },
-          { value: "Awareness Rides", label: "Awareness Rides" },
-          { value: "Family & Kids", label: "Family & Kids" },
-          { value: "Corporate Events", label: "Corporate Events" },
-          { value: "National Events", label: "National Events" },
+          { value: "Race", label: t("public.events.listing.filters.categories.race") },
+          {
+            value: "Community Ride",
+            label: t("public.events.listing.filters.categories.communityRide"),
+          },
+          {
+            value: "Training & Clinics",
+            label: t("public.events.listing.filters.categories.trainingClinics"),
+          },
+          {
+            value: "Awareness Rides",
+            label: t("public.events.listing.filters.categories.awarenessRides"),
+          },
+          {
+            value: "Family & Kids",
+            label: t("public.events.listing.filters.categories.familyKids"),
+          },
+          {
+            value: "Corporate Events",
+            label: t("public.events.listing.filters.categories.corporateEvents"),
+          },
+          {
+            value: "National Events",
+            label: t("public.events.listing.filters.categories.nationalEvents"),
+          },
         ],
       },
       {
@@ -348,19 +369,22 @@ function FilterBar({
             value: ALL_FILTER_VALUE,
             label: t("public.common.filters.allLevels"),
           },
-          { value: "beginner", label: "beginner" },
-          { value: "intermediate", label: "intermediate" },
-          { value: "advanced", label: "advanced" },
-          { value: "all", label: "all" },
+          { value: "beginner", label: t("public.events.listing.filters.levels.beginner") },
+          {
+            value: "intermediate",
+            label: t("public.events.listing.filters.levels.intermediate"),
+          },
+          { value: "advanced", label: t("public.events.listing.filters.levels.advanced") },
+          { value: "all", label: t("public.events.listing.filters.levels.all") },
         ],
       },
       {
         key: "status",
         options: [
           { value: ALL_FILTER_VALUE, label: t("public.common.filters.status") },
-          { value: "Upcoming", label: "Upcoming" },
-          { value: "Ongoing", label: "Ongoing" },
-          { value: "Completed", label: "Completed" },
+          { value: "Upcoming", label: t("public.events.listing.filters.status.upcoming") },
+          { value: "Ongoing", label: t("public.events.listing.filters.status.ongoing") },
+          { value: "Completed", label: t("public.events.listing.filters.status.completed") },
         ],
       },
     ],
@@ -714,7 +738,7 @@ function EventCard({
             icon={
               <img
                 src="/img/icons/calendar.svg"
-                alt="Calendar"
+                alt={t("public.events.listing.card.calendarAlt")}
                 width={18}
                 height={18}
               />
@@ -723,7 +747,12 @@ function EventCard({
           />
           <Meta
             icon={
-              <img src="/img/icons/kms.svg" alt="kms" width={18} height={18} />
+              <img
+                src="/img/icons/kms.svg"
+                alt={t("public.events.listing.card.distanceAlt")}
+                width={18}
+                height={18}
+              />
             }
             text={
               typeof event.distance === "number"
@@ -735,16 +764,21 @@ function EventCard({
             icon={
               <img
                 src="/img/icons/people.svg"
-                alt="people"
+                alt={t("public.events.listing.card.participantsAlt")}
                 width={18}
                 height={18}
               />
             }
-            text={t("public.common.participants", { formattedCount: participants })}
+            text={t("public.common.participants", { count: participants, formattedCount: participants })}
           />
           <Meta
             icon={
-              <img src="/img/icons/map.svg" alt="map" width={18} height={18} />
+              <img
+                src="/img/icons/map.svg"
+                alt={t("public.events.listing.card.locationAlt")}
+                width={18}
+                height={18}
+              />
             }
             text={event.city || event.address || "—"}
           />
