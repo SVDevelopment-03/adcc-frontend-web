@@ -105,3 +105,8 @@ export function useChallengeTypes() {
 export function useChallengeUnits() {
   return useLookupList('challenge_unit');
 }
+
+/** News categories (Club News, Rides & Events, Challenges, ...). */
+export function useNewsCategories() {
+  return useLookupList('news_category');
+}

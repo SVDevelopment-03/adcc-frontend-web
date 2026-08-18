@@ -18,7 +18,10 @@ import CommunitiesAbuDhabiCyclingCommunity from './components/communities-abu-dh
 import CommunitiesAlQuadraCyclePath from './components/communities-al-quadra-cycle-path/CommunitiesAlQuadraCyclePath';
 import CommunitiesMarchDistanceChallenge from './components/communities-march-distance-challenge/CommunitiesMarchDistanceChallenge';
 import UserAdccStore from './components/user-adcc-store/UserAdccStore';
+import UserMarketplace from './components/user-marketplace/UserMarketplace';
 import StoreDetailPage from './components/user-store-detail/userStoreDetail';
+import UserNews from './components/user-news/UserNews';
+import UserNewsDetail from './components/user-news-detail/UserNewsDetail';
 import ContactUs from './components/contact-us/contactUs.jsx';
 import { Home } from './components/home/Home';
 
@@ -37,6 +40,8 @@ const publicRoutePrefixes = [
   '/user-communities',
   '/user-adcc-store',
   '/user-store-detail',
+  '/user-marketplace',
+  '/user-news',
   '/contact-us',
 ];
 
@@ -132,6 +137,10 @@ function AppContent() {
         element={publicPage(<CommunitiesAbuDhabiCyclingCommunity />)}
       />
       <Route path="/user-adcc-store/*" element={publicPage(<UserAdccStore />)} />
+      <Route path="/user-marketplace" element={publicPage(<UserMarketplace />)} />
+      <Route path="/user-marketplace/:id" element={publicPage(<StoreDetailPage />)} />
+      <Route path="/user-news" element={publicPage(<UserNews />)} />
+      <Route path="/user-news/:id" element={publicPage(<UserNewsDetail />)} />
       <Route path="/user-store-detail/*" element={publicPage(<StoreDetailPage />)} />
 
       <Route path="/contact-us/*" element={publicPage(<ContactUs />)} />

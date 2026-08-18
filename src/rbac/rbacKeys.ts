@@ -14,6 +14,7 @@ export type SidebarItemId =
   | 'cms'
   | 'media'
   | 'push'
+  | 'news'
   | 'users'
   | 'admins'
   | 'reports'
@@ -26,14 +27,14 @@ export type SidebarItemId =
 export const ROLE_DEFAULT_SIDEBAR_ITEMS: Record<UserRole, SidebarItemId[]> = {
   Admin: [
     'dashboard', 'events', 'communities', 'tracks', 'challenges', 'badges',
-    'feed', 'marketplace', 'merchandise', 'cms', 'media', 'push', 'users', 'admins', 'reports',
+    'feed', 'marketplace', 'merchandise', 'cms', 'media', 'push', 'news', 'users', 'admins', 'reports',
     'config', 'languages', 'roles', 'staticData',
   ],
   'community-manager': [
     'dashboard', 'events', 'communities', 'tracks', 'challenges', 'badges', 'reports',
   ],
   'content-manager': [
-    'dashboard', 'events', 'communities', 'feed', 'marketplace', 'cms', 'push', 'reports',
+    'dashboard', 'events', 'communities', 'feed', 'marketplace', 'cms', 'push', 'news', 'reports',
   ],
   moderator: [
     'dashboard', 'feed', 'marketplace', 'users', 'reports',
@@ -54,6 +55,7 @@ export const MENU_PERMISSION_KEY: Record<string, string> = {
   cms: 'manage_cms',
   media: 'manage_media',
   push: '',
+  news: 'manage_cms',
   users: 'manage_users',
   reports: '',
   config: 'app_configuration',

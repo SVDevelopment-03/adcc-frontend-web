@@ -177,7 +177,7 @@ text-transform: Capitalize !important;}
       position: absolute;
       left: 20px;
       top: 22px;
-      width: 113px;
+      width: 185px;
       min-height: 23px;
       color: rgba(255, 255, 255, 0.6);
       font-size: 16px;
@@ -492,6 +492,7 @@ text-transform: Capitalize !important;}
 
 function TracksJourneyCard() {
   const { t } = useTranslation();
+  const titleWords = useWordList("public.common.journeyCard.title");
   const avatarBackgrounds = [
     "linear-gradient(135deg, #f7c59f 0%, #7aa7ff 100%)",
     "linear-gradient(135deg, #f58b8b 0%, #ffe08a 100%)",
@@ -509,8 +510,22 @@ function TracksJourneyCard() {
       <p className="tracks-journey-card__eyebrow">
         {t("public.common.journeyCard.eyebrow")}
       </p>
-      <h3 className="bebas tracks-journey-card__title">
-        {t("public.common.journeyCard.title")}
+      <h3
+        className="bebas tracks-journey-card__title"
+        style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}
+      >
+        {titleWords.map((word, index) => (
+          <motion.span
+            key={index}
+            initial={{ opacity: 0, y: 80 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: index * 0.07 }}
+            viewport={{ once: true }}
+            style={{ display: "inline-block" }}
+          >
+            {word}
+          </motion.span>
+        ))}
       </h3>
       <div
         className="tracks-journey-card__community"

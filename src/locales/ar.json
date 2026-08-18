@@ -11,6 +11,7 @@
     "marketplace": "السوق",
     "merchandise": "بضائع النادي",
     "cms": "إدارة المحتوى",
+    "news": "الأخبار",
     "media": "مكتبة الوسائط",
     "push": "الإشعارات",
     "users": "المستخدمون",
@@ -1716,6 +1717,90 @@
       "defaultSet": "تم تحديث اللغة الافتراضية"
     }
   },
+  "news": {
+    "list": {
+      "title": "الأخبار",
+      "subtitle": "إدارة أخبار النادي ومقالات المدونة",
+      "manageCategories": "إدارة الفئات",
+      "createButton": "مقال جديد",
+      "searchPlaceholder": "ابحث عن المقالات",
+      "allCategories": "جميع الفئات",
+      "search": "بحث",
+      "by": "بواسطة",
+      "unknownAuthor": "نادي ADCC",
+      "notPublished": "لم يُنشر بعد",
+      "empty": "لا توجد مقالات إخبارية بعد",
+      "emptyHint": "أنشئ أول مقال للبدء.",
+      "tabs": {
+        "all": "الكل",
+        "draft": "مسودة",
+        "published": "منشور",
+        "trash": "المهملات"
+      },
+      "actions": {
+        "edit": "تعديل",
+        "view": "عرض",
+        "publish": "نشر",
+        "unpublish": "إلغاء النشر",
+        "trash": "نقل إلى المهملات",
+        "restore": "استعادة",
+        "deleteForever": "حذف نهائي"
+      },
+      "pagination": {
+        "showing": "عرض {{from}}-{{to}} من {{total}}"
+      },
+      "deleteModal": {
+        "title": "حذف المقال الإخباري",
+        "message": "سيؤدي هذا إلى حذف المقال نهائياً. لا يمكن التراجع عن هذا الإجراء.",
+        "confirm": "حذف"
+      },
+      "toasts": {
+        "loadError": "فشل تحميل الأخبار",
+        "statusUpdated": "تم تحديث حالة الخبر",
+        "statusError": "فشل تحديث الحالة",
+        "deleteSuccess": "تم حذف المقال الإخباري",
+        "deleteError": "فشل الحذف"
+      }
+    },
+    "form": {
+      "createTitle": "مقال جديد",
+      "editTitle": "تعديل المقال",
+      "subtitle": "اكتب محتوى إخباري ثنائي اللغة لصفحة الأخبار العامة",
+      "englishSection": "الإنجليزية",
+      "arabicSection": "العربية",
+      "titleLabel": "العنوان",
+      "titlePlaceholder": "عنوان المقال",
+      "titleArLabel": "العنوان (بالعربية)",
+      "titleArPlaceholder": "عنوان المقال",
+      "contentLabel": "المحتوى",
+      "contentPlaceholder": "اكتب محتوى المقال...",
+      "contentArLabel": "المحتوى (بالعربية)",
+      "contentArPlaceholder": "اكتب محتوى المقال...",
+      "publishSection": "إعدادات النشر",
+      "categoryLabel": "الفئة",
+      "selectCategory": "اختر فئة",
+      "authorLabel": "الكاتب / التوقيع",
+      "authorPlaceholder": "مثال: نادي ADCC",
+      "publishDateLabel": "تاريخ النشر",
+      "publishDateHint": "اتركه فارغاً لاستخدام تاريخ اليوم عند النشر.",
+      "imageSection": "الصورة البارزة",
+      "uploadImage": "رفع الصورة البارزة",
+      "publishButton": "نشر",
+      "saveDraftButton": "حفظ كمسودة",
+      "loading": "جاري تحميل المقال...",
+      "errors": {
+        "titleRequired": "العنوان (بالإنجليزية أو العربية) مطلوب",
+        "contentRequired": "المحتوى (بالإنجليزية أو العربية) مطلوب",
+        "fixFields": "يرجى تصحيح الحقول المحددة"
+      },
+      "toasts": {
+        "createSuccess": "تم إنشاء المقال الإخباري",
+        "updateSuccess": "تم تحديث المقال الإخباري",
+        "saveError": "فشل حفظ المقال الإخباري",
+        "loadError": "فشل تحميل المقال الإخباري"
+      }
+    }
+  },
   "cms": {
     "title": "إدارة المحتوى",
     "subtitle": "إدارة محتوى الصفحة الرئيسية والتطبيق",
@@ -2062,6 +2147,7 @@
       "community": "المجتمع",
       "challenges": "التحديات",
       "tracks": "المسارات",
+      "news": "الأخبار",
       "logoAlt": "نادي أبوظبي للدراجات"
     },
     "auth": {
@@ -2169,7 +2255,7 @@
       },
       "store": {
         "title": "متجر نادي أبوظبي للدراجات",
-        "officialMerchandise": "منتجات النادي الرسمية",
+        "officialMerchandise": "متجر النادي",
         "communityMarketplace": "سوق المجتمع",
         "viewStore": "تصفّح المتجر",
         "exploreMarketplace": "استكشف السوق",
@@ -2270,6 +2356,88 @@
         "footer": {
           "address": "أبوظبي، جزيرة ياس، حلبة مرسى ياس، الفيلا 18."
         }
+      }
+    },
+    "marketplace": {
+      "listing": {
+        "hero": {
+          "titleWords": ["سوق", "المجتمع"],
+          "breadcrumb": "الرئيسية / السوق"
+        },
+        "browseTitleWords": ["تصفح", "إعلانات", "المجتمع"],
+        "searchPlaceholder": "ابحث عن الإعلانات",
+        "allCategories": "جميع الفئات",
+        "itemsCount": "{{count}} عنصر",
+        "listingsHeading": "إعلانات المجتمع",
+        "noListings": "لا توجد إعلانات في السوق متاحة في الوقت الحالي.",
+        "gearUp": {
+          "titleWords": ["بيع", "وشراء", "مع", "زملائك", "دراجي", "ADCC"],
+          "body": "تصفح الدراجات والمعدات والإكسسوارات المستعملة التي أدرجها أعضاء مجتمع ADCC. هل لديك شيء تريد بيعه؟ أضف إعلانك الخاص وتواصل مع زملائك الدراجين.",
+          "imageAlt": "سوق ركوب الدراجات"
+        },
+        "footer": {
+          "address": "أبوظبي، جزيرة ياس، حلبة مرسى ياس، الفيلا 18."
+        }
+      },
+      "detail": {
+        "loading": "جارٍ تحميل تفاصيل الإعلان...",
+        "thumbnailAlt": "معاينة الإعلان",
+        "trustedBy": "موثوق من قبل أكثر من 5,000 دراج",
+        "sellerAlt": "البائع",
+        "fields": {
+          "category": "الفئة",
+          "condition": "الحالة",
+          "location": "الموقع",
+          "posted": "تاريخ النشر"
+        },
+        "contactSeller": "تواصل مع البائع",
+        "share": "مشاركة",
+        "linkCopied": "تم نسخ الرابط",
+        "noContactInfo": "لم يقم هذا البائع بإضافة بيانات تواصل بعد.",
+        "previousImage": "الصورة السابقة",
+        "nextImage": "الصورة التالية",
+        "closeGallery": "إغلاق",
+        "tabs": {
+          "description": "الوصف",
+          "specifications": "المواصفات",
+          "benefits": "المزايا",
+          "shippingInfo": "معلومات الشحن"
+        },
+        "aboutHeading": "عن هذا الإعلان",
+        "productDetailAlt": "تفاصيل الإعلان",
+        "similarTitleWords": ["إعلانات", "مشابهة"],
+        "noSimilar": "لا توجد إعلانات مشابهة متاحة حالياً.",
+        "backToMarketplace": "العودة إلى السوق",
+        "notFound": "تعذر العثور على هذا الإعلان.",
+        "loadError": "تعذّر تحميل تفاصيل الإعلان المحدد حالياً.",
+        "unknownSeller": "بائع غير معروف",
+        "footer": {
+          "address": "أبوظبي، جزيرة ياس، حلبة مرسى ياس، الفيلا 18."
+        }
+      }
+    },
+    "news": {
+      "listing": {
+        "hero": {
+          "titleWords": ["الأخبار"],
+          "breadcrumb": "الرئيسية / الأخبار"
+        },
+        "heading": "تواصل مع مجتمعات ركوب الدراجات في أبوظبي",
+        "subheading": "يجمع نادي أبوظبي للدراجات الدراجين من خلال مجتمعات تركز على ركوب الدراجات. سواء كان ذلك من أجل اللياقة أو المنافسة أو المتعة، ستجد مجموعة تناسبك.",
+        "byLine": "بواسطة {{author}} | {{date}}",
+        "defaultAuthor": "نادي ADCC",
+        "empty": "لا توجد مقالات إخبارية متاحة في الوقت الحالي.",
+        "footer": {
+          "address": "أبوظبي، جزيرة ياس، حلبة مرسى ياس، الفيلا 18."
+        }
+      },
+      "detail": {
+        "loading": "جاري تحميل المقال...",
+        "notFound": "تعذر العثور على هذا المقال.",
+        "backToNews": "العودة إلى الأخبار",
+        "share": "مشاركة",
+        "linkCopied": "تم نسخ الرابط",
+        "relatedHeading": "المزيد من الأخبار"
       }
     },
     "tracks": {

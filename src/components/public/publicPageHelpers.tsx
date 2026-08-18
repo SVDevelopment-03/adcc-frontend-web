@@ -93,11 +93,14 @@ export function PublicPageHero({
   breadcrumb,
   backgroundImage,
   classPrefix = "public-page",
+  breadcrumbFontSize,
 }: {
   titleWords: string[];
   breadcrumb: string[];
   backgroundImage: string;
   classPrefix?: string;
+  /** Overrides the default 22px breadcrumb size — pass a smaller value for a more compact hero. */
+  breadcrumbFontSize?: number;
 }) {
   return (
     <section
@@ -135,7 +138,7 @@ export function PublicPageHero({
         </h1>
         <p
           className={`${classPrefix}-hero-breadcrumb overflow-hidden`}
-          style={{ color: "rgba(255,255,255,0.8)", fontSize: 22 }}
+          style={{ color: "rgba(255,255,255,0.8)", fontSize: breadcrumbFontSize ?? 22 }}
         >
           <HeroAnimatedWords words={breadcrumb} gap={8} />
         </p>

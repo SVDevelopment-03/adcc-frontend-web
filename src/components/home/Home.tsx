@@ -3408,7 +3408,9 @@ function StoreSection() {
         {HOME_STORE_PRODUCTS.map((product) => (
           <div
             key={product.id}
-            onClick={() => navigate("/user-adcc-store")}
+            onClick={() =>
+              navigate(product.variant === "marketplace" ? "/user-marketplace" : "/user-adcc-store")
+            }
             className={`store-card store-featured-card store-animated-card${product.variant === "marketplace" ? " is-marketplace" : ""}`}
           >
             <div className="store-featured-icon">

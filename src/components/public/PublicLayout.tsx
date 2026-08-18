@@ -433,6 +433,11 @@ function PublicFooter() {
                 </NavLink>
               </li>
               <li>
+                <NavLink to="/user-news" className="pub-footer-link">
+                  {t("public.nav.news")}
+                </NavLink>
+              </li>
+              <li>
                 <NavLink to="/contact-us" className="pub-footer-link">
                   {t("public.footer.contactUs")}
                 </NavLink>

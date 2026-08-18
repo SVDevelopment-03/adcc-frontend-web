@@ -98,7 +98,7 @@ margin-bottom: 3rem !important;}
       position: absolute;
       left: 20px;
       top: 22px;
-      width: 113px;
+      width: 185px;
       min-height: 23px;
       color: rgba(255, 255, 255, 0.6);
       font-family: 'Bebas Kai', sans-serif;
@@ -434,8 +434,7 @@ margin-bottom: 3rem !important;}
 
 .journey-card__title{
     padding-bottom: 25px !important;
-        padding-top: 25px !important;
-    display: block !important;}
+        padding-top: 25px !important;}
 
 .about-coaches-title div{
 justify-content: center !important;}

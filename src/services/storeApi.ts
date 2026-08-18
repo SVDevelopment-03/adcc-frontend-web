@@ -41,7 +41,10 @@ export interface StoreItem {
   coverImage?: string;
   photos?: string[];
   isFeatured?: boolean;
-  createdBy?: { _id: string; fullName: string };
+  createdBy?: { _id: string; fullName: string; profileImage?: string };
+  /** Derived server-side from createdBy.fullName (falls back to "Unknown Seller"). */
+  sellerName?: string;
+  postedBy?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -137,6 +140,43 @@ export async function getStoreItemById(itemId: string): Promise<StoreItem> {
     };
   } catch (error) {
     const message = getApiErrorMessage(error, 'Failed to load store item');
+    throw new Error(message);
+  }
+}
+
+export interface StoreItemsPagination {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+}
+
+export interface GetStoreItemsPageResult {
+  items: StoreItem[];
+  pagination: StoreItemsPagination;
+}
+
+/**
+ * Fetches a page of store/marketplace items along with pagination metadata,
+ * for listing pages that need real (not client-side) pagination.
+ * @throws Error with a clear message when the API request fails.
+ */
+export async function getStoreItemsPage(
+  params?: GetStoreItemsParams
+): Promise<GetStoreItemsPageResult> {
+  try {
+    const { data } = await api.get<StoreItemsResponse>('/v1/store/items', { params });
+    if (!data?.success || !Array.isArray(data?.data?.items)) {
+      return { items: [], pagination: { page: 1, limit: params?.limit ?? 6, total: 0, pages: 1 } };
+    }
+    return {
+      items: data.data.items.map((item) => ({ ...item, id: item._id })),
+      pagination:
+        data.data.pagination ??
+        { page: 1, limit: params?.limit ?? 6, total: data.data.items.length, pages: 1 },
+    };
+  } catch (error) {
+    const message = getApiErrorMessage(error, 'Failed to load store items');
     throw new Error(message);
   }
 }

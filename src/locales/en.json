@@ -13,6 +13,7 @@
     "cms": "Content Manager",
     "media": "Media Library",
     "push": "Push Notifications",
+    "news": "News",
     "users": "Users",
     "admins": "Admin Users",
     "reports": "Reports & Analytics",
@@ -1743,6 +1744,90 @@
       "defaultSet": "Default language updated"
     }
   },
+  "news": {
+    "list": {
+      "title": "News",
+      "subtitle": "Manage club news articles and blog posts",
+      "manageCategories": "Manage Categories",
+      "createButton": "New Article",
+      "searchPlaceholder": "Search articles",
+      "allCategories": "All Categories",
+      "search": "Search",
+      "by": "By",
+      "unknownAuthor": "ADCC Club",
+      "notPublished": "Not published yet",
+      "empty": "No news articles yet",
+      "emptyHint": "Create your first article to get started.",
+      "tabs": {
+        "all": "All",
+        "draft": "Draft",
+        "published": "Published",
+        "trash": "Trash"
+      },
+      "actions": {
+        "edit": "Edit",
+        "view": "View",
+        "publish": "Publish",
+        "unpublish": "Unpublish",
+        "trash": "Move to Trash",
+        "restore": "Restore",
+        "deleteForever": "Delete Permanently"
+      },
+      "pagination": {
+        "showing": "Showing {{from}}-{{to}} of {{total}}"
+      },
+      "deleteModal": {
+        "title": "Delete News Article",
+        "message": "This will permanently delete the article. This action cannot be undone.",
+        "confirm": "Delete"
+      },
+      "toasts": {
+        "loadError": "Failed to load news",
+        "statusUpdated": "News status updated",
+        "statusError": "Failed to update status",
+        "deleteSuccess": "News article deleted",
+        "deleteError": "Failed to delete"
+      }
+    },
+    "form": {
+      "createTitle": "New Article",
+      "editTitle": "Edit Article",
+      "subtitle": "Write bilingual news content for the public News page",
+      "englishSection": "English",
+      "arabicSection": "Arabic",
+      "titleLabel": "Title",
+      "titlePlaceholder": "Article title",
+      "titleArLabel": "Title (Arabic)",
+      "titleArPlaceholder": "عنوان المقال",
+      "contentLabel": "Content",
+      "contentPlaceholder": "Write the article content...",
+      "contentArLabel": "Content (Arabic)",
+      "contentArPlaceholder": "اكتب محتوى المقال...",
+      "publishSection": "Publish Settings",
+      "categoryLabel": "Category",
+      "selectCategory": "Select a category",
+      "authorLabel": "Author / Byline",
+      "authorPlaceholder": "e.g. Adcc Club",
+      "publishDateLabel": "Publish Date",
+      "publishDateHint": "Leave blank to use today's date when publishing.",
+      "imageSection": "Featured Image",
+      "uploadImage": "Upload featured image",
+      "publishButton": "Publish",
+      "saveDraftButton": "Save as Draft",
+      "loading": "Loading article...",
+      "errors": {
+        "titleRequired": "Title (English or Arabic) is required",
+        "contentRequired": "Content (English or Arabic) is required",
+        "fixFields": "Please fix the highlighted fields"
+      },
+      "toasts": {
+        "createSuccess": "News article created",
+        "updateSuccess": "News article updated",
+        "saveError": "Failed to save news article",
+        "loadError": "Failed to load news article"
+      }
+    }
+  },
   "cms": {
     "title": "Content Manager",
     "subtitle": "Manage homepage and app content",
@@ -2089,6 +2174,7 @@
       "community": "Community",
       "challenges": "Challenges",
       "tracks": "Tracks",
+      "news": "News",
       "logoAlt": "Abu Dhabi Cycling Club"
     },
     "auth": {
@@ -2196,7 +2282,7 @@
       },
       "store": {
         "title": "ADCC Store",
-        "officialMerchandise": "Official Merchandise",
+        "officialMerchandise": "Club Store",
         "communityMarketplace": "Community Marketplace",
         "viewStore": "View Store",
         "exploreMarketplace": "Explore Marketplace",
@@ -2297,6 +2383,88 @@
         "footer": {
           "address": "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18."
         }
+      }
+    },
+    "marketplace": {
+      "listing": {
+        "hero": {
+          "titleWords": ["Community", "Marketplace"],
+          "breadcrumb": "Home / Marketplace"
+        },
+        "browseTitleWords": ["Browse", "Community", "Listings"],
+        "searchPlaceholder": "Search listings",
+        "allCategories": "All Categories",
+        "itemsCount": "{{count}} items",
+        "listingsHeading": "Community Listings",
+        "noListings": "No marketplace listings available at the moment.",
+        "gearUp": {
+          "titleWords": ["Buy", "and", "Sell", "with", "Fellow", "ADCC", "Cyclists"],
+          "body": "Browse pre-loved bikes, gear, and accessories listed by members of the ADCC community. Have something to sell? List your own item and connect with fellow cyclists.",
+          "imageAlt": "Cycling marketplace"
+        },
+        "footer": {
+          "address": "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18."
+        }
+      },
+      "detail": {
+        "loading": "Loading listing details...",
+        "thumbnailAlt": "Listing preview",
+        "trustedBy": "Trusted by 5,000+ Cyclists",
+        "sellerAlt": "Seller",
+        "fields": {
+          "category": "Category",
+          "condition": "Condition",
+          "location": "Location",
+          "posted": "Posted"
+        },
+        "contactSeller": "Contact seller",
+        "share": "Share",
+        "linkCopied": "Link copied to clipboard",
+        "noContactInfo": "This seller hasn't provided contact details yet.",
+        "previousImage": "Previous image",
+        "nextImage": "Next image",
+        "closeGallery": "Close",
+        "tabs": {
+          "description": "Description",
+          "specifications": "Specifications",
+          "benefits": "Benefits",
+          "shippingInfo": "Shipping information"
+        },
+        "aboutHeading": "About This Listing",
+        "productDetailAlt": "Listing detail",
+        "similarTitleWords": ["Similar", "Listings"],
+        "noSimilar": "No similar listings available right now.",
+        "backToMarketplace": "Back to Marketplace",
+        "notFound": "This listing could not be found.",
+        "loadError": "The selected listing could not be loaded right now.",
+        "unknownSeller": "Unknown Seller",
+        "footer": {
+          "address": "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18."
+        }
+      }
+    },
+    "news": {
+      "listing": {
+        "hero": {
+          "titleWords": ["News"],
+          "breadcrumb": "Home / News"
+        },
+        "heading": "Connect with Cycling Communities Across Abu Dhabi",
+        "subheading": "Abu Dhabi Cycling Club unites riders through communities focused on cycling. Whether for fitness, competition, or fun, find a group that suits you.",
+        "byLine": "By {{author}} | {{date}}",
+        "defaultAuthor": "Adcc Club",
+        "empty": "No news articles available at the moment.",
+        "footer": {
+          "address": "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18."
+        }
+      },
+      "detail": {
+        "loading": "Loading article...",
+        "notFound": "This article could not be found.",
+        "backToNews": "Back to News",
+        "share": "Share",
+        "linkCopied": "Link copied to clipboard",
+        "relatedHeading": "More News"
       }
     },
     "tracks": {

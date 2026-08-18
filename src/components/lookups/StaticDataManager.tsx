@@ -89,6 +89,13 @@ const SECTIONS: SectionDef[] = [
     itemLabel: 'Unit',
     description: 'Target units offered when creating challenges (km, hours, rides, events).',
   },
+  {
+    key: 'news_category',
+    type: 'news_category',
+    label: 'News Categories',
+    itemLabel: 'Category',
+    description: 'Categories used when creating or filtering news articles.',
+  },
 ];
 
 export function StaticDataManager() {

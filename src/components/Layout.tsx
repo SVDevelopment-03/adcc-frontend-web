@@ -32,6 +32,9 @@ import { MarketplaceItemEdit } from './marketplace/MarketplaceItemEdit';
 import { CMS } from './cms/CMS';
 import { MediaLibrary } from './media/MediaLibrary';
 import { PushNotifications } from './push/PushNotifications';
+import { NewsList } from './news/NewsList';
+import { NewsCreate } from './news/NewsCreate';
+import { NewsEdit } from './news/NewsEdit';
 import { UsersList } from './users/UsersList';
 import { UserCreate } from './users/UserCreate';
 import { AdminsList } from './users/AdminsList';
@@ -234,6 +237,10 @@ export function Layout() {
             <Route path="/cms" element={withPermission('manage_cms', <CMS />)} />
             <Route path="/media" element={withPermission('manage_media', <MediaLibrary />)} />
             <Route path="/push" element={withRoleSidebarAccess('push', <PushNotifications />)} />
+
+            <Route path="/news" element={withPermission('manage_cms', <NewsList />)} />
+            <Route path="/news/create" element={withPermission('manage_cms', <NewsCreate />)} />
+            <Route path="/news/:id/edit" element={withPermission('manage_cms', <NewsEdit />)} />
             <Route path="/users" element={withPermission('manage_users', <UsersList />)} />
             <Route path="/users/create" element={withPermission('manage_users', <UserCreate />)} />
             <Route path="/admins" element={withPermission('manage_users', <AdminsList />)} />
