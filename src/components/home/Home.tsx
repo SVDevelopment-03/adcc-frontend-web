@@ -321,6 +321,15 @@ font-family: var(--font-satoshi) !important;}
   .home-ticker-text--stat {
     font-size: 29.6901px;
   }
+  /* Arabic falls back to a regular sans-serif (Bebas Kai has no Arabic glyphs),
+     which renders noticeably larger/heavier than the condensed Latin caps at
+     the same font-size, so the ticker text overflows/crowds — scale it down. */
+  html[dir='rtl'] .home-ticker-text--members {
+    font-size: 20px;
+  }
+  html[dir='rtl'] .home-ticker-text--stat {
+    font-size: 22px;
+  }
   .home-ticker-text--light {
     color: #000000;
   }
@@ -841,6 +850,12 @@ font-family: var(--font-satoshi) !important;}
     font-size: 50.3529px;
     line-height: 63px;
     color: #000000;
+  }
+  /* Arabic spells these out as full phrases ("أكثر من 15 ألف") instead of the
+     short "15K+", so the number-sized font wraps/overflows — scale it down. */
+  html[dir='rtl'] .home-about-stat-number {
+    font-size: 32px;
+    line-height: 38px;
   }
   .home-about-stat-label {
     font-family: 'Outfit', sans-serif;
@@ -1393,6 +1408,24 @@ font-family: var(--font-satoshi) !important;}
     .home-ticker-text--stat {
       font-size: 26px !important;
     }
+    html[dir='rtl'] .home-ticker-text--members {
+      font-size: 19px !important;
+    }
+    html[dir='rtl'] .home-ticker-text--stat {
+      font-size: 20px !important;
+    }
+    .home-ticker-icon--members {
+      width: 24px !important;
+      height: 20.4px !important;
+    }
+    .home-ticker-icon--md {
+      width: 27px !important;
+      height: 27px !important;
+    }
+    .home-ticker-icon--lg {
+      width: 34px !important;
+      height: 34px !important;
+    }
     .journey-section {
       display: flex !important;
       flex-direction: column !important;
@@ -1561,6 +1594,10 @@ font-family: var(--font-satoshi) !important;}
       font-size: 42px !important;
       line-height: 52px !important;
     }
+    html[dir='rtl'] .home-about-stat-number {
+      font-size: 28px !important;
+      line-height: 34px !important;
+    }
     .home-about-stat-label {
       font-size: 20px !important;
     }
@@ -1682,8 +1719,27 @@ font-family: var(--font-satoshi) !important;}
     .home-ticker-text--stat {
       font-size: 24px !important;
     }
+    html[dir='rtl'] .home-ticker-text--members {
+      font-size: 16px !important;
+    }
+    html[dir='rtl'] .home-ticker-text--stat {
+      font-size: 17px !important;
+    }
+    .home-ticker-icon--members {
+      width: 19px !important;
+      height: 16.1px !important;
+    }
+    .home-ticker-icon--md {
+      width: 21px !important;
+      height: 21px !important;
+    }
+    .home-ticker-icon--lg {
+      width: 26px !important;
+      height: 26px !important;
+    }
     .journey-section {
-      padding: 42px 18px !important;
+      padding-block: 42px !important;
+      padding-inline: 18px 0 !important;
     }
     .journey-copy {
       min-width: 0 !important;
@@ -1706,8 +1762,7 @@ font-family: var(--font-satoshi) !important;}
       gap: 20px !important;
     }
     .journey-cards {
-      margin-right: -18px !important;
-      padding-right: 18px !important;
+      padding-inline-end: 18px !important;
     }
     .journey-card {
       flex-basis: 220px !important;
@@ -1914,6 +1969,10 @@ font-family: var(--font-satoshi) !important;}
       font-size: 30px !important;
       line-height: 40px !important;
     }
+    html[dir='rtl'] .home-about-stat-number {
+      font-size: 20px !important;
+      line-height: 26px !important;
+    }
     .home-about-stat-label {
       font-size: 18px !important;
     }
@@ -1972,9 +2031,25 @@ font-family: var(--font-satoshi) !important;}
       font-size: 36px !important;
       max-width: 300px !important;
     }
+
+html[dir='rtl'] .home-platform-card-content{
+    bottom: 20px !important;}
+    html[dir='rtl'] .home-platform-card-title {
+        font-size: 16px !important;
+    }html[dir='rtl'] .home-platform-card-action {
+    font-size: 14px !important;
+    padding-bottom: 0 !important;
+}html[dir='rtl'] .home-platform-card-content{
+    inset-inline: 0px !important;}
+
     .home-feature-list {
       grid-template-columns: 1fr !important;
     }
+html[dir='rtl']  .store-featured-product-media{
+        left: -40px !important;}
+
+
+
     .journey-card {
       flex-basis: 206px !important;
       height: 286px !important;
@@ -2916,7 +2991,7 @@ function AppSection() {
           minWidth: 0,
         }}
       >
-        <motion.h2
+        <h2
           className="home-app-title overflow-hidden"
           style={{
             fontFamily: "'Bebas Kai', sans-serif",
@@ -2926,47 +3001,11 @@ function AppSection() {
             color: "#fff",
             marginBottom: 32,
           }}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
         >
-          {appTitleWords.slice(0, 3).map((word, index) => (
-            <span
-              key={index}
-              className="home-word-gap inline-block overflow-hidden"
-            >
-              <motion.span
-                className="inline-block"
-                variants={{
-                  hidden: { y: "120%", opacity: 0 },
-                  visible: { y: "0%", opacity: 1 },
-                }}
-                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              >
-                {word}
-              </motion.span>
-            </span>
-          ))}
+          {appTitleWords.slice(0, 3).join(" ")}
           <br />
-          {appTitleWords.slice(3).map((word, index) => (
-            <span
-              key={index}
-              className="home-word-gap inline-block overflow-hidden"
-            >
-              <motion.span
-                className="inline-block"
-                variants={{
-                  hidden: { y: "120%", opacity: 0 },
-                  visible: { y: "0%", opacity: 1 },
-                }}
-                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              >
-                {word}
-              </motion.span>
-            </span>
-          ))}
-        </motion.h2>
+          {appTitleWords.slice(3).join(" ")}
+        </h2>
 
         <motion.p
           className="home-download-label overflow-hidden font-satoshi"
@@ -3409,7 +3448,11 @@ function StoreSection() {
           <div
             key={product.id}
             onClick={() =>
-              navigate(product.variant === "marketplace" ? "/user-marketplace" : "/user-adcc-store")
+              navigate(
+                product.variant === "marketplace"
+                  ? "/user-marketplace"
+                  : "/user-adcc-store",
+              )
             }
             className={`store-card store-featured-card store-animated-card${product.variant === "marketplace" ? " is-marketplace" : ""}`}
           >

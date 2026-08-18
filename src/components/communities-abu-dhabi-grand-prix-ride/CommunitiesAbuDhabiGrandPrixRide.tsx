@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   Bike,
@@ -6,6 +6,7 @@ import {
   Cross,
   Droplets,
   Heart,
+  Lightbulb,
   MapPin,
   ParkingCircle,
   Plus,
@@ -174,11 +175,19 @@ const getStats = (event: GrandPrixEvent | null | undefined, t: TFunction): StatC
 ];
 
 const facilityIconMap: Array<{ match: RegExp; icon: LucideIcon }> = [
-  { match: /water|drink|hydration/i, icon: Droplets },
-  { match: /medical|aid|health|ambulance/i, icon: Cross },
-  { match: /repair|bike|mechanic|workshop/i, icon: Wrench },
-  { match: /parking/i, icon: ParkingCircle },
-  { match: /restroom|toilet|washroom/i, icon: Users },
+  // Amenity labels come through as whatever the admin-managed lookup list
+  // (or the API's locale) returns — an English label or an Arabic one
+  // ("دورات المياه", "موقف سيارات", ...) — so match keywords in both
+  // languages rather than defaulting everything to the generic Bike icon.
+  //
+  // Toilets is checked before water: its Arabic label ("دورات المياه")
+  // contains the word for "water", so it must win first.
+  { match: /restroom|toilet|washroom|دورات/i, icon: Users },
+  { match: /water|drink|hydration|ماء|مياه/i, icon: Droplets },
+  { match: /medical|aid|health|ambulance|طبي|صحي|إسعاف/i, icon: Cross },
+  { match: /repair|bike|mechanic|workshop|دراجات|تصليح|إصلاح|ورشة/i, icon: Wrench },
+  { match: /parking|موقف|مواقف/i, icon: ParkingCircle },
+  { match: /light|إضاءة/i, icon: Lightbulb },
 ];
 
 const getFacilityIcon = (title: string) =>
@@ -447,6 +456,30 @@ function StatsStrip({ event, stats }: { event: GrandPrixEvent; stats: StatCard[]
 
 function FacilitiesSection({ facilities }: { facilities: Facility[] }) {
   const { t } = useTranslation();
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const drag = useRef({ active: false, startX: 0, startScrollLeft: 0 });
+
+  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    drag.current = {
+      active: true,
+      startX: event.pageX,
+      startScrollLeft: el.scrollLeft,
+    };
+  };
+
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const el = scrollRef.current;
+    if (!el || !drag.current.active) return;
+    const delta = event.pageX - drag.current.startX;
+    el.scrollLeft = drag.current.startScrollLeft - delta;
+  };
+
+  const endDrag = () => {
+    drag.current.active = false;
+  };
+
   if (facilities.length === 0) return null;
 
   return (
@@ -473,11 +506,16 @@ function FacilitiesSection({ facilities }: { facilities: Facility[] }) {
       </div>
 
       <div
-        className="facility-scroll mt-[42px] flex gap-3 overflow-x-auto pl-3 sm:gap-5 md:pl-6 lg:pl-[max(1.5rem,calc((100vw-1268px)/2))]"
+        ref={scrollRef}
+        className="facility-scroll mt-[42px] flex gap-3 overflow-x-auto pl-3 sm:gap-5 md:pl-6 lg:pl-[max(1.5rem,calc((100vw-1268px)/2))] cursor-grab select-none active:cursor-grabbing"
         style={{
           maskImage: "linear-gradient(to right, black 85%, transparent 100%)",
           WebkitMaskImage: "linear-gradient(to right, black 85%, transparent 100%)",
         }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={endDrag}
+        onMouseLeave={endDrag}
       >
         {facilities.map(({ title, icon: Icon }) => (
           <article
@@ -533,25 +571,6 @@ function ScheduleSection({
             className="absolute bottom-0 left-[41px] h-[478px] w-[377px] object-contain"
           />
 
-          <div className="absolute start-[60px] top-[265px] z-20 flex items-center">
-            {[
-              "/img/Ellipse 2 (1).png",
-              "/img/Ellipse 3 (1).png",
-              "/img/Ellipse 4 (1).png",
-              "/img/Ellipse 5 (1).png",
-            ].map((src) => (
-              <img
-                key={src}
-                src={src}
-                alt={t("public.events.detail.schedule.riderAlt")}
-                className="-ms-[29.16px] h-[58.33px] w-[58.33px] rounded-full border-2 border-white object-cover first:ms-0"
-              />
-            ))}
-
-            <div className="-ms-[29.16px] flex h-[58.33px] w-[58.33px] items-center justify-center rounded-full bg-white font-sans text-[20.83px] font-normal uppercase leading-[27px] text-black">
-              +12k
-            </div>
-          </div>
         </div>
 
         {/* <div className="space-y-[16px]"> */}

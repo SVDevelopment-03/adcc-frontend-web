@@ -149,7 +149,10 @@ export default function ChallengesPage() {
     return () => {
       mounted = false;
     };
-  }, [status, page]);
+    // Re-fetch on language switch too — the API returns already-localized
+    // text, so without this the titles stay in the old language until a
+    // full page reload.
+  }, [status, page, i18n.language]);
 
   useEffect(() => {
     let mounted = true;

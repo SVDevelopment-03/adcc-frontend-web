@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -6,13 +6,16 @@ import {
   CalendarDays,
   Clock,
   Cloud,
+  Coffee,
   Cross,
   Droplets,
   Gauge,
+  Lightbulb,
   MapPin,
   ParkingCircle,
   Plus,
   Shield,
+  Shirt,
   Users,
   Wrench,
 } from "lucide-react";
@@ -133,11 +136,23 @@ const normalizeFacilities = (track?: Track | null): FacilityCard[] => {
 };
 
 const getFacilityIcon = (name: string): LucideIcon => {
-  if (/water|drink|hydration/i.test(name)) return Droplets;
-  if (/first|aid|medical|health/i.test(name)) return Cross;
-  if (/repair|bike|rental|mechanic/i.test(name)) return Wrench;
-  if (/parking/i.test(name)) return ParkingCircle;
-  if (/toilet|restroom|washroom/i.test(name)) return Users;
+  // Facility names come through as whatever the API/locale returns (an
+  // English slug like "firstAid", an English label like "First Aid", or an
+  // Arabic label like "الإسعافات الأولية") — match keywords in both
+  // languages so the icon doesn't silently fall back to the generic Bike
+  // icon just because the display text is Arabic.
+  //
+  // Toilets is checked before water: its Arabic label ("دورات المياه")
+  // contains the word for "water", so it must win first or every restroom
+  // would render the water-drop icon instead.
+  if (/toilet|restroom|washroom|دورات/i.test(name)) return Users;
+  if (/water|drink|hydration|محطات|مياه/i.test(name)) return Droplets;
+  if (/first|aid|medical|health|إسعاف/i.test(name)) return Cross;
+  if (/repair|bike|rental|mechanic|تأجير|دراجات/i.test(name)) return Wrench;
+  if (/parking|موقف|مواقف/i.test(name)) return ParkingCircle;
+  if (/light|إضاءة/i.test(name)) return Lightbulb;
+  if (/cafe|coffee|مقه/i.test(name)) return Coffee;
+  if (/chang(e|ing)|ملابس|تغيير/i.test(name)) return Shirt;
   return Bike;
 };
 
@@ -271,6 +286,30 @@ function StatsSection({ track }: { track: Track }) {
 
 function FacilitiesSection({ facilities }: { facilities: FacilityCard[] }) {
   const { t } = useTranslation();
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const drag = useRef({ active: false, startX: 0, startScrollLeft: 0 });
+
+  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    drag.current = {
+      active: true,
+      startX: event.pageX,
+      startScrollLeft: el.scrollLeft,
+    };
+  };
+
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const el = scrollRef.current;
+    if (!el || !drag.current.active) return;
+    const delta = event.pageX - drag.current.startX;
+    el.scrollLeft = drag.current.startScrollLeft - delta;
+  };
+
+  const endDrag = () => {
+    drag.current.active = false;
+  };
+
   if (facilities.length === 0) return null;
 
   return (
@@ -293,11 +332,16 @@ function FacilitiesSection({ facilities }: { facilities: FacilityCard[] }) {
       </div>
 
       <div
-        className="mt-14 flex gap-5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pl-4 sm:pl-6 md:pl-10 lg:pl-[max(2.5rem,calc((100vw-1268px)/2))]"
+        ref={scrollRef}
+        className="mt-14 flex gap-5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pl-4 sm:pl-6 md:pl-10 lg:pl-[max(2.5rem,calc((100vw-1268px)/2))] cursor-grab select-none active:cursor-grabbing"
         style={{
           maskImage: "linear-gradient(to right, black 85%, transparent 100%)",
           WebkitMaskImage: "linear-gradient(to right, black 85%, transparent 100%)",
         }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={endDrag}
+        onMouseLeave={endDrag}
       >
         {facilities.map(({ title, icon: Icon }) => (
           <div
@@ -434,7 +478,7 @@ function FaqSection({ track }: { track: Track }) {
 }
 
 export default function TrackDetailPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { trackId = "" } = useParams<{ trackId: string }>();
   const selectedTrackId = trackId.trim();
   const [track, setTrack] = useState<Track>(FALLBACK_TRACK);
@@ -526,7 +570,10 @@ export default function TrackDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [selectedTrackId, t]);
+    // Re-fetch on language switch too — the API returns already-localized
+    // text, so without this the titles stay in the old language until a
+    // full page reload.
+  }, [selectedTrackId, t, i18n.language]);
 
   const facilities = useMemo(() => normalizeFacilities(track), [track]);
 

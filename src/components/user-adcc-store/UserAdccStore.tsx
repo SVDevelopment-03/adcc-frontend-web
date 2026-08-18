@@ -58,7 +58,7 @@ function MerchandiseCard({ product }: { product: Product }) {
 }
 
 export default function AdccStorePage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const heroTitleWords = useWordList("public.store.listing.hero.titleWords");
   const heroBreadcrumb = useWordList("public.store.listing.hero.breadcrumb");
   const browseTitleWords = useWordList("public.store.listing.browseTitleWords");
@@ -82,7 +82,7 @@ export default function AdccStorePage() {
     getMerchandiseCategories()
       .then(setCategories)
       .catch(() => setCategories([]));
-  }, []);
+  }, [i18n.language]);
 
   useEffect(() => {
     setMerchandiseLoading(true);
@@ -103,7 +103,10 @@ export default function AdccStorePage() {
         setMerchandisePagination({ page: 1, limit: PRODUCTS_PAGE_SIZE, total: 0, pages: 1 });
       })
       .finally(() => setMerchandiseLoading(false));
-  }, [merchandisePage, selectedCategoryId, activeSearch]);
+    // Re-fetch on language switch too — the API returns already-localized
+    // text, so without this the titles stay in the old language until a
+    // full page reload.
+  }, [merchandisePage, selectedCategoryId, activeSearch, i18n.language]);
 
   const selectedCategoryName = selectedCategoryId
     ? categories.find((category) => category.id === selectedCategoryId)?.name
@@ -237,15 +240,15 @@ export default function AdccStorePage() {
         </div>
         <div className="mt-2 h-px bg-black/10" />
         {merchandiseLoading ? (
-          <div className="mt-6 grid grid-cols-1 gap-5 sm:mt-8 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, i) => (
+          <div className="mt-6 grid grid-cols-1 gap-5 sm:mt-8 sm:gap-8 md:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="min-h-[300px] animate-pulse rounded-[10px] bg-black/5 sm:min-h-[381px]" />
             ))}
           </div>
         ) : merchandiseProducts.length === 0 ? (
           <p className="mt-6 text-[15px] text-black/50 sm:mt-8 sm:text-[18px]">{t("public.store.listing.noMerchandise")}</p>
         ) : (
-          <div className="mt-6 grid grid-cols-1 gap-5 sm:mt-8 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-6 grid grid-cols-1 gap-5 sm:mt-8 sm:gap-8 md:grid-cols-2 lg:grid-cols-4">
             {merchandiseProducts.map((product) => (
               <MerchandiseCard key={product.id} product={product} />
             ))}

@@ -8,7 +8,6 @@ import api from "../../services/api";
 const CONTACT_DETAILS = {
   email: "INFO@ADCYCLINGCLUB.AE",
   phone: "+971 2 654 5645",
-  location: "ABU DHABI, YAS ISLAND, YAS MARINA CIRCUIT, VILLA 18.",
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -42,7 +41,7 @@ export default function ContactUsPage() {
   const contactItems = [
     { Icon: Mail, labelKey: "email", value: CONTACT_DETAILS.email },
     { Icon: Phone, labelKey: "telephone", value: CONTACT_DETAILS.phone },
-    { Icon: MapPin, labelKey: "location", value: CONTACT_DETAILS.location },
+    { Icon: MapPin, labelKey: "location", value: t("public.footer.address") },
   ];
 
   function validate(vals) {

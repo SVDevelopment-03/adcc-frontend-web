@@ -242,6 +242,26 @@ text-transform: Capitalize !important;}
       white-space: nowrap;
     }
 
+    /* RTL: mirror the avatar stack to the right and the label to the left —
+       applies unchanged at every breakpoint since no media query below
+       overrides this block's positioning. */
+    html[dir='rtl'] .tracks-journey-card__community {
+      left: 20px;
+      right: auto;
+    }
+
+    html[dir='rtl'] .tracks-journey-card__avatar:nth-child(1) { left: auto; right: 0; }
+    html[dir='rtl'] .tracks-journey-card__avatar:nth-child(2) { left: auto; right: 20.67px; }
+    html[dir='rtl'] .tracks-journey-card__avatar:nth-child(3) { left: auto; right: 41.33px; }
+    html[dir='rtl'] .tracks-journey-card__avatar:nth-child(4) { left: auto; right: 62px; }
+    html[dir='rtl'] .tracks-journey-card__avatar:nth-child(5) { left: auto; right: 82.67px; }
+
+    html[dir='rtl'] .tracks-journey-card__community-text {
+      left: auto;
+      right: 94.52px;
+      text-align: right;
+    }
+
     @media (max-width: 620px) {
       .tracks-journey-card {
         height: 214px;
@@ -711,19 +731,17 @@ function WhySection() {
           }}
         >
           <h2
-            className="bebas track-why-title overflow-hidden"
+            className="bebas track-why-title"
             style={{
               fontSize: 50,
               color: "#000",
               lineHeight: 1,
-              maxWidth: 300,
+              maxWidth: 600,
             }}
           >
-            <AnimatedWords words={titleWords} gap={12} />
+            {titleWords.join(" ")}
           </h2>
-          <AnimatedButton>
-            {t("public.common.exploreTracks")}
-          </AnimatedButton>
+          <AnimatedButton>{t("public.common.exploreTracks")}</AnimatedButton>
         </div>
 
         <div
@@ -1251,7 +1269,7 @@ function TracksGrid() {
           style={{
             fontSize: 50,
             lineHeight: 1,
-            maxWidth: 440,
+            maxWidth: 650,
             textTransform: "capitalize",
           }}
           initial="hidden"
@@ -1555,7 +1573,7 @@ function FAQ() {
       </p>
       <div
         className="track-faq-grid"
-        style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 28 }}
+        style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}
       >
         {faqs.map((f, i) => (
           <Item key={`${i18n.language}-${i}`} faq={f} idx={i} />

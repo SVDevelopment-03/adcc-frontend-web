@@ -284,7 +284,10 @@ export default function StoreDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+    // Re-fetch on language switch too — the API returns already-localized
+    // text, so without this the titles stay in the old language until a
+    // full page reload.
+  }, [id, i18n.language]);
 
   useEffect(() => {
     if (!item) return;
@@ -320,7 +323,7 @@ export default function StoreDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [item?.id, item?._id, item?.category]);
+  }, [item?.id, item?._id, item?.category, i18n.language]);
 
   const galleryImages = item ? dedupeImages(item.coverImage, item.photos) : [];
 

@@ -194,7 +194,10 @@ export default function CommunitiesPage() {
     } finally {
       setLoading(false);
     }
-  }, [cityFilter, currentPage, mapCommunityCard, searchQuery, typeFilter]);
+    // Re-fetch on language switch too — the API returns already-localized
+    // text, so without this the titles stay in the old language until a
+    // full page reload.
+  }, [cityFilter, currentPage, mapCommunityCard, searchQuery, typeFilter, i18n.language]);
 
   useEffect(() => {
     fetchCommunities();
