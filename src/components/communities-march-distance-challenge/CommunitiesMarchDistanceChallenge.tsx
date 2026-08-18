@@ -41,24 +41,24 @@ function FaqSection({ faqs }: { faqs: string[] }) {
     <section className="w-full px-4 pb-16 pt-14 text-center sm:px-6 md:px-10 lg:px-16 lg:pb-28 xl:px-20 2xl:px-24">
       <h2 className="text-[30px] font-normal uppercase sm:text-[38px] lg:text-[46px]">{t("public.tracks.faq.title")}</h2>
       <p className="mt-3 text-[15px] text-black/70 sm:text-[16px]">{t("public.tracks.faq.subtitle")}</p>
-      <div className="mx-auto mt-8 grid max-w-[1098px] grid-cols-1 gap-4 sm:mt-10 md:grid-cols-2 md:gap-5">
+      <div className="mx-auto mt-6 grid max-w-[1098px] grid-cols-1 gap-3 sm:mt-10 sm:gap-4 md:grid-cols-2 md:gap-5">
         {faqs.map((faq, index) => (
           <div
-            key={faq}
+            key={index}
             role="button"
             tabIndex={0}
             onClick={() => setOpenIndex(openIndex === index ? null : index)}
             onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setOpenIndex(openIndex === index ? null : index); }}
-            className="cursor-pointer overflow-hidden rounded-xl border border-[#ccc] px-6 text-left text-[20px] font-medium"
+            className="cursor-pointer overflow-hidden rounded-xl border border-[#ccc] px-4 text-start text-[16px] font-medium sm:px-6 sm:text-[20px]"
           >
-            <div className="flex min-h-25 items-center justify-between gap-4 py-4">
+            <div className="flex min-h-16 items-center justify-between gap-3 py-3 sm:min-h-25 sm:gap-4 sm:py-4">
               <span>{faq}</span>
-              <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-black text-[18px] font-normal leading-none transition-transform duration-300 ${openIndex === index ? "rotate-45" : ""}`}>
+              <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-black text-[16px] font-normal leading-none transition-transform duration-300 sm:h-7 sm:w-7 sm:text-[18px] ${openIndex === index ? "rotate-45" : ""}`}>
                 +
               </span>
             </div>
             {openIndex === index && (
-              <p className="pb-5 text-[16px] font-normal leading-7 text-black/65">
+              <p className="pb-5 text-[16px] font-normal leading-5 text-black/65 sm:leading-7">
                 {t("public.challenges.detail.faq.answer")}
               </p>
             )}
@@ -148,7 +148,7 @@ export default function ChallengeDetailPage() {
               {statusLabel}
             </span>
           </div>
-          <h1 className="text-[30px] font-normal uppercase leading-tight text-white sm:text-[40px] lg:text-[50px]">
+          <h1 className="text-[34px] font-normal uppercase leading-tight text-white sm:text-[40px] lg:text-[50px]">
             {challenge.title}
           </h1>
         </div>
@@ -216,7 +216,7 @@ export default function ChallengeDetailPage() {
             <h2 className="max-w-[487px] text-[22px] font-normal uppercase leading-tight sm:text-[30px] lg:text-[46px]">
               {t("public.challenges.detail.guideHeading")}
             </h2>
-            <button className="inline-flex h-fit items-center gap-3 rounded-full bg-[#019839] px-5 py-2.5 text-[14px] font-bold text-white sm:px-8 sm:py-4 sm:text-[16px]">
+            <button className="inline-flex h-fit items-center gap-3 self-center rounded-full bg-[#019839] px-5 py-2.5 text-[16px] font-bold text-white sm:px-8 sm:py-4 md:self-auto">
               {t("public.challenges.detail.joinButton")} <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
             </button>
           </div>

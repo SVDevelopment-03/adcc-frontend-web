@@ -20,7 +20,9 @@ export function BadgesCreate({ navigate, badgeId }: BadgesCreateProps) {
 
   const [formData, setFormData] = useState({
     name: '',
+    nameAr: '',
     description: '',
+    descriptionAr: '',
     requirements: '',
     icon: 'trophy',
     category: 'Distance' as Badge['category'],
@@ -38,7 +40,9 @@ export function BadgesCreate({ navigate, badgeId }: BadgesCreateProps) {
         const existingBadge = await getBadgeById(badgeId);
         setFormData({
           name: existingBadge.name,
+          nameAr: existingBadge.nameAr ?? '',
           description: existingBadge.description,
+          descriptionAr: existingBadge.descriptionAr ?? '',
           requirements: existingBadge.requirements,
           icon: existingBadge.icon || 'trophy',
           category: existingBadge.category,
@@ -74,7 +78,9 @@ export function BadgesCreate({ navigate, badgeId }: BadgesCreateProps) {
 
       const payload = {
         name: formData.name.trim(),
+        nameAr: formData.nameAr.trim(),
         description: formData.description.trim(),
+        descriptionAr: formData.descriptionAr.trim(),
         requirements: formData.requirements.trim(),
         icon: formData.icon,
         category: formData.category,
@@ -170,6 +176,20 @@ export function BadgesCreate({ navigate, badgeId }: BadgesCreateProps) {
 
               <div>
                 <label className="block text-sm mb-2" style={{ color: '#666' }}>
+                  {t('badges.create.nameLabel', 'Badge Name *')} (Arabic)
+                </label>
+                <input
+                  type="text"
+                  dir="rtl"
+                  value={formData.nameAr}
+                  onChange={(e) => setFormData({ ...formData, nameAr: e.target.value })}
+                  placeholder="اسم الشارة"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm mb-2" style={{ color: '#666' }}>
                   {t('badges.create.descriptionLabel', 'Description *')}
                 </label>
                 <textarea
@@ -179,6 +199,20 @@ export function BadgesCreate({ navigate, badgeId }: BadgesCreateProps) {
                     'badges.create.descriptionPlaceholder',
                     'Describe what this badge represents...',
                   )}
+                  rows={4}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm mb-2" style={{ color: '#666' }}>
+                  {t('badges.create.descriptionLabel', 'Description *')} (Arabic)
+                </label>
+                <textarea
+                  dir="rtl"
+                  value={formData.descriptionAr}
+                  onChange={(e) => setFormData({ ...formData, descriptionAr: e.target.value })}
+                  placeholder="وصف الشارة بالعربية"
                   rows={4}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />

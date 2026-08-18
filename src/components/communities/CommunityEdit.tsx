@@ -4,12 +4,11 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { UserRole } from '../../App';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getCommunityById, updateCommunity, deleteCommunity as deleteCommunityApi, CommunityApiResponse, getAvailableCities, getAvailableCategories, COMMUNITY_LOCATION_OPTIONS } from '../../services/communitiesApi';
+import { getCommunityById, updateCommunity, deleteCommunity as deleteCommunityApi, CommunityApiResponse } from '../../services/communitiesApi';
 import { getAllTracksEn, deleteTrack } from '../../services/trackService';
 import { CommunityFormData } from '../../types/community';
-import { availableCategories } from '../../data/communitiesData';
 import { DetailPageSkeleton } from '../ui/skeleton';
-import { getCitiesByCountry, type GCCCountry } from '../../data/gccLocations';
+import { useCommunityCategories, useCommunityPurposeTypes, useCountries, useCities } from '../../hooks/useLookups';
 
 
 interface CommunityEditProps {
@@ -37,7 +36,6 @@ export function CommunityEdit({ role }: CommunityEditProps) {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
 
-  const [availableCities, setAvailableCities] = useState<string[]>([]);
   // const [availableCategories, setAvailableCategories] = useState<string[]>([]);
 
   // const [formData, setFormData] = useState<string[]>([]);
@@ -76,21 +74,11 @@ export function CommunityEdit({ role }: CommunityEditProps) {
   }, []);
 
 
+  // Cities/countries/categories/purpose types now load via the dashboard-managed
+  // lookup hooks below (useCountries/useCities/useCommunityCategories/
+  // useCommunityPurposeTypes) instead of a bespoke metadata fetch.
   useEffect(() => {
-    const fetchMetadata = async () => {
-      try {
-        setIsMetadataLoading(true);
-        const [cities] = await Promise.all([
-          getAvailableCities(),
-        ]);
-        setAvailableCities(cities);
-      } catch (error) {
-        console.error('Error loading metadata:', error);
-      } finally {
-        setIsMetadataLoading(false);
-      }
-    };
-    fetchMetadata();
+    setIsMetadataLoading(false);
   }, []);
 
 
@@ -173,9 +161,11 @@ export function CommunityEdit({ role }: CommunityEditProps) {
     });
   }, [tracks, formData?.city]);
 
-  const citiesForCountry = useMemo(() => {
-    return getCitiesByCountry((formData.country || '') as GCCCountry);
-  }, [formData.country]);
+  const { options: countryOptions } = useCountries();
+  const { options: cityOptionsForCountry } = useCities(formData.country);
+  const { options: categoryOptions } = useCommunityCategories();
+  const { options: purposeTypeOptions } = useCommunityPurposeTypes();
+  const citiesForCountry = useMemo(() => cityOptionsForCountry.map((c) => c.value), [cityOptionsForCountry]);
 
   // Keep city valid for selected country (when user changes country)
   useEffect(() => {
@@ -373,10 +363,9 @@ export function CommunityEdit({ role }: CommunityEditProps) {
     // }
 
 
-    // Backend: location must be one of "Abu Dhabi"|"Dubai"|"Al Ain"|"Sharjah"
-    const location = COMMUNITY_LOCATION_OPTIONS.includes((formData.city || formData.location) as any)
-      ? (formData.city || formData.location)
-      : COMMUNITY_LOCATION_OPTIONS[0];
+    // `location` is dashboard-managed (lookups collection, type "city") — no
+    // longer restricted to a fixed list, so the selected city is used as-is.
+    const location = formData.city || formData.location;
 
     // Map form data to backend API structure; images sent as File in FormData (same key names: image, logo)
     const communityData = {
@@ -589,12 +578,9 @@ export function CommunityEdit({ role }: CommunityEditProps) {
                   onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 >
-                  <option value="UAE">{t('common.country.uae')}</option>
-                  <option value="Saudi Arabia">{t('common.country.saudiArabia')}</option>
-                  <option value="Kuwait">{t('common.country.kuwait')}</option>
-                  <option value="Bahrain">{t('common.country.bahrain')}</option>
-                  <option value="Oman">{t('common.country.oman')}</option>
-                  <option value="Qatar">{t('common.country.qatar')}</option>
+                  {countryOptions.map(({ value, label }) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
                 </select>
               </div>
 
@@ -606,10 +592,8 @@ export function CommunityEdit({ role }: CommunityEditProps) {
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 >
                   <option value="">Select city...</option>
-                  {(citiesForCountry.length ? citiesForCountry : COMMUNITY_LOCATION_OPTIONS).map((c) => (
-                    <option key={c} value={c}>
-                      {t(`data.locations.${c}`, { defaultValue: c })}
-                    </option>
+                  {cityOptionsForCountry.map(({ value, label }) => (
+                    <option key={value} value={value}>{label}</option>
                   ))}
                 </select>
               </div>
@@ -662,21 +646,21 @@ export function CommunityEdit({ role }: CommunityEditProps) {
               <div>
                 <label className="block text-sm mb-3" style={{ color: '#666' }}>{t('communities.edit.category')}</label>
                 <div className="flex flex-wrap gap-2">
-                  {availableCategories.map((item) => {
-                    const isSelected = formData.type?.includes(item) || false;
+                  {categoryOptions.map(({ value, label }) => {
+                    const isSelected = formData.type?.includes(value) || false;
 
                     return (
                       <button
-                        key={item}
+                        key={value}
                         type="button"
-                        onClick={() => toggleCategory(item)}
+                        onClick={() => toggleCategory(value)}
                         className="px-3 py-2 rounded-lg text-sm transition-all"
                         style={{
                           backgroundColor: isSelected ? '#C12D32' : '#F3F4F6',
                           color: isSelected ? '#fff' : '#666',
                         }}
                       >
-                        {t(`data.communityCategories.${item}`, item)}
+                        {label}
                       </button>
                     );
                   })}
@@ -694,12 +678,9 @@ export function CommunityEdit({ role }: CommunityEditProps) {
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                   >
                     <option value="">{t('communities.create.specialPurposeOptions.select')}</option>
-                    <option value="awareness">{t('communities.create.specialPurposeOptions.awareness')}</option>
-                    <option value="charity">{t('communities.create.specialPurposeOptions.charity')}</option>
-                    <option value="corporate">{t('communities.create.specialPurposeOptions.corporate')}</option>
-                    <option value="education">{t('communities.create.specialPurposeOptions.education')}</option>
-                    <option value="health">{t('communities.create.specialPurposeOptions.health')}</option>
-                    <option value="national-events">{t('communities.create.specialPurposeOptions.nationalEvents')}</option>
+                    {purposeTypeOptions.map(({ value, label }) => (
+                      <option key={value} value={value}>{label}</option>
+                    ))}
                   </select>
                 </div>
               )}

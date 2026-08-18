@@ -1,11 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  getTracksPageEn,
-  UAE_CITIES,
-  type Track,
-} from "../../services/trackService";
+import { getTracksPage, type Track } from "../../services/trackService";
+import { useLookupList } from "../../hooks/useLookups";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { APP_STORE_LINKS } from "../../config/appStoreLinks";
@@ -84,18 +81,25 @@ const formatDistance = (
 const normalizeTrack = (
   track: Track,
   t: (key: string) => string,
+  lang?: string,
 ): PublicTrackCard => ({
   id: getTrackId(track),
   name: track.title || (track as any).name || t("public.common.untitledTrack"),
   city: track.city || t("public.tracks.listing.uaeFallback"),
   difficulty: track.difficulty || "all",
+  // `area` is free text with no Arabic version — city is already
+  // dashboard-translated, so in Arabic show city alone rather than mixing
+  // an untranslated English area into the line.
   location:
-    [track.area, track.city].filter(Boolean).join(", ") ||
-    track.city ||
+    (lang?.startsWith("ar")
+      ? track.city
+      : [track.area, track.city].filter(Boolean).join(", ") || track.city) ||
     t("public.tracks.listing.uaeFallback"),
   distance: formatDistance(track.distance, t("public.common.na")),
   elevation: track.elevation ? String(track.elevation) : t("public.common.na"),
-  level: translateDifficulty(track.difficulty, t) || t("public.common.filters.allLevels"),
+  level:
+    translateDifficulty(track.difficulty, t) ||
+    t("public.common.filters.allLevels"),
   featured: Boolean((track as any).featured || (track as any).isFeatured),
   img: getTrackImage(track),
 });
@@ -292,10 +296,13 @@ text-transform: Capitalize !important;}
       }
       .track-intro-wrap,
       .track-why-content,
-      .track-footer-main,
-      .track-faq-grid {
+      .track-footer-main {
         flex-direction: column !important;
         gap: 26px !important;
+      }
+      .track-faq-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
       }
       .track-intro-left,
       .track-intro-right,
@@ -337,7 +344,7 @@ text-transform: Capitalize !important;}
       .track-why-head,
       .track-grid-head {
         flex-direction: column !important;
-        align-items: stretch !important;
+        align-items: flex-start !important;
         gap: 20px !important;
       }
       .track-why-image {
@@ -379,7 +386,7 @@ text-transform: Capitalize !important;}
       }
       .track-stat-row {
         display: grid !important;
-        grid-template-columns: 1fr !important;
+        grid-template-columns: 1fr 1fr 1fr !important;
       }
       .track-card-button {
         width: 100% !important;
@@ -397,11 +404,21 @@ text-transform: Capitalize !important;}
       .track-faq-section {
         padding: 48px 18px !important;
       }
+      .track-faq-section > p {
+        margin-bottom: 28px !important;
+      }
       .track-faq-question {
-        min-height: 82px !important;
+        min-height: 56px !important;
+        margin-bottom: 10px !important;
+        padding: 0 16px !important;
+      }
+      .track-faq-question > div {
+        min-height: 56px !important;
+        gap: 10px !important;
       }
       .track-faq-question p {
         font-size: 16px !important;
+        line-height: 1.3 !important;
       }
       .track-cta {
         height: auto !important;
@@ -690,7 +707,7 @@ function WhySection() {
             <AnimatedWords words={titleWords} gap={12} />
           </h2>
           <AnimatedButton>
-            {t("public.common.exploreTracksArrow")}
+            {t("public.common.exploreTracks")}
           </AnimatedButton>
         </div>
 
@@ -945,13 +962,19 @@ function TrackCard({
           variant="outline"
           size="sm"
           className="track-card-button"
-          style={isHovered ? ({
-            "--adcc-btn-bg": "#fff",
-            "--adcc-btn-border": "transparent",
-            "--adcc-btn-color": "#019839",
-            "--adcc-btn-hover-fill": "#019839",
-          } as React.CSSProperties) : {}}
-          onClick={() => navigate(`/user-tracks/${encodeURIComponent(track.id)}`)}
+          style={
+            isHovered
+              ? ({
+                  "--adcc-btn-bg": "#fff",
+                  "--adcc-btn-border": "transparent",
+                  "--adcc-btn-color": "#019839",
+                  "--adcc-btn-hover-fill": "#019839",
+                } as React.CSSProperties)
+              : {}
+          }
+          onClick={() =>
+            navigate(`/user-tracks/${encodeURIComponent(track.id)}`)
+          }
         >
           {t("public.common.viewDetails")}
         </AnimatedButton>
@@ -978,12 +1001,13 @@ function TracksGrid() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const { options: cityLookupOptions } = useLookupList("city");
   const cityFilterOptions = useMemo<FilterOption[]>(
     () => [
       { value: ALL_FILTER_VALUE, label: t("public.common.filters.allCities") },
-      ...UAE_CITIES.map((city) => ({ value: city, label: city })),
+      ...cityLookupOptions,
     ],
-    [t, i18n.language],
+    [t, cityLookupOptions],
   );
 
   const levelFilterOptions = useMemo<FilterOption[]>(
@@ -1003,7 +1027,7 @@ function TracksGrid() {
       try {
         setLoading(true);
         setError("");
-        const response = await getTracksPageEn({
+        const response = await getTracksPage({
           page,
           limit: PAGE_SIZE,
           city: filters.city === ALL_FILTER_VALUE ? undefined : filters.city,
@@ -1013,7 +1037,11 @@ function TracksGrid() {
         });
 
         if (mounted) {
-          setTracks(response.tracks.map((track) => normalizeTrack(track, t)));
+          setTracks(
+            response.tracks.map((track) =>
+              normalizeTrack(track, t, i18n.language),
+            ),
+          );
           setTotalResults(response.pagination.total);
           setTotalPages(Math.max(1, response.pagination.pages || 1));
         }
@@ -1035,7 +1063,7 @@ function TracksGrid() {
     return () => {
       mounted = false;
     };
-  }, [filters, page, t]);
+  }, [filters, page, t, i18n.language]);
 
   const ChevronDown = ({ open = false }: { open?: boolean }) => (
     <svg
@@ -1222,35 +1250,33 @@ function TracksGrid() {
             },
           }}
         >
-          {gridTitleWords.map(
-            (word, index) => (
-              <span
-                key={`${word}-${index}`}
-                className="inline-block overflow-hidden"
-                style={{ marginRight: "12px" }}
+          {gridTitleWords.map((word, index) => (
+            <span
+              key={index}
+              className="inline-block overflow-hidden"
+              style={{ marginRight: "12px" }}
+            >
+              <motion.span
+                className="inline-block"
+                variants={{
+                  hidden: {
+                    y: "120%",
+                    opacity: 0,
+                  },
+                  visible: {
+                    y: "0%",
+                    opacity: 1,
+                  },
+                }}
+                transition={{
+                  duration: 0.7,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
               >
-                <motion.span
-                  className="inline-block"
-                  variants={{
-                    hidden: {
-                      y: "120%",
-                      opacity: 0,
-                    },
-                    visible: {
-                      y: "0%",
-                      opacity: 1,
-                    },
-                  }}
-                  transition={{
-                    duration: 0.7,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                >
-                  {word}
-                </motion.span>
-              </span>
-            ),
-          )}
+                {word}
+              </motion.span>
+            </span>
+          ))}
         </motion.h2>
         <div
           className="track-filter-bar"
@@ -1409,8 +1435,6 @@ function FAQ() {
   const faqs = t("public.tracks.faq.items", {
     returnObjects: true,
   }) as FaqItem[];
-  const left = faqs.filter((_, i) => i % 2 === 0);
-  const right = faqs.filter((_, i) => i % 2 !== 0);
 
   useEffect(() => {
     setOpen(null);
@@ -1514,17 +1538,13 @@ function FAQ() {
       >
         {t("public.tracks.faq.subtitle")}
       </p>
-      <div className="track-faq-grid" style={{ display: "flex", gap: 28 }}>
-        <div style={{ flex: 1 }}>
-          {left.map((f, i) => (
-            <Item key={`${i18n.language}-l-${i}`} faq={f} idx={i * 2} />
-          ))}
-        </div>
-        <div style={{ flex: 1 }}>
-          {right.map((f, i) => (
-            <Item key={`${i18n.language}-r-${i}`} faq={f} idx={i * 2 + 1} />
-          ))}
-        </div>
+      <div
+        className="track-faq-grid"
+        style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 28 }}
+      >
+        {faqs.map((f, i) => (
+          <Item key={`${i18n.language}-${i}`} faq={f} idx={i} />
+        ))}
       </div>
     </section>
   );
@@ -1779,7 +1799,7 @@ export default function Tracks() {
       <FontLoader />
       <div
         className="tracks-page"
-        style={{ minWidth: 320, overflowX: "hidden" }}
+        style={{ minWidth: 320, overflowX: "clip", overflowY: "visible" }}
       >
         <Hero />
         <ExploreIntro />

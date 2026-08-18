@@ -121,8 +121,13 @@ select {
   h1.communities-page-hero-title,
   h1.challenges-page-hero-title,
   h1.track-hero-title,
-  h1.contact-page-hero-title {
+  h1.contact-page-hero-title,
+  .public-hero-bleed:not(.home-hero) h1 {
     font-size: 34px !important;
+  }
+  .public-hero-bleed:not(.home-hero) {
+    height: 480px !important;
+    min-height: 480px !important;
   }
   div.about-hero-content,
   div.event-hero-content,
@@ -183,10 +188,15 @@ select {
   .tracks-page .track-journey-offset {
     padding-block-start: 25px !important;
   }
-  .contact-page-hero {
-    height: 320px !important;
-  }
   h2.contact-intro-title {
     line-height: 38px !important;
+  }
+}
+
+/* Events page hero title — smaller than the shared PublicPageHero default (70px) on larger screens.
+   Mobile keeps the 34px size set in the @media (max-width: 650px) block above. */
+@media (min-width: 651px) {
+  h1.event-hero-title {
+    font-size: 48px !important;
   }
 }

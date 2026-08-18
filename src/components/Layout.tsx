@@ -13,6 +13,7 @@ import { EventDetail } from './events/EventDetail';
 import { EventParticipants } from './events/EventParticipants';
 import { EventResults } from './events/EventResults';
 import { EventEdit } from './events/EventEdit';
+import { StaticDataManager } from './lookups/StaticDataManager';
 import { CommunitiesList } from './communities/CommunitiesList';
 import { CommunityCreate } from './communities/CommunityCreate';
 import { CommunityDetail } from './communities/CommunityDetail';
@@ -240,6 +241,7 @@ export function Layout() {
             <Route path="/admins/:id/edit" element={withPermission('manage_users', <AdminEdit />)} />
             <Route path="/reports" element={withRoleSidebarAccess('reports', <Reports role={currentRole} />)} />
             <Route path="/config" element={withPermission('app_configuration', <AppConfig />)} />
+            <Route path="/static-data" element={withPermission('app_configuration', <StaticDataManager />)} />
             <Route path="/roles" element={withPermission('manage_roles', <RolesPermissions />)} />
             <Route path="/roles/:id" element={withPermission('manage_roles', <RoleDetail />)} />
             <Route path="/roles/:id/edit" element={withPermission('manage_roles', <RoleEdit />)} />

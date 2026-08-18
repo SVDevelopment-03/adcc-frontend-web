@@ -404,15 +404,8 @@ let participants: EventParticipant[] = [
   },
 ];
 
-export const availableCategories = [
-  'Race',
-  'Community Ride',
-  'Training & Clinics',
-  'Awareness Rides',
-  'Family & Kids',
-  'Corporate Events',
-  'National Events',
-];
+// Event categories are dashboard-managed — see hooks/useLookups.ts
+// (`useEventCategories`) and components/events/EventCategories.tsx.
 
 export const availableCities = [
   'Abu Dhabi',

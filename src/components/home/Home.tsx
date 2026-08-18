@@ -1601,6 +1601,12 @@ font-family: var(--font-satoshi) !important;}
   }
 
   @media (max-width: 640px) {
+    .home-platform-card-image,
+    .home-platform-card .adcc-image__img {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
     .home-header {
       height: 78px !important;
       padding: 0 16px !important;
@@ -1618,7 +1624,7 @@ font-family: var(--font-satoshi) !important;}
       font-size: 14px !important;
     }
     .home-hero {
-      height: 100vh !important;
+      height: 130vh !important;
       min-height: 400px !important;
       max-height: none !important;
     }
@@ -1627,7 +1633,7 @@ font-family: var(--font-satoshi) !important;}
     }
     .home-hero-content {
       inset-inline-start: 20px !important;
-      top: 140px !important;
+      top: 110px !important;
       width: min(340px, calc(100% - 36px)) !important;
       max-width: 340px !important;
     }
@@ -1791,6 +1797,7 @@ font-family: var(--font-satoshi) !important;}
     .home-icon-row img {
       width: 88px !important;
       height: 88px !important;
+      margin: auto !important;
     }
     .home-platform-section,
     .home-store-section {
@@ -1873,8 +1880,9 @@ font-family: var(--font-satoshi) !important;}
     .store-featured-product-media {
       inset-inline-end: 18px !important;
       top: 96px !important;
-      width: 338px !important;
+      width: 480px !important;
       height: 390px !important;
+              left: 80px !important;
     }
     .store-compact-card {
       flex-basis: min(300px, calc(100vw - 36px)) !important;
@@ -1895,8 +1903,8 @@ font-family: var(--font-satoshi) !important;}
       line-height: 100.7% !important;
     }
     .home-about-text {
-      font-size: 18px !important;
-      line-height: 26px !important;
+      font-size: 16px !important;
+      line-height: 24px !important;
     }
     .home-about-stats {
       gap: 24px !important;
@@ -2043,6 +2051,9 @@ font-family: var(--font-satoshi) !important;}
     .home-cta-text {
       font-size: 16px !important;
     }
+
+    div.home-about-stats{
+            grid-template-columns: 1fr 1fr 1fr !important;}
   }
 `;
 
@@ -2458,6 +2469,7 @@ function HeroSection() {
       />
       <div className="home-hero-content">
         <motion.h1
+          key={locale}
           className="home-hero-title"
           initial="hidden"
           animate="visible"
@@ -2468,7 +2480,7 @@ function HeroSection() {
           }}
         >
           {[line1, line2].map((line, lineIndex) => (
-            <span key={line} className="home-hero-title-line">
+            <span key={lineIndex} className="home-hero-title-line">
               <motion.span
                 className="inline-block"
                 variants={lineVariants}
@@ -2656,7 +2668,11 @@ function CyclingJourneySection() {
     }
 
     const observer = new IntersectionObserver(
-      ([entry]) => setCardsVisible(entry.isIntersecting),
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setCardsVisible(true);
+        observer.disconnect();
+      },
       { threshold: 0.35 },
     );
 
@@ -2682,7 +2698,7 @@ function CyclingJourneySection() {
           }}
         >
           {[titleLine1, titleLine2].map((line, lineIndex) => (
-            <span key={line} className="journey-title-line">
+            <span key={lineIndex} className="journey-title-line">
               <motion.span
                 className="inline-block"
                 variants={{
@@ -2711,7 +2727,9 @@ function CyclingJourneySection() {
           viewport={{ once: true }}
         >
           <img
-            src={locale === "ar" ? "/images/journey-ar.png" : "/images/journey.png"}
+            src={
+              locale === "ar" ? "/images/journey-ar.png" : "/images/journey.png"
+            }
             alt={t("public.home.journey.riderAlt")}
           />
         </motion.div>
@@ -2755,9 +2773,8 @@ function CyclingJourneySection() {
                   alt={card.label.replace("\n", " ")}
                   style={{
                     animation: cardsVisible
-                      ? `imageExpand 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards`
+                      ? `imageExpand 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) ${i * 0.18}s forwards`
                       : "none",
-                    animationDelay: `${i * 0.18}s`,
                     opacity: 0,
                   }}
                 />
@@ -2861,7 +2878,11 @@ function AppSection() {
     if (!phoneEl) return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => setPhoneVisible(entry.isIntersecting),
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setPhoneVisible(true);
+        observer.disconnect();
+      },
       { threshold: 0.35 },
     );
 
@@ -2912,7 +2933,7 @@ function AppSection() {
         >
           {appTitleWords.slice(0, 3).map((word, index) => (
             <span
-              key={`${word}-${index}`}
+              key={index}
               className="home-word-gap inline-block overflow-hidden"
             >
               <motion.span
@@ -2930,7 +2951,7 @@ function AppSection() {
           <br />
           {appTitleWords.slice(3).map((word, index) => (
             <span
-              key={`${word}-${index}`}
+              key={index}
               className="home-word-gap inline-block overflow-hidden"
             >
               <motion.span
@@ -2962,9 +2983,9 @@ function AppSection() {
           viewport={{ once: true }}
           variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
         >
-          {downloadLine1.map((word) => (
+          {downloadLine1.map((word, index) => (
             <span
-              key={word}
+              key={index}
               className="home-word-gap-sm inline-block overflow-hidden"
             >
               <motion.span
@@ -2982,7 +3003,7 @@ function AppSection() {
           <br />
           {downloadLine2.map((word, index) => (
             <span
-              key={`${word}-${index}`}
+              key={index}
               className="home-word-gap-sm inline-block overflow-hidden"
             >
               <motion.span
@@ -3252,7 +3273,11 @@ function ExplorePlatformSection() {
     if (!cardsEl) return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => setCardsVisible(entry.isIntersecting),
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setCardsVisible(true);
+        observer.disconnect();
+      },
       { threshold: 0.35 },
     );
 
@@ -3300,9 +3325,8 @@ function ExplorePlatformSection() {
                 alt={card.title}
                 style={{
                   animation: cardsVisible
-                    ? `imageExpand 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards`
+                    ? `imageExpand 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) ${i * 0.18}s forwards`
                     : "none",
-                  animationDelay: `${i * 0.18}s`,
                   opacity: 0,
                 }}
               />
@@ -3361,7 +3385,11 @@ function StoreSection() {
     if (!railEl) return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => setStoreCardsVisible(entry.isIntersecting),
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setStoreCardsVisible(true);
+        observer.disconnect();
+      },
       { threshold: 0.35 },
     );
 
@@ -3459,9 +3487,18 @@ function AboutSection() {
     ? _titleWordsRaw
     : [];
   const stats = [
-    { num: t("public.home.about.stats.ridersValue"), label: t("public.home.about.stats.riders") },
-    { num: t("public.home.about.stats.eventsValue"), label: t("public.home.about.stats.events") },
-    { num: t("public.home.about.stats.yearsValue"), label: t("public.home.about.stats.years") },
+    {
+      num: t("public.home.about.stats.ridersValue"),
+      label: t("public.home.about.stats.riders"),
+    },
+    {
+      num: t("public.home.about.stats.eventsValue"),
+      label: t("public.home.about.stats.events"),
+    },
+    {
+      num: t("public.home.about.stats.yearsValue"),
+      label: t("public.home.about.stats.years"),
+    },
   ];
 
   useEffect(() => {
@@ -3470,9 +3507,11 @@ function AboutSection() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setAboutVisible(entry.isIntersecting);
+        if (!entry.isIntersecting) return;
 
-        if (entry.isIntersecting && !hasAnimatedStats.current) {
+        setAboutVisible(true);
+
+        if (!hasAnimatedStats.current) {
           hasAnimatedStats.current = true;
 
           statsRefs.current.forEach((el, index) => {
@@ -3483,6 +3522,8 @@ function AboutSection() {
             }
           });
         }
+
+        observer.disconnect();
       },
       // { threshold: 0.35 }
       { threshold: 0.1 },
@@ -3536,7 +3577,7 @@ function AboutSection() {
         >
           {titleWords.slice(0, 3).map((word, index) => (
             <span
-              key={`${word}-${index}`}
+              key={index}
               className="home-word-gap inline-block overflow-hidden"
             >
               <motion.span
@@ -3557,7 +3598,7 @@ function AboutSection() {
               <br />
               {titleWords.slice(3).map((word, index) => (
                 <span
-                  key={`${word}-${index + 3}`}
+                  key={index + 3}
                   className="home-word-gap inline-block overflow-hidden"
                 >
                   <motion.span

@@ -206,7 +206,7 @@ export default function ChallengesPage() {
   }, [i18n.language]);
 
   return (
-    <div className="challenges-page min-h-screen overflow-x-hidden bg-[#eaf4ff] text-black">
+    <div className="challenges-page min-h-screen overflow-x-clip overflow-y-visible bg-[#eaf4ff] text-black">
       <style>{`
 
 .font-satoshi, h3.font-satoshi{
@@ -270,7 +270,7 @@ justify-content: center !important;}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
           {stats.map((item, index) => (
             <motion.div
               key={item.labelKey}
@@ -285,15 +285,15 @@ justify-content: center !important;}
               className="
         rounded-xl border border-[#d7e3ef]
         bg-[#edf6ff]
-        p-5 sm:p-6 lg:p-8
+        p-3 sm:p-6 lg:p-8
         transition-all duration-300
         hover:bg-[#435974]
         hover:text-white
         cursor-pointer
       "
             >
-              <div className="flex items-center gap-4">
-                <Users size={32} className="shrink-0" />
+              <div className="flex items-center gap-2 sm:gap-4">
+                <Users className="h-5 w-5 shrink-0 sm:h-8 sm:w-8" />
 
                 <div>
                   <h3 className="font-satoshi text-[24px] font-black sm:text-[28px]">
@@ -442,7 +442,7 @@ justify-content: center !important;}
 
                   <Link
                     to={`/user-challenges/${encodeURIComponent(item.id)}`}
-                    className="rounded-full border border-white px-5 py-3 text-[13px] font-semibold sm:px-6"
+                    className="self-center rounded-full border border-white px-5 py-3 text-[16px] font-semibold sm:self-auto sm:px-6"
                   >
                     {t("public.common.joinChallenge")}
                   </Link>
@@ -527,11 +527,11 @@ justify-content: center !important;}
               },
             },
           }}
-          className="mt-8 grid grid-cols-1 gap-4 md:mt-12 md:grid-cols-2 md:gap-5"
+          className="mt-6 grid grid-cols-1 gap-3 md:mt-12 md:gap-5 md:grid-cols-2"
         >
           {faqs.map((faq, index) => (
             <motion.div
-              key={faq.q}
+              key={index}
               variants={{
                 hidden: {
                   opacity: 0,
@@ -553,12 +553,12 @@ justify-content: center !important;}
                 if (event.key === "Enter" || event.key === " ")
                   setOpenFaq(openFaq === index ? null : index);
               }}
-              className="cursor-pointer overflow-hidden rounded-xl border border-[#ccc] px-6 text-left text-[20px] font-medium"
+              className="cursor-pointer overflow-hidden rounded-xl border border-[#ccc] px-4 text-start text-[16px] font-medium sm:px-6 sm:text-[20px]"
             >
-              <div className="flex min-h-25 items-center justify-between gap-4 py-4">
+              <div className="flex min-h-16 items-center justify-between gap-3 py-3 sm:min-h-25 sm:gap-4 sm:py-4">
                 <span>{faq.q}</span>
 
-                <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-black text-[18px] font-normal leading-none transition-transform ${openFaq === index ? "rotate-45" : ""}`}>
+                <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-black text-[16px] font-normal leading-none transition-transform sm:h-7 sm:w-7 sm:text-[18px] ${openFaq === index ? "rotate-45" : ""}`}>
                   +
                 </span>
               </div>
@@ -568,7 +568,7 @@ justify-content: center !important;}
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   transition={{ duration: 0.35 }}
-                  className="pb-5 text-[16px] font-normal leading-7 text-black/65"
+                  className="pb-5 text-[16px] font-normal leading-5 text-black/65 sm:leading-7"
                 >
                   {faq.a}
                 </motion.p>

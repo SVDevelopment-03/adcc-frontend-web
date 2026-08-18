@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { UserRole } from '../../App';
 import { Plus, Search, Calendar, Users, MapPin, Star, Edit, Eye, UserCheck, Trophy, Ban, Archive, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
-import { availableCategories, availableCities } from '../../data/eventsData';
+import { availableCities } from '../../data/eventsData';
 import { getAllEvents, deleteEvent as deleteEventApi, disableEvent as disableEventApi, EventApiResponse } from '../../services/eventsApi';
+import { useEventCategories } from '../../hooks/useLookups';
 import { toast } from 'sonner';
 import { CardSkeleton } from '../ui/skeleton';
 import { getAllTracks, deleteTrack } from '../../services/trackService';
@@ -20,6 +21,7 @@ interface EventsListProps {
 export function EventsList({ role }: EventsListProps) {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+  const { options: categoryOptions, resolveLabel: resolveCategoryLabel } = useEventCategories();
 
   const [events, setEvents] = useState<IEvent[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -244,14 +246,23 @@ export function EventsList({ role }: EventsListProps) {
           <h1 className="text-3xl mb-2" style={{ color: '#333' }}>{t('events.title')}</h1>
           <p style={{ color: '#666' }}>{t('events.subtitle')}</p>
         </div>
-        <button
-          onClick={() => navigate('/events/create')}
-          className="flex items-center gap-2 px-6 py-3 rounded-xl text-white transition-all hover:shadow-lg"
-          style={{ backgroundColor: '#C12D32' }}
-        >
-          <Plus className="w-5 h-5" />
-          {t('events.createButton')}
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate('/static-data?type=event_category')}
+            className="flex items-center gap-2 px-4 py-3 rounded-xl border border-gray-200 transition-all hover:bg-gray-50"
+            style={{ color: '#666' }}
+          >
+            Manage Categories
+          </button>
+          <button
+            onClick={() => navigate('/events/create')}
+            className="flex items-center gap-2 px-6 py-3 rounded-xl text-white transition-all hover:shadow-lg"
+            style={{ backgroundColor: '#C12D32' }}
+          >
+            <Plus className="w-5 h-5" />
+            {t('events.createButton')}
+          </button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -429,17 +440,17 @@ export function EventsList({ role }: EventsListProps) {
         <div>
           <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.card.categories')}</label>
           <div className="flex flex-wrap gap-2">
-            {availableCategories.map(category => (
+            {categoryOptions.map(({ value, label }) => (
               <button
-                key={category}
-                onClick={() => toggleCategory(category)}
+                key={value}
+                onClick={() => toggleCategory(value)}
                 className="px-3 py-1 rounded-full text-sm transition-all"
                 style={{
-                  backgroundColor: categoryFilter.includes(category) ? '#C12D32' : '#F3F4F6',
-                  color: categoryFilter.includes(category) ? '#fff' : '#666',
+                  backgroundColor: categoryFilter.includes(value) ? '#C12D32' : '#F3F4F6',
+                  color: categoryFilter.includes(value) ? '#fff' : '#666',
                 }}
               >
-                {t(`data.eventCategories.${category}`, category)}
+                {label}
               </button>
             ))}
           </div>
@@ -465,7 +476,7 @@ export function EventsList({ role }: EventsListProps) {
                 <div className="flex items-start gap-6">
                   {/* Cover Image */}
                   <img
-                    src={event.mainImage ? event.mainImage : event.eventImag}
+                    src={event.mainImage || event.eventImage}
                     alt={event.title}
                     className="w-32 h-32 rounded-lg object-cover"
                   />
@@ -493,7 +504,7 @@ export function EventsList({ role }: EventsListProps) {
                                         event.category === 'Family & Kids' ? '#F59E0B' : '#8B5CF6'
                             }}
                           >
-                            {event.category ? t(`data.eventCategories.${event.category}`, event.category) : t('events.card.noCategory', 'Uncategorized')}
+                            {event.category ? resolveCategoryLabel(event.category) : t('events.card.noCategory', 'Uncategorized')}
                           </span>
                           <span className="text-sm" style={{ color: '#666' }}>{event.communityId?.title || t('events.card.noCommunity')}</span>
                           <span className="text-sm" style={{ color: '#666' }}>|</span>

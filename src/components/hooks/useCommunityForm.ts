@@ -5,9 +5,8 @@ import { z } from 'zod';
 import { CommunityFormData, GCCCountry, CommunityType } from '../../types/community';
 import type { CommunityApiResponse } from '../../services/communitiesApi';
 
-import { gccCountries, getCitiesByCountry } from '../../data/gccLocations';
 import { getAllTracksEn } from '../../services/trackService';
-import { COMMUNITY_LOCATION_OPTIONS } from '../../services/communitiesApi';
+import { useCities, useCountries } from '../../hooks/useLookups';
 
 // Coerce empty string from number inputs to undefined so optional number fields don't fail and scroll to this section
 const optionalNumber = (schema: z.ZodNumber) =>
@@ -25,7 +24,7 @@ const communityFormSchema = z.object({
   titleAr: z.string().optional(),
   description: z.string().max(2000, 'Description too long').optional().default(''),
   descriptionAr: z.string().optional(),
-  country: z.enum(['UAE', 'Saudi Arabia', 'Kuwait', 'Qatar', 'Bahrain', 'Oman']),
+  country: z.string().min(1, 'Country is required'),
   city: z.string().min(1, 'City is required'),
   area: z.string().optional(),
   communityType: z.enum(['city', 'type', 'purpose-based']),
@@ -205,15 +204,11 @@ export const useCommunityForm = ({ initialData, isEditMode }: UseCommunityFormPr
     }
   }, [initialData, isEditMode, reset]);
 
-  // Update location when country/city changes
+  // Update location when country/city changes. `location`/`city` are
+  // dashboard-managed (lookups collection, type "city") — no longer
+  // restricted to a fixed list, so the selected city is used as-is.
   useEffect(() => {
-    // Backend validation: `location` is restricted to specific UAE values,
-    // but we still keep the real selected city in `city`.
-    const safeLocation = (COMMUNITY_LOCATION_OPTIONS as readonly string[]).includes(selectedCity)
-      ? selectedCity
-      : COMMUNITY_LOCATION_OPTIONS[0];
-
-    setValue('location', safeLocation);
+    setValue('location', selectedCity);
     setValue('city', selectedCity);
     setValue('country', selectedCountry);
   }, [selectedCity, selectedCountry, setValue]);
@@ -223,7 +218,9 @@ export const useCommunityForm = ({ initialData, isEditMode }: UseCommunityFormPr
     setValue('primaryTrackIds', selectedTrackIds);
   }, [selectedTrackIds, setValue]);
 
-  const availableCities = getCitiesByCountry(selectedCountry);
+  const { options: countryOptions } = useCountries();
+  const { options: cityOptions } = useCities(selectedCountry);
+  const availableCities = useMemo(() => cityOptions.map((c) => c.value), [cityOptions]);
 
   // Load tracks from database (API) - always fetch English for consistent filtering
   const [tracksFromApi, setTracksFromApi] = useState<any[]>([]);
@@ -330,6 +327,7 @@ export const useCommunityForm = ({ initialData, isEditMode }: UseCommunityFormPr
     logoFile,
     isCompressing,
     communityType,
+    countryOptions,
     availableCities,
     tracks,
     tracksLoading,

@@ -182,6 +182,11 @@
 
 html {
   font-size: var(--font-size);
+  overflow-x: clip;
+}
+
+body {
+  overflow-x: clip;
 }
 
 @keyframes scroll-left {
@@ -204,6 +209,16 @@ html {
 @media (min-width: 768px)  { .public-hero-content-pos { inset-inline-start: 40px; } }
 @media (min-width: 1024px) { .public-hero-content-pos { inset-inline-start: 56px; } }
 @media (min-width: 1280px) { .public-hero-content-pos { inset-inline-start: 88px; } }
+
+/* Event / track / community / challenge inner pages — tighter content
+   spacing for mobile now that the banner is clamped to 480px. */
+@media (max-width: 640px) {
+  .public-hero-content-pos {
+    bottom: 20px !important;
+    inset-inline-start: 20px !important;
+    inset-inline-end: 20px !important;
+  }
+}
 
 .ticker-track {
   display: flex;

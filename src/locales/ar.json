@@ -18,7 +18,8 @@
     "reports": "التقارير والتحليلات",
     "config": "إعدادات التطبيق",
     "languages": "اللغات",
-    "roles": "الأدوار والصلاحيات"
+    "roles": "الأدوار والصلاحيات",
+    "staticData": "البيانات الثابتة"
   },
   "topbar": {
     "search": "بحث...",
@@ -1769,7 +1770,8 @@
     "tabs": {
       "homepageSections": "أقسام الصفحة الرئيسية",
       "staticPages": "الصفحات الثابتة",
-      "appBanner": "بانر التطبيق"
+      "appBanner": "بانر التطبيق",
+      "appBannerAr": "بانر التطبيق (عربي)"
     },
     "appBanner": {
       "homeScreenBanner": "بانر الشاشة الرئيسية",
@@ -1779,7 +1781,13 @@
       "noBanner": "لم يتم رفع أي بانر بعد",
       "uploadSuccess": "تم رفع البانر بنجاح",
       "uploadError": "فشل في رفع البانر",
-      "currentBanner": "البانر الحالي"
+      "currentBanner": "البانر الحالي",
+      "addNewBanner": "إضافة بانر جديد",
+      "noBanners": "لا توجد بانرات بعد",
+      "inactive": "غير مفعل",
+      "clearSelection": "مسح",
+      "arHint": "قم برفع النسخة العربية لكل بانر إنجليزي أدناه.",
+      "noArabicVersion": "لا توجد نسخة عربية بعد"
     },
     "lastModified": "آخر تعديل"
   },

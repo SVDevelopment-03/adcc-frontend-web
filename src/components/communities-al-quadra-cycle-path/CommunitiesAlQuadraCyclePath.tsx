@@ -191,7 +191,7 @@ function HeroSection({ track }: { track: Track }) {
             {titleCase(track.trackType)}
           </span>
         </div>
-        <h1 className="text-[30px] font-normal uppercase leading-tight text-white sm:text-[40px] lg:text-[50px]">
+        <h1 className="text-[34px] font-normal uppercase leading-tight text-white sm:text-[40px] lg:text-[50px]">
           {track.title}
         </h1>
       </div>
@@ -208,7 +208,7 @@ function AboutSection({ track }: { track: Track }) {
         {track.shortDescription || (track as any).description || track.safetyNotes || t("public.tracks.detail.detailsComingSoon")}
       </p>
 
-      <button className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#019839] px-6 py-3 text-[15px] font-bold text-white sm:mt-8 sm:px-8 sm:py-4 sm:text-[18px]">
+      <button className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#019839] px-6 py-3 text-[16px] font-bold text-white sm:mt-8 sm:px-8 sm:py-4 sm:text-[18px]">
         {t("public.tracks.detail.startRide")} <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
       </button>
     </section>
@@ -281,7 +281,7 @@ function FacilitiesSection({ facilities }: { facilities: FacilityCard[] }) {
       }}
     >
       <div className="mx-auto max-w-[1268px] px-4 sm:px-6 md:px-10">
-        <div className="flex justify-between gap-8 max-lg:flex-col">
+        <div className="flex items-start justify-between gap-8 max-lg:flex-col">
           <h2 className="max-w-[580px] text-[26px] font-normal uppercase leading-tight sm:text-[34px] lg:text-[44px]">
             {t("public.tracks.detail.facilitiesHeading")}
           </h2>
@@ -319,25 +319,11 @@ function FacilitiesSection({ facilities }: { facilities: FacilityCard[] }) {
   );
 }
 
-function TrackMediaSection({ track }: { track: Track }) {
-  const media = track.galleryImages?.[1] || track.mapPreview || track.galleryImages?.[0] || track.image;
-  if (!media) return null;
-
-  return (
-    <section
-      className="h-[620px] bg-[#2f2f2f] bg-cover bg-center"
-      style={{
-        backgroundImage: `url('${media}')`,
-      }}
-    />
-  );
-}
-
 function EventCard({ event }: { event: EventApiResponse }) {
   const { t } = useTranslation();
   const image =
-    event.eventImage ||
     event.mainImage ||
+    event.eventImage ||
     event.galleryImages?.[0] ||
     FALLBACK_EVENT_IMAGE;
   const participants = event.currentParticipants ?? event.registrations ?? 0;
@@ -419,24 +405,24 @@ function FaqSection({ track }: { track: Track }) {
       <h2 className="text-[30px] font-normal uppercase sm:text-[38px] lg:text-[46px]">{t("public.tracks.faq.title")}</h2>
       <p className="mt-3 text-[15px] text-black/70 sm:text-[16px]">{t("public.tracks.faq.subtitle")}</p>
 
-      <div className="mx-auto mt-8 grid max-w-[1098px] grid-cols-1 gap-4 sm:mt-10 md:grid-cols-2 md:gap-5">
+      <div className="mx-auto mt-6 grid max-w-[1098px] grid-cols-1 gap-3 sm:mt-10 sm:gap-4 md:grid-cols-2 md:gap-5">
         {faqs.map((faq, index) => (
           <div
-            key={faq}
+            key={index}
             role="button"
             tabIndex={0}
             onClick={() => toggle(index)}
             onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") toggle(index); }}
-            className="cursor-pointer overflow-hidden rounded-xl border border-[#ccc] px-6 text-left text-[20px] font-medium"
+            className="cursor-pointer overflow-hidden rounded-xl border border-[#ccc] px-4 text-start text-[16px] font-medium sm:px-6 sm:text-[20px]"
           >
-            <div className="flex min-h-25 items-center justify-between gap-4 py-4">
+            <div className="flex min-h-16 items-center justify-between gap-3 py-3 sm:min-h-25 sm:gap-4 sm:py-4">
               <span>{faq}</span>
-              <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-black text-[18px] font-normal leading-none transition-transform duration-300 ${openIndex === index ? "rotate-45" : ""}`}>
+              <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-black text-[16px] font-normal leading-none transition-transform duration-300 sm:h-7 sm:w-7 sm:text-[18px] ${openIndex === index ? "rotate-45" : ""}`}>
                 +
               </span>
             </div>
             {openIndex === index && (
-              <p className="pb-5 text-[16px] font-normal leading-7 text-black/65">
+              <p className="pb-5 text-[16px] font-normal leading-5 text-black/65 sm:leading-7">
                 {t("public.tracks.detail.faqDefaultAnswer")}
               </p>
             )}
@@ -553,7 +539,6 @@ export default function TrackDetailPage() {
       <AboutSection track={track} />
       <StatsSection track={track} />
       <FacilitiesSection facilities={facilities} />
-      <TrackMediaSection track={track} />
       <UpcomingEventsSection events={events} />
       <FaqSection track={track} />
     </main>

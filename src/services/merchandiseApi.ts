@@ -87,6 +87,45 @@ export const getMerchandiseProducts = async (params?: GetProductsParams): Promis
   }
 };
 
+export interface ProductsPagination {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+}
+
+export interface GetProductsPageResult {
+  items: Product[];
+  pagination: ProductsPagination;
+}
+
+export const getMerchandiseProductsPage = async (
+  params?: GetProductsParams,
+): Promise<GetProductsPageResult> => {
+  try {
+    const { data } = await api.get<{
+      success: boolean;
+      message?: string;
+      data?: {
+        items: any[];
+        pagination?: ProductsPagination;
+      };
+    }>('/v1/merchandise/products', { params });
+
+    if (!data?.success || !data.data?.items) {
+      return { items: [], pagination: { page: 1, limit: params?.limit ?? 20, total: 0, pages: 1 } };
+    }
+
+    return {
+      items: data.data.items.map(mapProduct),
+      pagination:
+        data.data.pagination ?? { page: 1, limit: params?.limit ?? 20, total: data.data.items.length, pages: 1 },
+    };
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to load merchandise products'));
+  }
+};
+
 export const getMerchandiseProductById = async (id: string): Promise<Product> => {
   try {
     const { data } = await api.get<{ success: boolean; message?: string; data?: any }>(`/v1/merchandise/products/${id}`);

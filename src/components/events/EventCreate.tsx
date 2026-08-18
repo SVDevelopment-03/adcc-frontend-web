@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Calendar, MapPin, Users, Settings, Award, Image as ImageIcon, Save, Plus, X, Globe, Send } from 'lucide-react';
-import { availableCategories } from '../../data/eventsData';
+import { useEventCategories, useEventAmenities } from '../../hooks/useLookups';
 import { toast } from 'sonner';
 import { getAllTracksEn } from '../../services/trackService';
 import { gccCountries, getCitiesByCountry, type GCCCountry } from '../../data/gccLocations';
@@ -20,7 +20,9 @@ export function EventCreate({ role }: EventCreateProps) {
 
   const navigate = useNavigate();
   const { t } = useTranslation();
-  
+  const { options: categoryOptions } = useEventCategories();
+  const { options: amenityOptions } = useEventAmenities();
+
   const [thumbnailImage, setThumbnailImage] = useState<File | null>(null);
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [galleryImages, setGalleryImages] = useState<File[]>([]);
@@ -200,20 +202,9 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     });
   }, [formData.country]);
 
-  // Predefined amenities that appear as checkboxes
-  const predefinedAmenities = ['water', 'toilets', 'parking', 'lighting', 'medical support', 'bike service'];
-
-  const amenityKeyMap: Record<string, string> = {
-    'water': 'water',
-    'toilets': 'toilets',
-    'parking': 'parking',
-    'lighting': 'lighting',
-    'medical support': 'medicalSupport',
-    'bike service': 'bikeService',
-  };
-  
-  // Custom amenities (those not in the predefined list)
-  const customAmenities = formData.amenities.filter(a => !predefinedAmenities.includes(a));
+  // Custom amenities (those not in the dashboard-managed list)
+  const predefinedAmenityValues = amenityOptions.map(a => a.value);
+  const customAmenities = formData.amenities.filter(a => !predefinedAmenityValues.includes(a));
 
   const handleNameChange = (title: string) => {
     setFormData(prev => ({
@@ -544,8 +535,8 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 >
-                  {availableCategories.map(category => (
-                    <option key={category} value={category}>{t(`data.eventCategories.${category}`, category)}</option>
+                  {categoryOptions.map(({ value, label }) => (
+                    <option key={value} value={value}>{label}</option>
                   ))}
                 </select>
               </div>
@@ -863,16 +854,16 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {predefinedAmenities.map(amenity => (
-                <label key={amenity} className="flex items-center gap-2 cursor-pointer">
+              {amenityOptions.map(({ value, label }) => (
+                <label key={value} className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={formData.amenities.includes(amenity)}
-                    onChange={() => toggleAmenity(amenity)}
+                    checked={formData.amenities.includes(value)}
+                    onChange={() => toggleAmenity(value)}
                     className="w-4 h-4"
                     style={{ accentColor: '#C12D32' }}
                   />
-                  <span className="text-sm" style={{ color: '#666' }}>{t(`events.create.amenityOptions.${amenityKeyMap[amenity] || amenity}`, amenity)}</span>
+                  <span className="text-sm" style={{ color: '#666' }}>{label}</span>
                 </label>
               ))}
             </div>

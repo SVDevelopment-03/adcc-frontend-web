@@ -114,9 +114,11 @@ html[dir='rtl'] .contact-page .contact-intro-title {
 }
 
 /* Large Bebas Kai section/CTA titles run oversized in Arabic's fallback
-   font, so cap them site-wide across the public pages. */
+   font, so cap them site-wide across the public pages. Per-card titles
+   (e.g. event-card-title) are excluded — they're small by design and get
+   their own rule below, not the page/section-heading size. */
 html[dir='rtl'] .about-page [class*='-title'],
-html[dir='rtl'] .event-page [class*='-title'],
+html[dir='rtl'] .event-page [class*='-title']:not(.event-card-title),
 html[dir='rtl'] .tracks-page [class*='-title'],
 html[dir='rtl'] .challenges-page h1,
 html[dir='rtl'] .challenges-page h2,
@@ -128,6 +130,10 @@ html[dir='rtl'] .contact-page h1,
 html[dir='rtl'] .contact-page h2,
 html[dir='rtl'] .contact-page [class*='-title'] {
   font-size: clamp(26px, 3.4vw, 44px) !important;
+}
+
+html[dir='rtl'] .event-page .event-card-title {
+  font-size: 30px !important;
 }
 
 /* CTA banners run noticeably larger than regular section titles */

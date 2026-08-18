@@ -11,6 +11,7 @@ import {
 import { toast } from 'sonner';
 import { UserRole } from '../../App';
 import { useTranslation } from 'react-i18next';
+import { useChallengeTypes } from '../../hooks/useLookups';
 
 interface ChallengesListProps {
   role: UserRole;
@@ -19,6 +20,7 @@ interface ChallengesListProps {
 export function ChallengesList({ role }: ChallengesListProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { options: challengeTypeOptions } = useChallengeTypes();
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -231,11 +233,9 @@ export function ChallengesList({ role }: ChallengesListProps) {
             className="px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
           >
             <option value="all">{t('challenges.allTypes')}</option>
-            <option value="Distance">{t('challenges.typeLabels.Distance')}</option>
-            <option value="Frequency">{t('challenges.typeLabels.Frequency')}</option>
-            <option value="Duration">{t('challenges.typeLabels.Duration')}</option>
-            <option value="Social">{t('challenges.typeLabels.Social')}</option>
-            <option value="Event">{t('challenges.typeLabels.Event')}</option>
+            {challengeTypeOptions.map(({ value, label }) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
           </select>
 
           <select
@@ -347,7 +347,7 @@ export function ChallengesList({ role }: ChallengesListProps) {
                   className="px-3 py-1 rounded-full text-xs text-white"
                   style={{ backgroundColor: getTypeColor(challenge.type) }}
                 >
-                  {t(`challenges.typeLabels.${challenge.type}`)}
+                  {challenge.type}
                 </span>
                 <span
                   className="px-3 py-1 rounded-full text-xs text-white"

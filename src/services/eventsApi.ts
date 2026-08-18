@@ -75,15 +75,8 @@ export interface GetEventsResponse {
   };
 }
 
-export const availableCategories = [
-  'Race',
-  'Community Ride',
-  'Training & Clinics',
-  'Awareness Rides',
-  'Family & Kids',
-  'Corporate Events',
-  'National Events',
-];
+// Event categories are dashboard-managed — see hooks/useLookups.ts
+// (`useEventCategories`) and components/events/EventCategories.tsx.
 
 export const getEventsPage = async (params?: GetEventsParams): Promise<GetEventsResponse['data']> => {
   const cacheKey = `events-page:${JSON.stringify(params || {})}`;

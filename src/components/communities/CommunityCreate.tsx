@@ -4,12 +4,11 @@ import { ArrowLeft, Users, Tag, Settings, Shield, Save, Globe, Image as ImageIco
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { useCommunityForm } from '../hooks/useCommunityForm';
-import { createCommunity, updateCommunity, getCommunityById, CommunityApiResponse, COMMUNITY_LOCATION_OPTIONS } from '../../services/communitiesApi';
+import { createCommunity, updateCommunity, getCommunityById, CommunityApiResponse } from '../../services/communitiesApi';
 import { FormField } from './form/FormField';
 import { CategorySelector } from './form/CategorySelector';
 import { TrackSelector } from './form/TrackSelector';
-import { gccCountries } from '../../data/gccLocations';
-import { availableCategories } from '../../constants/communityConstants';
+import { useCommunityCategories, useCommunityPurposeTypes } from '../../hooks/useLookups';
 import { useLocale } from '../../contexts/LocaleContext';
 
 interface CommunityCreateProps {
@@ -45,6 +44,7 @@ export const CommunityCreate: React.FC<CommunityCreateProps> = ({ communityId: p
     logoFile,
     isCompressing,
     communityType,
+    countryOptions,
     availableCities,
     tracks,
     tracksLoading,
@@ -58,6 +58,9 @@ export const CommunityCreate: React.FC<CommunityCreateProps> = ({ communityId: p
     initialData: editingCommunity,
     isEditMode,
   });
+
+  const { options: categoryOptions } = useCommunityCategories();
+  const { options: purposeTypeOptions } = useCommunityPurposeTypes();
 
   const { register, handleSubmit, setValue, formState: { errors } } = form;
 console.log('errorss',errors);
@@ -296,8 +299,8 @@ console.log('errorss',errors);
                 value={selectedCountry}
                 onChange={(e) => setSelectedCountry(e.target.value as any)}
               >
-                {gccCountries.map(country => (
-                  <option key={country} value={country}>{country}</option>
+                {countryOptions.map(({ value, label }) => (
+                  <option key={value} value={value}>{label}</option>
                 ))}
               </FormField>
 
@@ -312,7 +315,7 @@ console.log('errorss',errors);
                 required
               >
                 {availableCities.map(city => (
-                  <option key={city} value={city}>{t(`data.locations.${city}`, city)}</option>
+                  <option key={city} value={city}>{city}</option>
                 ))}
               </FormField>
 
@@ -350,7 +353,7 @@ console.log('errorss',errors);
                 selectedCategories={selectedCategories}
                 onToggle={toggleCategory}
                 error={errors.categories?.message}
-                availableCategories={availableCategories}
+                availableCategories={categoryOptions}
               />
 
               {communityType === 'purpose-based' && (
@@ -361,12 +364,9 @@ console.log('errorss',errors);
                   as="select"
                 >
                   <option value="">{t('communities.create.specialPurposeOptions.select')}</option>
-                  <option value="Awareness">{t('communities.create.specialPurposeOptions.awareness')}</option>
-                  <option value="Charity">{t('communities.create.specialPurposeOptions.charity')}</option>
-                  <option value="Corporate">{t('communities.create.specialPurposeOptions.corporate')}</option>
-                  <option value="Education">{t('communities.create.specialPurposeOptions.education')}</option>
-                  <option value="Health">{t('communities.create.specialPurposeOptions.health')}</option>
-                  <option value="National">{t('communities.create.specialPurposeOptions.nationalEvents')}</option>
+                  {purposeTypeOptions.map(({ value, label }) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
                 </FormField>
               )}
             </div>

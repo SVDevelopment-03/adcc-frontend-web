@@ -5,10 +5,11 @@ import { getCached, setCache, invalidateCache } from '../utils/apiCache';
 export interface Challenge {
   id: string;
   title: string;
-  title_ar?: string;
+  titleAr?: string;
   description: string;
-  description_ar?: string;
-  type: 'Distance' | 'Frequency' | 'Duration' | 'Social' | 'Event';
+  descriptionAr?: string;
+  // Dashboard-managed via the `lookups` collection (type "challenge_type").
+  type: string;
   target: number;
   unit: string;
   startDate: string;
@@ -30,9 +31,9 @@ interface ChallengeApiRaw {
   _id?: string | { toString(): string };
   id?: string;
   title: string;
-  title_ar?: string;
+  titleAr?: string;
   description: string;
-  description_ar?: string;
+  descriptionAr?: string;
   type: Challenge['type'];
   target: number;
   unit: string;
@@ -89,7 +90,9 @@ function normalizeChallenge(raw: ChallengeApiRaw): Challenge {
   return {
     id,
     title: raw.title,
+    titleAr: raw.titleAr,
     description: raw.description,
+    descriptionAr: raw.descriptionAr,
     type: raw.type,
     target: raw.target,
     unit: raw.unit,
@@ -202,7 +205,9 @@ export const getChallengeById = async (id: string): Promise<Challenge> => {
 function buildChallengeFormData(payload: Partial<Challenge>, imageFile?: File): FormData {
   const fd = new FormData();
   if (payload.title) fd.append('title', payload.title);
+  if (payload.titleAr !== undefined) fd.append('titleAr', payload.titleAr);
   if (payload.description) fd.append('description', payload.description);
+  if (payload.descriptionAr !== undefined) fd.append('descriptionAr', payload.descriptionAr);
   if (payload.type) fd.append('type', payload.type);
   if (payload.target !== undefined) fd.append('target', String(payload.target));
   if (payload.unit) fd.append('unit', payload.unit);

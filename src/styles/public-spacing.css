@@ -19,6 +19,7 @@
 .challenges-page-hero-content,
 .communities-page-hero-content,
 .contact-page-hero-content,
+.store-page-hero-content,
 [class*='-page-hero-content'] {
   inset-inline-start: 82px !important;
   inset-inline-end: auto !important;
@@ -32,6 +33,17 @@
 [class*='-hero-title'] {
   margin-block-start: 8px !important;
   margin-block-end: 0 !important;
+}
+
+/* Belt-and-braces: guarantee positioning even if the shared rule above
+   somehow loses the cascade for this specific prefix. Logical-only,
+   no conflicting physical left/right companion. Desktop only — mobile
+   spacing is handled by the .public-hero-content-pos max-width:640px
+   rule below, which this compound selector would otherwise outrank. */
+@media (min-width: 641px) {
+  .store-page-hero-content.public-hero-content-pos {
+    inset-inline-start: 82px !important;
+  }
 }
 
 [class*='-hero-breadcrumb'] {
@@ -269,7 +281,6 @@
 .public-word-gap {
   margin-inline-end: 12px !important;
   margin-inline-start: 0 !important;
-  margin-right: 0 !important;
 }
 
 /* ─── RTL spacing adjustments ─── */

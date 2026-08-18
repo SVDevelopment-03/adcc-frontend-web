@@ -12,7 +12,9 @@ export type BadgeRarity = "Common" | "Rare" | "Epic" | "Legendary";
 export interface Badge {
   id: string;
   name: string;
+  nameAr?: string;
   description: string;
+  descriptionAr?: string;
   icon: string; // backend stores icon key, we map to emoji in UI
   category: BadgeCategory;
   timesAwarded: number;
@@ -27,7 +29,9 @@ interface BadgeApi {
   _id?: string;
   id?: string;
   name?: string;
+  nameAr?: string;
   description?: string;
+  descriptionAr?: string;
   icon?: string;
   category?: string;
   timesAwarded?: number;
@@ -48,7 +52,9 @@ function mapBadgeApiToBadge(raw: BadgeApi): Badge | null {
     id,
     // Backend uses "name"; keep "name" in UI
     name: raw.name ?? "",
+    nameAr: raw.nameAr,
     description: raw.description ?? "",
+    descriptionAr: raw.descriptionAr,
     icon: raw.icon ?? "trophy",
     category,
     timesAwarded: typeof raw.timesAwarded === "number" ? raw.timesAwarded : 0,
@@ -109,7 +115,9 @@ export const getBadgeById = async (id: string): Promise<Badge> => {
 
 export interface SaveBadgePayload {
   name: string;
+  nameAr?: string;
   description: string;
+  descriptionAr?: string;
   requirements: string;
   icon: string;
   category: BadgeCategory;
@@ -123,8 +131,14 @@ function buildBadgeFormData(payload: Partial<SaveBadgePayload>): FormData {
   if (payload.name !== undefined) {
     formData.append("name", payload.name);
   }
+  if (payload.nameAr !== undefined) {
+    formData.append("nameAr", payload.nameAr);
+  }
   if (payload.description !== undefined) {
     formData.append("description", payload.description);
+  }
+  if (payload.descriptionAr !== undefined) {
+    formData.append("descriptionAr", payload.descriptionAr);
   }
   if (payload.requirements !== undefined) {
     formData.append("requirements", payload.requirements);

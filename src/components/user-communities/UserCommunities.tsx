@@ -12,9 +12,9 @@ import {
 } from "lucide-react";
 import {
   CommunityApiResponse,
-  getAvailableCities,
   getCommunities,
 } from "../../services/communitiesApi";
+import { useLookupList, useCommunityCategories } from "../../hooks/useLookups";
 import { motion } from "framer-motion";
 import {
   AnimatedWords,
@@ -53,11 +53,6 @@ const FontLoader = () => (
         height: 480px !important;
       }
     }
-    @media (min-width: 1025px) {
-      .communities-page-hero {
-        height: 620px !important;
-      }
-    }
   `}</style>
 );
 
@@ -66,31 +61,6 @@ const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
 const FALLBACK_COMMUNITY_IMAGE =
   "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=1200&auto=format&fit=crop";
-
-const COMMUNITY_TYPE_OPTIONS = [
-  "Family Rides",
-  "Racing & Performance",
-  "Women (SheRides)",
-  "Youth Cycling",
-  "Weekend Social",
-  "Night Riders",
-  "MTB/Trail",
-  "Training & Clinics",
-] as const;
-
-const COMMUNITY_TYPE_LOCALE_KEYS: Record<
-  (typeof COMMUNITY_TYPE_OPTIONS)[number],
-  string
-> = {
-  "Family Rides": "familyRides",
-  "Racing & Performance": "racingPerformance",
-  "Women (SheRides)": "sheRides",
-  "Youth Cycling": "youthCycling",
-  "Weekend Social": "weekendSocial",
-  "Night Riders": "nightRiders",
-  "MTB/Trail": "mtbTrail",
-  "Training & Clinics": "trainingClinics",
-};
 
 type FaqItem = { q: string; a: string };
 
@@ -164,7 +134,8 @@ export default function CommunitiesPage() {
     }>
   >([]);
   const [totalPages, setTotalPages] = useState(1);
-  const [cities, setCities] = useState<string[]>([]);
+  const { options: cityLookupOptions } = useLookupList("city");
+  const { options: categoryLookupOptions } = useCommunityCategories();
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
 
@@ -198,28 +169,6 @@ export default function CommunitiesPage() {
     }),
     [formatCount, t],
   );
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadCities() {
-      try {
-        const available = await getAvailableCities();
-        if (isMounted && available.length > 0) {
-          setCities(available);
-        }
-      } catch {
-        if (isMounted) {
-          setCities(["Abu Dhabi", "Al Ain", "Dubai", "Al Dhafra", "Sharjah"]);
-        }
-      }
-    }
-
-    loadCities();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   const fetchCommunities = useCallback(async () => {
     try {
@@ -280,23 +229,17 @@ export default function CommunitiesPage() {
   const cityOptions = useMemo(
     () => [
       { value: "all", label: t("public.common.filters.allCities") },
-      ...cities.map((city) => ({ value: city, label: city })),
+      ...cityLookupOptions,
     ],
-    [cities, t],
+    [cityLookupOptions, t],
   );
 
   const typeOptions = useMemo(
     () => [
       { value: "all", label: t("public.common.filters.allTypes") },
-      ...COMMUNITY_TYPE_OPTIONS.map((type) => {
-        const localeKey = COMMUNITY_TYPE_LOCALE_KEYS[type];
-        return {
-          value: type,
-          label: t(`public.communities.types.${localeKey}`),
-        };
-      }),
+      ...categoryLookupOptions,
     ],
-    [t],
+    [categoryLookupOptions, t],
   );
 
   const renderDropdown = (
@@ -351,7 +294,7 @@ export default function CommunitiesPage() {
   };
 
   return (
-    <div className="communities-page min-h-screen overflow-x-hidden bg-[#eaf4ff] text-black">
+    <div className="communities-page min-h-screen overflow-x-clip overflow-y-visible bg-[#eaf4ff] text-black">
       <FontLoader />
 
       <PublicPageHero
@@ -583,7 +526,7 @@ export default function CommunitiesPage() {
         <AnimatedWords
           words={t("public.tracks.faq.title").split(/\s+/).filter(Boolean)}
           gap={12}
-          className="text-[34px] font-bebas justify-center uppercase sm:text-[42px] lg:text-[50px]"
+          className="text-[34px] font-bebas justify-center uppercase leading-[0.95] sm:leading-[1.05] sm:text-[42px] lg:text-[50px]"
         />
         <p className="mt-4 text-[16px] sm:text-[18px]">
           {t("public.tracks.faq.subtitle")}
@@ -594,11 +537,11 @@ export default function CommunitiesPage() {
           whileInView="visible"
           viewport={{ once: true, amount: 0.1 }}
           variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
-          className="mt-8 grid grid-cols-1 gap-4 md:mt-12 md:grid-cols-2 md:gap-7"
+          className="mt-6 grid grid-cols-1 gap-3 md:mt-12 md:gap-7 md:grid-cols-2"
         >
           {faqs.map((faq, index) => (
             <motion.div
-              key={faq.q}
+              key={index}
               variants={{
                 hidden: { opacity: 0, y: 40 },
                 visible: { opacity: 1, y: 0 },
@@ -611,11 +554,11 @@ export default function CommunitiesPage() {
                 if (event.key === "Enter" || event.key === " ")
                   setOpenFaq(openFaq === index ? null : index);
               }}
-              className="cursor-pointer overflow-hidden rounded-xl border border-[#ccc] px-6 text-left text-[20px] font-medium"
+              className="cursor-pointer overflow-hidden rounded-xl border border-[#ccc] px-4 text-start text-[16px] font-medium sm:px-6 sm:text-[20px]"
             >
-              <div className="flex min-h-25 items-center justify-between gap-4 py-4">
+              <div className="flex min-h-16 items-center justify-between gap-3 py-3 sm:min-h-25 sm:gap-4 sm:py-4">
                 <span>{faq.q}</span>
-                <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-black text-[18px] font-normal leading-none transition-transform ${openFaq === index ? "rotate-45" : ""}`}>
+                <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-black text-[16px] font-normal leading-none transition-transform sm:h-7 sm:w-7 sm:text-[18px] ${openFaq === index ? "rotate-45" : ""}`}>
                   +
                 </span>
               </div>
@@ -624,7 +567,7 @@ export default function CommunitiesPage() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="pb-5 text-[16px] font-normal leading-7 text-black/65"
+                  className="pb-5 text-[16px] font-normal leading-5 text-black/65 sm:leading-7"
                 >
                   {faq.a}
                 </motion.p>

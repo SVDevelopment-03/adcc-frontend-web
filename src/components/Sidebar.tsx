@@ -20,7 +20,8 @@ import {
   Settings,
   Shield,
   Globe,
-  Flag
+  Flag,
+  Database,
 } from 'lucide-react';
 import {
   ROLE_DEFAULT_SIDEBAR_ITEMS,
@@ -57,6 +58,7 @@ const menuItems: MenuItemDef[] = [
   { id: 'admins', labelKey: 'sidebar.admins', icon: <Shield className="w-5 h-5" />, roles: ['Admin'], path: '/admins' },
   { id: 'reports', labelKey: 'sidebar.reports', icon: <BarChart3 className="w-5 h-5" />, roles: ['Admin', 'content-manager', 'community-manager', 'moderator'], path: '/reports' },
   { id: 'config', labelKey: 'sidebar.config', icon: <Settings className="w-5 h-5" />, roles: ['Admin'], path: '/config' },
+  { id: 'staticData', labelKey: 'sidebar.staticData', icon: <Database className="w-5 h-5" />, roles: ['Admin'], path: '/static-data' },
   { id: 'languages', labelKey: 'sidebar.languages', icon: <Globe className="w-5 h-5" />, roles: ['Admin'], path: '/languages' },
   { id: 'roles', labelKey: 'sidebar.roles', icon: <Shield className="w-5 h-5" />, roles: ['Admin'], path: '/roles' },
 ];

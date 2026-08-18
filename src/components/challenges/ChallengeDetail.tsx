@@ -196,7 +196,7 @@ export function ChallengeDetail({ role }: ChallengeDetailProps) {
             <div className="space-y-3">
               <div>
                 <p className="text-sm" style={{ color: '#999' }}>{t('challenges.type')}</p>
-                <p style={{ color: '#333' }}>{t(`challenges.typeLabels.${challenge.type}`)}</p>
+                <p style={{ color: '#333' }}>{challenge.type}</p>
               </div>
               <div>
                 <p className="text-sm" style={{ color: '#999' }}>{t('challenges.target')}</p>

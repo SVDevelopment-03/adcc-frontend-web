@@ -37,7 +37,7 @@ export function AnimatedWords({
     >
       {words.map((word, index) => (
         <span
-          key={`${word}-${index}`}
+          key={index}
           className="overflow-hidden"
           style={{ display: "block" }}
         >
@@ -71,7 +71,7 @@ export function HeroAnimatedWords({
     >
       {words.map((word, index) => (
         <span
-          key={`${word}-${index}`}
+          key={index}
           className="inline-block overflow-hidden public-word-gap"
           style={{ marginInlineEnd: gap }}
         >

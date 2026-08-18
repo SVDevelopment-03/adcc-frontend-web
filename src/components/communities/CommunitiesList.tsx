@@ -5,7 +5,7 @@ import { CardSkeleton } from '../ui/skeleton';
 import { UserRole } from '../../App';
 import { toast } from 'sonner';
 import { getAllCommunities as getAllCommunitiesApi, deleteCommunity as deleteCommunityApi, CommunityApiResponse } from '../../services/communitiesApi';
-import { availableCities, availableCategories } from '../../data/communitiesData';
+import { useLookupList, useCommunityCategories } from '../../hooks/useLookups';
 import { useTranslation } from 'react-i18next';
 
 interface CommunitiesListProps {
@@ -35,6 +35,8 @@ interface Community {
 export function CommunitiesList({ role }: CommunitiesListProps) {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+  const { options: cityOptions } = useLookupList('city');
+  const { options: categoryOptions } = useCommunityCategories();
   const [searchTerm, setSearchTerm] = useState('');
   const [cityFilter, setCityFilter] = useState('all');
   const [communityTypeFilter, setCommunityTypeFilter] = useState('all');
@@ -396,8 +398,8 @@ export function CommunitiesList({ role }: CommunitiesListProps) {
             className="px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
           >
             <option value="all">{t('communities.filters.allCities')}</option>
-            {availableCities.map(city => (
-              <option key={city} value={city}>{t(`data.locations.${city}`, city)}</option>
+            {cityOptions.map(({ value, label }) => (
+              <option key={value} value={value}>{label}</option>
             ))}
           </select>
 
@@ -440,17 +442,17 @@ export function CommunitiesList({ role }: CommunitiesListProps) {
         <div>
           <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('communities.card.categories')}</label>
           <div className="flex flex-wrap gap-2">
-            {availableCategories.map(category => (
+            {categoryOptions.map(({ value, label }) => (
               <button
-                key={category}
-                onClick={() => toggleCategory(category)}
+                key={value}
+                onClick={() => toggleCategory(value)}
                 className="px-3 py-1 rounded-full text-sm transition-all"
                 style={{
-                  backgroundColor: categoryFilter.includes(category) ? '#C12D32' : '#F3F4F6',
-                  color: categoryFilter.includes(category) ? '#fff' : '#666',
+                  backgroundColor: categoryFilter.includes(value) ? '#C12D32' : '#F3F4F6',
+                  color: categoryFilter.includes(value) ? '#fff' : '#666',
                 }}
               >
-                {t(`data.communityCategories.${category}`, category)}
+                {label}
               </button>
             ))}
           </div>

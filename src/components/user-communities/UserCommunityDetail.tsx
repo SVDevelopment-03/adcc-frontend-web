@@ -612,7 +612,7 @@ function TracksSection({ tracks }: { tracks: CommunityTrack[] }) {
 
 function EventCard({ event }: { event: EventApiResponse }) {
   const { t, i18n } = useTranslation();
-  const image = event.eventImage || event.mainImage || event.galleryImages?.[0] || FALLBACK_EVENT_IMAGE;
+  const image = event.mainImage || event.eventImage || event.galleryImages?.[0] || FALLBACK_EVENT_IMAGE;
   const participants = event.currentParticipants ?? event.registrations ?? 0;
   const formattedParticipants = Number(participants).toLocaleString(i18n.language);
 

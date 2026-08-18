@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   CalendarDays,
@@ -135,7 +135,7 @@ function HeroSection({ community }: { community: CommunityApiResponse }) {
             {tag || t("public.common.communityFallback")}
           </span>
         </div>
-        <h1 className="text-[30px] font-normal uppercase leading-tight text-white sm:text-[40px] lg:text-[50px]">
+        <h1 className="text-[34px] font-normal uppercase leading-tight text-white sm:text-[40px] lg:text-[50px]">
           {community.title}
         </h1>
       </div>
@@ -152,9 +152,9 @@ function AboutSection({ community }: { community: CommunityApiResponse }) {
         {community.description}
       </p>
 
-      <button className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#019839] px-6 py-3 text-[15px] font-bold text-white sm:mt-8 sm:px-8 sm:py-4 sm:text-[18px]">
+      <Link to="/contact-us" className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#019839] px-6 py-3 text-[16px] font-bold text-white sm:mt-8 sm:px-8 sm:py-4 sm:text-[18px]">
         {t("public.communities.detail.about.joinButton")} <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
-      </button>
+      </Link>
     </section>
   );
 }
@@ -229,8 +229,8 @@ function StatsSection({ community }: { community: CommunityApiResponse }) {
 function EventCard({ event }: { event: EventApiResponse }) {
   const { t, i18n } = useTranslation();
   const image =
-    event.eventImage ||
     event.mainImage ||
+    event.eventImage ||
     event.galleryImages?.[0] ||
     "/img/Frame 2147226042.png";
   const participants = event.currentParticipants ?? event.registrations ?? 0;
@@ -296,24 +296,24 @@ function FaqSection({ community }: { community: CommunityApiResponse }) {
         {t("public.communities.detail.faq.subtitle")}
       </p>
 
-      <div className="mx-auto mt-8 grid max-w-[1098px] grid-cols-1 gap-4 sm:mt-10 md:grid-cols-2 md:gap-5">
+      <div className="mx-auto mt-6 grid max-w-[1098px] grid-cols-1 gap-3 sm:mt-10 sm:gap-4 md:grid-cols-2 md:gap-5">
         {faqs.map((faq, index) => (
           <div
-            key={faq}
+            key={index}
             role="button"
             tabIndex={0}
             onClick={() => toggle(index)}
             onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") toggle(index); }}
-            className="cursor-pointer overflow-hidden rounded-xl border border-[#ccc] px-6 text-left text-[20px] font-medium"
+            className="cursor-pointer overflow-hidden rounded-xl border border-[#ccc] px-4 text-start text-[16px] font-medium sm:px-6 sm:text-[20px]"
           >
-            <div className="flex min-h-25 items-center justify-between gap-4 py-4">
+            <div className="flex min-h-16 items-center justify-between gap-3 py-3 sm:min-h-25 sm:gap-4 sm:py-4">
               <span>{faq}</span>
-              <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-black text-[18px] font-normal leading-none transition-transform duration-300 ${openIndex === index ? "rotate-45" : ""}`}>
+              <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-black text-[16px] font-normal leading-none transition-transform duration-300 sm:h-7 sm:w-7 sm:text-[18px] ${openIndex === index ? "rotate-45" : ""}`}>
                 +
               </span>
             </div>
             {openIndex === index && (
-              <p className="pb-5 text-[16px] font-normal leading-7 text-black/65">
+              <p className="pb-5 text-[16px] font-normal leading-5 text-black/65 sm:leading-7">
                 {t("public.communities.detail.faq.genericAnswer")}
               </p>
             )}

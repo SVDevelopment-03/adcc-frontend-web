@@ -12,6 +12,7 @@ import { getAllBadges, Badge } from '../../services/badgesService';
 import { getBadgeEmoji } from '../../data/badgesIcons';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { useChallengeTypes, useChallengeUnits } from '../../hooks/useLookups';
 
 interface CommunityItem {
   id: string;
@@ -25,9 +26,14 @@ export function ChallengeCreate() {
   const { id: challengeId } = useParams<{ id: string }>();
   const isEditMode = !!challengeId;
 
+  const { options: challengeTypeOptions } = useChallengeTypes();
+  const { options: challengeUnitOptions } = useChallengeUnits();
+
   const [formData, setFormData] = useState({
     title: '',
+    titleAr: '',
     description: '',
+    descriptionAr: '',
     type: 'Distance' as Challenge['type'],
     target: 0,
     unit: 'km',
@@ -56,7 +62,9 @@ export function ChallengeCreate() {
       const existing = await getChallengeById(challengeId);
       setFormData({
         title: existing.title,
+        titleAr: existing.titleAr ?? '',
         description: existing.description,
+        descriptionAr: existing.descriptionAr ?? '',
         type: existing.type,
         target: existing.target,
         unit: existing.unit,
@@ -221,11 +229,35 @@ export function ChallengeCreate() {
               </div>
 
               <div>
+                <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('challenges.challengeTitle')} (Arabic)</label>
+                <input
+                  type="text"
+                  dir="rtl"
+                  value={formData.titleAr}
+                  onChange={(e) => setFormData({ ...formData, titleAr: e.target.value })}
+                  placeholder="العنوان بالعربية"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
+                />
+              </div>
+
+              <div>
                 <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('challenges.description')}</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder={t('challenges.descriptionPlaceholder')}
+                  rows={4}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('challenges.description')} (Arabic)</label>
+                <textarea
+                  dir="rtl"
+                  value={formData.descriptionAr}
+                  onChange={(e) => setFormData({ ...formData, descriptionAr: e.target.value })}
+                  placeholder="الوصف بالعربية"
                   rows={4}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
@@ -238,11 +270,9 @@ export function ChallengeCreate() {
                   onChange={(e) => handleTypeChange(e.target.value as Challenge['type'])}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 >
-                  <option value="Distance">{t('challenges.types.Distance')}</option>
-                  <option value="Frequency">{t('challenges.types.Frequency')}</option>
-                  <option value="Duration">{t('challenges.types.Duration')}</option>
-                  <option value="Social">{t('challenges.types.Social')}</option>
-                  <option value="Event">{t('challenges.types.Event')}</option>
+                  {challengeTypeOptions.map(({ value, label }) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -272,13 +302,15 @@ export function ChallengeCreate() {
 
               <div>
                 <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('challenges.unit')}</label>
-                <input
-                  type="text"
+                <select
                   value={formData.unit}
                   onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                  placeholder="km"
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
-                />
+                >
+                  {challengeUnitOptions.map(({ value, label }) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
+                </select>
               </div>
             </div>
 

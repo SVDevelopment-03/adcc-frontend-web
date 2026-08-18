@@ -5,12 +5,10 @@ import { toast } from 'sonner';
 import { UserRole } from '../../App';
 import { getTrackById, getTrackResults, trackCommunityResults, updateTrack, deleteTrack, disableTrack, enableTrack, Track } from '../../services/trackService';
 import { FacilityType } from '../../types/track.types';
-import { TRACK_FACILITIES, FACILITY_VALUE_TO_API_TEXT, API_TEXT_TO_FACILITY_VALUE } from '../../constants/track.constants';
 import { useLocale } from '../../contexts/LocaleContext';
 import { useTranslation } from 'react-i18next';
 import { DetailPageSkeleton } from '../ui/skeleton';
-import { gccCountries, getCitiesByCountry, type GCCCountry } from '../../data/gccLocations';
-import { translateGccCity, translateGccCountry } from '../../utils/locationI18n';
+import { useCountries, useCities, useTrackFacilities } from '../../hooks/useLookups';
 
 interface TrackEditProps {
   navigate: (page: string, params?: any) => void;
@@ -203,9 +201,9 @@ const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     status: track.status || prev.status,
     image: track.image || prev.image,
     mapPreview: track.mapPreview || prev.mapPreview,
-    facilities: (track.facilities || prev.facilities).map((f: string) =>
-      API_TEXT_TO_FACILITY_VALUE[String(f).toLowerCase()] ?? f
-    ),
+    // Facilities are dashboard-managed lookup values (the API text itself,
+    // e.g. "water stations") — no internal key translation needed.
+    facilities: track.facilities || prev.facilities,
     estimatedTime: track.estimatedTime || prev.estimatedTime,
     // If backend returns loopOptions as CSV string, parse it into numbers
     loopOptions: (track as any).loopOptions
@@ -216,7 +214,10 @@ const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   }));
 }, [track]);
 
-  const citiesForCountry = getCitiesByCountry((formData.country || '') as GCCCountry);
+  const { options: countryOptions } = useCountries();
+  const { options: cityOptionsForCountry } = useCities(formData.country);
+  const { options: facilityOptions } = useTrackFacilities();
+  const citiesForCountry = cityOptionsForCountry.map((c) => c.value);
 
   useEffect(() => {
     if (!formData.country) return;
@@ -367,7 +368,7 @@ const handleGalleryUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         elevation: String(formData.elevation ?? ''),
         estimatedTime: formData.estimatedTime || undefined,
         loopOptions: (formData.loopOptions || []).length ? formData.loopOptions : undefined,
-        facilities: formData.facilities.map((v) => FACILITY_VALUE_TO_API_TEXT[v as keyof typeof FACILITY_VALUE_TO_API_TEXT] ?? v),
+        facilities: formData.facilities,
         safetyNotes: formData.safetyNotes,
         helmetRequired: Boolean(formData.helmetRequired),
         nightRidingAllowed: Boolean(formData.nightRidingAllowed),
@@ -573,10 +574,8 @@ const handleDisable = async (id: string, name: string) => {
                   onChange={(e) => setFormData({ ...formData, country: e.target.value, city: '' })}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 >
-                  {gccCountries.map((country) => (
-                    <option key={country} value={country}>
-                      {translateGccCountry(t, country)}
-                    </option>
+                  {countryOptions.map(({ value, label }) => (
+                    <option key={value} value={value}>{label}</option>
                   ))}
                 </select>
               </div>
@@ -589,8 +588,8 @@ const handleDisable = async (id: string, name: string) => {
                   disabled={!formData.country}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {citiesForCountry.map((city) => (
-                    <option key={city} value={city}>{translateGccCity(t, city)}</option>
+                  {cityOptionsForCountry.map(({ value, label }) => (
+                    <option key={value} value={value}>{label}</option>
                   ))}
                 </select>
               </div>
@@ -733,23 +732,23 @@ const handleDisable = async (id: string, name: string) => {
             </div>
 
             <div className="grid grid-cols-3 gap-4">
-              {TRACK_FACILITIES.map((facility) => {
-                const isChecked = formData.facilities.includes(facility.value);
+              {facilityOptions.map(({ value, label }) => {
+                const isChecked = formData.facilities.includes(value);
                 return (
                   <label
-                    key={facility.value}
+                    key={value}
                     className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition
                       ${isChecked ? 'border-red-500 bg-red-50' : 'border-gray-200 bg-white'}
                     `}
                   >
                    <input
                     type="checkbox"
-                    checked={formData.facilities.includes(facility.value)}
-                    onChange={() => toggleFacility(facility.value)}
+                    checked={isChecked}
+                    onChange={() => toggleFacility(value)}
                     className="w-4 h-4"
                     style={{ accentColor: '#C12D32' }}
                   />
-                    <span className="font-medium">{t(`tracks.edit.facilityOptions.${facility.value}`)}</span>
+                    <span className="font-medium">{label}</span>
                   </label>
                 );
               })}

@@ -14,6 +14,7 @@ import {
 } from "../public/publicPageHelpers";
 import { useNavigate } from "react-router-dom";
 import { AnimatedButton } from "../ui/AnimatedButton";
+import { useEventCategories } from "../../hooks/useLookups";
 
 const FontLoader = () => (
   <style>{`
@@ -99,7 +100,7 @@ font-family: 'Satoshi', sans-serif !important;
       .event-filter-field {
         width: 100% !important;
         height: 54px !important;
-        padding: 0 14px 0 16px !important;
+        padding: 0 0px 0 0px !important;
       }
       .event-filter-field select {
         font-size: 15px !important;
@@ -121,13 +122,14 @@ font-family: 'Satoshi', sans-serif !important;
         height: 220px !important;
       }
       .event-card-meta {
-        grid-template-columns: 1fr !important;
+        grid-template-columns: 1fr 1fr!important;
       }
       .event-card-title {
         font-size: 22px !important;
       }
       .event-card-button {
-        width: 100% !important;
+        width: auto !important;
+        font-size:16px !important;
       }
       .event-pagination {
         gap: 8px !important;
@@ -180,6 +182,9 @@ font-family: 'Satoshi', sans-serif !important;
         position: static !important;
         margin: 18px auto 0 !important;
       }
+        .event-page div.event-grid-wrap{
+            padding-bottom: 0px !important;
+    padding-top: 0px !important;        padding-block: 0px !important;}
     }
 
     @media (max-width: 420px) {
@@ -307,6 +312,7 @@ function FilterBar({
   loading: boolean;
 }) {
   const { t } = useTranslation();
+  const { options: categoryOptions } = useEventCategories();
   const [openDropdown, setOpenDropdown] = useState<keyof EventFilters | null>(
     null,
   );
@@ -322,10 +328,22 @@ function FilterBar({
             value: ALL_FILTER_VALUE,
             label: t("public.common.filters.allCities"),
           },
-          { value: "Abu Dhabi", label: t("public.events.listing.filters.cities.abuDhabi") },
-          { value: "Dubai", label: t("public.events.listing.filters.cities.dubai") },
-          { value: "Sharjah", label: t("public.events.listing.filters.cities.sharjah") },
-          { value: "Al Ain", label: t("public.events.listing.filters.cities.alAin") },
+          {
+            value: "Abu Dhabi",
+            label: t("public.events.listing.filters.cities.abuDhabi"),
+          },
+          {
+            value: "Dubai",
+            label: t("public.events.listing.filters.cities.dubai"),
+          },
+          {
+            value: "Sharjah",
+            label: t("public.events.listing.filters.cities.sharjah"),
+          },
+          {
+            value: "Al Ain",
+            label: t("public.events.listing.filters.cities.alAin"),
+          },
         ],
       },
       {
@@ -335,31 +353,7 @@ function FilterBar({
             value: ALL_FILTER_VALUE,
             label: t("public.common.filters.allCategories"),
           },
-          { value: "Race", label: t("public.events.listing.filters.categories.race") },
-          {
-            value: "Community Ride",
-            label: t("public.events.listing.filters.categories.communityRide"),
-          },
-          {
-            value: "Training & Clinics",
-            label: t("public.events.listing.filters.categories.trainingClinics"),
-          },
-          {
-            value: "Awareness Rides",
-            label: t("public.events.listing.filters.categories.awarenessRides"),
-          },
-          {
-            value: "Family & Kids",
-            label: t("public.events.listing.filters.categories.familyKids"),
-          },
-          {
-            value: "Corporate Events",
-            label: t("public.events.listing.filters.categories.corporateEvents"),
-          },
-          {
-            value: "National Events",
-            label: t("public.events.listing.filters.categories.nationalEvents"),
-          },
+          ...categoryOptions,
         ],
       },
       {
@@ -369,26 +363,44 @@ function FilterBar({
             value: ALL_FILTER_VALUE,
             label: t("public.common.filters.allLevels"),
           },
-          { value: "beginner", label: t("public.events.listing.filters.levels.beginner") },
+          {
+            value: "beginner",
+            label: t("public.events.listing.filters.levels.beginner"),
+          },
           {
             value: "intermediate",
             label: t("public.events.listing.filters.levels.intermediate"),
           },
-          { value: "advanced", label: t("public.events.listing.filters.levels.advanced") },
-          { value: "all", label: t("public.events.listing.filters.levels.all") },
+          {
+            value: "advanced",
+            label: t("public.events.listing.filters.levels.advanced"),
+          },
+          {
+            value: "all",
+            label: t("public.events.listing.filters.levels.all"),
+          },
         ],
       },
       {
         key: "status",
         options: [
           { value: ALL_FILTER_VALUE, label: t("public.common.filters.status") },
-          { value: "Upcoming", label: t("public.events.listing.filters.status.upcoming") },
-          { value: "Ongoing", label: t("public.events.listing.filters.status.ongoing") },
-          { value: "Completed", label: t("public.events.listing.filters.status.completed") },
+          {
+            value: "Upcoming",
+            label: t("public.events.listing.filters.status.upcoming"),
+          },
+          {
+            value: "Ongoing",
+            label: t("public.events.listing.filters.status.ongoing"),
+          },
+          {
+            value: "Completed",
+            label: t("public.events.listing.filters.status.completed"),
+          },
         ],
       },
     ],
-    [t],
+    [t, categoryOptions],
   );
 
   const ChevronDown = ({ open = false }: { open?: boolean }) => (
@@ -428,7 +440,7 @@ function FilterBar({
       // <div key={filter.key} className="event-filter-field" style={{ position: "relative", width: 260 }}>
       <motion.div
         key={filter.key}
-        className="event-filter-field overflow-hidden"
+        className="event-filter-field"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
@@ -643,9 +655,11 @@ function EventCard({
   };
 
   const tag = event.category || t("public.common.eventFallback");
+  // `mainImage` is the field Event Edit actually keeps current; `eventImage` can go
+  // stale (only set at creation), so prefer mainImage first.
   const image =
-    event.eventImage ||
     event.mainImage ||
+    event.eventImage ||
     event.galleryImages?.[0] ||
     "https://images.unsplash.com/photo-1471897488648-5eae4ac6d485?w=600&q=80";
 
@@ -739,8 +753,8 @@ function EventCard({
               <img
                 src="/img/icons/calendar.svg"
                 alt={t("public.events.listing.card.calendarAlt")}
-                width={18}
-                height={18}
+                width={14}
+                height={14}
               />
             }
             text={formatEventDate(event.eventDate, t("public.common.dateTBA"))}
@@ -750,8 +764,8 @@ function EventCard({
               <img
                 src="/img/icons/kms.svg"
                 alt={t("public.events.listing.card.distanceAlt")}
-                width={18}
-                height={18}
+                width={14}
+                height={14}
               />
             }
             text={
@@ -765,19 +779,22 @@ function EventCard({
               <img
                 src="/img/icons/people.svg"
                 alt={t("public.events.listing.card.participantsAlt")}
-                width={18}
-                height={18}
+                width={14}
+                height={14}
               />
             }
-            text={t("public.common.participants", { count: participants, formattedCount: participants })}
+            text={t("public.common.participants", {
+              count: participants,
+              formattedCount: participants,
+            })}
           />
           <Meta
             icon={
               <img
                 src="/img/icons/map.svg"
                 alt={t("public.events.listing.card.locationAlt")}
-                width={18}
-                height={18}
+                width={14}
+                height={14}
               />
             }
             text={event.city || event.address || "—"}
@@ -804,9 +821,18 @@ function EventCard({
 
 function Meta({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-      <span style={{ fontSize: 16, display: "flex", filter: "brightness(0) saturate(100%) invert(42%) sepia(99%) saturate(458%) hue-rotate(100deg) brightness(91%) contrast(102%)" }}>{icon}</span>
-      <span style={{ fontSize: 16, fontWeight: 500, color: "rgba(0,0,0,0.7)" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+      <span
+        style={{
+          fontSize: 13,
+          display: "flex",
+          filter:
+            "brightness(0) saturate(100%) invert(42%) sepia(99%) saturate(458%) hue-rotate(100deg) brightness(91%) contrast(102%)",
+        }}
+      >
+        {icon}
+      </span>
+      <span style={{ fontSize: 13, fontWeight: 500, color: "rgba(0,0,0,0.7)" }}>
         {text}
       </span>
     </div>
@@ -829,7 +855,8 @@ function EventsGrid() {
   const queryParams = useMemo<GetEventsParams>(() => {
     const params: GetEventsParams = { page, limit: PAGE_SIZE };
     if (filters.city !== ALL_FILTER_VALUE) params.city = filters.city;
-    if (filters.category !== ALL_FILTER_VALUE) params.category = filters.category;
+    if (filters.category !== ALL_FILTER_VALUE)
+      params.category = filters.category;
     if (filters.level !== ALL_FILTER_VALUE) params.level = filters.level;
     if (filters.status !== ALL_FILTER_VALUE) params.status = filters.status;
     return params;
@@ -1270,7 +1297,12 @@ export default function Events() {
       <FontLoader />
       <div
         className="event-page"
-        style={{ minWidth: 320, overflowX: "hidden", paddingBottom: 80 }}
+        style={{
+          minWidth: 320,
+          overflowX: "clip",
+          overflowY: "visible",
+          paddingBottom: 80,
+        }}
       >
         <Hero />
         <SectionHeader />

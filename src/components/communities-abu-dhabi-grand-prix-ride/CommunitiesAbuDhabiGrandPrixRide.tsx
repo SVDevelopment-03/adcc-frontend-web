@@ -131,6 +131,15 @@ const getLevel = (event: GrandPrixEvent | null | undefined, t: TFunction) => {
   );
 };
 
+// `city` is always dashboard-translated (see backend localizeEventStatic); `address`
+// is free text that may not have an Arabic version filled in for a given event, so
+// prefer the guaranteed-localized city when the UI is in Arabic.
+const getLocalizedLocation = (event: GrandPrixEvent | null | undefined, fallback: string) => {
+  if (!event) return fallback;
+  const preferCity = i18n.language?.startsWith("ar");
+  return (preferCity ? event.city || event.address : event.address || event.city) || fallback;
+};
+
 const titleCase = (value: string) =>
   value
     .replace(/[-_]+/g, " ")
@@ -200,8 +209,7 @@ const getSchedule = (event: GrandPrixEvent | null | undefined, t: TFunction): Sc
     {
       time: event.eventTime || t("public.events.detail.schedule.timeTBA"),
       title: t("public.events.detail.schedule.eventStart"),
-      description:
-        event.address || event.city || t("public.events.detail.schedule.locationTBA"),
+      description: getLocalizedLocation(event, t("public.events.detail.schedule.locationTBA")),
     },
     ...(event.endTime
       ? [
@@ -326,7 +334,7 @@ function HeroSection({ event }: { event: GrandPrixEvent }) {
             </span>
           ))}
         </div>
-        <h1 className="grand-prix-bebas text-[32px] uppercase leading-tight text-white sm:text-[44px] lg:text-[52px]">
+        <h1 className="grand-prix-bebas text-[34px] uppercase leading-tight text-white sm:text-[44px] lg:text-[52px]">
           {event.title}
         </h1>
       </div>
@@ -344,13 +352,13 @@ function AboutSection({ event }: { event: GrandPrixEvent }) {
       <p className="mx-auto mt-4 max-w-[851px] text-[14px] font-normal leading-relaxed text-black sm:text-[17px] md:text-[20px] lg:text-[24px]">
         {event.description}
       </p>
-      <button
-        type="button"
-        className="mt-5 inline-flex h-[44px] items-center justify-center gap-3 rounded-full bg-[#019839] px-6 text-[15px] font-bold leading-none text-white transition hover:bg-[#017a2e] sm:h-[49px] sm:px-[28px] sm:text-[18px]"
+      <Link
+        to="/contact-us"
+        className="mt-5 inline-flex h-[44px] items-center justify-center gap-3 rounded-full bg-[#019839] px-6 text-[16px] font-bold leading-none text-white transition hover:bg-[#017a2e] sm:h-[49px] sm:px-[28px] sm:text-[18px]"
       >
         {t("public.events.detail.joinEvent")}
         <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
-      </button>
+      </Link>
     </section>
   );
 }
@@ -465,7 +473,7 @@ function FacilitiesSection({ facilities }: { facilities: Facility[] }) {
       </div>
 
       <div
-        className="facility-scroll mt-[42px] flex gap-5 overflow-x-auto pl-3 md:pl-6 lg:pl-[max(1.5rem,calc((100vw-1268px)/2))]"
+        className="facility-scroll mt-[42px] flex gap-3 overflow-x-auto pl-3 sm:gap-5 md:pl-6 lg:pl-[max(1.5rem,calc((100vw-1268px)/2))]"
         style={{
           maskImage: "linear-gradient(to right, black 85%, transparent 100%)",
           WebkitMaskImage: "linear-gradient(to right, black 85%, transparent 100%)",
@@ -474,15 +482,15 @@ function FacilitiesSection({ facilities }: { facilities: Facility[] }) {
         {facilities.map(({ title, icon: Icon }) => (
           <article
             key={title}
-            className="group relative h-[97px] w-[240px] shrink-0 cursor-pointer rounded-[10px] bg-[#76767666] text-white transition-colors duration-200 hover:bg-white hover:text-[#333] sm:w-[260px]"
+            className="group relative h-[70px] w-[170px] shrink-0 cursor-pointer rounded-[10px] bg-[#76767666] text-white transition-colors duration-200 hover:bg-white hover:text-[#333] sm:h-[97px] sm:w-[260px]"
           >
-            <span className="absolute left-[19px] top-5 flex h-[50px] w-[50px] items-center justify-center rounded-[10px] bg-white text-[#333] transition-colors duration-200 group-hover:bg-[#019839] group-hover:text-white">
-              <Icon className="h-[26px] w-[26px]" />
+            <span className="absolute left-[14px] top-1/2 flex h-[36px] w-[36px] -translate-y-1/2 items-center justify-center rounded-[8px] bg-white text-[#333] transition-colors duration-200 group-hover:bg-[#019839] group-hover:text-white sm:left-[19px] sm:top-5 sm:h-[50px] sm:w-[50px] sm:translate-y-0 sm:rounded-[10px]">
+              <Icon className="h-[18px] w-[18px] sm:h-[26px] sm:w-[26px]" />
             </span>
-            <b className="absolute left-[86px] top-5 flex h-[50px] max-w-[130px] items-center text-[18px] font-bold leading-[22px] sm:text-[20px]">
+            <b className="absolute left-[60px] top-1/2 flex h-[36px] max-w-[100px] -translate-y-1/2 items-center text-[13px] font-bold leading-[16px] sm:left-[86px] sm:top-5 sm:h-[50px] sm:max-w-[130px] sm:translate-y-0 sm:text-[20px] sm:leading-[22px]">
               {title}
             </b>
-            <span className="absolute bottom-0 left-0 h-[4px] w-full rounded-b-[10px] bg-transparent transition-colors duration-200 group-hover:bg-[#019839]" />
+            <span className="absolute bottom-0 left-0 h-[3px] w-full rounded-b-[10px] bg-transparent transition-colors duration-200 group-hover:bg-[#019839] sm:h-[4px]" />
           </article>
         ))}
         <div className="shrink-0 w-4" aria-hidden />
@@ -511,7 +519,7 @@ function ScheduleSection({
       </h2>
 
       <p className="mx-auto mb-8 mt-3 max-w-[795px] text-center text-[13px] leading-relaxed text-white/70 sm:text-[16px] md:text-[18px] lg:text-[22px] lg:mb-[45px] lg:mt-[22px]">
-        {event.address || event.city || t("public.events.detail.schedule.subtitleFallback")}
+        {getLocalizedLocation(event, t("public.events.detail.schedule.subtitleFallback"))}
       </p>
 
       {/* <div className="grand-prix-shell mt-[45px] grid grid-cols-[460px_736px] gap-[53px] max-lg:grid-cols-1"> */}
@@ -525,8 +533,7 @@ function ScheduleSection({
             className="absolute bottom-0 left-[41px] h-[478px] w-[377px] object-contain"
           />
 
-          <div className=" left-[60px] top-[265px] z-20 flex items-center">
-          {/* <div className="left-[60px]  z-20 flex h-[58.33px] items-center"> */}
+          <div className="absolute start-[60px] top-[265px] z-20 flex items-center">
             {[
               "/img/Ellipse 2 (1).png",
               "/img/Ellipse 3 (1).png",
@@ -537,11 +544,11 @@ function ScheduleSection({
                 key={src}
                 src={src}
                 alt={t("public.events.detail.schedule.riderAlt")}
-                className="-ml-[29.16px] h-[58.33px] w-[58.33px] rounded-full border-2 border-white object-cover first:ml-0"
+                className="-ms-[29.16px] h-[58.33px] w-[58.33px] rounded-full border-2 border-white object-cover first:ms-0"
               />
             ))}
 
-            <div className="-ml-[29.16px] flex h-[58.33px] w-[58.33px] items-center justify-center rounded-full bg-white font-sans text-[20.83px] font-normal uppercase leading-[27px] text-black">
+            <div className="-ms-[29.16px] flex h-[58.33px] w-[58.33px] items-center justify-center rounded-full bg-white font-sans text-[20.83px] font-normal uppercase leading-[27px] text-black">
               +12k
             </div>
           </div>
@@ -597,24 +604,24 @@ function FaqSection({ faqs }: { faqs: string[] }) {
         {t("public.tracks.faq.subtitle")}
       </p>
 
-      <div className="mx-auto mt-8 grid max-w-[1098px] grid-cols-1 gap-4 sm:mt-10 md:grid-cols-2 md:gap-5">
+      <div className="mx-auto mt-6 grid max-w-[1098px] grid-cols-1 gap-3 sm:mt-10 sm:gap-4 md:grid-cols-2 md:gap-5">
         {faqs.map((faq, index) => (
           <div
-            key={faq}
+            key={index}
             role="button"
             tabIndex={0}
             onClick={() => toggle(index)}
             onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") toggle(index); }}
-            className="cursor-pointer overflow-hidden rounded-xl border border-[#ccc] px-6 text-left text-[20px] font-medium"
+            className="cursor-pointer overflow-hidden rounded-xl border border-[#ccc] px-4 text-start text-[16px] font-medium sm:px-6 sm:text-[20px]"
           >
-            <div className="flex min-h-25 items-center justify-between gap-4 py-4">
+            <div className="flex min-h-16 items-center justify-between gap-3 py-3 sm:min-h-25 sm:gap-4 sm:py-4">
               <span>{faq}</span>
-              <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-black text-[18px] font-normal leading-none transition-transform duration-300 ${openIndex === index ? "rotate-45" : ""}`}>
+              <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-black text-[16px] font-normal leading-none transition-transform duration-300 sm:h-7 sm:w-7 sm:text-[18px] ${openIndex === index ? "rotate-45" : ""}`}>
                 +
               </span>
             </div>
             {openIndex === index && (
-              <p className="pb-5 text-[16px] font-normal leading-7 text-black/65">
+              <p className="pb-5 text-[16px] font-normal leading-5 text-black/65 sm:leading-7">
                 {t("public.events.detail.faq.genericAnswer")}
               </p>
             )}
@@ -686,7 +693,10 @@ export default function CommunitiesAbuDhabiGrandPrixRide() {
     return () => {
       cancelled = true;
     };
-  }, [selectedEventId]);
+    // Re-fetch on language switch too — the API returns already-localized text
+    // (Accept-Language header), so a stale response would otherwise linger
+    // in the old language until a full page reload.
+  }, [selectedEventId, i18n.language]);
 
   const stats = useMemo(() => getStats(event, t), [event, t]);
   const facilities = useMemo(() => getFacilities(event), [event]);

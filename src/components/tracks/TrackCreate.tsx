@@ -1,17 +1,15 @@
 import { useState, useEffect, type ChangeEvent } from 'react';
 import { ArrowLeft, MapPin, Activity, Shield, Image as ImageIcon, Settings, Save } from 'lucide-react';
-import { addTrack, Track, availableFacilities } from '../../data/tracksData';
+import { addTrack, Track } from '../../data/tracksData';
 import { toast } from 'sonner';
 import { useNavigate, useParams } from 'react-router-dom';
 import { UserRole } from '../../App';
-import { createTrack, type CreateTrackRequest, type FacilityType, FACILITY_KEY_TO_API } from '../../services/trackService';
-import { FACILITY_VALUE_TO_API_TEXT } from '../../constants/track.constants';
+import { createTrack, type CreateTrackRequest, type FacilityType } from '../../services/trackService';
 import { useForm, Controller } from 'react-hook-form';
 import { compressImage } from '../../utils/imageUtils';
 import { useLocale } from '../../contexts/LocaleContext';
 import { useTranslation } from 'react-i18next';
-import { gccCountries, getCitiesByCountry, type GCCCountry } from '../../data/gccLocations';
-import { translateGccCity, translateGccCountry } from '../../utils/locationI18n';
+import { useCountries, useCities, useTrackFacilities } from '../../hooks/useLookups';
 
 
 interface TrackCreateProps {
@@ -45,13 +43,13 @@ type FormData = {
   loopOptionInput: string;
 };
 
-const getFormFields = (t: (key: string) => string) => [
+const getFormFields = (t: (key: string) => string, countryValues: string[]) => [
   // Basic Information
   { section: 1, name: 'name', label: t('tracks.create.trackName'), type: 'text', required: true, placeholder: t('tracks.create.placeholders.trackName') },
   { section: 1, name: 'slug', label: t('tracks.create.slug'), type: 'text', readOnly: true },
   { section: 1, name: 'description', label: t('tracks.create.description'), type: 'textarea', required: true, placeholder: t('tracks.create.placeholders.description') },
   { section: 1, name: 'trackType', label: t('tracks.create.trackType'), type: 'select', required: true, options: ['road', 'circuit', 'coastal', 'desert', 'urban'] },
-  { section: 1, name: 'country', label: t('tracks.create.country'), type: 'select', required: true, options: gccCountries as unknown as string[] },
+  { section: 1, name: 'country', label: t('tracks.create.country'), type: 'select', required: true, options: countryValues },
   // City options depend on selected country (computed inside component)
   { section: 1, name: 'city', label: t('tracks.create.city'), type: 'select', required: true, options: [] as string[] },
   { section: 1, name: 'area', label: t('tracks.create.area'), type: 'text', placeholder: t('tracks.create.placeholders.area') },
@@ -89,7 +87,9 @@ export function TrackCreate({ role }: TrackCreateProps) {
   const [galleryImageUrls, setGalleryImageUrls] = useState<string[]>([]);
   const { locale } = useLocale();
   const { t } = useTranslation();
-  const formFields = getFormFields(t);
+  const { options: countryOptions } = useCountries();
+  const { options: facilityOptions } = useTrackFacilities();
+  const formFields = getFormFields(t, countryOptions.map((c) => c.value));
 
   const [image, setImage] = useState<string>('');
   const [coverImage, setCoverImage] = useState<string>('');
@@ -133,7 +133,10 @@ export function TrackCreate({ role }: TrackCreateProps) {
   const watchedCountry = watch('country');
   const watchedCity = watch('city');
 
-  const citiesForCountry = getCitiesByCountry((watchedCountry || '') as GCCCountry);
+  const { options: cityOptionsForCountry } = useCities(watchedCountry);
+  const citiesForCountry = cityOptionsForCountry.map((c) => c.value);
+  const countryLabelMap = new Map(countryOptions.map((c) => [c.value, c.label]));
+  const cityLabelMap = new Map(cityOptionsForCountry.map((c) => [c.value, c.label]));
 
   // Keep city valid when country changes (reset to first city if invalid)
   useEffect(() => {
@@ -300,12 +303,10 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
 
     const slug = (data.slug?.trim() || slugify(title)).trim() || `track-${Date.now()}`;
 
-    // Map form facility keys to API FacilityType, then to API text (e.g. water -> 'water stations')
-    const facilitiesMapped: FacilityType[] = (data.facilities || [])
-      .map((key) => FACILITY_KEY_TO_API[key] ?? key)
-      .filter((v): v is FacilityType => Boolean(v));
-    const facilitiesForApi = facilitiesMapped.length
-      ? facilitiesMapped.map((v) => FACILITY_VALUE_TO_API_TEXT[v] ?? v)
+    // Facility checkboxes now store the dashboard-managed lookup value directly
+    // (already the API text, e.g. "water stations"), so no key translation is needed.
+    const facilitiesForApi: FacilityType[] | undefined = (data.facilities || []).length
+      ? (data.facilities as FacilityType[])
       : undefined;
 
     const payload: CreateTrackRequest = {
@@ -435,9 +436,9 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
                   {selectOptions.map((opt: string) => (
                     <option key={opt} value={opt}>
                       {name === 'country'
-                        ? translateGccCountry(t, opt)
+                        ? countryLabelMap.get(opt) ?? opt
                         : name === 'city'
-                          ? translateGccCity(t, opt)
+                          ? cityLabelMap.get(opt) ?? opt
                           : translationPrefix
                             ? String(t(`${translationPrefix}.${opt}`, { defaultValue: opt }))
                             : opt}
@@ -686,19 +687,19 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {availableFacilities.map(facility => (
+              {facilityOptions.map(({ value, label }) => (
                 <label
-                  key={facility.key}
+                  key={value}
                   className="flex items-center gap-2 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors"
                 >
                   <input
                     type="checkbox"
-                    checked={watchedFacilities.includes(facility.key)}
-                    onChange={() => toggleFacility(facility.key)}
+                    checked={watchedFacilities.includes(value)}
+                    onChange={() => toggleFacility(value)}
                     className="w-4 h-4"
                     style={{ accentColor: '#C12D32' }}
                   />
-                  <span className="text-sm" style={{ color: '#333' }}>{t(`tracks.create.facilityOptions.${facility.key}`)}</span>
+                  <span className="text-sm" style={{ color: '#333' }}>{label}</span>
                 </label>
               ))}
             </div>

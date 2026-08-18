@@ -19,14 +19,15 @@ export type SidebarItemId =
   | 'reports'
   | 'config'
   | 'languages'
-  | 'roles';
+  | 'roles'
+  | 'staticData';
 
 /** Default sidebar menu set by role (used as baseline visibility). */
 export const ROLE_DEFAULT_SIDEBAR_ITEMS: Record<UserRole, SidebarItemId[]> = {
   Admin: [
     'dashboard', 'events', 'communities', 'tracks', 'challenges', 'badges',
     'feed', 'marketplace', 'merchandise', 'cms', 'media', 'push', 'users', 'admins', 'reports',
-    'config', 'languages', 'roles',
+    'config', 'languages', 'roles', 'staticData',
   ],
   'community-manager': [
     'dashboard', 'events', 'communities', 'tracks', 'challenges', 'badges', 'reports',
@@ -58,6 +59,7 @@ export const MENU_PERMISSION_KEY: Record<string, string> = {
   config: 'app_configuration',
   languages: 'manage_languages',
   roles: 'manage_roles',
+  staticData: 'app_configuration',
 };
 
 /** Critical sidebar items that must additionally pass permission checks. */
@@ -68,6 +70,7 @@ export const SIDEBAR_PERMISSION_REQUIRED: Partial<Record<SidebarItemId, string>>
   feed: 'moderate_content',
   marketplace: 'moderate_content',
   config: 'app_configuration',
+  staticData: 'app_configuration',
 };
 
 const normalizePermissionKey = (key: string) =>

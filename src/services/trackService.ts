@@ -92,18 +92,6 @@ export type CreateTrackRequest = Omit<
   galleryImages: string[];
 };
 
-/** Map form facility keys (e.g. bike_rental) to API FacilityType (e.g. bikeRental) */
-export const FACILITY_KEY_TO_API: Record<string, FacilityType> = {
-  bike_rental: "bikeRental",
-  first_aid: "firstAid",
-  changing_rooms: "changingRooms",
-  lights: "lights",
-  water: "water",
-  parking: "parking",
-  toilets: "toilets",
-  cafes: "cafes",
-};
-
 export const UAE_CITIES = [
   "Abu Dhabi",
   "Dubai",

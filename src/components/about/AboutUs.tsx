@@ -113,13 +113,19 @@ margin-bottom: 3rem !important;}
     .journey-card__title {
       position: absolute;
       left: 20px;
-      top: 50px;
+      top: 30px;
       width: 167px;
       color: #fff;
       font-size: 40px;
       line-height: 48px;
       text-transform: capitalize;
       z-index: 2;
+    }
+
+    html[dir='rtl'] .journey-card__title {
+      top: 70px;
+      font-size: 32px;
+      line-height: 38px;
     }
 
     .journey-card__community {
@@ -315,8 +321,8 @@ margin-bottom: 3rem !important;}
         width: 230px !important;
       }
       .journey-card__community-text {
-        color: #fff !important;
-        text-shadow: 0 1px 8px rgba(0,0,0,0.45);
+        color: #000 !important;
+        // text-shadow: 0 1px 8px rgba(0,0,0,0.45);
       }
       .about-values-grid {
         display: grid !important;
@@ -396,7 +402,7 @@ margin-bottom: 3rem !important;}
       .journey-card__title {
         font-size: 30px !important;
         line-height: 34px !important;
-        width: 150px !important;
+        width: 60% !important;
       }
       .journey-card__community {
         top: 208px !important;
@@ -405,7 +411,7 @@ margin-bottom: 3rem !important;}
       .journey-card__button {
         top: 272px !important;
         left: 18px !important;
-        width: calc(100% - 36px) !important;
+        width: auto !important;
       }
       .about-cta-title {
         font-size: 40px !important;
@@ -428,6 +434,7 @@ margin-bottom: 3rem !important;}
 
 .journey-card__title{
     padding-bottom: 25px !important;
+        padding-top: 25px !important;
     display: block !important;}
 
 .about-coaches-title div{
@@ -478,7 +485,7 @@ function JourneyCard() {
       >
         {titleWords.map((word, index) => (
           <motion.span
-            key={`${word}-${index}`}
+            key={index}
             initial={{ opacity: 0, y: 80 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{
@@ -1412,7 +1419,7 @@ export default function AboutUs() {
       <FontLoader />
       <div
         className="about-page"
-        style={{ minWidth: 320, overflowX: "hidden" }}
+        style={{ minWidth: 320, overflowX: "clip", overflowY: "visible" }}
       >
         <Hero />
         <StatsSection />

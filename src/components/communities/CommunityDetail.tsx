@@ -768,7 +768,7 @@ export function CommunityDetail() {
                 >
                   {/* Event Image */}
                   <img
-                    src={event.eventImage || event.mainImage || 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400'}
+                    src={event.mainImage || event.eventImage || 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400'}
                     alt={event.title}
                     className="w-full h-40 object-cover rounded-lg mb-4"
                   />

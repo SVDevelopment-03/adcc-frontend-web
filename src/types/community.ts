@@ -1,10 +1,13 @@
 // Types for community module
-export type GCCCountry = 'UAE' | 'Saudi Arabia' | 'Kuwait' | 'Qatar' | 'Bahrain' | 'Oman';
+// Country, and Terrain are dashboard-managed (see the `lookups` collection,
+// types "country" and "community_terrain") rather than fixed unions, so
+// admins can add/edit/remove entries without a code change.
+export type GCCCountry = string;
 export type CommunityType = 'city' | 'type' | 'purpose-based';
 export type CommunityStatus = 'active' | 'inactive';
 export type Visibility = 'public' | 'private';
 export type JoinMode = 'open' | 'approval' | 'invite';
-export type Terrain = 'Paved Road' | 'Gravel' | 'Mixed' | 'Mountain';
+export type Terrain = string;
 
 export interface CommunityFormData {
   // Basic Information

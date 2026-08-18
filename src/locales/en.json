@@ -18,7 +18,8 @@
     "reports": "Reports & Analytics",
     "config": "App Configuration",
     "languages": "Languages",
-    "roles": "Roles & Permissions"
+    "roles": "Roles & Permissions",
+    "staticData": "Static Data"
   },
   "topbar": {
     "search": "Search...",
@@ -1796,7 +1797,8 @@
     "tabs": {
       "homepageSections": "Homepage Sections",
       "staticPages": "Static Pages",
-      "appBanner": "App Banner"
+      "appBanner": "App Banner",
+      "appBannerAr": "App Banner Arabic"
     },
     "appBanner": {
       "homeScreenBanner": "Home Screen Banner",
@@ -1806,7 +1808,13 @@
       "noBanner": "No banner uploaded yet",
       "uploadSuccess": "Banner uploaded successfully",
       "uploadError": "Failed to upload banner",
-      "currentBanner": "Current Banner"
+      "currentBanner": "Current Banner",
+      "addNewBanner": "Add New Banner",
+      "noBanners": "No app banners yet",
+      "inactive": "Inactive",
+      "clearSelection": "Clear",
+      "arHint": "Upload the Arabic version of each English app banner below.",
+      "noArabicVersion": "No Arabic version yet"
     },
     "lastModified": "Last modified"
   },

@@ -279,16 +279,8 @@ let tracks: Track[] = [
   },
 ];
 
-export const availableFacilities = [
-  { key: 'lights', label: 'lighting' },
-  { key: 'water', label: 'water stations' },
-  { key: 'parking', label: 'parking' },
-  { key: 'toilets', label: 'restrooms' },
-  { key: 'cafes', label: 'cafes' },
-  { key: 'bike_rental', label: 'bike rental' },
-  { key: 'first_aid', label: 'first aid' },
-  { key: 'changing_rooms', label: 'changing rooms' },
-];
+// Track facilities are dashboard-managed — see hooks/useLookups.ts
+// (`useTrackFacilities`) and the Static Data admin page.
 
 export function getAllTracks(): Track[] {
   return tracks;
