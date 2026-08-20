@@ -247,7 +247,7 @@ export default function ChallengeDetailPage() {
       </section>
 
       {/* FAQ */}
-      <FaqSection faqs={faqs} />
+      {/* <FaqSection faqs={faqs} /> */}
     </div>
   );
 }

@@ -745,7 +745,7 @@ export default function CommunitiesAbuDhabiGrandPrixRide() {
           <StatsStrip event={event} stats={stats} />
           <FacilitiesSection facilities={facilities} />
           <ScheduleSection event={event} schedule={schedule} />
-          <FaqSection faqs={faqs} />
+          {/* <FaqSection faqs={faqs} /> */}
         </>
       )}
     </div>

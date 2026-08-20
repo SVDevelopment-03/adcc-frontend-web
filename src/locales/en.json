@@ -2176,6 +2176,9 @@
       "challenges": "Challenges",
       "tracks": "Tracks",
       "news": "News",
+      "store": "Store",
+      "clubStore": "Club Store",
+      "marketplace": "Marketplace",
       "logoAlt": "Abu Dhabi Cycling Club"
     },
     "auth": {

@@ -427,7 +427,7 @@ export default function CommunityDetailPage() {
       <AboutSection community={community} />
       <StatsSection community={community} />
       {events.length > 0 && <UpcomingEventsSection events={events} />}
-      <FaqSection community={community} />
+      {/* <FaqSection community={community} /> */}
     </main>
   );
 }

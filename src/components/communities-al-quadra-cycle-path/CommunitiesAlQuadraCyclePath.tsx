@@ -587,7 +587,7 @@ export default function TrackDetailPage() {
       <StatsSection track={track} />
       <FacilitiesSection facilities={facilities} />
       <UpcomingEventsSection events={events} />
-      <FaqSection track={track} />
+      {/* <FaqSection track={track} /> */}
     </main>
   );
 }

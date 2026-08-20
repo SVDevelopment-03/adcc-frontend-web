@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { LogIn, LogOut, Mail, MapPin, Menu, Phone } from "lucide-react";
+import { ChevronDown, LogIn, LogOut, Mail, MapPin, Menu, Phone } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../contexts/AuthContext";
 import { useLocale } from "../../contexts/LocaleContext";
@@ -13,7 +13,20 @@ interface PublicLayoutProps {
   children: React.ReactNode;
 }
 
-const navItems = [
+interface NavChild {
+  labelKey: string;
+  to: string;
+  match: string[];
+}
+
+interface NavItem {
+  labelKey: string;
+  match: string[];
+  to?: string;
+  children?: NavChild[];
+}
+
+const navItems: NavItem[] = [
   { labelKey: "public.nav.home", to: "/home", match: ["/home"] },
   { labelKey: "public.nav.aboutUs", to: "/aboutus", match: ["/aboutus"] },
   {
@@ -37,11 +50,33 @@ const navItems = [
     match: ["/user-tracks"],
   },
   {
+    labelKey: "public.nav.store",
+    match: ["/user-adcc-store", "/user-marketplace"],
+    children: [
+      {
+        labelKey: "public.nav.clubStore",
+        to: "/user-adcc-store",
+        match: ["/user-adcc-store"],
+      },
+      {
+        labelKey: "public.nav.marketplace",
+        to: "/user-marketplace",
+        match: ["/user-marketplace"],
+      },
+    ],
+  },
+  {
     labelKey: "public.footer.contactUs",
     to: "/contact-us",
     match: ["/contact-us"],
   },
 ];
+
+function isNavItemActive(item: NavItem | NavChild, pathname: string): boolean {
+  return item.match.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`),
+  );
+}
 
 function Logo({ compact = false }: { compact?: boolean }) {
   const navigate = useNavigate();
@@ -63,6 +98,7 @@ function Logo({ compact = false }: { compact?: boolean }) {
 
 function PublicHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(null);
   const [headerVisible, setHeaderVisible] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
@@ -197,6 +233,18 @@ function PublicHeader() {
         .pub-footer-link:hover::after {
           width: 100%;
         }
+        .pub-nav-dropdown {
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(4px);
+          transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+        }
+        .pub-nav-dropdown-wrap:hover .pub-nav-dropdown,
+        .pub-nav-dropdown-wrap:focus-within .pub-nav-dropdown {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
       `}</style>
       <div className="public-header-bar relative mx-auto flex h-full w-full max-w-[1400px] items-center justify-between bg-black/30 backdrop-blur-[2px] px-5 py-2 md:px-10! lg:px-14! xl:px-22!">
         <div className="public-header-logo-wrap flex items-center gap-3">
@@ -206,15 +254,60 @@ function PublicHeader() {
 
         <nav className="hidden items-center gap-4 text-[15px] font-medium xl:flex 2xl:gap-6 2xl:text-[17px]">
           {navItems.map((item) => {
-            const isActive = item.match.some(
-              (path) =>
-                location.pathname === path ||
-                location.pathname.startsWith(`${path}/`),
-            );
+            const isActive = isNavItemActive(item, location.pathname);
+
+            if (item.children) {
+              return (
+                <div
+                  key={item.labelKey}
+                  className="pub-nav-dropdown-wrap relative inline-block"
+                >
+                  <button
+                    type="button"
+                    className={`pub-nav-link inline-flex items-center gap-1 ${
+                      isActive ? "!text-[#019839]" : "!text-white"
+                    }`}
+                  >
+                    {t(item.labelKey)}
+                    <ChevronDown className="h-3.5 w-3.5" />
+                  </button>
+                  {/* Zero-gap hover bridge: the visual spacing below the button is
+                      padding (part of this box), not margin, so the pointer never
+                      crosses a dead zone that would drop :hover between the
+                      button and the card. */}
+                  <div
+                    className={`pub-nav-dropdown absolute ${
+                      isRtl ? "right-0" : "left-0"
+                    } top-full z-10 pt-2`}
+                  >
+                    <div className="min-w-[180px] rounded-xl bg-white p-2 shadow-lg">
+                      {item.children.map((child) => {
+                        const isChildActive = isNavItemActive(
+                          child,
+                          location.pathname,
+                        );
+                        return (
+                          <NavLink
+                            key={child.labelKey}
+                            to={child.to}
+                            className={`block rounded-lg px-3 py-2 text-[14px] font-medium !text-black hover:bg-black/5 ${
+                              isChildActive ? "!text-[#019839]" : ""
+                            }`}
+                          >
+                            {t(child.labelKey)}
+                          </NavLink>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+
             return (
               <NavLink
                 key={item.labelKey}
-                to={item.to}
+                to={item.to as string}
                 className={`pub-nav-link inline-block ${
                   isActive ? "!text-[#019839]" : "!text-white"
                 }`}
@@ -232,7 +325,10 @@ function PublicHeader() {
             type="button"
             aria-expanded={menuOpen}
             aria-label={t("public.auth.toggleMenu")}
-            onClick={() => setMenuOpen((value) => !value)}
+            onClick={() => {
+              setMenuOpen((value) => !value);
+              setOpenMobileDropdown(null);
+            }}
             className="public-menu-toggle flex h-11 w-11 items-center justify-center rounded-full bg-[#019839] text-white transition-colors hover:bg-black sm:h-11 sm:w-11 xl:hidden"
           >
             <Menu className="h-5 w-5" />
@@ -243,15 +339,61 @@ function PublicHeader() {
           <div className="public-mobile-menu absolute left-0 right-0 top-full max-h-[calc(100vh-80px)] overflow-y-auto border-t border-black/10 bg-white px-5 py-5 shadow-lg sm:px-6 md:px-10 xl:hidden">
             <nav className="flex flex-col gap-2 text-[16px] font-semibold">
               {navItems.map((item) => {
-                const isActive = item.match.some(
-                  (path) =>
-                    location.pathname === path ||
-                    location.pathname.startsWith(`${path}/`),
-                );
+                const isActive = isNavItemActive(item, location.pathname);
+
+                if (item.children) {
+                  const isOpen = openMobileDropdown === item.labelKey;
+                  return (
+                    <div key={item.labelKey} className="flex flex-col">
+                      <button
+                        type="button"
+                        aria-expanded={isOpen}
+                        onClick={() =>
+                          setOpenMobileDropdown((current) =>
+                            current === item.labelKey ? null : item.labelKey,
+                          )
+                        }
+                        className={`inline-flex items-center gap-1.5 self-start px-4 py-2.5 ${
+                          isActive ? "!text-[#019839]" : "!text-black"
+                        }`}
+                      >
+                        {t(item.labelKey)}
+                        <ChevronDown
+                          className={`h-4 w-4 transition-transform ${
+                            isOpen ? "rotate-180" : ""
+                          }`}
+                        />
+                      </button>
+                      {isOpen && (
+                        <div className={`flex flex-col ${isRtl ? "pe-4" : "ps-4"}`}>
+                          {item.children.map((child) => {
+                            const isChildActive = isNavItemActive(
+                              child,
+                              location.pathname,
+                            );
+                            return (
+                              <NavLink
+                                key={child.labelKey}
+                                to={child.to}
+                                onClick={() => setMenuOpen(false)}
+                                className={`pub-nav-link self-start px-4 py-2 text-[15px] font-medium ${
+                                  isChildActive ? "!text-[#019839]" : "!text-black/70"
+                                }`}
+                              >
+                                {t(child.labelKey)}
+                              </NavLink>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+
                 return (
                   <NavLink
                     key={item.labelKey}
-                    to={item.to}
+                    to={item.to as string}
                     onClick={() => setMenuOpen(false)}
                     className={`pub-nav-link self-start px-4 py-2.5 ${
                       isActive ? "!text-[#019839]" : "!text-black"

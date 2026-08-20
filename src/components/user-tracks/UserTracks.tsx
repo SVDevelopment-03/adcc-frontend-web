@@ -1842,7 +1842,7 @@ export default function Tracks() {
         <ExploreIntro />
         <WhySection />
         <TracksGrid />
-        <FAQ />
+        {/* <FAQ /> */}
         {/* <CTABanner /> */}
         {/* <Footer /> */}
       </div>
