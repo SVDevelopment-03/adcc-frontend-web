@@ -170,7 +170,9 @@ export function ClubMerchandise() {
         </div>
       </div>
 
-      <MerchandiseBannerUploader />
+      <MerchandiseBannerUploader variant="en" />
+
+      <MerchandiseBannerUploader variant="ar" />
     </div>
   );
 }

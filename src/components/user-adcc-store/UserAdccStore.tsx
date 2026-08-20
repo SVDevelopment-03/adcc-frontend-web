@@ -35,7 +35,14 @@ const getPaginationItems = (
   }
   if (page <= 3) return [1, 2, 3, 4, "...", totalPages];
   if (page >= totalPages - 2)
-    return [1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    return [
+      1,
+      "...",
+      totalPages - 3,
+      totalPages - 2,
+      totalPages - 1,
+      totalPages,
+    ];
   return [1, "...", page - 1, page, page + 1, "...", totalPages];
 };
 
@@ -65,16 +72,19 @@ export default function AdccStorePage() {
   const heroTitleWords = useWordList("public.store.listing.hero.titleWords");
   const heroBreadcrumb = useWordList("public.store.listing.hero.breadcrumb");
   const browseTitleWords = useWordList("public.store.listing.browseTitleWords");
-  const gearUpTitleWords = useWordList("public.store.listing.gearUp.titleWords");
+  const gearUpTitleWords = useWordList(
+    "public.store.listing.gearUp.titleWords",
+  );
   const [merchandiseProducts, setMerchandiseProducts] = useState<Product[]>([]);
   const [merchandiseLoading, setMerchandiseLoading] = useState(true);
   const [merchandisePage, setMerchandisePage] = useState(1);
-  const [merchandisePagination, setMerchandisePagination] = useState<ProductsPagination>({
-    page: 1,
-    limit: PRODUCTS_PAGE_SIZE,
-    total: 0,
-    pages: 1,
-  });
+  const [merchandisePagination, setMerchandisePagination] =
+    useState<ProductsPagination>({
+      page: 1,
+      limit: PRODUCTS_PAGE_SIZE,
+      total: 0,
+      pages: 1,
+    });
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
@@ -103,7 +113,12 @@ export default function AdccStorePage() {
       })
       .catch(() => {
         setMerchandiseProducts([]);
-        setMerchandisePagination({ page: 1, limit: PRODUCTS_PAGE_SIZE, total: 0, pages: 1 });
+        setMerchandisePagination({
+          page: 1,
+          limit: PRODUCTS_PAGE_SIZE,
+          total: 0,
+          pages: 1,
+        });
       })
       .finally(() => setMerchandiseLoading(false));
     // Re-fetch on language switch too — the API returns already-localized
@@ -188,7 +203,8 @@ export default function AdccStorePage() {
               className="flex h-[52px] w-full items-center justify-between rounded-full border border-[#CBCBCB] bg-white px-6 text-[15px] sm:h-[66px] sm:px-8 sm:text-[18px]"
             >
               <span className="truncate">
-                {selectedCategoryName ?? t("public.store.listing.allCategories")}
+                {selectedCategoryName ??
+                  t("public.store.listing.allCategories")}
               </span>
               <ChevronDown
                 size={20}
@@ -213,7 +229,9 @@ export default function AdccStorePage() {
                     type="button"
                     onClick={() => applyCategory(category.id)}
                     className={`block w-full rounded-xl px-4 py-2.5 text-start text-[15px] hover:bg-[#eaf4ff] ${
-                      selectedCategoryId === category.id ? "font-bold text-[#019839]" : ""
+                      selectedCategoryId === category.id
+                        ? "font-bold text-[#019839]"
+                        : ""
                     }`}
                   >
                     {category.name}
@@ -234,10 +252,14 @@ export default function AdccStorePage() {
 
         {/* Club Merchandise */}
         <div className="mt-10 flex items-center gap-4 sm:mt-20 sm:gap-6">
-          <h3 className="text-[20px] font-normal uppercase sm:text-[28px] lg:text-[32px]">{t("public.store.listing.clubMerchandiseHeading")}</h3>
+          <h3 className="text-[20px] font-normal uppercase sm:text-[28px] lg:text-[32px]">
+            {t("public.store.listing.clubMerchandiseHeading")}
+          </h3>
           {!merchandiseLoading && (
             <span className="rounded-full bg-[#435974]/10 px-3 py-1 text-[12px] font-bold text-[#435974] sm:px-4 sm:text-[14px]">
-              {t("public.store.listing.itemsCount", { count: merchandisePagination.total })}
+              {t("public.store.listing.itemsCount", {
+                count: merchandisePagination.total,
+              })}
             </span>
           )}
         </div>
@@ -245,11 +267,16 @@ export default function AdccStorePage() {
         {merchandiseLoading ? (
           <div className="mt-6 grid grid-cols-1 gap-5 sm:mt-8 sm:gap-8 md:grid-cols-2 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="min-h-[300px] animate-pulse rounded-[10px] bg-black/5 sm:min-h-[381px]" />
+              <div
+                key={i}
+                className="min-h-[300px] animate-pulse rounded-[10px] bg-black/5 sm:min-h-[381px]"
+              />
             ))}
           </div>
         ) : merchandiseProducts.length === 0 ? (
-          <p className="mt-6 text-[15px] text-black/50 sm:mt-8 sm:text-[18px]">{t("public.store.listing.noMerchandise")}</p>
+          <p className="mt-6 text-[15px] text-black/50 sm:mt-8 sm:text-[18px]">
+            {t("public.store.listing.noMerchandise")}
+          </p>
         ) : (
           <div className="mt-6 grid grid-cols-1 gap-5 sm:mt-8 sm:gap-8 md:grid-cols-2 lg:grid-cols-4">
             {merchandiseProducts.map((product) => (
@@ -262,7 +289,9 @@ export default function AdccStorePage() {
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3 text-[#019839] text-[16px] font-medium sm:mt-20 sm:gap-8 sm:text-[20px]">
             <button
               type="button"
-              onClick={() => setMerchandisePage((page) => Math.max(1, page - 1))}
+              onClick={() =>
+                setMerchandisePage((page) => Math.max(1, page - 1))
+              }
               disabled={merchandisePagination.page <= 1}
               aria-label={t("public.common.prevPage")}
               className="flex h-12 w-12 items-center justify-center rounded-full bg-[#019839] text-white disabled:cursor-not-allowed disabled:opacity-40"
@@ -270,35 +299,43 @@ export default function AdccStorePage() {
               <ChevronRight size={22} className="rotate-180" />
             </button>
 
-            {getPaginationItems(merchandisePagination.page, merchandisePagination.pages).map(
-              (item, index) =>
-                item === "..." ? (
-                  <span key={`ellipsis-${index}`} className="tracking-[0.25em]">
-                    ..........
-                  </span>
-                ) : (
-                  <button
-                    key={item}
-                    type="button"
-                    onClick={() => setMerchandisePage(item as number)}
-                    aria-current={item === merchandisePagination.page ? "page" : undefined}
-                    className={
-                      item === merchandisePagination.page
-                        ? "flex h-12 w-12 items-center justify-center rounded-full bg-[#019839] text-white"
-                        : "transition-colors hover:text-[#017a2e]"
-                    }
-                  >
-                    {item}
-                  </button>
-                ),
+            {getPaginationItems(
+              merchandisePagination.page,
+              merchandisePagination.pages,
+            ).map((item, index) =>
+              item === "..." ? (
+                <span key={`ellipsis-${index}`} className="tracking-[0.25em]">
+                  ..........
+                </span>
+              ) : (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => setMerchandisePage(item as number)}
+                  aria-current={
+                    item === merchandisePagination.page ? "page" : undefined
+                  }
+                  className={
+                    item === merchandisePagination.page
+                      ? "flex h-12 w-12 items-center justify-center rounded-full bg-[#019839] text-white"
+                      : "transition-colors hover:text-[#017a2e]"
+                  }
+                >
+                  {item}
+                </button>
+              ),
             )}
 
             <button
               type="button"
               onClick={() =>
-                setMerchandisePage((page) => Math.min(merchandisePagination.pages, page + 1))
+                setMerchandisePage((page) =>
+                  Math.min(merchandisePagination.pages, page + 1),
+                )
               }
-              disabled={merchandisePagination.page >= merchandisePagination.pages}
+              disabled={
+                merchandisePagination.page >= merchandisePagination.pages
+              }
               aria-label={t("public.common.nextPage")}
               className="flex h-12 w-12 items-center justify-center rounded-full bg-[#019839] text-white disabled:cursor-not-allowed disabled:opacity-40"
             >
@@ -329,7 +366,7 @@ export default function AdccStorePage() {
         <img
           src="/img/image 30691.png"
           alt={t("public.store.listing.gearUp.imageAlt")}
-          className="h-[300px] w-full max-w-[686px] object-contain sm:h-[568px] lg:absolute lg:bottom-[-25px] lg:end-0"
+          className="h-[300px] w-full max-w-[500px] object-contain sm:h-[500px] lg:absolute lg:bottom-[-25px] lg:end-0"
         />
       </section>
 
@@ -357,7 +394,9 @@ export default function AdccStorePage() {
           </div>
 
           <div>
-            <h4 className="text-[24px] font-black uppercase">{t("public.footer.quickLinks")}</h4>
+            <h4 className="text-[24px] font-black uppercase">
+              {t("public.footer.quickLinks")}
+            </h4>
             <ul className="mt-8 space-y-4 text-[18px]">
               <li>{t("public.nav.aboutUs")}</li>
               <li>{t("public.footer.rides")}</li>
@@ -368,7 +407,9 @@ export default function AdccStorePage() {
           </div>
 
           <div>
-            <h4 className="text-[24px] font-black uppercase">{t("public.footer.contactUs")}</h4>
+            <h4 className="text-[24px] font-black uppercase">
+              {t("public.footer.contactUs")}
+            </h4>
             <ul className="mt-8 space-y-4 text-[18px]">
               <li className="flex gap-3">
                 <Phone size={22} /> +971 2 654 5645

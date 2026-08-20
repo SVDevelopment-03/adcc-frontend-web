@@ -221,7 +221,7 @@ export default function MerchandiseDetailPage() {
             <div className="mt-6 rounded-xl bg-[#323232] p-5 text-white sm:mt-8 sm:p-6 lg:max-w-[480px] lg:p-8 xl:max-w-[560px]">
               <div className="flex items-center gap-4 sm:gap-6">
                 <img
-                  src="/ADCC-Logo.png"
+                  src="/images/adcc-logo.png"
                   alt="ADCC"
                   className="h-10 w-10 rounded-full bg-white object-contain p-1.5 sm:h-16 sm:w-16 lg:h-[70px] lg:w-[70px]"
                 />

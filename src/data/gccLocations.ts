@@ -86,3 +86,19 @@ export function isValidCountryCity(country: GCCCountry | '', city: string): bool
   if (!country || !city) return false;
   return gccCities[country]?.includes(city) || false;
 }
+
+// Some records (e.g. tracks saved before this code-based select existed)
+// store a country's full display label (e.g. "United Arab Emirates")
+// instead of its short code (e.g. "UAE"). Of this list, only UAE's code
+// diverges from its label, so map that one case back to the code when
+// comparing a stored value against the country selects above — otherwise
+// an exact string match silently drops matching tracks/records.
+const COUNTRY_LABEL_TO_CODE: Record<string, GCCCountry> = {
+  'united arab emirates': 'UAE',
+};
+
+export function normalizeCountryValue(value?: string | null): string {
+  const trimmed = (value || '').trim();
+  if (!trimmed) return 'UAE';
+  return COUNTRY_LABEL_TO_CODE[trimmed.toLowerCase()] || trimmed;
+}

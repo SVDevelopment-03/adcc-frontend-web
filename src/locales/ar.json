@@ -785,6 +785,7 @@
       },
       "featuredEvent": "فعالية مميزة",
       "allowCancellation": "السماح بالإلغاء",
+      "purposeBasedEvent": "فعاليات ذات غرض خاص",
       "customAmenities": "مرافق مخصصة:",
       "amenityOptions": {
         "water": "مياه",

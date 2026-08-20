@@ -280,6 +280,71 @@ export const deleteProductBanner = async (key: string): Promise<void> => {
   }
 };
 
+export const getProductBannersAr = async (): Promise<ProductBanner[]> => {
+  try {
+    const { data } = await api.get<{ success: boolean; message?: string; data?: { banners: any[] } }>('/v1/product-banners-ar');
+    if (!data?.success || !data.data?.banners) {
+      return [];
+    }
+    return data.data.banners.map((banner) => ({
+      id: banner.id || banner._id || String(banner._id),
+      key: banner.key,
+      group: banner.group,
+      label: banner.label,
+      title: banner.title,
+      description: banner.description,
+      image: banner.image,
+      active: banner.active,
+      createdAt: banner.createdAt,
+      updatedAt: banner.updatedAt,
+    }));
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to load Arabic product banners'));
+  }
+};
+
+export const uploadProductBannersAr = async (files: File[]): Promise<ProductBanner[]> => {
+  try {
+    const formData = new FormData();
+    files.forEach((file) => formData.append('images', file));
+
+    const { data } = await api.post<{ success: boolean; message?: string; data?: { banners: any[] } }>(
+      '/v1/product-banners-ar',
+      formData,
+      {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      }
+    );
+
+    if (!data?.success || !data.data?.banners) {
+      throw new Error(data?.message || 'Failed to upload Arabic product banners');
+    }
+
+    return data.data.banners.map((banner) => ({
+      id: banner.id || banner._id || String(banner._id),
+      key: banner.key,
+      group: banner.group,
+      label: banner.label,
+      title: banner.title,
+      description: banner.description,
+      image: banner.image,
+      active: banner.active,
+      createdAt: banner.createdAt,
+      updatedAt: banner.updatedAt,
+    }));
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to upload Arabic product banners'));
+  }
+};
+
+export const deleteProductBannerAr = async (key: string): Promise<void> => {
+  try {
+    await api.delete(`/v1/product-banners-ar/${encodeURIComponent(key)}`);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to delete Arabic product banner'));
+  }
+};
+
 export const updateMerchandiseProduct = async (id: string, payload: Partial<Omit<Product, 'id' | 'sold' | 'createdAt'>>): Promise<Product> => {
   try {
     const { data } = await api.patch<{ success: boolean; message?: string; data?: any }>(`/v1/merchandise/products/${id}`, payload);

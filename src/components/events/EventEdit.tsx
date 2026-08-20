@@ -6,7 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getEventByIdEn, updateEvent as updateEventApi, deleteEvent as deleteEventApi, disableEvent as disableEventApi, closeEventRegistration, reopenEventRegistration, completeEvent as completeEventApi, EventApiResponse } from '../../services/eventsApi';
 import { useEventCategories, useEventAmenities } from '../../hooks/useLookups';
 import { getAllTracksEn, deleteTrack } from '../../services/trackService';
-import { gccCountries, getCitiesByCountry, type GCCCountry } from '../../data/gccLocations';
+import { gccCountries, getCitiesByCountry, normalizeCountryValue, type GCCCountry } from '../../data/gccLocations';
 import { getAllCommunities, deleteCommunity as deleteCommunityApi, CommunityApiResponse } from '../../services/communitiesApi';
 import { formatToInputDate } from '../../utils/date';
 import { useLocale } from '../../contexts/LocaleContext';
@@ -208,6 +208,7 @@ export function EventEdit({ role }: EventEditProps) {
     status: 'Draft' | 'Open' | 'Full' | 'Completed' | 'Archived';
     isFeatured: boolean;
     allowCancellation: boolean;
+    isPurposeBased: boolean;
     galleryImages: string[];
     address: string;
     youtubeLink: string;
@@ -246,6 +247,7 @@ export function EventEdit({ role }: EventEditProps) {
     galleryImages: [],
     isFeatured: false,
     allowCancellation: false,
+    isPurposeBased: false,
     address: '',
     youtubeLink: '',
     maxAge: 70,
@@ -313,6 +315,7 @@ export function EventEdit({ role }: EventEditProps) {
         status,
         isFeatured: ev.isFeatured ?? false,
         allowCancellation: ev.allowCancellation ?? false,
+        isPurposeBased: ev.isPurposeBased ?? false,
         galleryImages: ev.galleryImages ?? [],
         address: ev.address ?? '',
         youtubeLink: ev.youtubeLink ?? '',
@@ -335,11 +338,11 @@ export function EventEdit({ role }: EventEditProps) {
 
   const filteredTracks = React.useMemo(() => {
     if (!formData.country || !formData.city) return [];
-    const country = formData.country.trim();
+    const country = normalizeCountryValue(formData.country);
     const city = formData.city.trim();
     return tracks.filter(
       (t: { country?: string; city?: string }) =>
-        (t.country || 'UAE').trim() === country && (t.city || '').trim() === city
+        normalizeCountryValue(t.country) === country && (t.city || '').trim() === city
     );
   }, [tracks, formData.country, formData.city]);
 
@@ -538,6 +541,7 @@ export function EventEdit({ role }: EventEditProps) {
         status: formData.status,
         isFeatured: formData.isFeatured,
         allowCancellation: formData.allowCancellation,
+        isPurposeBased: formData.isPurposeBased,
         address: formData.address,
         country: formData.country,
         maxAge: formData.maxAge,
@@ -1516,6 +1520,17 @@ export function EventEdit({ role }: EventEditProps) {
                     style={{ accentColor: '#C12D32' }}
                   />
                   <span className="text-sm" style={{ color: '#666' }}>{t('events.create.allowCancellation')}</span>
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.isPurposeBased}
+                    onChange={(e) => setFormData({ ...formData, isPurposeBased: e.target.checked })}
+                    className="w-4 h-4"
+                    style={{ accentColor: '#C12D32' }}
+                  />
+                  <span className="text-sm" style={{ color: '#666' }}>{t('events.create.purposeBasedEvent')}</span>
                 </label>
               </div>
             </div>

@@ -823,6 +823,7 @@
       },
       "featuredEvent": "Featured Event",
       "allowCancellation": "Allow Cancellation",
+      "purposeBasedEvent": "Purpose Based Events",
       "customAmenities": "Custom Amenities:",
       "amenityOptions": {
         "water": "water",

@@ -7,6 +7,7 @@ import type { CommunityApiResponse } from '../../services/communitiesApi';
 
 import { getAllTracksEn } from '../../services/trackService';
 import { useCities, useCountries } from '../../hooks/useLookups';
+import { normalizeCountryValue } from '../../data/gccLocations';
 
 // Coerce empty string from number inputs to undefined so optional number fields don't fail and scroll to this section
 const optionalNumber = (schema: z.ZodNumber) =>
@@ -246,10 +247,13 @@ export const useCommunityForm = ({ initialData, isEditMode }: UseCommunityFormPr
   const tracks = useMemo(() => {
     if (!tracksFromApi.length) return [];
     const cityNorm = (selectedCity || '').toLowerCase().trim();
-    const countryNorm = (selectedCountry || '').toLowerCase().trim();
+    // Some tracks store the country's full label ("United Arab Emirates")
+    // instead of its short code ("UAE"); normalize both sides so a track
+    // saved either way still matches the code-based country selection.
+    const countryNorm = normalizeCountryValue(selectedCountry).toLowerCase();
     const filtered = tracksFromApi.filter((t) => {
       const tCity = (t.city || t.area || '').toLowerCase().trim();
-      const tCountry = (t.country || '').toLowerCase().trim();
+      const tCountry = normalizeCountryValue(t.country).toLowerCase();
       const cityMatch = !cityNorm || tCity.includes(cityNorm) || cityNorm.includes(tCity);
       const countryMatch = !countryNorm || tCountry.includes(countryNorm) || countryNorm.includes(tCountry);
       return cityMatch && countryMatch;

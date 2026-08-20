@@ -204,7 +204,9 @@ export function Merchandise({ navigate }: MerchandiseProps) {
             </div>
           </div>
 
-          <MerchandiseBannerUploader />
+          <MerchandiseBannerUploader variant="en" />
+
+          <MerchandiseBannerUploader variant="ar" />
 
           {/* Quick Actions */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">

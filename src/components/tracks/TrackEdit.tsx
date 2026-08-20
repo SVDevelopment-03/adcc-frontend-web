@@ -219,6 +219,22 @@ const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const { options: facilityOptions } = useTrackFacilities();
   const citiesForCountry = cityOptionsForCountry.map((c) => c.value);
 
+  // Older tracks may have been saved with the country's display label
+  // (e.g. "United Arab Emirates") instead of the lookup's short code
+  // (e.g. "UAE"). Cities are matched by that exact code, so a track stuck
+  // on the label would never see any cities. Once countries load, snap a
+  // label match back onto the code so the cascade below can find them.
+  useEffect(() => {
+    if (!formData.country || !countryOptions.length) return;
+    if (countryOptions.some((c) => c.value === formData.country)) return;
+    const matchByLabel = countryOptions.find(
+      (c) => c.label.toLowerCase() === formData.country.toLowerCase()
+    );
+    if (matchByLabel) {
+      setFormData((prev) => ({ ...prev, country: matchByLabel.value }));
+    }
+  }, [formData.country, countryOptions]);
+
   useEffect(() => {
     if (!formData.country) return;
     if (!citiesForCountry.length) return;
