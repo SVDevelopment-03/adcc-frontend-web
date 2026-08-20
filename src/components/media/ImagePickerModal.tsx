@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ImageIcon, Loader2, Search, Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
-import { getMediaPage, uploadToMediaLibrary, MediaItem } from '../../services/mediaApi';
+import { backfillMediaLibrary, getMediaPage, uploadToMediaLibrary, MediaItem } from '../../services/mediaApi';
 
 interface ImagePickerModalProps {
   /** Upload folder used when a brand-new file is uploaded from this picker (see backend FOLDER_MAP). */
@@ -27,6 +27,7 @@ export function ImagePickerModal({ uploadFolder, onClose, onSelect }: ImagePicke
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [uploading, setUploading] = useState(false);
+  const [scanning, setScanning] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async (nextPage: number, query: string, append: boolean) => {
@@ -73,6 +74,26 @@ export function ImagePickerModal({ uploadFolder, onClose, onSelect }: ImagePicke
       toast.error(error?.message || 'Upload failed');
     } finally {
       setUploading(false);
+    }
+  };
+
+  // Images uploaded before the media catalog existed (e.g. an event cover
+  // set months ago) were never recorded — this scans existing content once
+  // and backfills them so they show up here too. Safe to run repeatedly.
+  const handleScanExisting = async () => {
+    setScanning(true);
+    try {
+      const result = await backfillMediaLibrary();
+      if (result.added > 0) {
+        toast.success(`Found ${result.added} existing image${result.added === 1 ? '' : 's'}`);
+        load(1, search, false);
+      } else {
+        toast.info('No additional existing images found.');
+      }
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to scan existing content');
+    } finally {
+      setScanning(false);
     }
   };
 
@@ -142,13 +163,28 @@ export function ImagePickerModal({ uploadFolder, onClose, onSelect }: ImagePicke
                     {search ? 'No images match your search' : 'No images uploaded yet'}
                   </p>
                   {!search && (
-                    <button
-                      type="button"
-                      onClick={() => setTab('upload')}
-                      className="text-sm text-blue-600 hover:underline"
-                    >
-                      Upload your first image
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setTab('upload')}
+                        className="text-sm text-blue-600 hover:underline"
+                      >
+                        Upload your first image
+                      </button>
+                      <p className="text-xs text-gray-400 max-w-xs">
+                        Already have images on events, tracks, communities or banners? They won't
+                        show up here until you scan for them once.
+                      </p>
+                      <button
+                        type="button"
+                        disabled={scanning}
+                        onClick={handleScanExisting}
+                        className="flex items-center gap-2 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg px-4 py-2 transition-colors disabled:opacity-50"
+                      >
+                        {scanning && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                        Scan existing content for images
+                      </button>
+                    </>
                   )}
                 </div>
               ) : (

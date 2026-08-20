@@ -103,3 +103,25 @@ export const deleteMediaItem = async (id: string): Promise<void> => {
     throw new Error(getApiErrorMessage(error, 'Failed to remove media item'));
   }
 };
+
+/**
+ * Scans existing events/tracks/communities/banners/lookups for images that
+ * predate the media catalog and adds them, so the picker also offers images
+ * uploaded before this feature existed. Safe to run more than once.
+ */
+export const backfillMediaLibrary = async (): Promise<{ scanned: number; added: number }> => {
+  try {
+    const { data } = await api.post<{
+      success: boolean;
+      message?: string;
+      data?: { scanned: number; added: number };
+    }>('/v1/media/backfill');
+
+    if (!data?.success || !data.data) {
+      throw new Error(data?.message || 'Failed to scan existing content');
+    }
+    return data.data;
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to scan existing content'));
+  }
+};
