@@ -15,6 +15,7 @@ import { AnimatedButton } from "../ui/AnimatedButton";
 
 type PublicTrackCard = {
   id: string;
+  slug?: string;
   name: string;
   city: string;
   difficulty: string;
@@ -84,6 +85,7 @@ const normalizeTrack = (
   lang?: string,
 ): PublicTrackCard => ({
   id: getTrackId(track),
+  slug: track.slug,
   name: track.title || (track as any).name || t("public.common.untitledTrack"),
   city: track.city || t("public.tracks.listing.uaeFallback"),
   difficulty: track.difficulty || "all",
@@ -1006,7 +1008,9 @@ function TrackCard({
               : {}
           }
           onClick={() =>
-            navigate(`/user-tracks/${encodeURIComponent(track.id)}`)
+            navigate(
+              `/user-tracks/${encodeURIComponent(track.slug || track.id)}`,
+            )
           }
         >
           {t("public.common.viewDetails")}

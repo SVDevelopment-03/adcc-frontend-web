@@ -156,6 +156,7 @@ export default function CommunitiesPage() {
   const mapCommunityCard = useCallback(
     (community: CommunityApiResponse) => ({
       id: community._id || community.id || community.title,
+      slug: community.slug,
       title:
         community.title ||
         community.name ||
@@ -431,7 +432,7 @@ export default function CommunitiesPage() {
                   key={item.id}
                 >
                   <Link
-                    to={`/user-communities/${encodeURIComponent(item.id)}`}
+                    to={`/user-communities/${encodeURIComponent(item.slug || item.id)}`}
                     className="group relative block h-[300px] overflow-hidden rounded-[10px] bg-black text-left sm:h-[380px] lg:h-[467px]"
                   >
                   <motion.img

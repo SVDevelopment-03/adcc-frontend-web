@@ -43,7 +43,10 @@ function MerchandiseCard({ product }: { product: Product }) {
   const image = product.images?.[0] ?? "";
   const price = `${product.price.toLocaleString()} AED`;
   return (
-    <div className="min-h-[381px] rounded-[10px] border border-black/5 p-8 shadow-inner transition-all duration-300 hover:border-[#435974] hover:bg-[#435974] hover:text-white">
+    <Link
+      to={`/user-adcc-store/product/${product.id}`}
+      className="block min-h-[381px] rounded-[10px] border border-black/5 p-8 text-black no-underline shadow-inner transition-all duration-300 hover:border-[#435974] hover:shadow-md"
+    >
       <h3 className="text-[24px] uppercase">{product.name}</h3>
       <p className="mt-1 text-[18px]">{price}</p>
       {image && (
@@ -53,7 +56,7 @@ function MerchandiseCard({ product }: { product: Product }) {
           className="mt-8 h-[240px] w-full object-contain mix-blend-multiply"
         />
       )}
-    </div>
+    </Link>
   );
 }
 

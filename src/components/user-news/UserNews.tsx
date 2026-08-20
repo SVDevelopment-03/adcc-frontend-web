@@ -46,7 +46,7 @@ function formatByDate(value: string | undefined, locale: string): string {
 function NewsCard({ item }: { item: NewsItem }) {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const id = item.id || item._id;
+  const id = item.slug || item.id || item._id;
   const authorName =
     item.author ||
     item.createdBy?.fullName ||

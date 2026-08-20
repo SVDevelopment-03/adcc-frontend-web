@@ -23,6 +23,7 @@ export function MerchandiseCategories({ categories, setCategories }: Merchandise
 
   const [form, setForm] = useState({
     name: '',
+    nameAr: '',
     icon: '🏷️',
     image: '',
     active: true,
@@ -34,7 +35,7 @@ export function MerchandiseCategories({ categories, setCategories }: Merchandise
   const imageInputRef = useRef<HTMLInputElement | null>(null);
 
   const openCreate = () => {
-    setForm({ name: '', icon: '🏷️', image: '', active: true, subcategories: [] });
+    setForm({ name: '', nameAr: '', icon: '🏷️', image: '', active: true, subcategories: [] });
     setSelectedImageFile(null);
     setImagePreviewUrl('');
     setNewSubcatName('');
@@ -43,7 +44,7 @@ export function MerchandiseCategories({ categories, setCategories }: Merchandise
   };
 
   const openEdit = (cat: Category) => {
-    setForm({ name: cat.name, icon: cat.icon ?? '🏷️', image: cat.image ?? '', active: cat.active, subcategories: cat.subcategories.map(s => ({ ...s })) });
+    setForm({ name: cat.name, nameAr: cat.nameAr ?? '', icon: cat.icon ?? '🏷️', image: cat.image ?? '', active: cat.active, subcategories: cat.subcategories.map(s => ({ ...s })) });
     setSelectedImageFile(null);
     setImagePreviewUrl(cat.image ?? '');
     setNewSubcatName('');
@@ -65,6 +66,7 @@ export function MerchandiseCategories({ categories, setCategories }: Merchandise
     try {
       const payload: any = {
         name: form.name,
+        nameAr: form.nameAr,
         active: form.active,
         subcategories: form.subcategories,
       };
@@ -245,6 +247,17 @@ export function MerchandiseCategories({ categories, setCategories }: Merchandise
                   onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                   className="w-full px-4 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-red-600"
                   placeholder="e.g. Jerseys & Kits"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm mb-1" style={{ color: '#666' }}>Category Name (Arabic)</label>
+                <input
+                  value={form.nameAr}
+                  onChange={e => setForm(f => ({ ...f, nameAr: e.target.value }))}
+                  dir="rtl"
+                  className="w-full px-4 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-red-600"
+                  placeholder="مثال: ملابس رياضية"
                 />
               </div>
 

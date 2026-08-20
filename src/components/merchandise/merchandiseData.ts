@@ -13,12 +13,14 @@ export interface ProductVariant {
 export interface Product {
   id: string;
   name: string;
+  nameAr?: string;
   categoryId: string;
   subcategoryId?: string;
   price: number;
   originalPrice?: number;
   images: string[];
   description: string;
+  descriptionAr?: string;
   specifications: { label: string; value: string }[];
   variants: ProductVariant[];
   status: ProductStatus;
@@ -35,6 +37,7 @@ export interface Product {
 export interface Category {
   id: string;
   name: string;
+  nameAr?: string;
   icon?: string;
   image?: string;
   subcategories: { id: string; name: string }[];

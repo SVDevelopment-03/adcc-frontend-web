@@ -371,7 +371,7 @@ function EventCard({ event }: { event: EventApiResponse }) {
     event.galleryImages?.[0] ||
     FALLBACK_EVENT_IMAGE;
   const participants = event.currentParticipants ?? event.registrations ?? 0;
-  const eventId = event._id || event.id;
+  const eventId = event.slug || event._id || event.id;
 
   return (
     <div>

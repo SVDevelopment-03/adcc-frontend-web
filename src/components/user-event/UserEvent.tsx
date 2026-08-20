@@ -806,9 +806,9 @@ function EventCard({
           size="sm"
           className="event-card-button"
           onClick={() => {
-            const eventId = event._id || event.id;
-            if (eventId) {
-              navigate(`/user-event/${encodeURIComponent(eventId)}`);
+            const eventSlug = event.slug || event._id || event.id;
+            if (eventSlug) {
+              navigate(`/user-event/${encodeURIComponent(eventSlug)}`);
             }
           }}
         >

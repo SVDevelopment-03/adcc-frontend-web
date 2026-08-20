@@ -197,7 +197,7 @@ export default function UserNewsDetail() {
             </h2>
             <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-6">
               {related.map((item) => {
-                const relatedId = item.id || item._id;
+                const relatedId = item.slug || item.id || item._id;
                 return (
                   <button
                     type="button"

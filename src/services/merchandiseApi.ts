@@ -169,6 +169,29 @@ export const uploadMerchandiseBanner = async (file: File): Promise<{ url: string
   }
 };
 
+export const uploadMerchandiseProductImages = async (files: File[]): Promise<{ url: string; key: string }[]> => {
+  try {
+    const formData = new FormData();
+    files.forEach((file) => formData.append('images', file));
+
+    const { data } = await api.post<{ success: boolean; message?: string; data?: { url: string; key: string }[] }>(
+      '/v1/uploads/images/merchandise-products',
+      formData,
+      {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      }
+    );
+
+    if (!data?.success || !data?.data) {
+      throw new Error(data?.message || 'Failed to upload product images');
+    }
+
+    return data.data;
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to upload product images'));
+  }
+};
+
 export const uploadMerchandiseCategoryImage = async (file: File): Promise<{ url: string; key: string }> => {
   try {
     const formData = new FormData();
