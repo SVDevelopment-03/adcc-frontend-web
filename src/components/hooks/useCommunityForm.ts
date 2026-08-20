@@ -317,6 +317,19 @@ export const useCommunityForm = ({ initialData, isEditMode }: UseCommunityFormPr
     setValue('logo', '');
   }, [setValue]);
 
+  /** Pick an already-uploaded image from the media library instead of a fresh file. */
+  const pickImageFromLibrary = useCallback((url: string) => {
+    setImageFile(null);
+    setImagePreview(url);
+    setValue('image', url);
+  }, [setValue]);
+
+  const pickLogoFromLibrary = useCallback((url: string) => {
+    setLogoFile(null);
+    setLogoPreview(url);
+    setValue('logo', url);
+  }, [setValue]);
+
   return {
     form,
     selectedCountry,
@@ -339,7 +352,9 @@ export const useCommunityForm = ({ initialData, isEditMode }: UseCommunityFormPr
     toggleTrack,
     handleImageUpload,
     clearImage,
+    pickImageFromLibrary,
     handleLogoUpload,
     clearLogo,
+    pickLogoFromLibrary,
   };
 };

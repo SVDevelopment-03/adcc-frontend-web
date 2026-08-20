@@ -220,11 +220,18 @@ export const createEvent = async (
   formData.append("badgeImage" ,  eventData.badgeImage)
     }
 
-    // Images: backend multer expects mainImage and eventImage (File objects only)
+    // Images: backend multer expects mainImage/eventImage as files, but also
+    // accepts a plain URL string in the body (see createEventSchema) — that's
+    // the path taken when an image is picked from the media library instead
+    // of freshly uploaded.
     if (eventData.mainImage instanceof File) {
+      formData.append("mainImage", eventData.mainImage);
+    } else if (typeof eventData.mainImage === 'string' && eventData.mainImage) {
       formData.append("mainImage", eventData.mainImage);
     }
     if (eventData.eventImage instanceof File) {
+      formData.append("eventImage", eventData.eventImage);
+    } else if (typeof eventData.eventImage === 'string' && eventData.eventImage) {
       formData.append("eventImage", eventData.eventImage);
     }
 

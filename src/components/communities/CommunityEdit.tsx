@@ -9,6 +9,7 @@ import { getAllTracksEn, deleteTrack } from '../../services/trackService';
 import { CommunityFormData } from '../../types/community';
 import { DetailPageSkeleton } from '../ui/skeleton';
 import { useCommunityCategories, useCommunityPurposeTypes, useCountries, useCities } from '../../hooks/useLookups';
+import { ImagePickerModal } from '../media/ImagePickerModal';
 
 
 interface CommunityEditProps {
@@ -35,6 +36,8 @@ export function CommunityEdit({ role }: CommunityEditProps) {
   const [tracks, setTracks] = useState<any[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [showLogoPicker, setShowLogoPicker] = useState(false);
+  const [showCoverPicker, setShowCoverPicker] = useState(false);
 
   // const [availableCategories, setAvailableCategories] = useState<string[]>([]);
 
@@ -393,6 +396,11 @@ export function CommunityEdit({ role }: CommunityEditProps) {
       ridesThisMonth: String(formData.ridesThisMonth ?? ''),
       weeklyRides: String(formData.weeklyRides ?? ''),
       fundsRaised: String(formData.fundsRaised ?? ''),
+      // Only takes effect when no fresh file is selected below (updateCommunity
+      // filters out blob: preview URLs) — this is how an image picked from the
+      // media library, or the unchanged existing image, gets (re-)sent.
+      image: formData.image || undefined,
+      logo: formData.logo || undefined,
     };
 
     const imageFiles = (imageFile || logoFile)
@@ -880,6 +888,24 @@ export function CommunityEdit({ role }: CommunityEditProps) {
                     onChange={handleLogoChange}
                   />
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setShowLogoPicker(true)}
+                  className="mt-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                >
+                  Choose from Media Library
+                </button>
+                {showLogoPicker && (
+                  <ImagePickerModal
+                    uploadFolder="community"
+                    onClose={() => setShowLogoPicker(false)}
+                    onSelect={(url) => {
+                      setLogoFile(null);
+                      setFormData((prev) => ({ ...prev, logo: url }));
+                      setShowLogoPicker(false);
+                    }}
+                  />
+                )}
               </div>
 
               <div>
@@ -910,6 +936,24 @@ export function CommunityEdit({ role }: CommunityEditProps) {
                     onChange={handleImageChange}
                   />
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setShowCoverPicker(true)}
+                  className="mt-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                >
+                  Choose from Media Library
+                </button>
+                {showCoverPicker && (
+                  <ImagePickerModal
+                    uploadFolder="community"
+                    onClose={() => setShowCoverPicker(false)}
+                    onSelect={(url) => {
+                      setImageFile(null);
+                      setFormData((prev) => ({ ...prev, image: url }));
+                      setShowCoverPicker(false);
+                    }}
+                  />
+                )}
               </div>
             </div>
           </div>

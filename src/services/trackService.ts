@@ -423,10 +423,23 @@ function buildTrackFormData(
     if (Array.isArray(f)) formData.append("facilities", JSON.stringify(f));
     else formData.append("facilities", String(f));
   }
-  if (imageFiles?.image instanceof File)
+  // A freshly selected file always wins; otherwise fall back to a plain URL
+  // on trackData (e.g. an image picked from the media library instead of
+  // uploaded) — backend accepts either (see createTrackSchema/updateTrackSchema).
+  // `blob:` URLs are just local previews and are never sent.
+  const isRemoteUrl = (val: unknown): val is string =>
+    typeof val === "string" && /^https?:\/\//.test(val);
+
+  if (imageFiles?.image instanceof File) {
     formData.append("image", imageFiles.image);
-  if (imageFiles?.coverImage instanceof File)
+  } else if (isRemoteUrl(trackData.image)) {
+    formData.append("image", trackData.image);
+  }
+  if (imageFiles?.coverImage instanceof File) {
     formData.append("coverImage", imageFiles.coverImage);
+  } else if (isRemoteUrl(trackData.coverImage)) {
+    formData.append("coverImage", trackData.coverImage);
+  }
   if (imageFiles?.galleryImages?.length) {
     imageFiles.galleryImages.forEach((file) =>
       formData.append("galleryImages", file),

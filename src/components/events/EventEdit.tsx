@@ -12,6 +12,7 @@ import { formatToInputDate } from '../../utils/date';
 import { useLocale } from '../../contexts/LocaleContext';
 import { useTranslation } from 'react-i18next';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
+import { ImagePickerModal } from '../media/ImagePickerModal';
 
 interface EventEditProps {
   navigate: (page: string, params?: any) => void;
@@ -40,6 +41,7 @@ export function EventEdit({ role }: EventEditProps) {
   const [galleryImages, setGalleryImages] = useState<File[]>([]);
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
   const [mainImageFile, setMainImageFile] = useState<File | null>(null);
+  const [showCoverPicker, setShowCoverPicker] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -1307,7 +1309,25 @@ export function EventEdit({ role }: EventEditProps) {
                   </p>
                 </div>
 
+                <button
+                  type="button"
+                  onClick={() => setShowCoverPicker(true)}
+                  className="mt-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                >
+                  Choose from Media Library
+                </button>
 
+                {showCoverPicker && (
+                  <ImagePickerModal
+                    uploadFolder="events"
+                    onClose={() => setShowCoverPicker(false)}
+                    onSelect={(url) => {
+                      setMainImageFile(null);
+                      setFormData((prev) => ({ ...prev, mainImage: url }));
+                      setShowCoverPicker(false);
+                    }}
+                  />
+                )}
               </div>
             </div>
 

@@ -9,6 +9,7 @@ import { useLocale } from '../../contexts/LocaleContext';
 import { useTranslation } from 'react-i18next';
 import { DetailPageSkeleton } from '../ui/skeleton';
 import { useCountries, useCities, useTrackFacilities } from '../../hooks/useLookups';
+import { ImagePickerModal } from '../media/ImagePickerModal';
 
 interface TrackEditProps {
   navigate: (page: string, params?: any) => void;
@@ -35,6 +36,8 @@ export function TrackEdit({ role }: TrackEditProps) {
   const [galleryImages, setGalleryImages] = useState<File[]>([]);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
+  const [showThumbnailPicker, setShowThumbnailPicker] = useState(false);
+  const [showCoverPicker, setShowCoverPicker] = useState(false);
 
   const fromPath =
     typeof (location.state as any)?.from === 'string' && (location.state as any).from.length
@@ -391,6 +394,12 @@ const handleGalleryUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         status: formData.status,
         visibility: formData.visibility,
         displayPriority: Number(formData.displayPriority) || 0,
+        // Only takes effect when no fresh file is selected below (blob:
+        // preview URLs are filtered out by buildTrackFormData) — this is how
+        // an image picked from the media library, or the unchanged existing
+        // image, gets (re-)sent.
+        image: formData.thumbnailImage || undefined,
+        coverImage: formData.coverImage || undefined,
       };
 
       Object.keys(payload).forEach(k => payload[k] === undefined && delete payload[k]);
@@ -855,6 +864,24 @@ const handleDisable = async (id: string, name: string) => {
                     onChange={(e) => handleImageUpload(e, 'thumbnailImage')}
                   />
                 </label>
+                <button
+                  type="button"
+                  onClick={() => setShowThumbnailPicker(true)}
+                  className="mt-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                >
+                  Choose from Media Library
+                </button>
+                {showThumbnailPicker && (
+                  <ImagePickerModal
+                    uploadFolder="tracks"
+                    onClose={() => setShowThumbnailPicker(false)}
+                    onSelect={(url) => {
+                      setThumbnailImage(null);
+                      setFormData((prev) => ({ ...prev, thumbnailImage: url }));
+                      setShowThumbnailPicker(false);
+                    }}
+                  />
+                )}
               </div>
             </div>
             <div className="space-y-4">
@@ -884,6 +911,25 @@ const handleDisable = async (id: string, name: string) => {
                     onChange={handleCoverChange}
                   />
                 </label>
+                <button
+                  type="button"
+                  onClick={() => setShowCoverPicker(true)}
+                  className="mt-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                >
+                  Choose from Media Library
+                </button>
+                {showCoverPicker && (
+                  <ImagePickerModal
+                    uploadFolder="tracks"
+                    onClose={() => setShowCoverPicker(false)}
+                    onSelect={(url) => {
+                      setCoverImage(null);
+                      setCoverPreview(url);
+                      setFormData((prev) => ({ ...prev, coverImage: url }));
+                      setShowCoverPicker(false);
+                    }}
+                  />
+                )}
               </div>
               <div>
                 <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('tracks.edit.galleryImages')}</label>

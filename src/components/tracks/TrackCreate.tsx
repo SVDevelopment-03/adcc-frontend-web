@@ -10,6 +10,7 @@ import { compressImage } from '../../utils/imageUtils';
 import { useLocale } from '../../contexts/LocaleContext';
 import { useTranslation } from 'react-i18next';
 import { useCountries, useCities, useTrackFacilities } from '../../hooks/useLookups';
+import { ImagePickerModal } from '../media/ImagePickerModal';
 
 
 interface TrackCreateProps {
@@ -94,6 +95,8 @@ export function TrackCreate({ role }: TrackCreateProps) {
   const [image, setImage] = useState<string>('');
   const [coverImage, setCoverImage] = useState<string>('');
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [showThumbnailPicker, setShowThumbnailPicker] = useState(false);
+  const [showCoverPicker, setShowCoverPicker] = useState(false);
 
 
   const { control, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormData>({
@@ -332,6 +335,11 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
       status: action === 'draft' ? 'closed' : data.status,
       visibility: data.visibility,
       displayPriority: data.displayPriority,
+      // Only takes effect when no fresh file is selected below (blob: preview
+      // URLs are filtered out server-side-bound by buildTrackFormData) — this
+      // is how an image picked from the media library gets sent.
+      image: image || undefined,
+      coverImage: coverImage || undefined,
       galleryImages: [],
     };
 
@@ -754,6 +762,24 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
                   className="hidden"
                   onChange={handleThumbnailUpload}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowThumbnailPicker(true)}
+                  className="mt-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                >
+                  Choose from Media Library
+                </button>
+                {showThumbnailPicker && (
+                  <ImagePickerModal
+                    uploadFolder="tracks"
+                    onClose={() => setShowThumbnailPicker(false)}
+                    onSelect={(url) => {
+                      setThumbnailFile(null);
+                      setImage(url);
+                      setShowThumbnailPicker(false);
+                    }}
+                  />
+                )}
               </div>
 
               <div>
@@ -777,6 +803,24 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
                   className="hidden"
                   onChange={handleCoverUpload}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowCoverPicker(true)}
+                  className="mt-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                >
+                  Choose from Media Library
+                </button>
+                {showCoverPicker && (
+                  <ImagePickerModal
+                    uploadFolder="tracks"
+                    onClose={() => setShowCoverPicker(false)}
+                    onSelect={(url) => {
+                      setCoverFile(null);
+                      setCoverImage(url);
+                      setShowCoverPicker(false);
+                    }}
+                  />
+                )}
               </div>
 
               <div>
