@@ -235,17 +235,19 @@ function EventCard({ event }: { event: EventApiResponse }) {
     "/img/Frame 2147226042.png";
   const participants = event.currentParticipants ?? event.registrations ?? 0;
   const formattedParticipants = Number(participants).toLocaleString(i18n.language);
+  const eventId = event.slug || event._id || event.id;
+  const eventHref = eventId ? `/user-event/${encodeURIComponent(eventId)}` : "/user-event";
 
   return (
-    <div>
+    <Link to={eventHref} className="block group">
       <div className="relative h-[397px] overflow-hidden rounded-[14px] bg-white">
-        <img src={image} alt={event.title} className="h-full w-full object-cover" />
+        <img src={image} alt={event.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
         <span className="absolute right-6 top-6 rounded-full bg-black/40 px-6 py-2 text-white">
           {event.category || t("public.common.eventFallback")}
         </span>
       </div>
 
-      <h3 className="mt-6 text-[26px] font-normal uppercase">{event.title}</h3>
+      <h3 className="mt-6 text-[26px] font-normal uppercase transition-colors group-hover:text-[#019839]">{event.title}</h3>
 
       <div className="mt-5 grid grid-cols-2 gap-y-4 text-[18px] text-black/70">
         <p className="flex gap-2">
@@ -262,7 +264,7 @@ function EventCard({ event }: { event: EventApiResponse }) {
           <MapPin size={20} /> {event.city || event.address || t("public.communities.detail.locationTBA")}
         </p>
       </div>
-    </div>
+    </Link>
   );
 }
 
