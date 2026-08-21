@@ -122,6 +122,7 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     status: 'Draft' | 'Open' | 'Full' | 'Completed' | 'Archived';
     isFeatured: boolean;
     allowCancellation: boolean;
+    isPurposeBased: boolean;
   }>({
     title: '',
     titleAr: '',
@@ -153,6 +154,7 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     status: 'Draft',
     isFeatured: false,
     allowCancellation: true,
+    isPurposeBased: false,
   });
 
   const [customAmenityInput, setCustomAmenityInput] = useState('');
@@ -407,6 +409,7 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         status: action === 'draft' ? 'Draft' : formData.status,
         isFeatured: !!formData.isFeatured,
         allowCancellation: !!formData.allowCancellation,
+        isPurposeBased: !!formData.isPurposeBased,
         badgeImage: badgeImage || undefined,
       };
 
@@ -1182,6 +1185,17 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                     style={{ accentColor: '#C12D32' }}
                   />
                   <span className="text-sm" style={{ color: '#666' }}>{t('events.create.allowCancellation')}</span>
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.isPurposeBased}
+                    onChange={(e) => setFormData({ ...formData, isPurposeBased: e.target.checked })}
+                    className="w-4 h-4"
+                    style={{ accentColor: '#C12D32' }}
+                  />
+                  <span className="text-sm" style={{ color: '#666' }}>{t('events.create.purposeBasedEvent')}</span>
                 </label>
               </div>
             </div>

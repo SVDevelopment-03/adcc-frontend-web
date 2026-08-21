@@ -46,6 +46,7 @@ export interface EventApiResponse {
   trackId?: string;
   isFeatured?: boolean;
   allowCancellation?: boolean;
+  isPurposeBased?: boolean;
   galleryImages: string[];
   currentParticipants?: number;
 }
@@ -203,6 +204,7 @@ export const createEvent = async (
     formData.append("status", eventData.status || "Draft");
     formData.append("isFeatured", String(eventData.isFeatured ?? false));
     formData.append("allowCancellation", String(eventData.allowCancellation ?? true));
+    formData.append("isPurposeBased", String(eventData.isPurposeBased ?? false));
     if (eventData.minAge != null) formData.append("minAge", String(eventData.minAge));
     if (eventData.maxAge != null) formData.append("maxAge", String(eventData.maxAge));
     if (eventData.eligibility) {
@@ -315,6 +317,7 @@ export const updateEvent = async (
     append('status', d.status);
     append('isFeatured', d.isFeatured);
     append('allowCancellation', d.allowCancellation);
+    append('isPurposeBased', d.isPurposeBased);
     append('youtubeLink', d.youtubeLink);
     append('minAge', d.minAge);
     append('maxAge', d.maxAge);
