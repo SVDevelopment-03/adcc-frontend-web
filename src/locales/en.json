@@ -823,7 +823,7 @@
       },
       "featuredEvent": "Featured Event",
       "allowCancellation": "Allow Cancellation",
-      "purposeBasedEvent": "Purpose Based Event",
+      "purposeBasedEvent": "Purpose Based Events",
       "customAmenities": "Custom Amenities:",
       "amenityOptions": {
         "water": "water",
@@ -2176,6 +2176,9 @@
       "challenges": "Challenges",
       "tracks": "Tracks",
       "news": "News",
+      "store": "Store",
+      "clubStore": "Club Store",
+      "marketplace": "Marketplace",
       "logoAlt": "Abu Dhabi Cycling Club"
     },
     "auth": {
@@ -2340,10 +2343,10 @@
     "store": {
       "listing": {
         "hero": {
-          "titleWords": ["ADCC", "Store"],
-          "breadcrumb": "Home / ADCC Store"
+          "titleWords": ["Club", "Store"],
+          "breadcrumb": "Home / Club Store"
         },
-        "browseTitleWords": ["Browse", "Our", "Collection"],
+        "browseTitleWords": ["Shop", "Official", "ADCC", "Merchandise"],
         "searchPlaceholder": "Search products",
         "allCategories": "All Categories",
         "allConditions": "All Conditions",
@@ -2352,8 +2355,8 @@
         "clubMerchandiseHeading": "Club Merchandise",
         "noMerchandise": "No merchandise available at the moment.",
         "gearUp": {
-          "titleWords": ["Gear", "Up", "with", "Official", "Cycling", "Essentials", "from", "ADCC"],
-          "body": "Explore a curated collection of cycling gear, apparel, and accessories designed for performance and comfort. Whether you're training, racing, or riding for leisure, find everything you need to elevate your cycling experience.",
+          "titleWords": ["Ride", "With", "The", "ADCC", "Community"],
+          "body": "Show your connection to the Abu Dhabi Cycling Club with official apparel, riding essentials, and everyday gear made for the cycling community.",
           "imageAlt": "Cycling essentials"
         },
         "footer": {
@@ -2361,17 +2364,25 @@
         }
       },
       "detail": {
+        "loading": "Loading product details...",
         "thumbnailAlt": "Product preview",
         "trustedBy": "Trusted by 5,000+ Cyclists",
         "sellerAlt": "Seller",
+        "officialStore": "Official ADCC Store",
         "fields": {
           "category": "Category",
           "condition": "Condition",
           "location": "Location",
-          "posted": "Posted"
+          "posted": "Posted",
+          "sku": "SKU",
+          "availability": "Availability"
         },
+        "inStock": "In Stock",
+        "outOfStock": "Out of Stock",
         "contactSeller": "Contact seller",
+        "contactAdccTeam": "Contact ADCC team",
         "share": "Share",
+        "linkCopied": "Link copied to clipboard",
         "tabs": {
           "description": "Description",
           "specifications": "Specifications",
@@ -2380,7 +2391,10 @@
         },
         "aboutHeading": "About This Product",
         "productDetailAlt": "Product detail",
-        "similarTitleWords": ["Similar", "Collections"],
+        "similarTitleWords": ["Similar", "Products"],
+        "noSimilar": "No similar products available right now.",
+        "backToStore": "Back to Store",
+        "notFound": "This product could not be found.",
         "footer": {
           "address": "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18."
         }

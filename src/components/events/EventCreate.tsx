@@ -3,9 +3,10 @@ import { ArrowLeft, Calendar, MapPin, Users, Settings, Award, Image as ImageIcon
 import { useEventCategories, useEventAmenities } from '../../hooks/useLookups';
 import { toast } from 'sonner';
 import { getAllTracksEn } from '../../services/trackService';
-import { gccCountries, getCitiesByCountry, type GCCCountry } from '../../data/gccLocations';
+import { gccCountries, getCitiesByCountry, normalizeCountryValue, type GCCCountry } from '../../data/gccLocations';
 import { createEvent } from '../../services/eventsApi';
 import { getAllCommunities, deleteCommunity as deleteCommunityApi, CommunityApiResponse } from '../../services/communitiesApi';
+import { ImagePickerModal } from '../media/ImagePickerModal';
 import { UserRole } from '../../App';
 import { useNavigate } from 'react-router-dom';
 import { useLocale } from '../../contexts/LocaleContext';
@@ -25,6 +26,8 @@ export function EventCreate({ role }: EventCreateProps) {
 
   const [thumbnailImage, setThumbnailImage] = useState<File | null>(null);
   const [coverImage, setCoverImage] = useState<File | null>(null);
+  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
+  const [showCoverPicker, setShowCoverPicker] = useState(false);
   const [galleryImages, setGalleryImages] = useState<File[]>([]);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
@@ -45,8 +48,16 @@ const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   if (e.target.files?.[0]) {
     const file = e.target.files[0];
     setCoverImage(file);
+    setCoverImageUrl(null);
     setCoverPreview(URL.createObjectURL(file));
   }
+};
+
+const handleCoverPicked = (url: string) => {
+  setCoverImage(null);
+  setCoverImageUrl(url);
+  setCoverPreview(url);
+  setShowCoverPicker(false);
 };
 
 const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -166,11 +177,11 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
   const filteredTracks = React.useMemo(() => {
     if (!formData.country || !formData.city) return [];
-    const country = formData.country.trim();
+    const country = normalizeCountryValue(formData.country);
     const city = formData.city.trim();
     return tracks.filter(
       (t: { country?: string; city?: string }) =>
-        (t.country || 'UAE').trim() === country && (t.city || '').trim() === city
+        normalizeCountryValue(t.country) === country && (t.city || '').trim() === city
     );
   }, [tracks, formData.country, formData.city]);
 
@@ -396,8 +407,8 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           ? formData.schedule.filter((s) => s.time && s.title?.trim())
           : [],
         amenities: Array.isArray(formData.amenities) ? formData.amenities : [],
-        mainImage: coverImage || undefined,
-        eventImage: coverImage || undefined,
+        mainImage: coverImage || coverImageUrl || undefined,
+        eventImage: coverImage || coverImageUrl || undefined,
         galleryImages,
         minAge: formData.eligibilityAge,
         eligibility: {
@@ -1081,7 +1092,15 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                   onChange={handleCoverChange}
                   />
                 </label>
-                
+
+                <button
+                  type="button"
+                  onClick={() => setShowCoverPicker(true)}
+                  className="mt-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                >
+                  Choose from Media Library
+                </button>
+
                   {coverPreview && (
                     <img
                       src={coverPreview}
@@ -1090,7 +1109,13 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                     />
                   )}
 
-                
+                  {showCoverPicker && (
+                    <ImagePickerModal
+                      uploadFolder="events"
+                      onClose={() => setShowCoverPicker(false)}
+                      onSelect={handleCoverPicked}
+                    />
+                  )}
               </div>
 
               <div>

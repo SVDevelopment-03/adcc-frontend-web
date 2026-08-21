@@ -171,6 +171,32 @@ margin-bottom: 3rem !important;}
       white-space: nowrap;
     }
 
+    /* RTL: mirror the avatar stack to the right and the label to the left */
+    html[dir='rtl'] .journey-card__community {
+      left: auto;
+      right: 250px;
+    }
+
+    html[dir='rtl'] .journey-card__avatar:nth-child(1) { left: auto; right: 0; }
+    html[dir='rtl'] .journey-card__avatar:nth-child(2) { left: auto; right: 20.67px; }
+    html[dir='rtl'] .journey-card__avatar:nth-child(3) { left: auto; right: 41.33px; }
+    html[dir='rtl'] .journey-card__avatar:nth-child(4) { left: auto; right: 62px; }
+    html[dir='rtl'] .journey-card__avatar:nth-child(5) { left: auto; right: 82.67px; }
+
+    html[dir='rtl'] .journey-card__community-text {
+      left: auto;
+      right: 94.52px;
+      text-align: right;
+    }
+
+    /* RTL: the mission/vision copy is shorter in Arabic, so don't force
+       the 380px min-height — it just stretches space-between into a big gap. */
+    html[dir='rtl'] .about-mission-card-stack {
+      min-height: 0 !important;
+      justify-content: flex-start !important;
+      gap: 24px !important;
+    }
+
     .journey-card__button {
       position: absolute;
       left: 20px;
@@ -254,6 +280,10 @@ margin-bottom: 3rem !important;}
         flex-direction: column !important;
         gap: 26px !important;
         align-items: stretch !important;
+      }
+      .about-values-head .adcc-btn {
+        align-self: flex-start !important;
+        width: auto !important;
       }
       .about-stats-left,
       .about-stats-right,
@@ -408,6 +438,13 @@ margin-bottom: 3rem !important;}
         top: 208px !important;
         left: 18px !important;
       }
+      html[dir='rtl'] .journey-card__community {
+        left: auto !important;
+        right: 120px !important;
+      }html[dir='rtl'] .journey-card__title{
+          right: 155px;
+    font-size: 22px !important;    top: 40px;
+}
       .journey-card__button {
         top: 272px !important;
         left: 18px !important;
@@ -482,23 +519,7 @@ function JourneyCard() {
           gap: "10px",
         }}
       >
-        {titleWords.map((word, index) => (
-          <motion.span
-            key={index}
-            initial={{ opacity: 0, y: 80 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.35,
-              delay: index * 0.07,
-            }}
-            viewport={{ once: true }}
-            style={{
-              display: "inline-block",
-            }}
-          >
-            {word}
-          </motion.span>
-        ))}
+        {titleWords.join(" ")}
       </h3>
 
       <div
@@ -735,7 +756,7 @@ function MissionSection() {
       >
         <div>
           <h2
-            className="bebas about-mission-title overflow-hidden"
+            className="bebas about-mission-title"
             style={{
               fontSize: 50,
               lineHeight: 1.2,
@@ -743,7 +764,7 @@ function MissionSection() {
               textTransform: "capitalize",
             }}
           >
-            <AnimatedWords words={titleWords} gap={12} />
+            {titleWords.join(" ")}
           </h2>
         </div>
         <p
@@ -902,8 +923,8 @@ function ValuesSection() {
     "inclusivity",
     "achievement",
   ] as const;
-  const values = valueKeys.map((key) => ({
-    num: "//001",
+  const values = valueKeys.map((key, index) => ({
+    num: `//${String(index + 1).padStart(3, "0")}`,
     title: t(`public.about.values.items.${key}.title`),
     bg: key === "community" ? "#323232" : "#777777",
     text: t(`public.about.values.items.${key}.text`),
@@ -1033,6 +1054,7 @@ function ValuesSection() {
 
 // ─── COACHES ─────────────────────────────────────────────────────────────────
 function CoachesSection() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const titleWords = useWordList("public.about.coaches.titleWords");
   const cards = [
@@ -1143,7 +1165,9 @@ function CoachesSection() {
         ))}
       </div>
       <div style={{ textAlign: "center", marginTop: 36 }}>
-        <AnimatedButton>{t("public.about.coaches.explore")}</AnimatedButton>
+        <AnimatedButton onClick={() => navigate("/contact-us")}>
+          {t("public.about.coaches.explore")}
+        </AnimatedButton>
       </div>
     </section>
   );

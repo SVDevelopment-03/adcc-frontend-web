@@ -187,4 +187,21 @@
     width: 100%;
     justify-content: center;
   }
+
+  /* Compact sizing for every button variant on mobile — same for English and
+     Arabic since this only touches size, not font choice/fallback.
+     !important is required here: AnimatedButton sets these custom
+     properties inline via style={{ ...sizeVars[size] }}, and inline
+     styles beat any non-!important stylesheet rule. */
+  @media (max-width: 767px) {
+    .adcc-btn,
+    .adcc-btn--sm,
+    .adcc-btn--lg {
+      --adcc-btn-font-size: 16px !important;
+      --adcc-btn-min-height: 40px !important;
+      --adcc-btn-padding-x: 18px !important;
+      --adcc-btn-arrow-shift: 16px !important;
+      --adcc-btn-arrow-inset: 14px !important;
+    }
+  }
 }

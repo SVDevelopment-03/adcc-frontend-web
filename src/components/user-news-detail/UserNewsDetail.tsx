@@ -50,7 +50,10 @@ export default function UserNewsDetail() {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+    // Re-fetch on language switch too — the API returns already-localized
+    // text, so without this the titles stay in the old language until a
+    // full page reload.
+  }, [id, i18n.language]);
 
   useEffect(() => {
     if (!news) return;
@@ -68,7 +71,7 @@ export default function UserNewsDetail() {
     return () => {
       cancelled = true;
     };
-  }, [news?.id, news?._id]);
+  }, [news?.id, news?._id, i18n.language]);
 
   const handleShare = async () => {
     const shareUrl = window.location.href;
@@ -194,7 +197,7 @@ export default function UserNewsDetail() {
             </h2>
             <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-6">
               {related.map((item) => {
-                const relatedId = item.id || item._id;
+                const relatedId = item.slug || item.id || item._id;
                 return (
                   <button
                     type="button"

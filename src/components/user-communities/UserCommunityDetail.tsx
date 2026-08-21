@@ -769,7 +769,7 @@ function GallerySection({ community }: { community: CommunityApiResponse }) {
 }
 
 export default function UserCommunityDetail() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [community, setCommunity] = useState<CommunityApiResponse | null>(null);
@@ -818,7 +818,10 @@ export default function UserCommunityDetail() {
     return () => {
       cancelled = true;
     };
-  }, [id, t]);
+    // Re-fetch on language switch too — the API returns already-localized
+    // text, so without this the titles stay in the old language until a
+    // full page reload.
+  }, [id, t, i18n.language]);
 
   const tracks = useMemo(() => normalizeTracks(community), [community]);
 

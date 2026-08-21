@@ -2,66 +2,33 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import {
-  Cloud,
-  Star,
-  MapPin,
-  Phone,
-  Share2,
-  Mail,
-} from "lucide-react";
+import { Cloud, Star, Phone, Share2, Mail, MapPin, Tag } from "lucide-react";
 import {
   AnimatedWords,
   useWordList,
   ProductGallery,
-  dedupeImages,
   FALLBACK_IMAGE,
-  FALLBACK_AVATAR,
 } from "../public/publicPageHelpers";
 import {
-  getStoreItemById,
-  getStoreItemsPage,
-  type StoreItem,
-} from "../../services/storeApi";
+  getMerchandiseProductById,
+  getMerchandiseProductsPage,
+  getMerchandiseCategories,
+} from "../../services/merchandiseApi";
+import type { Category, Product } from "../merchandise/merchandiseData";
 
-function formatRelativeTime(input: string | undefined, locale: string): string {
-  if (!input) return "";
-  const then = new Date(input).getTime();
-  if (!Number.isFinite(then)) return "";
-  const diffSeconds = Math.round((then - Date.now()) / 1000);
-  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+const ADCC_CONTACT_NUMBER = "+971 2 654 5645";
 
-  const divisions: Array<[number, Intl.RelativeTimeFormatUnit]> = [
-    [60, "seconds"],
-    [60, "minutes"],
-    [24, "hours"],
-    [30, "days"],
-    [12, "months"],
-    [Infinity, "years"],
-  ];
-
-  let duration = diffSeconds;
-  for (const [amount, unit] of divisions) {
-    if (Math.abs(duration) < amount) {
-      return rtf.format(Math.round(duration), unit);
-    }
-    duration /= amount;
-  }
-  return "";
-}
-
-export default function StoreDetailPage() {
+export default function MerchandiseDetailPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const similarTitleWords = useWordList(
-    "public.marketplace.detail.similarTitleWords",
-  );
+  const similarTitleWords = useWordList("public.store.detail.similarTitleWords");
 
-  const [item, setItem] = useState<StoreItem | null>(null);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
-  const [similarItems, setSimilarItems] = useState<StoreItem[]>([]);
+  const [similarProducts, setSimilarProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     if (!id) {
@@ -72,9 +39,9 @@ export default function StoreDetailPage() {
     let cancelled = false;
     setLoading(true);
     setLoadError(false);
-    getStoreItemById(id)
+    getMerchandiseProductById(id)
       .then((data) => {
-        if (!cancelled) setItem(data);
+        if (!cancelled) setProduct(data);
       })
       .catch(() => {
         if (!cancelled) setLoadError(true);
@@ -86,90 +53,77 @@ export default function StoreDetailPage() {
       cancelled = true;
     };
     // Re-fetch on language switch too — the API returns already-localized
-    // text, so without this the titles stay in the old language until a
-    // full page reload.
+    // text, so without this the title/description stay in the old language
+    // until a full page reload.
   }, [id, i18n.language]);
 
   useEffect(() => {
-    if (!item) return;
-    const currentId = item.id || item._id;
+    getMerchandiseCategories()
+      .then(setCategories)
+      .catch(() => setCategories([]));
+  }, [i18n.language]);
+
+  useEffect(() => {
+    if (!product) return;
     let cancelled = false;
 
-    getStoreItemsPage({ status: "Approved", category: item.category, limit: 6 })
+    getMerchandiseProductsPage({
+      source: "adcc",
+      status: "published",
+      categoryId: product.categoryId,
+      limit: 6,
+    })
       .then(({ items: sameCategory }) => {
-        const pool = sameCategory.filter(
-          (candidate) => (candidate.id || candidate._id) !== currentId,
-        );
+        const pool = sameCategory.filter((candidate) => candidate.id !== product.id);
         if (pool.length >= 3) {
-          if (!cancelled) setSimilarItems(pool.slice(0, 3));
+          if (!cancelled) setSimilarProducts(pool.slice(0, 3));
           return;
         }
-        return getStoreItemsPage({ status: "Approved", limit: 12 }).then(
+        return getMerchandiseProductsPage({ source: "adcc", status: "published", limit: 12 }).then(
           ({ items: fallback }) => {
-            const seen = new Set(
-              pool.map((candidate) => candidate.id || candidate._id),
+            const seen = new Set(pool.map((candidate) => candidate.id));
+            const extras = fallback.filter(
+              (candidate) => candidate.id !== product.id && !seen.has(candidate.id),
             );
-            const extras = fallback.filter((candidate) => {
-              const candidateId = candidate.id || candidate._id;
-              return candidateId !== currentId && !seen.has(candidateId);
-            });
-            if (!cancelled) setSimilarItems([...pool, ...extras].slice(0, 3));
+            if (!cancelled) setSimilarProducts([...pool, ...extras].slice(0, 3));
           },
         );
       })
       .catch(() => {
-        if (!cancelled) setSimilarItems([]);
+        if (!cancelled) setSimilarProducts([]);
       });
 
     return () => {
       cancelled = true;
     };
-  }, [item?.id, item?._id, item?.category, i18n.language]);
+  }, [product?.id, product?.categoryId, i18n.language]);
 
-  const galleryImages = item ? dedupeImages(item.coverImage, item.photos) : [];
+  const categoryName =
+    categories.find((category) => category.id === product?.categoryId)?.name ?? "—";
 
-  const sellerName =
-    item?.sellerName ||
-    item?.createdBy?.fullName ||
-    t("public.marketplace.detail.unknownSeller");
-  const sellerAvatar = item?.createdBy?.profileImage || FALLBACK_AVATAR;
-  const postedLabel = formatRelativeTime(item?.createdAt, i18n.language);
+  const inStock = (product?.totalStock ?? 0) > 0;
 
-  const infoRows: [string, string][] = item
+  const infoRows: [string, string][] = product
     ? [
-        [t("public.marketplace.detail.fields.category"), item.category || "—"],
+        [t("public.store.detail.fields.category"), categoryName],
+        [t("public.store.detail.fields.sku"), product.sku || "—"],
         [
-          t("public.marketplace.detail.fields.condition"),
-          item.condition || "—",
+          t("public.store.detail.fields.availability"),
+          inStock ? t("public.store.detail.inStock") : t("public.store.detail.outOfStock"),
         ],
-        [t("public.marketplace.detail.fields.location"), item.city || "—"],
-        [t("public.marketplace.detail.fields.posted"), postedLabel || "—"],
       ]
     : [];
 
-  const contactDigits = (item?.phoneNumber || "").replace(/[^\d+]/g, "");
-  const contactHref = contactDigits
-    ? item?.contactMethod === "WhatsApp"
-      ? `https://wa.me/${contactDigits.replace(/^\+/, "")}`
-      : `tel:${contactDigits}`
-    : "";
+  const contactHref = `tel:${ADCC_CONTACT_NUMBER.replace(/[^\d+]/g, "")}`;
 
-  const handleContactSeller = () => {
-    if (!contactDigits || !contactHref) {
-      toast.error(t("public.marketplace.detail.noContactInfo"));
-      return;
-    }
-    if (item?.contactMethod === "WhatsApp") {
-      window.open(contactHref, "_blank", "noopener,noreferrer");
-    } else {
-      window.location.href = contactHref;
-    }
+  const handleContactAdccTeam = () => {
+    window.location.href = contactHref;
   };
 
   const handleShare = async () => {
     const shareUrl = window.location.href;
     const shareData = {
-      title: item?.title || "ADCC Marketplace",
+      title: product?.name || "ADCC Store",
       url: shareUrl,
     };
     if (navigator.share) {
@@ -182,46 +136,40 @@ export default function StoreDetailPage() {
     }
     try {
       await navigator.clipboard.writeText(shareUrl);
-      toast.success(t("public.marketplace.detail.linkCopied"));
+      toast.success(t("public.store.detail.linkCopied"));
     } catch {
-      toast.error(t("public.marketplace.detail.linkCopied"));
+      toast.error(t("public.store.detail.linkCopied"));
     }
   };
 
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-white text-black">
-        <p className="text-[16px] sm:text-[18px]">
-          {t("public.marketplace.detail.loading")}
-        </p>
+        <p className="text-[16px] sm:text-[18px]">{t("public.store.detail.loading")}</p>
       </div>
     );
   }
 
-  if (loadError || !item) {
+  if (loadError || !product) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-white px-6 text-center text-black">
         <p className="text-[18px] font-semibold sm:text-[22px]">
-          {t("public.marketplace.detail.notFound")}
+          {t("public.store.detail.notFound")}
         </p>
         <Link
-          to="/user-marketplace"
+          to="/user-adcc-store"
           className="rounded-full bg-[#019839] px-8 py-3 text-[15px] font-medium text-white sm:text-[16px]"
         >
-          {t("public.marketplace.detail.backToMarketplace")}
+          {t("public.store.detail.backToStore")}
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen  text-black">
+    <div className="min-h-screen text-black">
       <header className="h-[134px] flex items-center justify-between px-10 md:px-20">
-        <img
-          src="/ADCC-Logo.png"
-          alt="ADCC"
-          className="h-[57px] w-[135px] object-contain"
-        />
+        <img src="/ADCC-Logo.png" alt="ADCC" className="h-[57px] w-[135px] object-contain" />
 
         <nav className="hidden lg:flex gap-12 text-[20px] font-medium">
           <span>{t("public.nav.aboutUs")}</span>
@@ -241,66 +189,55 @@ export default function StoreDetailPage() {
 
       <main className="mx-auto max-w-[1440px] px-4 py-10 pt-24 sm:px-6 sm:py-14 sm:pt-28 md:px-10 lg:px-20 lg:py-16 lg:pt-32 xl:pt-36">
         <section className="grid grid-cols-1 items-start gap-8 sm:gap-10 lg:grid-cols-[480px_1fr] lg:gap-14 xl:grid-cols-[560px_1fr]">
-          <ProductGallery
-            key={item.id || item._id}
-            images={galleryImages}
-            alt={item.title}
-          />
+          <ProductGallery key={product.id} images={product.images ?? []} alt={product.name} />
 
           <div className="flex flex-col">
             <div className="flex items-center gap-1 text-[#F58700]">
               {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className="h-3 w-3 sm:h-3 sm:w-3 lg:h-3 lg:w-3"
-                  fill="currentColor"
-                />
+                <Star key={star} className="h-3 w-3 sm:h-3 sm:w-3 lg:h-3 lg:w-3" fill="currentColor" />
               ))}
               <span className="ms-2 text-[13px] font-medium text-[#555] sm:text-[16px] lg:text-[18px]">
-                {t("public.marketplace.detail.trustedBy")}
+                {t("public.store.detail.trustedBy")}
               </span>
             </div>
 
-            <h1 className="mt-3 text-[26px]  uppercase leading-tight sm:mt-4 sm:text-[34px] lg:text-[42px]">
-              {item.title}
+            <h1 className="mt-3 text-[26px] uppercase leading-tight sm:mt-4 sm:text-[34px] lg:text-[42px]">
+              {product.name}
             </h1>
 
             <p className="mt-3 max-w-[499px] text-[14px] leading-6 text-[#555] sm:mt-4 sm:text-[16px] lg:text-[18px]">
-              {item.description}
+              {product.description}
             </p>
 
-            <h2 className="mt-5 text-[24px]  sm:mt-6 sm:text-[28px] lg:text-[32px]">
-              {item.currency} {Number(item.price ?? 0).toLocaleString()}
+            <h2 className="mt-5 text-[24px] sm:mt-6 sm:text-[28px] lg:text-[32px]">
+              {Number(product.price ?? 0).toLocaleString()} AED
+              {product.originalPrice ? (
+                <span className="ms-3 text-[16px] text-black/40 line-through sm:text-[20px]">
+                  {Number(product.originalPrice).toLocaleString()} AED
+                </span>
+              ) : null}
             </h2>
 
             <div className="mt-6 rounded-xl bg-[#323232] p-5 text-white sm:mt-8 sm:p-6 lg:max-w-[480px] lg:p-8 xl:max-w-[560px]">
               <div className="flex items-center gap-4 sm:gap-6">
                 <img
-                  src={sellerAvatar}
-                  alt={t("public.marketplace.detail.sellerAlt")}
-                  className="h-10 w-10 rounded-full object-cover sm:h-16 sm:w-16 lg:h-[70px] lg:w-[70px]"
-                  onError={(event) => {
-                    event.currentTarget.onerror = null;
-                    event.currentTarget.src = FALLBACK_AVATAR;
-                  }}
+                  src="/images/adcc-logo.png"
+                  alt="ADCC"
+                  className="h-10 w-10 rounded-full bg-white object-contain p-1.5 sm:h-16 sm:w-16 lg:h-[70px] lg:w-[70px]"
                 />
                 <div>
                   <h3 className="text-[18px] sm:text-[22px] lg:text-[26px]">
-                    {sellerName}
+                    {t("public.store.detail.officialStore")}
                   </h3>
                   <p className="mt-1 flex items-center gap-2 text-[13px] text-white/60 sm:text-[16px] lg:text-[16px]">
-                    <MapPin className="h-4 w-4 sm:h-5 sm:w-5" />{" "}
-                    {item.city || "—"}
+                    <MapPin className="h-4 w-4 sm:h-5 sm:w-5" /> Abu Dhabi, UAE
                   </p>
                 </div>
               </div>
 
               <div className="mt-5 space-y-3 text-[13px] sm:mt-6 sm:space-y-4 sm:text-[15px] lg:text-[16px]">
                 {infoRows.map(([label, value]) => (
-                  <div
-                    key={label}
-                    className="flex justify-between border-b border-white/30 pb-3 sm:pb-4"
-                  >
+                  <div key={label} className="flex justify-between border-b border-white/30 pb-3 sm:pb-4">
                     <span className="text-white/80">{label}</span>
                     <span className="font-medium">{value}</span>
                   </div>
@@ -311,30 +248,42 @@ export default function StoreDetailPage() {
             <div className="mt-6 flex flex-wrap gap-3 sm:mt-8 sm:gap-4">
               <button
                 type="button"
-                onClick={handleContactSeller}
+                onClick={handleContactAdccTeam}
                 className="cursor-pointer flex h-11 items-center gap-2 rounded-full bg-[#019839] px-6 text-[14px] font-medium text-white sm:h-12 sm:px-8 sm:text-[16px] lg:h-[52px] lg:text-[18px]"
               >
-                <Phone size={18} />{" "}
-                {t("public.marketplace.detail.contactSeller")}
+                <Phone size={18} /> {t("public.store.detail.contactAdccTeam")}
               </button>
               <button
                 type="button"
                 onClick={handleShare}
                 className="flex h-11 items-center gap-2 rounded-full border border-[#019839] px-6 text-[14px] font-medium text-[#019839] sm:h-12 sm:px-8 sm:text-[16px] lg:h-[52px] lg:text-[18px]"
               >
-                <Share2 size={18} /> {t("public.marketplace.detail.share")}
+                <Share2 size={18} /> {t("public.store.detail.share")}
               </button>
             </div>
+
+            {product.tags && product.tags.length > 0 && (
+              <div className="mt-6 flex flex-wrap gap-2">
+                {product.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-[#435974]/10 px-3 py-1.5 text-[13px] font-medium text-[#435974]"
+                  >
+                    <Tag size={12} /> {tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
         <section className="mt-16 sm:mt-20 lg:mt-24">
           <div className="mx-auto max-w-[720px] text-center">
             <h2 className="text-[22px] uppercase text-[#333] sm:text-[28px] lg:text-[32px]">
-              {t("public.marketplace.detail.aboutHeading")}
+              {t("public.store.detail.aboutHeading")}
             </h2>
             <p className="mt-4 text-[14px] leading-6 text-black/70 sm:mt-6 sm:text-[16px] lg:text-[18px]">
-              {item.description}
+              {product.description}
             </p>
           </div>
         </section>
@@ -344,35 +293,28 @@ export default function StoreDetailPage() {
             <AnimatedWords words={similarTitleWords} gap={16} />
           </h2>
 
-          {similarItems.length === 0 ? (
+          {similarProducts.length === 0 ? (
             <p className="mt-8 text-center text-[15px] text-black/50 sm:mt-10 sm:text-[18px]">
-              {t("public.marketplace.detail.noSimilar")}
+              {t("public.store.detail.noSimilar")}
             </p>
           ) : (
             <div className="mt-8 grid grid-cols-1 gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 lg:mt-8 lg:gap-8">
-              {similarItems.map((similar) => {
-                const similarId = similar.id || similar._id;
-                const similarImage =
-                  similar.coverImage || similar.photos?.[0] || FALLBACK_IMAGE;
+              {similarProducts.map((similar) => {
+                const similarImage = similar.images?.[0] ?? FALLBACK_IMAGE;
                 return (
                   <button
                     type="button"
-                    key={similarId}
-                    onClick={() =>
-                      similarId && navigate(`/user-marketplace/${similarId}`)
-                    }
+                    key={similar.id}
+                    onClick={() => navigate(`/user-adcc-store/product/${similar.id}`)}
                     className="cursor-pointer min-h-[220px] rounded-[10px] border border-black/10 p-5 text-start shadow-sm transition-all duration-300 hover:border-[#435974] hover:shadow-md sm:min-h-[280px] sm:p-6 lg:min-h-[340px] lg:p-8"
                   >
-                    <h3 className="text-[16px] uppercase sm:text-[18px] lg:text-[22px]">
-                      {similar.title}
-                    </h3>
+                    <h3 className="text-[16px] uppercase sm:text-[18px] lg:text-[22px]">{similar.name}</h3>
                     <p className="mt-1 text-[14px] font-medium sm:text-[16px] lg:text-[18px]">
-                      {similar.currency}{" "}
-                      {Number(similar.price ?? 0).toLocaleString()}
+                      {Number(similar.price ?? 0).toLocaleString()} AED
                     </p>
                     <img
                       src={similarImage}
-                      alt={similar.title}
+                      alt={similar.name}
                       className="mt-4 h-[140px] w-full object-contain mix-blend-multiply sm:mt-6 sm:h-[180px] lg:mt-8 lg:h-[220px]"
                       onError={(event) => {
                         event.currentTarget.onerror = null;
@@ -390,11 +332,7 @@ export default function StoreDetailPage() {
       <footer className="mx-auto max-w-[1268px] px-10 py-24">
         <div className="grid grid-cols-1 gap-16 md:grid-cols-3">
           <div>
-            <img
-              src="/ADCC-Logo.png"
-              alt="ADCC"
-              className="h-[63px] w-[149px] object-contain"
-            />
+            <img src="/ADCC-Logo.png" alt="ADCC" className="h-[63px] w-[149px] object-contain" />
             <p className="mt-8 max-w-[402px] text-[18px] leading-[23px]">
               {t("public.footer.brandText")}
             </p>
@@ -411,9 +349,7 @@ export default function StoreDetailPage() {
           </div>
 
           <div>
-            <h4 className="text-[24px] font-black uppercase">
-              {t("public.footer.quickLinks")}
-            </h4>
+            <h4 className="text-[24px] font-black uppercase">{t("public.footer.quickLinks")}</h4>
             <ul className="mt-8 space-y-4 text-[18px]">
               <li>{t("public.nav.aboutUs")}</li>
               <li>{t("public.footer.rides")}</li>
@@ -424,19 +360,16 @@ export default function StoreDetailPage() {
           </div>
 
           <div>
-            <h4 className="text-[24px] font-black uppercase">
-              {t("public.footer.contactUs")}
-            </h4>
+            <h4 className="text-[24px] font-black uppercase">{t("public.footer.contactUs")}</h4>
             <ul className="mt-8 space-y-4 text-[18px]">
               <li className="flex gap-3">
-                <Phone size={22} /> +971 2 654 5645
+                <Phone size={22} /> {ADCC_CONTACT_NUMBER}
               </li>
               <li className="flex gap-3">
                 <Phone size={22} /> 144226
               </li>
               <li className="flex gap-3">
-                <Mail size={22} />{" "}
-                {t("public.marketplace.detail.footer.address")}
+                <Mail size={22} /> {t("public.store.detail.footer.address")}
               </li>
               <li className="flex gap-3">
                 <MapPin size={22} /> info@adcyclingclub.ae

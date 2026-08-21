@@ -9,6 +9,7 @@ import { useLocale } from '../../contexts/LocaleContext';
 import { useTranslation } from 'react-i18next';
 import { DetailPageSkeleton } from '../ui/skeleton';
 import { useCountries, useCities, useTrackFacilities } from '../../hooks/useLookups';
+import { ImagePickerModal } from '../media/ImagePickerModal';
 
 interface TrackEditProps {
   navigate: (page: string, params?: any) => void;
@@ -35,6 +36,8 @@ export function TrackEdit({ role }: TrackEditProps) {
   const [galleryImages, setGalleryImages] = useState<File[]>([]);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
+  const [showThumbnailPicker, setShowThumbnailPicker] = useState(false);
+  const [showCoverPicker, setShowCoverPicker] = useState(false);
 
   const fromPath =
     typeof (location.state as any)?.from === 'string' && (location.state as any).from.length
@@ -219,6 +222,22 @@ const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const { options: facilityOptions } = useTrackFacilities();
   const citiesForCountry = cityOptionsForCountry.map((c) => c.value);
 
+  // Older tracks may have been saved with the country's display label
+  // (e.g. "United Arab Emirates") instead of the lookup's short code
+  // (e.g. "UAE"). Cities are matched by that exact code, so a track stuck
+  // on the label would never see any cities. Once countries load, snap a
+  // label match back onto the code so the cascade below can find them.
+  useEffect(() => {
+    if (!formData.country || !countryOptions.length) return;
+    if (countryOptions.some((c) => c.value === formData.country)) return;
+    const matchByLabel = countryOptions.find(
+      (c) => c.label.toLowerCase() === formData.country.toLowerCase()
+    );
+    if (matchByLabel) {
+      setFormData((prev) => ({ ...prev, country: matchByLabel.value }));
+    }
+  }, [formData.country, countryOptions]);
+
   useEffect(() => {
     if (!formData.country) return;
     if (!citiesForCountry.length) return;
@@ -375,6 +394,12 @@ const handleGalleryUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         status: formData.status,
         visibility: formData.visibility,
         displayPriority: Number(formData.displayPriority) || 0,
+        // Only takes effect when no fresh file is selected below (blob:
+        // preview URLs are filtered out by buildTrackFormData) — this is how
+        // an image picked from the media library, or the unchanged existing
+        // image, gets (re-)sent.
+        image: formData.thumbnailImage || undefined,
+        coverImage: formData.coverImage || undefined,
       };
 
       Object.keys(payload).forEach(k => payload[k] === undefined && delete payload[k]);
@@ -839,6 +864,24 @@ const handleDisable = async (id: string, name: string) => {
                     onChange={(e) => handleImageUpload(e, 'thumbnailImage')}
                   />
                 </label>
+                <button
+                  type="button"
+                  onClick={() => setShowThumbnailPicker(true)}
+                  className="mt-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                >
+                  Choose from Media Library
+                </button>
+                {showThumbnailPicker && (
+                  <ImagePickerModal
+                    uploadFolder="tracks"
+                    onClose={() => setShowThumbnailPicker(false)}
+                    onSelect={(url) => {
+                      setThumbnailImage(null);
+                      setFormData((prev) => ({ ...prev, thumbnailImage: url }));
+                      setShowThumbnailPicker(false);
+                    }}
+                  />
+                )}
               </div>
             </div>
             <div className="space-y-4">
@@ -868,6 +911,25 @@ const handleDisable = async (id: string, name: string) => {
                     onChange={handleCoverChange}
                   />
                 </label>
+                <button
+                  type="button"
+                  onClick={() => setShowCoverPicker(true)}
+                  className="mt-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                >
+                  Choose from Media Library
+                </button>
+                {showCoverPicker && (
+                  <ImagePickerModal
+                    uploadFolder="tracks"
+                    onClose={() => setShowCoverPicker(false)}
+                    onSelect={(url) => {
+                      setCoverImage(null);
+                      setCoverPreview(url);
+                      setFormData((prev) => ({ ...prev, coverImage: url }));
+                      setShowCoverPicker(false);
+                    }}
+                  />
+                )}
               </div>
               <div>
                 <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('tracks.edit.galleryImages')}</label>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Plus, Search, Filter, Edit2, Trash2, Eye, Star, Package,
   Upload, X, ChevronDown, Tag, CheckCircle, AlertTriangle, Archive
@@ -11,6 +11,7 @@ import {
   deleteMerchandiseProduct,
   updateMerchandiseProductStatus,
   updateMerchandiseProductFeatured,
+  uploadMerchandiseProductImages,
 } from '../../services/merchandiseApi';
 
 interface MerchandiseProductsProps {
@@ -31,12 +32,14 @@ const emptyVariant = (): ProductVariant => ({
 
 const emptyProduct = (source: 'adcc' | 'vendor' = 'adcc'): Omit<Product, 'id' | 'sold' | 'createdAt'> => ({
   name: '',
+  nameAr: '',
   categoryId: '',
   subcategoryId: '',
   price: 0,
   originalPrice: undefined,
   images: [],
   description: '',
+  descriptionAr: '',
   specifications: [{ label: '', value: '' }],
   variants: [emptyVariant()],
   status: 'draft',
@@ -64,6 +67,8 @@ export function MerchandiseProducts({ products, categories, setProducts, default
   const [form, setForm] = useState(emptyProduct(defaultSource ?? 'adcc'));
   const [tagInput, setTagInput] = useState('');
   const [imageUrlInput, setImageUrlInput] = useState('');
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const imageFilesInputRef = useRef<HTMLInputElement | null>(null);
 
   const filtered = products.filter(p => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.sku.toLowerCase().includes(search.toLowerCase());
@@ -86,12 +91,14 @@ export function MerchandiseProducts({ products, categories, setProducts, default
   const openEdit = (product: Product) => {
     setForm({
       name: product.name,
+      nameAr: product.nameAr || '',
       categoryId: product.categoryId,
       subcategoryId: product.subcategoryId || '',
       price: product.price,
       originalPrice: product.originalPrice,
       images: [...product.images],
       description: product.description,
+      descriptionAr: product.descriptionAr || '',
       specifications: product.specifications.map(s => ({ ...s })),
       variants: product.variants.map(v => ({ ...v })),
       status: product.status,
@@ -179,6 +186,20 @@ export function MerchandiseProducts({ products, categories, setProducts, default
       setForm(f => ({ ...f, images: [...f.images, url] }));
     }
     setImageUrlInput('');
+  };
+
+  const handleImageFilesSelected = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setUploadingImages(true);
+    try {
+      const uploaded = await uploadMerchandiseProductImages(Array.from(files));
+      setForm(f => ({ ...f, images: [...f.images, ...uploaded.map(u => u.url)] }));
+    } catch (error) {
+      toast.error((error as Error)?.message || 'Failed to upload images');
+    } finally {
+      setUploadingImages(false);
+      if (imageFilesInputRef.current) imageFilesInputRef.current.value = '';
+    }
   };
 
   const addVariant = () => setForm(f => ({ ...f, variants: [...f.variants, emptyVariant()] }));
@@ -371,6 +392,17 @@ export function MerchandiseProducts({ products, categories, setProducts, default
                   />
                 </div>
 
+                <div>
+                  <label className="block text-sm mb-1" style={{ color: '#666' }}>Product Name (Arabic)</label>
+                  <input
+                    value={form.nameAr}
+                    onChange={e => setForm(f => ({ ...f, nameAr: e.target.value }))}
+                    dir="rtl"
+                    className="w-full px-4 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-red-600"
+                    placeholder="مثال: قميص سباق ADCC 2024"
+                  />
+                </div>
+
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm mb-1" style={{ color: '#666' }}>SKU <span style={{ color: '#C12D32' }}>*</span></label>
@@ -455,6 +487,18 @@ export function MerchandiseProducts({ products, categories, setProducts, default
                 </div>
 
                 <div>
+                  <label className="block text-sm mb-1" style={{ color: '#666' }}>Description (Arabic)</label>
+                  <textarea
+                    value={form.descriptionAr}
+                    onChange={e => setForm(f => ({ ...f, descriptionAr: e.target.value }))}
+                    rows={4}
+                    dir="rtl"
+                    className="w-full px-4 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-red-600 resize-none"
+                    placeholder="وصف المنتج..."
+                  />
+                </div>
+
+                <div>
                   <div className="flex items-center gap-2 mb-2">
                     <input
                       type="checkbox"
@@ -472,16 +516,35 @@ export function MerchandiseProducts({ products, categories, setProducts, default
               <div className="space-y-4">
                 {/* Images */}
                 <div>
-                  <label className="block text-sm mb-2" style={{ color: '#666' }}>Product Images</label>
+                  <label className="block text-sm mb-2" style={{ color: '#666' }}>Product Images (Gallery)</label>
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <button
+                      type="button"
+                      onClick={() => imageFilesInputRef.current?.click()}
+                      disabled={uploadingImages}
+                      className="px-3 py-2 rounded-xl border border-gray-200 bg-white text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-60"
+                    >
+                      {uploadingImages ? 'Uploading...' : 'Upload Images'}
+                    </button>
+                    <input
+                      ref={imageFilesInputRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      onChange={e => handleImageFilesSelected(e.target.files)}
+                    />
+                  </div>
                   <div className="flex gap-2 mb-2">
                     <input
                       value={imageUrlInput}
                       onChange={e => setImageUrlInput(e.target.value)}
-                      placeholder="Paste image URL..."
+                      placeholder="...or paste image URL"
                       className="flex-1 px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-red-600"
                     />
                     <button onClick={addImage} className="px-3 py-2 rounded-xl text-sm text-white" style={{ backgroundColor: '#C12D32' }}>Add</button>
                   </div>
+                  <p className="text-xs text-gray-500 mb-2">First image is used as the main thumbnail; add more to build the product's photo gallery.</p>
                   <div className="flex flex-wrap gap-2">
                     {form.images.map((img, idx) => (
                       <div key={idx} className="relative w-16 h-16">

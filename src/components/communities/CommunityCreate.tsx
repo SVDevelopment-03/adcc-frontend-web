@@ -10,6 +10,7 @@ import { CategorySelector } from './form/CategorySelector';
 import { TrackSelector } from './form/TrackSelector';
 import { useCommunityCategories, useCommunityPurposeTypes } from '../../hooks/useLookups';
 import { useLocale } from '../../contexts/LocaleContext';
+import { ImagePickerModal } from '../media/ImagePickerModal';
 
 interface CommunityCreateProps {
   communityId?: string;
@@ -24,6 +25,8 @@ export const CommunityCreate: React.FC<CommunityCreateProps> = ({ communityId: p
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [fetchedCommunity, setFetchedCommunity] = useState<CommunityApiResponse | null>(null);
+  const [showLogoPicker, setShowLogoPicker] = useState(false);
+  const [showCoverPicker, setShowCoverPicker] = useState(false);
   const { locale } = useLocale();
 
   const stateCommunityId = propCommunityId || locationState?.communityId;
@@ -52,8 +55,10 @@ export const CommunityCreate: React.FC<CommunityCreateProps> = ({ communityId: p
     toggleTrack,
     handleImageUpload,
     clearImage,
+    pickImageFromLibrary,
     handleLogoUpload,
     clearLogo,
+    pickLogoFromLibrary,
   } = useCommunityForm({
     initialData: editingCommunity,
     isEditMode,
@@ -136,6 +141,11 @@ console.log('errorss',errors);
         foundedYear: formData.foundedYear ?? undefined,
         area: formData.area || undefined,
         manager: formData.managerName || undefined,
+        // Only takes effect when no fresh file is selected below (createCommunity/
+        // updateCommunity filter out blob: preview URLs) — this is how an image
+        // picked from the media library gets sent.
+        image: formData.image || undefined,
+        logo: formData.logo || undefined,
       };
 
       const imageFiles = (imageFile || logoFile)
@@ -507,6 +517,23 @@ console.log('errorss',errors);
                     Remove logo
                   </button>
                 )}
+                <button
+                  type="button"
+                  onClick={() => setShowLogoPicker(true)}
+                  className="mt-2 ms-3 text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                >
+                  Choose from Media Library
+                </button>
+                {showLogoPicker && (
+                  <ImagePickerModal
+                    uploadFolder="community"
+                    onClose={() => setShowLogoPicker(false)}
+                    onSelect={(url) => {
+                      pickLogoFromLibrary(url);
+                      setShowLogoPicker(false);
+                    }}
+                  />
+                )}
               </div>
 
               {/* Cover Image */}
@@ -560,6 +587,23 @@ console.log('errorss',errors);
                   >
                     Remove cover image
                   </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setShowCoverPicker(true)}
+                  className="mt-2 ms-3 text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                >
+                  Choose from Media Library
+                </button>
+                {showCoverPicker && (
+                  <ImagePickerModal
+                    uploadFolder="community"
+                    onClose={() => setShowCoverPicker(false)}
+                    onSelect={(url) => {
+                      pickImageFromLibrary(url);
+                      setShowCoverPicker(false);
+                    }}
+                  />
                 )}
                 {errors.image?.message && (
                   <p className="mt-1 text-sm text-red-600">{errors.image.message}</p>

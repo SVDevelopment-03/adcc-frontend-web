@@ -46,7 +46,7 @@ function formatByDate(value: string | undefined, locale: string): string {
 function NewsCard({ item }: { item: NewsItem }) {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const id = item.id || item._id;
+  const id = item.slug || item.id || item._id;
   const authorName =
     item.author ||
     item.createdBy?.fullName ||
@@ -89,7 +89,7 @@ function NewsCard({ item }: { item: NewsItem }) {
 }
 
 export default function UserNews() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const heroTitleWords = useWordList("public.news.listing.hero.titleWords");
   const heroBreadcrumb = useWordList("public.news.listing.hero.breadcrumb");
 
@@ -115,7 +115,10 @@ export default function UserNews() {
         setPagination({ page: 1, limit: NEWS_PAGE_SIZE, total: 0, pages: 1 });
       })
       .finally(() => setLoading(false));
-  }, [page]);
+    // Re-fetch on language switch too — the API returns already-localized
+    // text, so without this the titles stay in the old language until a
+    // full page reload.
+  }, [page, i18n.language]);
 
   return (
     <div className="min-h-screen bg-[#eaf4ff] text-black">

@@ -1,14 +1,52 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { UploadCloud, ImageIcon, XCircle, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { deleteProductBanner, getProductBanners, ProductBanner, uploadProductBanners } from '../../services/merchandiseApi';
+import {
+  deleteProductBanner,
+  deleteProductBannerAr,
+  getProductBanners,
+  getProductBannersAr,
+  ProductBanner,
+  uploadProductBanners,
+  uploadProductBannersAr,
+} from '../../services/merchandiseApi';
+import { ImagePickerModal } from '../media/ImagePickerModal';
 
-export function MerchandiseBannerUploader() {
+export interface MerchandiseBannerUploaderProps {
+  /** Which banner set this instance manages. Defaults to 'en'. */
+  variant?: 'en' | 'ar';
+  title?: string;
+  description?: string;
+}
+
+const VARIANT_CONFIG = {
+  en: {
+    title: 'Merchandise Banner Upload',
+    description: 'Upload one or more banner images for merchandise promotions. Only image files are accepted.',
+    getBanners: getProductBanners,
+    uploadBanners: uploadProductBanners,
+    deleteBanner: deleteProductBanner,
+    dir: 'ltr' as const,
+  },
+  ar: {
+    title: 'Merchandise Banner Upload for Arabic',
+    description: 'Upload one or more banner images for merchandise promotions on the Arabic app. Only image files are accepted.',
+    getBanners: getProductBannersAr,
+    uploadBanners: uploadProductBannersAr,
+    deleteBanner: deleteProductBannerAr,
+    dir: 'ltr' as const,
+  },
+};
+
+export function MerchandiseBannerUploader({ variant = 'en', title, description }: MerchandiseBannerUploaderProps = {}) {
+  const config = VARIANT_CONFIG[variant];
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const [banners, setBanners] = useState<ProductBanner[]>([]);
+  const [showLibraryPicker, setShowLibraryPicker] = useState(false);
+  const [pickingFromLibrary, setPickingFromLibrary] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -23,7 +61,7 @@ export function MerchandiseBannerUploader() {
   useEffect(() => {
     const loadBanners = async () => {
       try {
-        const items = await getProductBanners();
+        const items = await config.getBanners();
         setBanners(items);
       } catch (error) {
         console.error('Failed to load product banners', error);
@@ -31,7 +69,7 @@ export function MerchandiseBannerUploader() {
     };
 
     void loadBanners();
-  }, []);
+  }, [config]);
 
   const handleFileSelection = (files: FileList | null) => {
     if (!files || !files.length) {
@@ -66,6 +104,26 @@ export function MerchandiseBannerUploader() {
     setSelectedFiles((prev) => [...prev, ...acceptedFiles]);
   };
 
+  // Re-fetches an already-hosted image's bytes and wraps them as a File so
+  // it flows through the exact same "selected files" -> upload pipeline as a
+  // locally chosen file — no separate banner-creation code path needed.
+  const handlePickFromLibrary = async (url: string) => {
+    setPickingFromLibrary(true);
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const name = decodeURIComponent(url.split('/').pop() || 'banner.jpg').split('?')[0];
+      const file = new File([blob], name, { type: blob.type || 'image/jpeg' });
+      setSelectedFiles((prev) => [...prev, file]);
+      setUploadError('');
+    } catch (error) {
+      setUploadError('Failed to load the selected image.');
+    } finally {
+      setPickingFromLibrary(false);
+      setShowLibraryPicker(false);
+    }
+  };
+
   const handleUpload = async () => {
     if (!selectedFiles.length) return;
 
@@ -73,8 +131,8 @@ export function MerchandiseBannerUploader() {
     setUploadError('');
 
     try {
-      await uploadProductBanners(selectedFiles);
-      const items = await getProductBanners();
+      await config.uploadBanners(selectedFiles);
+      const items = await config.getBanners();
       setBanners(items);
       toast.success('Product banners uploaded successfully');
       setSelectedFiles([]);
@@ -92,17 +150,17 @@ export function MerchandiseBannerUploader() {
   };
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm space-y-4">
+    <div className="bg-white rounded-2xl p-6 shadow-sm space-y-4" dir={config.dir}>
       <div className="flex items-start gap-3">
         <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-[#EFF6FF] text-[#3B82F6]">
           <UploadCloud className="w-5 h-5" />
         </div>
         <div>
           <h2 className="text-lg font-semibold" style={{ color: '#333' }}>
-            Merchandise Banner Upload
+            {title ?? config.title}
           </h2>
           <p className="text-sm text-gray-500">
-            Upload one or more banner images for merchandise promotions. Only image files are accepted.
+            {description ?? config.description}
           </p>
         </div>
       </div>
@@ -126,6 +184,23 @@ export function MerchandiseBannerUploader() {
         className="hidden"
         onChange={(event) => handleFileSelection(event.target.files)}
       />
+
+      <button
+        type="button"
+        disabled={pickingFromLibrary}
+        onClick={(e) => { e.stopPropagation(); setShowLibraryPicker(true); }}
+        className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline disabled:opacity-50"
+      >
+        {pickingFromLibrary ? 'Adding…' : 'Choose from Media Library'}
+      </button>
+
+      {showLibraryPicker && (
+        <ImagePickerModal
+          uploadFolder="merchandise-banners"
+          onClose={() => setShowLibraryPicker(false)}
+          onSelect={handlePickFromLibrary}
+        />
+      )}
 
       {selectedFiles.length > 0 ? (
         <div className="rounded-2xl border border-gray-200 p-4 bg-gray-50">
@@ -217,7 +292,7 @@ export function MerchandiseBannerUploader() {
                   onClick={async () => {
                     if (!banner.key) return;
                     try {
-                      await deleteProductBanner(banner.key);
+                      await config.deleteBanner(banner.key);
                       setBanners((prev) => prev.filter((item) => item.key !== banner.key));
                       toast.success('Banner deleted');
                     } catch (error: any) {

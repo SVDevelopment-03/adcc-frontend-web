@@ -156,6 +156,7 @@ export default function CommunitiesPage() {
   const mapCommunityCard = useCallback(
     (community: CommunityApiResponse) => ({
       id: community._id || community.id || community.title,
+      slug: community.slug,
       title:
         community.title ||
         community.name ||
@@ -194,7 +195,10 @@ export default function CommunitiesPage() {
     } finally {
       setLoading(false);
     }
-  }, [cityFilter, currentPage, mapCommunityCard, searchQuery, typeFilter]);
+    // Re-fetch on language switch too — the API returns already-localized
+    // text, so without this the titles stay in the old language until a
+    // full page reload.
+  }, [cityFilter, currentPage, mapCommunityCard, searchQuery, typeFilter, i18n.language]);
 
   useEffect(() => {
     fetchCommunities();
@@ -428,7 +432,7 @@ export default function CommunitiesPage() {
                   key={item.id}
                 >
                   <Link
-                    to={`/user-communities/${encodeURIComponent(item.id)}`}
+                    to={`/user-communities/${encodeURIComponent(item.slug || item.id)}`}
                     className="group relative block h-[300px] overflow-hidden rounded-[10px] bg-black text-left sm:h-[380px] lg:h-[467px]"
                   >
                   <motion.img
@@ -522,60 +526,6 @@ export default function CommunitiesPage() {
         )}
       </section>
 
-      <section className="w-full px-4 pb-16 text-center sm:px-6 md:px-10 lg:px-16 lg:pb-28 xl:px-20 2xl:px-24">
-        <AnimatedWords
-          words={t("public.tracks.faq.title").split(/\s+/).filter(Boolean)}
-          gap={12}
-          className="text-[34px] font-bebas justify-center uppercase leading-[0.95] sm:leading-[1.05] sm:text-[42px] lg:text-[50px]"
-        />
-        <p className="mt-4 text-[16px] sm:text-[18px]">
-          {t("public.tracks.faq.subtitle")}
-        </p>
-
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.1 }}
-          variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
-          className="mt-6 grid grid-cols-1 gap-3 md:mt-12 md:gap-7 md:grid-cols-2"
-        >
-          {faqs.map((faq, index) => (
-            <motion.div
-              key={index}
-              variants={{
-                hidden: { opacity: 0, y: 40 },
-                visible: { opacity: 1, y: 0 },
-              }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              role="button"
-              tabIndex={0}
-              onClick={() => setOpenFaq(openFaq === index ? null : index)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ")
-                  setOpenFaq(openFaq === index ? null : index);
-              }}
-              className="cursor-pointer overflow-hidden rounded-xl border border-[#ccc] px-4 text-start text-[16px] font-medium sm:px-6 sm:text-[20px]"
-            >
-              <div className="flex min-h-16 items-center justify-between gap-3 py-3 sm:min-h-25 sm:gap-4 sm:py-4">
-                <span>{faq.q}</span>
-                <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-black text-[16px] font-normal leading-none transition-transform sm:h-7 sm:w-7 sm:text-[18px] ${openFaq === index ? "rotate-45" : ""}`}>
-                  +
-                </span>
-              </div>
-              {openFaq === index && (
-                <motion.p
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="pb-5 text-[16px] font-normal leading-5 text-black/65 sm:leading-7"
-                >
-                  {faq.a}
-                </motion.p>
-              )}
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
     </div>
   );
 }

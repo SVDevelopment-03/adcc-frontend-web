@@ -785,7 +785,7 @@
       },
       "featuredEvent": "فعالية مميزة",
       "allowCancellation": "السماح بالإلغاء",
-      "purposeBasedEvent": "فعالية حسب الغرض",
+      "purposeBasedEvent": "فعاليات ذات غرض خاص",
       "customAmenities": "مرافق مخصصة:",
       "amenityOptions": {
         "water": "مياه",
@@ -2149,6 +2149,9 @@
       "challenges": "التحديات",
       "tracks": "المسارات",
       "news": "الأخبار",
+      "store": "المتجر",
+      "clubStore": "متجر النادي",
+      "marketplace": "السوق",
       "logoAlt": "نادي أبوظبي للدراجات"
     },
     "auth": {
@@ -2313,10 +2316,10 @@
     "store": {
       "listing": {
         "hero": {
-          "titleWords": ["متجر", "ADCC"],
-          "breadcrumb": "الرئيسية / متجر ADCC"
+          "titleWords": ["متجر", "النادي"],
+          "breadcrumb": "الرئيسية / متجر النادي"
         },
-        "browseTitleWords": ["تصفح", "مجموعتنا"],
+        "browseTitleWords": ["تسوق", "منتجات", "ADCC", "الرسمية"],
         "searchPlaceholder": "ابحث عن المنتجات",
         "allCategories": "جميع الفئات",
         "allConditions": "جميع الحالات",
@@ -2325,8 +2328,8 @@
         "clubMerchandiseHeading": "منتجات النادي",
         "noMerchandise": "لا توجد منتجات متاحة في الوقت الحالي.",
         "gearUp": {
-          "titleWords": ["جهّز", "نفسك", "بمستلزمات", "ركوب", "الدراجات", "الرسمية", "من", "ADCC"],
-          "body": "اكتشف مجموعة مختارة من معدات ركوب الدراجات والملابس والإكسسوارات المصممة للأداء والراحة. سواء كنت تتدرب أو تتسابق أو تركب الدراجة للاستمتاع، ستجد كل ما تحتاجه للارتقاء بتجربتك في ركوب الدراجات.",
+          "titleWords": ["اركب", "مع", "مجتمع", "ADCC"],
+          "body": "أظهر ارتباطك بنادي أبوظبي للدراجات من خلال الملابس الرسمية ومستلزمات ركوب الدراجات والمعدات اليومية المصممة لمجتمع الدراجين.",
           "imageAlt": "مستلزمات ركوب الدراجات"
         },
         "footer": {
@@ -2334,17 +2337,25 @@
         }
       },
       "detail": {
+        "loading": "جارٍ تحميل تفاصيل المنتج...",
         "thumbnailAlt": "معاينة المنتج",
         "trustedBy": "موثوق من قبل أكثر من 5,000 دراج",
         "sellerAlt": "البائع",
+        "officialStore": "متجر ADCC الرسمي",
         "fields": {
           "category": "الفئة",
           "condition": "الحالة",
           "location": "الموقع",
-          "posted": "تاريخ النشر"
+          "posted": "تاريخ النشر",
+          "sku": "رمز المنتج",
+          "availability": "التوفر"
         },
+        "inStock": "متوفر",
+        "outOfStock": "غير متوفر",
         "contactSeller": "تواصل مع البائع",
+        "contactAdccTeam": "تواصل مع فريق ADCC",
         "share": "مشاركة",
+        "linkCopied": "تم نسخ الرابط",
         "tabs": {
           "description": "الوصف",
           "specifications": "المواصفات",
@@ -2353,7 +2364,10 @@
         },
         "aboutHeading": "عن هذا المنتج",
         "productDetailAlt": "تفاصيل المنتج",
-        "similarTitleWords": ["مجموعات", "مشابهة"],
+        "similarTitleWords": ["منتجات", "مشابهة"],
+        "noSimilar": "لا توجد منتجات مشابهة متاحة حاليًا.",
+        "backToStore": "العودة إلى المتجر",
+        "notFound": "تعذر العثور على هذا المنتج.",
         "footer": {
           "address": "أبوظبي، جزيرة ياس، حلبة مرسى ياس، الفيلا 18."
         }

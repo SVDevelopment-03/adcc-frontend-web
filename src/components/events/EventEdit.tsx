@@ -6,12 +6,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getEventByIdEn, updateEvent as updateEventApi, deleteEvent as deleteEventApi, disableEvent as disableEventApi, closeEventRegistration, reopenEventRegistration, completeEvent as completeEventApi, EventApiResponse } from '../../services/eventsApi';
 import { useEventCategories, useEventAmenities } from '../../hooks/useLookups';
 import { getAllTracksEn, deleteTrack } from '../../services/trackService';
-import { gccCountries, getCitiesByCountry, type GCCCountry } from '../../data/gccLocations';
+import { gccCountries, getCitiesByCountry, normalizeCountryValue, type GCCCountry } from '../../data/gccLocations';
 import { getAllCommunities, deleteCommunity as deleteCommunityApi, CommunityApiResponse } from '../../services/communitiesApi';
 import { formatToInputDate } from '../../utils/date';
 import { useLocale } from '../../contexts/LocaleContext';
 import { useTranslation } from 'react-i18next';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
+import { ImagePickerModal } from '../media/ImagePickerModal';
 
 interface EventEditProps {
   navigate: (page: string, params?: any) => void;
@@ -40,6 +41,7 @@ export function EventEdit({ role }: EventEditProps) {
   const [galleryImages, setGalleryImages] = useState<File[]>([]);
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
   const [mainImageFile, setMainImageFile] = useState<File | null>(null);
+  const [showCoverPicker, setShowCoverPicker] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -338,11 +340,11 @@ export function EventEdit({ role }: EventEditProps) {
 
   const filteredTracks = React.useMemo(() => {
     if (!formData.country || !formData.city) return [];
-    const country = formData.country.trim();
+    const country = normalizeCountryValue(formData.country);
     const city = formData.city.trim();
     return tracks.filter(
       (t: { country?: string; city?: string }) =>
-        (t.country || 'UAE').trim() === country && (t.city || '').trim() === city
+        normalizeCountryValue(t.country) === country && (t.city || '').trim() === city
     );
   }, [tracks, formData.country, formData.city]);
 
@@ -1307,7 +1309,25 @@ export function EventEdit({ role }: EventEditProps) {
                   </p>
                 </div>
 
+                <button
+                  type="button"
+                  onClick={() => setShowCoverPicker(true)}
+                  className="mt-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                >
+                  Choose from Media Library
+                </button>
 
+                {showCoverPicker && (
+                  <ImagePickerModal
+                    uploadFolder="events"
+                    onClose={() => setShowCoverPicker(false)}
+                    onSelect={(url) => {
+                      setMainImageFile(null);
+                      setFormData((prev) => ({ ...prev, mainImage: url }));
+                      setShowCoverPicker(false);
+                    }}
+                  />
+                )}
               </div>
             </div>
 

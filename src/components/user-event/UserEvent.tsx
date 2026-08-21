@@ -806,9 +806,9 @@ function EventCard({
           size="sm"
           className="event-card-button"
           onClick={() => {
-            const eventId = event._id || event.id;
-            if (eventId) {
-              navigate(`/user-event/${encodeURIComponent(eventId)}`);
+            const eventSlug = event.slug || event._id || event.id;
+            if (eventSlug) {
+              navigate(`/user-event/${encodeURIComponent(eventSlug)}`);
             }
           }}
         >
@@ -843,7 +843,7 @@ function Meta({ icon, text }: { icon: React.ReactNode; text: string }) {
 const PAGE_SIZE = 6;
 
 function EventsGrid() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [filters, setFilters] = useState<EventFilters>(DEFAULT_FILTERS);
   const [page, setPage] = useState(1);
   const [events, setEvents] = useState<EventApiResponse[]>([]);
@@ -894,7 +894,10 @@ function EventsGrid() {
     return () => {
       cancelled = true;
     };
-  }, [queryParams]);
+    // Re-fetch on language switch too — the API returns already-localized
+    // text, so without this the titles stay in the old language until a
+    // full page reload.
+  }, [queryParams, i18n.language]);
 
   return (
     <>

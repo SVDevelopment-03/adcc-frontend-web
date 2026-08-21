@@ -77,7 +77,7 @@ function MarketplaceCard({ item }: { item: StoreItem }) {
 }
 
 export default function UserMarketplace() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const heroTitleWords = useWordList(
     "public.marketplace.listing.hero.titleWords",
   );
@@ -115,7 +115,7 @@ export default function UserMarketplace() {
         setCategories(distinct);
       })
       .catch(() => setCategories([]));
-  }, []);
+  }, [i18n.language]);
 
   useEffect(() => {
     setLoading(true);
@@ -135,7 +135,10 @@ export default function UserMarketplace() {
         setPagination({ page: 1, limit: ITEMS_PAGE_SIZE, total: 0, pages: 1 });
       })
       .finally(() => setLoading(false));
-  }, [page, selectedCategory, activeSearch]);
+    // Re-fetch on language switch too — the API returns already-localized
+    // text, so without this the titles stay in the old language until a
+    // full page reload.
+  }, [page, selectedCategory, activeSearch, i18n.language]);
 
   const applyCategory = (category: string) => {
     setSelectedCategory(category);
@@ -181,7 +184,7 @@ export default function UserMarketplace() {
         breadcrumbFontSize={17}
       />
 
-      <section className="w-full px-4 py-10 sm:px-6 sm:py-20 md:px-8 lg:px-10 lg:py-24">
+      <section className="w-full px-4 py-10 sm:px-6 sm:py-20 md:px-10 lg:px-20 lg:py-24">
         <h2 className="flex justify-center overflow-hidden text-center text-[28px] font-normal uppercase sm:text-[38px] lg:text-[50px]">
           <AnimatedWords words={browseTitleWords} gap={16} />
         </h2>
@@ -273,8 +276,8 @@ export default function UserMarketplace() {
         </div>
         <div className="mt-2 h-px bg-black/10" />
         {loading ? (
-          <div className="mt-6 grid grid-cols-1 gap-5 sm:mt-8 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, i) => (
+          <div className="mt-6 grid grid-cols-1 gap-5 sm:mt-8 sm:gap-8 md:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
                 className="min-h-[300px] animate-pulse rounded-[10px] bg-black/5 sm:min-h-[381px]"
@@ -286,7 +289,7 @@ export default function UserMarketplace() {
             {t("public.marketplace.listing.noListings")}
           </p>
         ) : (
-          <div className="mt-6 grid grid-cols-1 gap-5 sm:mt-8 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-6 grid grid-cols-1 gap-5 sm:mt-8 sm:gap-8 md:grid-cols-2 lg:grid-cols-4">
             {items.map((item) => (
               <MarketplaceCard key={item.id || item._id} item={item} />
             ))}
