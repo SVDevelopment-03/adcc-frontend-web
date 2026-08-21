@@ -198,7 +198,14 @@ export default function CommunitiesPage() {
     // Re-fetch on language switch too — the API returns already-localized
     // text, so without this the titles stay in the old language until a
     // full page reload.
-  }, [cityFilter, currentPage, mapCommunityCard, searchQuery, typeFilter, i18n.language]);
+  }, [
+    cityFilter,
+    currentPage,
+    mapCommunityCard,
+    searchQuery,
+    typeFilter,
+    i18n.language,
+  ]);
 
   useEffect(() => {
     fetchCommunities();
@@ -435,35 +442,35 @@ export default function CommunitiesPage() {
                     to={`/user-communities/${encodeURIComponent(item.slug || item.id)}`}
                     className="group relative block h-[300px] overflow-hidden rounded-[10px] bg-black text-left sm:h-[380px] lg:h-[467px]"
                   >
-                  <motion.img
-                    src={item.image}
-                    alt={item.title}
-                    initial={{ opacity: 0, scale: 0.85 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    transition={{
-                      duration: 0.45,
-                      delay: index * 0.12,
-                      ease: [0.22, 1, 0.36, 1],
-                    }}
-                    viewport={{ once: true }}
-                    className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                    <motion.img
+                      src={item.image}
+                      alt={item.title}
+                      initial={{ opacity: 0, scale: 0.85 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      transition={{
+                        duration: 0.45,
+                        delay: index * 0.12,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
+                      viewport={{ once: true }}
+                      className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
 
-                  <div className="absolute bottom-5 left-5 right-5 text-white sm:bottom-8 sm:left-7 lg:bottom-10 lg:left-8">
-                    <h3 className="text-[23px] font-black uppercase leading-tight sm:text-[27px] lg:text-[30px]">
-                      {item.title}
-                    </h3>
+                    <div className="absolute bottom-5 left-5 right-5 text-white sm:bottom-8 sm:left-7 lg:bottom-10 lg:left-8">
+                      <h3 className="text-[23px]  uppercase leading-tight sm:text-[27px] lg:text-[30px]">
+                        {item.title}
+                      </h3>
 
-                    <div className="mt-4 flex flex-wrap gap-2 sm:gap-4 lg:mt-5">
-                      <span className="flex min-h-9 items-center gap-2 rounded-full bg-white/20 px-3 text-[13px] backdrop-blur-md sm:h-10 sm:px-5 sm:text-[16px]">
-                        <Users size={18} /> {item.members}
-                      </span>
-                      <span className="flex min-h-9 items-center gap-2 rounded-full bg-white/20 px-3 text-[13px] backdrop-blur-md sm:h-10 sm:px-5 sm:text-[16px]">
-                        <CalendarDays size={18} /> {item.events}
-                      </span>
+                      <div className="mt-4 flex flex-wrap gap-2 sm:gap-4 lg:mt-5">
+                        <span className="flex min-h-9 items-center gap-2 rounded-full bg-white/20 px-3 text-[13px] backdrop-blur-md sm:h-10 sm:px-5 sm:text-[16px]">
+                          <Users size={18} /> {item.members}
+                        </span>
+                        <span className="flex min-h-9 items-center gap-2 rounded-full bg-white/20 px-3 text-[13px] backdrop-blur-md sm:h-10 sm:px-5 sm:text-[16px]">
+                          <CalendarDays size={18} /> {item.events}
+                        </span>
+                      </div>
                     </div>
-                  </div>
                   </Link>
                 </motion.div>
               ))}
@@ -498,7 +505,9 @@ export default function CommunitiesPage() {
                   type="button"
                   onClick={() => setCurrentPage(page)}
                   disabled={loading}
-                  aria-label={t("public.communities.listing.pageAria", { page })}
+                  aria-label={t("public.communities.listing.pageAria", {
+                    page,
+                  })}
                   aria-current={currentPage === page ? "page" : undefined}
                   className={`flex h-10 min-w-10 items-center justify-center rounded-full px-3 sm:h-12 sm:min-w-12 ${
                     currentPage === page
@@ -525,7 +534,6 @@ export default function CommunitiesPage() {
           </div>
         )}
       </section>
-
     </div>
   );
 }

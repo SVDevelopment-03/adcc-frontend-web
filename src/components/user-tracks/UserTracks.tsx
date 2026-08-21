@@ -307,12 +307,6 @@ text-transform: Capitalize !important;}
         right: 18px !important;
         bottom: 42px !important;
       }
-      .track-hero-title {
-        font-size: 46px !important;
-      }
-      .track-hero-breadcrumb {
-        font-size: 17px !important;
-      }
       .track-section {
         padding: 48px 18px !important;
       }

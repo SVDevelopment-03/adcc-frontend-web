@@ -264,12 +264,6 @@ margin-bottom: 3rem !important;}
         right: 18px !important;
         bottom: 42px !important;
       }
-      .about-hero-title {
-        font-size: 46px !important;
-      }
-      .about-hero-breadcrumb {
-        font-size: 17px !important;
-      }
       .about-section {
         padding: 48px 18px !important;
       }

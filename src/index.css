@@ -116,13 +116,7 @@ select {
   .home-about-stats {
     margin-bottom: 25px !important;
   }
-  h1.about-hero-title,
-  h1.event-hero-title,
-  h1.communities-page-hero-title,
-  h1.challenges-page-hero-title,
-  h1.track-hero-title,
-  h1.contact-page-hero-title,
-  .public-hero-bleed:not(.home-hero) h1 {
+  .public-hero-bleed:not(.home-hero) h1[class*='-hero-title'] {
     font-size: 34px !important;
   }
   .public-hero-bleed:not(.home-hero) {
@@ -138,9 +132,7 @@ select {
     bottom: 20px !important;
   }
 
-  .communities-page-hero-breadcrumb,
-  .challenges-page-hero-breadcrumb,
-  .contact-page-hero-breadcrumb {
+  .public-hero-bleed:not(.home-hero) p[class*='-hero-breadcrumb'] {
     font-size: 17px !important;
   }
 
@@ -193,10 +185,14 @@ select {
   }
 }
 
-/* Events page hero title — smaller than the shared PublicPageHero default (70px) on larger screens.
-   Mobile keeps the 34px size set in the @media (max-width: 650px) block above. */
+/* Public hero title/breadcrumb — same size on every public page (not just events),
+   smaller than the shared PublicPageHero default (70px title / 22px breadcrumb).
+   Mobile keeps the 34px/17px sizes set in the @media (max-width: 650px) block above. */
 @media (min-width: 651px) {
-  h1.event-hero-title {
+  .public-hero-bleed:not(.home-hero) h1[class*='-hero-title'] {
     font-size: 48px !important;
+  }
+  .public-hero-bleed:not(.home-hero) p[class*='-hero-breadcrumb'] {
+    font-size: 17px !important;
   }
 }

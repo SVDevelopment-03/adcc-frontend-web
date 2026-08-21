@@ -76,12 +76,6 @@ font-family: 'Satoshi', sans-serif !important;
         right: 18px !important;
         bottom: 42px !important;
       }
-      .event-hero-title {
-        font-size: 46px !important;
-      }
-      .event-hero-breadcrumb {
-        font-size: 17px !important;
-      }
       .event-section-header {
         padding: 48px 18px 28px !important;
       }
@@ -1313,7 +1307,7 @@ export default function Events() {
           minWidth: 320,
           overflowX: "clip",
           overflowY: "visible",
-          paddingBottom: 80,
+          paddingBottom: 0,
         }}
       >
         <Hero />
