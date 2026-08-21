@@ -9,6 +9,8 @@ export function AppStoreButton({ type }: { type: "google" | "apple" }) {
   return (
     <a
       href={href}
+      target="_blank"
+      rel="noopener noreferrer"
       className="inline-flex h-[53px] w-[150px] flex-none items-center justify-center gap-[10px] rounded-[100px] bg-white px-[26px] py-0 text-black no-underline shadow-lg transition-opacity hover:opacity-90 sm:h-[57px] sm:w-[180px] sm:px-[20px]"
     >
       <img

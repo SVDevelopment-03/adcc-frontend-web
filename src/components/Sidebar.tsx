@@ -15,13 +15,14 @@ import {
   FileText,
   Image,
   Bell,
+  Mail,
+  UserPlus,
   Newspaper,
   UserCog,
   BarChart3,
   Settings,
   Shield,
   Globe,
-  Flag,
   Database,
 } from 'lucide-react';
 import {
@@ -59,6 +60,8 @@ const menuItems: MenuItemDef[] = [
   { id: 'users', labelKey: 'sidebar.users', icon: <UserCog className="w-5 h-5" />, roles: ['Admin', 'moderator'], path: '/users' },
   { id: 'admins', labelKey: 'sidebar.admins', icon: <Shield className="w-5 h-5" />, roles: ['Admin'], path: '/admins' },
   { id: 'reports', labelKey: 'sidebar.reports', icon: <BarChart3 className="w-5 h-5" />, roles: ['Admin', 'content-manager', 'community-manager', 'moderator'], path: '/reports' },
+  { id: 'contactMessages', labelKey: 'sidebar.contactMessages', icon: <Mail className="w-5 h-5" />, roles: ['Admin', 'content-manager'], path: '/contact-messages' },
+  { id: 'newsletter', labelKey: 'sidebar.newsletter', icon: <UserPlus className="w-5 h-5" />, roles: ['Admin', 'content-manager'], path: '/newsletter' },
   { id: 'config', labelKey: 'sidebar.config', icon: <Settings className="w-5 h-5" />, roles: ['Admin'], path: '/config' },
   { id: 'staticData', labelKey: 'sidebar.staticData', icon: <Database className="w-5 h-5" />, roles: ['Admin'], path: '/static-data' },
   { id: 'languages', labelKey: 'sidebar.languages', icon: <Globe className="w-5 h-5" />, roles: ['Admin'], path: '/languages' },
@@ -83,9 +86,11 @@ export function Sidebar({ currentRole, hasPermission }: SidebarProps) {
     <div className="scroller fixed left-0 top-16 w-64 h-[calc(100vh-4rem)] overflow-x-scroll bg-white shadow-sm border-r border-gray-200 scroll-smooth">
       <div className="p-6">
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: '#C12D32' }}>
-            <Flag className="w-6 h-6 text-white" />
-          </div>
+          <img
+            src="/images/favicon.png"
+            alt={t('sidebar.appTitle')}
+            className="w-10 h-10 rounded-full object-cover"
+          />
           <div>
             <div className="text-lg" style={{ color: '#333' }}>{t('sidebar.appTitle')}</div>
           </div>

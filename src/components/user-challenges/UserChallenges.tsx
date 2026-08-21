@@ -327,6 +327,7 @@ justify-content: center !important;}
           muted
           loop
           playsInline
+          poster="/img/paolo-candelo-8tXukRrs7yk-unsplash 1.png"
         >
           <source src="/img/videos/video.mp4" type="video/mp4" />
           {t("public.challenges.listing.videoFallback")}

@@ -376,7 +376,7 @@ text-transform: Capitalize !important;}
         grid-template-columns: 1fr 1fr !important;
       }
       .track-grid-section {
-        padding: 48px 18px 0 !important;
+        padding: 48px 18px !important;
       }
       .track-filter-bar {
         display: grid !important;
@@ -743,7 +743,15 @@ function WhySection() {
           >
             {titleWords.join(" ")}
           </h2>
-          <AnimatedButton>{t("public.common.exploreTracks")}</AnimatedButton>
+          <AnimatedButton
+            onClick={() =>
+              document
+                .getElementById("track-listing")
+                ?.scrollIntoView({ behavior: "smooth" })
+            }
+          >
+            {t("public.common.exploreTracks")}
+          </AnimatedButton>
         </div>
 
         <div
@@ -1253,8 +1261,9 @@ function TracksGrid() {
 
   return (
     <section
+      id="track-listing"
       className="track-grid-section"
-      style={{ background: "#EAF4FF", padding: "60px 82px 0" }}
+      style={{ background: "#EAF4FF", padding: "60px 82px" }}
     >
       {/* section title + filters */}
       <div
@@ -1648,6 +1657,8 @@ function CTABanner() {
             <a
               key={label}
               href={href}
+              target="_blank"
+              rel="noopener noreferrer"
               style={{
                 background: "#fff",
                 border: "none",

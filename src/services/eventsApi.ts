@@ -46,7 +46,6 @@ export interface EventApiResponse {
   trackId?: string;
   isFeatured?: boolean;
   allowCancellation?: boolean;
-  isPurposeBased?: boolean;
   galleryImages: string[];
   currentParticipants?: number;
 }

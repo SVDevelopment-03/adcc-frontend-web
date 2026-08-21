@@ -18,6 +18,8 @@ export type SidebarItemId =
   | 'users'
   | 'admins'
   | 'reports'
+  | 'contactMessages'
+  | 'newsletter'
   | 'config'
   | 'languages'
   | 'roles'
@@ -28,13 +30,13 @@ export const ROLE_DEFAULT_SIDEBAR_ITEMS: Record<UserRole, SidebarItemId[]> = {
   Admin: [
     'dashboard', 'events', 'communities', 'tracks', 'challenges', 'badges',
     'feed', 'marketplace', 'merchandise', 'cms', 'media', 'push', 'news', 'users', 'admins', 'reports',
-    'config', 'languages', 'roles', 'staticData',
+    'contactMessages', 'newsletter', 'config', 'languages', 'roles', 'staticData',
   ],
   'community-manager': [
     'dashboard', 'events', 'communities', 'tracks', 'challenges', 'badges', 'reports',
   ],
   'content-manager': [
-    'dashboard', 'events', 'communities', 'feed', 'marketplace', 'cms', 'push', 'news', 'reports',
+    'dashboard', 'events', 'communities', 'feed', 'marketplace', 'cms', 'push', 'news', 'reports', 'contactMessages', 'newsletter',
   ],
   moderator: [
     'dashboard', 'feed', 'marketplace', 'users', 'reports',
@@ -58,6 +60,8 @@ export const MENU_PERMISSION_KEY: Record<string, string> = {
   news: 'manage_cms',
   users: 'manage_users',
   reports: '',
+  contactMessages: 'manage_cms',
+  newsletter: 'manage_cms',
   config: 'app_configuration',
   languages: 'manage_languages',
   roles: 'manage_roles',
@@ -71,6 +75,8 @@ export const SIDEBAR_PERMISSION_REQUIRED: Partial<Record<SidebarItemId, string>>
   users: 'manage_users',
   feed: 'moderate_content',
   marketplace: 'moderate_content',
+  contactMessages: 'manage_cms',
+  newsletter: 'manage_cms',
   config: 'app_configuration',
   staticData: 'app_configuration',
 };

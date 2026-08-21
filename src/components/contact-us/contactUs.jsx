@@ -4,16 +4,23 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { PublicPageHero, useWordList } from "../public/publicPageHelpers";
 import api from "../../services/api";
+import { COUNTRY_CODES, DEFAULT_COUNTRY_CODE } from "../../constants/countryCodes";
 
 const CONTACT_DETAILS = {
-  email: "INFO@ADCYCLINGCLUB.AE",
+  email: "info@adcyclingclub.ae",
   phone: "+971 2 654 5645",
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^[0-9\s\-+()]{6,20}$/;
 
-const INITIAL = { firstName: "", email: "", phone: "", message: "", privacy: false };
+const INITIAL = {
+  firstName: "",
+  email: "",
+  countryCode: DEFAULT_COUNTRY_CODE.dialCode,
+  phone: "",
+  message: "",
+};
 
 const FontLoader = () => (
   <style>{`
@@ -38,10 +45,26 @@ export default function ContactUsPage() {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
+  const address = t("public.footer.address");
   const contactItems = [
-    { Icon: Mail, labelKey: "email", value: CONTACT_DETAILS.email },
-    { Icon: Phone, labelKey: "telephone", value: CONTACT_DETAILS.phone },
-    { Icon: MapPin, labelKey: "location", value: t("public.footer.address") },
+    {
+      Icon: Mail,
+      labelKey: "email",
+      value: CONTACT_DETAILS.email,
+      href: `mailto:${CONTACT_DETAILS.email}`,
+    },
+    {
+      Icon: Phone,
+      labelKey: "telephone",
+      value: CONTACT_DETAILS.phone,
+      href: `tel:${CONTACT_DETAILS.phone.replace(/[\s()-]/g, "")}`,
+    },
+    {
+      Icon: MapPin,
+      labelKey: "location",
+      value: address,
+      href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`,
+    },
   ];
 
   function validate(vals) {
@@ -56,7 +79,6 @@ export default function ContactUsPage() {
       e.phone = t("public.contact.form.errors.phoneInvalid");
     }
     if (!vals.message.trim()) e.message = t("public.contact.form.errors.messageRequired");
-    if (!vals.privacy) e.privacy = t("public.contact.form.errors.privacyRequired");
     return e;
   }
 
@@ -83,7 +105,7 @@ export default function ContactUsPage() {
       await api.post("/v1/contact", {
         firstName: values.firstName.trim(),
         email: values.email.trim().toLowerCase(),
-        phone: values.phone.trim() || undefined,
+        phone: values.phone.trim() ? `${values.countryCode} ${values.phone.trim()}` : undefined,
         message: values.message.trim(),
       });
       toast.success(t("public.contact.form.successMessage"));
@@ -116,18 +138,24 @@ export default function ContactUsPage() {
             <p className="mt-4 text-[24px] max-md:text-[18px]">{t("public.contact.intro.body")}</p>
           </div>
 
-          <div className="mt-20 grid grid-cols-1 gap-8 lg:grid-cols-2 max-md:mt-12 max-sm:mt-8">
-            <div>
+          <div className="mt-20 grid grid-cols-1 items-stretch gap-8 lg:grid-cols-2 max-md:mt-12 max-sm:mt-8">
+            <div className="flex h-full flex-col">
               <img
                 src="/img/490796704_1417267435941639_5633845168834004037_n. 1 (1).png"
                 alt={t("public.contact.imageAlt")}
-                className="h-[562px] w-full rounded-[15px] object-cover max-md:h-[380px] max-sm:h-[260px]"
+                className="h-100 w-full rounded-[15px] object-cover max-md:h-80 max-sm:h-55"
               />
 
-              <div className="mt-8 rounded-[15px] border border-black/20 p-5">
+              <div className="mt-8 flex flex-1 flex-col justify-center rounded-[15px] border border-black/20 p-5">
                 <div className="space-y-4">
-                  {contactItems.map(({ Icon, labelKey, value }) => (
-                    <div key={labelKey} className="flex items-center gap-4">
+                  {contactItems.map(({ Icon, labelKey, value, href }) => (
+                    <a
+                      key={labelKey}
+                      href={href}
+                      target={labelKey === "location" ? "_blank" : undefined}
+                      rel={labelKey === "location" ? "noopener noreferrer" : undefined}
+                      className="flex items-center gap-4 transition-opacity hover:opacity-80"
+                    >
                       <span className="flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-full bg-[#019839] text-white">
                         <Icon size={22} strokeWidth={1.8} />
                       </span>
@@ -135,15 +163,17 @@ export default function ContactUsPage() {
                         <p className="text-[14px] text-black/50">
                           {t(`public.contact.info.${labelKey}`)}
                         </p>
-                        <h3 className="text-[18px] uppercase">{value}</h3>
+                        <h3 className={`text-[18px] ${labelKey === "email" ? "lowercase" : "uppercase"}`}>
+                          {value}
+                        </h3>
                       </div>
-                    </div>
+                    </a>
                   ))}
                 </div>
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} noValidate className="rounded-[15px] border border-black/20 p-6">
+            <form onSubmit={handleSubmit} noValidate className="flex h-full flex-col rounded-[15px] border border-black/20 p-6">
               <h3 className="text-[28px] uppercase">
                 {t("public.contact.form.title")}
               </h3>
@@ -151,7 +181,7 @@ export default function ContactUsPage() {
                 {t("public.contact.form.description")}
               </p>
 
-              <div className="mt-6 space-y-5">
+              <div className="mt-6 flex flex-1 flex-col space-y-5">
                 <label className="block">
                   <span className="text-[14px]">
                     {t("public.contact.form.firstName")}
@@ -185,21 +215,33 @@ export default function ContactUsPage() {
                   <span className="text-[14px]">
                     {t("public.contact.form.phone")}
                   </span>
-                  <div className={`mt-2 flex h-10.5 items-center rounded-[10px] border px-4 text-[14px] ${errors.phone ? "border-red-500" : "border-[#CBCBCB]"}`}>
-                    <span className="font-bold shrink-0">🇦🇪 +971</span>
-                    <div className="mx-3 h-5 border-l border-[#ccc]" />
+                  <div className={`mt-2 flex h-10.5 items-center rounded-[10px] border px-2 text-[14px] ${errors.phone ? "border-red-500" : "border-[#CBCBCB]"}`}>
+                    <select
+                      name="countryCode"
+                      value={values.countryCode}
+                      onChange={handleChange}
+                      aria-label={t("public.contact.form.countryCode")}
+                      className="shrink-0 cursor-pointer appearance-none bg-transparent bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 20 20%22 fill=%22%23666%22><path d=%22M5.5 7.5l4.5 4.5 4.5-4.5%22 stroke=%22%23666%22 stroke-width=%221.5%22 fill=%22none%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/></svg>')] bg-size-[14px] bg-position-[right_2px_center] bg-no-repeat py-2 pl-2 pr-5 text-[14px] font-bold outline-none"
+                    >
+                      {COUNTRY_CODES.map(({ iso2, dialCode, flag }) => (
+                        <option key={iso2} value={dialCode}>
+                          {flag} {dialCode}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="mx-2 h-5 border-l border-[#ccc]" />
                     <input
                       name="phone"
                       value={values.phone}
                       onChange={handleChange}
                       placeholder={t("public.contact.form.phonePlaceholder")}
-                      className="flex-1 bg-transparent text-[14px] outline-none"
+                      className="min-w-0 flex-1 bg-transparent text-[14px] outline-none"
                     />
                   </div>
                   {errors.phone && <p className="mt-1 text-[12px] text-red-500">{errors.phone}</p>}
                 </label>
 
-                <label className="block">
+                <label className="flex flex-1 flex-col">
                   <span className="text-[14px]">
                     {t("public.contact.form.message")}
                   </span>
@@ -208,29 +250,15 @@ export default function ContactUsPage() {
                     value={values.message}
                     onChange={handleChange}
                     placeholder={t("public.contact.form.messagePlaceholder")}
-                    className={`mt-2 h-22.5 w-full rounded-[10px] border px-4 py-3 text-[14px] outline-none bg-transparent resize-none ${errors.message ? "border-red-500" : "border-[#CBCBCB]"}`}
+                    className={`mt-2 min-h-22.5 w-full flex-1 rounded-[10px] border px-4 py-3 text-[14px] outline-none bg-transparent resize-none ${errors.message ? "border-red-500" : "border-[#CBCBCB]"}`}
                   />
                   {errors.message && <p className="mt-1 text-[12px] text-red-500">{errors.message}</p>}
                 </label>
 
-                <div>
-                  <label className="flex items-center gap-2 text-[13px] text-[#888] cursor-pointer">
-                    <input
-                      type="checkbox"
-                      name="privacy"
-                      checked={values.privacy}
-                      onChange={handleChange}
-                      className="h-5 w-5 cursor-pointer"
-                    />
-                    {t("public.contact.form.privacy")}
-                  </label>
-                  {errors.privacy && <p className="mt-1 text-[12px] text-red-500">{errors.privacy}</p>}
-                </div>
-
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#019839] px-6 py-3 text-[16px] font-bold text-white disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="inline-flex w-fit cursor-pointer items-center gap-2 self-start rounded-full bg-[#019839] px-6 py-3 text-[16px] font-bold text-white disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {submitting ? t("public.contact.form.submitting") : t("public.contact.form.submit")}
                   <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
