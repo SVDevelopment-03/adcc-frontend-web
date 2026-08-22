@@ -41,6 +41,8 @@ import { AdminsList } from './users/AdminsList';
 import { AdminCreate } from './users/AdminCreate';
 import { AdminEdit } from './users/AdminEdit';
 import { Reports } from './reports/Reports';
+import { ContactMessagesList } from './contact-messages/ContactMessagesList';
+import { NewsletterSubscribersList } from './newsletter/NewsletterSubscribersList';
 import { AppConfig } from './config/AppConfig';
 import { RolesPermissions } from './roles/RolesPermissions';
 import { RoleEdit } from './roles/RoleEdit';
@@ -247,6 +249,8 @@ export function Layout() {
             <Route path="/admins/create" element={withPermission('manage_users', <AdminCreate />)} />
             <Route path="/admins/:id/edit" element={withPermission('manage_users', <AdminEdit />)} />
             <Route path="/reports" element={withRoleSidebarAccess('reports', <Reports role={currentRole} />)} />
+            <Route path="/contact-messages" element={withPermission('manage_cms', <ContactMessagesList />)} />
+            <Route path="/newsletter" element={withPermission('manage_cms', <NewsletterSubscribersList />)} />
             <Route path="/config" element={withPermission('app_configuration', <AppConfig />)} />
             <Route path="/static-data" element={withPermission('app_configuration', <StaticDataManager />)} />
             <Route path="/roles" element={withPermission('manage_roles', <RolesPermissions />)} />

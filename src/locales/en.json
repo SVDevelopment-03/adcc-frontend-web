@@ -17,6 +17,8 @@
     "users": "Users",
     "admins": "Admin Users",
     "reports": "Reports & Analytics",
+    "contactMessages": "Contact Messages",
+    "newsletter": "Newsletter Subscribers",
     "config": "App Configuration",
     "languages": "Languages",
     "roles": "Roles & Permissions",
@@ -1745,6 +1747,48 @@
       "defaultSet": "Default language updated"
     }
   },
+  "newsletter": {
+    "subtitle": "Everyone who signed up through the site’s newsletter form",
+    "loadError": "Failed to load subscribers",
+    "exportButton": "Export CSV",
+    "exportError": "Failed to export subscribers",
+    "empty": "No subscribers yet",
+    "activeCount": "{{count}} active",
+    "columns": {
+      "email": "Email",
+      "source": "Source",
+      "status": "Status",
+      "subscribedOn": "Subscribed On"
+    },
+    "status": {
+      "active": "Active",
+      "unsubscribed": "Unsubscribed"
+    },
+    "pagination": {
+      "showing": "Showing {{from}}-{{to}} of {{total}}"
+    }
+  },
+  "contactMessages": {
+    "subtitle": "Enquiries submitted through the public Contact Us form",
+    "loadError": "Failed to load contact messages",
+    "statusError": "Failed to update status",
+    "exportButton": "Export CSV",
+    "exportError": "Failed to export contact messages",
+    "empty": "No contact messages yet",
+    "tabs": {
+      "all": "All",
+      "new": "New",
+      "read": "Read",
+      "resolved": "Resolved"
+    },
+    "actions": {
+      "markRead": "Mark as Read",
+      "markResolved": "Mark as Resolved"
+    },
+    "pagination": {
+      "showing": "Showing {{from}}-{{to}} of {{total}}"
+    }
+  },
   "news": {
     "list": {
       "title": "News",
@@ -2197,7 +2241,7 @@
       "downloadOn": "Download on the",
       "googlePlay": "Google Play",
       "appStore": "App Store",
-      "brandText": "From weekend warriors to elite athletes, we unite cyclists who share a passion for riding. ADCC is where your cycling journey thrives...",
+      "brandText": "From weekend warriors to elite athletes, we unite cyclists who share a passion for riding. ADCC is where your cycling journey thrives.",
       "emailPlaceholder": "Enter your email",
       "submit": "Submit",
       "saving": "Saving...",
@@ -2207,11 +2251,17 @@
       "subscribeError": "Failed to subscribe.",
       "quickLinks": "Quick Links",
       "contactUs": "Contact Us",
-      "rides": "Rides",
+      "rides": "Tracks",
       "cyclistsCorner": "Cyclist's Corner",
       "copyright": "Copyright 2026. Abu Dhabi Cycling Club",
       "cyclingShortcut": "Cycling shortcut",
-      "address": "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18."
+      "address": "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18.",
+      "social": {
+        "twitter": "Follow us on Twitter",
+        "facebook": "Follow us on Facebook",
+        "instagram": "Follow us on Instagram",
+        "youtube": "Subscribe to our YouTube channel"
+      }
     },
     "home": {
       "hero": {

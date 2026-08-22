@@ -21,7 +21,7 @@
 .contact-page-hero-content,
 .store-page-hero-content,
 [class*='-page-hero-content'] {
-  inset-inline-start: 82px !important;
+  inset-inline-start: 96px !important;
   inset-inline-end: auto !important;
   left: auto !important;
   right: auto !important;
@@ -42,7 +42,7 @@
    rule below, which this compound selector would otherwise outrank. */
 @media (min-width: 641px) {
   .store-page-hero-content.public-hero-content-pos {
-    inset-inline-start: 82px !important;
+    inset-inline-start: 96px !important;
   }
 }
 
@@ -207,7 +207,7 @@
 
 /* ─── Home page ─── */
 .home-page .home-hero-content {
-  inset-inline-start: clamp(24px, 5.97vw, 86px) !important;
+  inset-inline-start: clamp(24px, 5.97vw, 96px) !important;
   left: auto !important;
   right: auto !important;
   padding: 0 !important;
@@ -424,6 +424,10 @@ html[dir='rtl'] .communities-page .text-left {
   .public-footer {
     padding-inline: 18px !important;
     padding-block-start: 48px !important;
+  }
+
+  .public-footer > div:first-of-type {
+    gap: 20px !important;
   }
 
   .contact-page > section {

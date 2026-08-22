@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Award, CalendarDays, Plus, Star, Trophy, Users } from "lucide-react";
 import { Challenge, getChallengeById } from "../../services/challengesApi";
+import { getAppStoreLink } from "../../utils/appStoreLink";
 
 const STATUS_TAB_KEYS: Record<string, string> = {
   Active: "active",
@@ -160,9 +161,14 @@ export default function ChallengeDetailPage() {
         <p className="mx-auto mt-4 max-w-[851px] text-[14px] leading-relaxed sm:mt-6 sm:text-[17px] md:text-[20px] lg:text-[22px]">
           {challenge.description}
         </p>
-        <button className="mt-8 inline-flex items-center gap-3 rounded-full bg-[#019839] px-6 py-3 text-[16px] font-bold text-white sm:px-8 sm:py-4 sm:text-[18px]">
+        <a
+          href={getAppStoreLink()}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-8 inline-flex items-center gap-3 rounded-full bg-[#019839] px-6 py-3 text-[16px] font-bold text-white sm:px-8 sm:py-4 sm:text-[18px]"
+        >
           {t("public.challenges.detail.joinButton")} <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
-        </button>
+        </a>
       </section>
 
       {/* Stats strip */}
@@ -216,9 +222,14 @@ export default function ChallengeDetailPage() {
             <h2 className="max-w-[487px] text-[22px] font-normal uppercase leading-tight sm:text-[30px] lg:text-[46px]">
               {t("public.challenges.detail.guideHeading")}
             </h2>
-            <button className="inline-flex h-fit items-center gap-3 self-center rounded-full bg-[#019839] px-5 py-2.5 text-[16px] font-bold text-white sm:px-8 sm:py-4 md:self-auto">
+            <a
+              href={getAppStoreLink()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-fit items-center gap-3 self-center rounded-full bg-[#019839] px-5 py-2.5 text-[16px] font-bold text-white sm:px-8 sm:py-4 md:self-auto"
+            >
               {t("public.challenges.detail.joinButton")} <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
-            </button>
+            </a>
           </div>
           <div className="mt-8 grid grid-cols-1 gap-5 sm:mt-14 lg:grid-cols-[554px_1fr_1fr]">
             <img

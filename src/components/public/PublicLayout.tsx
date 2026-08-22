@@ -1,6 +1,18 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { ChevronDown, LogIn, LogOut, Mail, MapPin, Menu, Phone } from "lucide-react";
+import {
+  ChevronDown,
+  Facebook,
+  Instagram,
+  LogIn,
+  LogOut,
+  Mail,
+  MapPin,
+  Menu,
+  Phone,
+  Twitter,
+  Youtube,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../contexts/AuthContext";
 import { useLocale } from "../../contexts/LocaleContext";
@@ -70,6 +82,13 @@ const navItems: NavItem[] = [
     to: "/contact-us",
     match: ["/contact-us"],
   },
+];
+
+const socialLinks = [
+  { labelKey: "public.footer.social.twitter", href: "https://twitter.com/adcyclingclub", Icon: Twitter },
+  { labelKey: "public.footer.social.facebook", href: "https://www.facebook.com/adcyclingclub/", Icon: Facebook },
+  { labelKey: "public.footer.social.instagram", href: "https://www.instagram.com/adcyclingclub/", Icon: Instagram },
+  { labelKey: "public.footer.social.youtube", href: "https://www.youtube.com/channel/UCmAQA4sNHPvpae86czU-U4g", Icon: Youtube },
 ];
 
 function isNavItemActive(item: NavItem | NavChild, pathname: string): boolean {
@@ -186,21 +205,17 @@ function PublicHeader() {
           .public-mobile-menu nav {
             gap: 6px !important;
           }
-          .public-mobile-menu a {
+          .public-mobile-menu .pub-nav-link {
             padding: 8px 4px !important;
             line-height: 1.25 !important;
+            margin-top: 0 !important;
           }
           .public-auth-button {
-            padding: 13px 18px !important;
-          }
-          .public-mobile-menu button {
-            margin-top: 12px !important;
             padding: 13px 18px !important;
           }
         }
         .pub-nav-link {
           border-radius: 6px;
-          padding: 4px 12px;
           position: relative;
         }
         .pub-nav-link::after {
@@ -213,8 +228,10 @@ function PublicHeader() {
           background: currentColor;
           transition: width 0.3s ease;
         }
-        .pub-nav-link:hover::after {
-          width: calc(100% - 24px);
+        @media (hover: hover) and (pointer: fine) {
+          .pub-nav-link:hover::after {
+            width: calc(100% - 24px);
+          }
         }
         .pub-footer-link {
           position: relative;
@@ -230,8 +247,10 @@ function PublicHeader() {
           background: currentColor;
           transition: width 0.3s ease;
         }
-        .pub-footer-link:hover::after {
-          width: 100%;
+        @media (hover: hover) and (pointer: fine) {
+          .pub-footer-link:hover::after {
+            width: 100%;
+          }
         }
         .pub-nav-dropdown {
           opacity: 0;
@@ -264,7 +283,7 @@ function PublicHeader() {
                 >
                   <button
                     type="button"
-                    className={`pub-nav-link inline-flex items-center gap-1 ${
+                    className={`pub-nav-link inline-flex items-center gap-1 px-3 py-1 ${
                       isActive ? "!text-[#019839]" : "!text-white"
                     }`}
                   >
@@ -308,7 +327,7 @@ function PublicHeader() {
               <NavLink
                 key={item.labelKey}
                 to={item.to as string}
-                className={`pub-nav-link inline-block ${
+                className={`pub-nav-link inline-block px-3 py-1 ${
                   isActive ? "!text-[#019839]" : "!text-white"
                 }`}
               >
@@ -353,7 +372,7 @@ function PublicHeader() {
                             current === item.labelKey ? null : item.labelKey,
                           )
                         }
-                        className={`inline-flex items-center gap-1.5 self-start px-4 py-2.5 ${
+                        className={`pub-nav-link inline-flex items-center gap-1.5 self-start px-4 py-2.5 ${
                           isActive ? "!text-[#019839]" : "!text-black"
                         }`}
                       >
@@ -492,7 +511,7 @@ function PublicFooter() {
           <p className="mt-5! text-[16px] leading-6 sm:mt-7! sm:text-[18px] md:text-[22px]">
             {t("public.footer.ctaSubtitle")}
           </p>
-          <div className="mt-6! flex flex-row flex-wrap items-center justify-center gap-3 sm:mt-7! sm:gap-4">
+          <div className="mt-6! mb-6! flex flex-row flex-wrap items-center justify-center gap-3 sm:mt-7! sm:mb-8! sm:gap-4">
             <StoreButton type="google" />
             <StoreButton type="apple" />
           </div>
@@ -547,6 +566,21 @@ function PublicFooter() {
                 {emailMessage}
               </p>
             )}
+
+            <div className="mt-6! flex gap-3! sm:mt-7!">
+              {socialLinks.map(({ labelKey, href, Icon }) => (
+                <a
+                  key={labelKey}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={t(labelKey)}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-[#019839] text-white transition-colors hover:bg-black"
+                >
+                  <Icon className="h-4.5 w-4.5" strokeWidth={1.75} />
+                </a>
+              ))}
+            </div>
           </div>
 
           <div>

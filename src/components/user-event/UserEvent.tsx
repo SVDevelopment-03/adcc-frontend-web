@@ -13,6 +13,7 @@ import {
   useWordList,
 } from "../public/publicPageHelpers";
 import { useNavigate } from "react-router-dom";
+import { APP_STORE_LINKS } from "../../config/appStoreLinks";
 import { AnimatedButton } from "../ui/AnimatedButton";
 import { useEventCategories } from "../../hooks/useLookups";
 
@@ -74,12 +75,6 @@ font-family: 'Satoshi', sans-serif !important;
         left: 18px !important;
         right: 18px !important;
         bottom: 42px !important;
-      }
-      .event-hero-title {
-        font-size: 46px !important;
-      }
-      .event-hero-breadcrumb {
-        font-size: 17px !important;
       }
       .event-section-header {
         padding: 48px 18px 28px !important;
@@ -1098,9 +1093,15 @@ function CTABanner() {
           Download the ADCC app and join the cycling community.
         </p>
         <div className="event-cta-buttons" style={{ display: "flex", gap: 20 }}>
-          {["Google Play", "App Store"].map((s) => (
-            <button
-              key={s}
+          {[
+            { label: "Google Play", href: APP_STORE_LINKS.googlePlay },
+            { label: "App Store", href: APP_STORE_LINKS.appStore },
+          ].map(({ label, href }) => (
+            <a
+              key={label}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
               style={{
                 background: "#fff",
                 border: "none",
@@ -1113,10 +1114,12 @@ function CTABanner() {
                 display: "flex",
                 alignItems: "center",
                 gap: 10,
+                textDecoration: "none",
+                color: "#000",
               }}
             >
-              {s}
-            </button>
+              {label}
+            </a>
           ))}
         </div>
       </div>
@@ -1304,7 +1307,7 @@ export default function Events() {
           minWidth: 320,
           overflowX: "clip",
           overflowY: "visible",
-          paddingBottom: 80,
+          paddingBottom: 0,
         }}
       >
         <Hero />

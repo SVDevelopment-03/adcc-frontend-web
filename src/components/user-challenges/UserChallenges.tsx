@@ -243,9 +243,6 @@ justify-content: center !important;}
             bottom: 40px !important;
             inset-inline-start: 16px !important;
           }
-          .challenges-page-hero-title {
-            font-size: 38px !important;
-          }
         }
         @media (min-width: 769px) and (max-width: 1024px) {
           .challenges-page-hero {
@@ -327,6 +324,7 @@ justify-content: center !important;}
           muted
           loop
           playsInline
+          poster="/img/paolo-candelo-8tXukRrs7yk-unsplash 1.png"
         >
           <source src="/img/videos/video.mp4" type="video/mp4" />
           {t("public.challenges.listing.videoFallback")}

@@ -61,15 +61,15 @@ function MarketplaceCard({ item }: { item: StoreItem }) {
           navigate(`/user-marketplace/${id}`);
         }
       }}
-      className="min-h-[381px] cursor-pointer rounded-[10px] border border-black/5 p-8 shadow-inner transition-all duration-300 "
+      className="min-h-55 cursor-pointer rounded-[10px] border border-black/5 p-4 shadow-inner transition-all duration-300 sm:min-h-[381px] sm:p-8"
     >
-      <h3 className="text-[24px] uppercase">{item.title}</h3>
-      <p className="mt-1 text-[18px]">{price}</p>
+      <h3 className="text-[15px] uppercase sm:text-[24px]">{item.title}</h3>
+      <p className="mt-1 text-[13px] sm:text-[18px]">{price}</p>
       {image && (
         <img
           src={image}
           alt={item.title}
-          className="mt-8 h-[240px] w-full object-contain mix-blend-multiply"
+          className="mt-4 h-30 w-full object-contain mix-blend-multiply sm:mt-8 sm:h-60"
         />
       )}
     </div>
@@ -276,11 +276,11 @@ export default function UserMarketplace() {
         </div>
         <div className="mt-2 h-px bg-black/10" />
         {loading ? (
-          <div className="mt-6 grid grid-cols-1 gap-5 sm:mt-8 sm:gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-6 grid grid-cols-2 gap-5 sm:mt-8 sm:gap-8 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
-                className="min-h-[300px] animate-pulse rounded-[10px] bg-black/5 sm:min-h-[381px]"
+                className="min-h-55 animate-pulse rounded-[10px] bg-black/5 sm:min-h-[381px]"
               />
             ))}
           </div>
@@ -289,7 +289,7 @@ export default function UserMarketplace() {
             {t("public.marketplace.listing.noListings")}
           </p>
         ) : (
-          <div className="mt-6 grid grid-cols-1 gap-5 sm:mt-8 sm:gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-6 grid grid-cols-2 gap-5 sm:mt-8 sm:gap-8 lg:grid-cols-4">
             {items.map((item) => (
               <MarketplaceCard key={item.id || item._id} item={item} />
             ))}

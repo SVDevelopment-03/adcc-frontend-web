@@ -364,6 +364,9 @@ export function AppConfig() {
                 className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-white"
                 placeholder="support@example.com"
               />
+              <p className="text-xs mt-1" style={{ color: '#888' }}>
+                Also receives a notification whenever someone submits the public Contact Us form.
+              </p>
             </div>
 
             <div>
