@@ -765,7 +765,7 @@ function EventCard({
             }
             text={
               typeof event.distance === "number"
-                ? `${event.distance} km`
+                ? `${event.distance} ${t("public.common.km")}`
                 : t("public.common.distanceTBA")
             }
           />

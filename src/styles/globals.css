@@ -180,6 +180,16 @@
   }
 }
 
+/* Unlike <a>, <button> doesn't get a pointer cursor by default — and the
+   typography rules above are scoped away from anything with a text-* class,
+   which is most buttons in this app, so this can't live inside that block. */
+button:not(:disabled) {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+
 html {
   font-size: var(--font-size);
   overflow-x: clip;

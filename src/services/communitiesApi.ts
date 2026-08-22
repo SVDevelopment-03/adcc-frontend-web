@@ -235,7 +235,7 @@ export const updateCommunity = async (
     const d = (communityData as unknown) as Record<string, unknown>;
     const scalarKeys = [
       'title', 'titleAr', 'description', 'descriptionAr', 'type', 'category', 'location',
-      'trackId', 'trackIds', 'purposeType', 'ridesThisMonth', 'weeklyRides', 'fundsRaised', 'foundedYear',
+      'trackId', 'purposeType', 'ridesThisMonth', 'weeklyRides', 'fundsRaised', 'foundedYear',
       'area', 'manager', 'city', 'isActive', 'isFeatured', 'status', 'isPublic',
     ];
     scalarKeys.forEach((key) => {
