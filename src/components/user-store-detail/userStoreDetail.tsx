@@ -361,38 +361,39 @@ export default function StoreDetailPage() {
             </p>
           ) : (
             <div className="mt-8 grid grid-cols-2 gap-4 sm:mt-12 sm:gap-6 md:grid-cols-3 lg:mt-8 lg:gap-8">
-              {similarItems.map((similar) => {
-                const similarId = similar.id || similar._id;
-                const similarImage =
-                  similar.coverImage || similar.photos?.[0] || FALLBACK_IMAGE;
-                return (
-                  <button
-                    type="button"
-                    key={similarId}
-                    onClick={() =>
-                      similarId && navigate(`/user-marketplace/${similarId}`)
-                    }
-                    className="cursor-pointer min-h-[220px] rounded-[10px] border border-black/10 p-5 text-start shadow-sm transition-all duration-300 hover:border-[#435974] hover:shadow-md sm:min-h-[280px] sm:p-6 lg:min-h-[340px] lg:p-8"
-                  >
-                    <h3 className="text-[16px] uppercase sm:text-[18px] lg:text-[22px]">
-                      {similar.title}
-                    </h3>
-                    <p className="mt-1 text-[14px] font-medium sm:text-[16px] lg:text-[18px]">
-                      {similar.currency && similar.currency !== "AED" ? similar.currency : t("public.common.aed")}{" "}
-                      {Number(similar.price ?? 0).toLocaleString()}
-                    </p>
-                    <img
-                      src={similarImage}
-                      alt={similar.title}
-                      className="mt-4 h-[140px] w-full object-contain mix-blend-multiply sm:mt-6 sm:h-[180px] lg:mt-8 lg:h-[220px]"
-                      onError={(event) => {
-                        event.currentTarget.onerror = null;
-                        event.currentTarget.src = FALLBACK_IMAGE;
-                      }}
-                    />
-                  </button>
-                );
-              })}
+                {similarItems.map((similar) => {
+                  const similarId = similar.id || similar._id;
+                  const similarImage =
+                    similar.coverImage || similar.photos?.[0] || FALLBACK_IMAGE;
+                  const similarTitle = i18n.language === 'ar' ? (similar.titleAr || similar.title) : similar.title;
+                  return (
+                    <button
+                      type="button"
+                      key={similarId}
+                      onClick={() =>
+                        similarId && navigate(`/user-marketplace/${similarId}`)
+                      }
+                      className="cursor-pointer min-h-[220px] rounded-[10px] border border-black/10 p-5 text-start shadow-sm transition-all duration-300 hover:border-[#435974] hover:shadow-md sm:min-h-[280px] sm:p-6 lg:min-h-[340px] lg:p-8"
+                    >
+                      <h3 className="text-[16px] uppercase sm:text-[18px] lg:text-[22px]">
+                        {similarTitle}
+                      </h3>
+                      <p className="mt-1 text-[14px] font-medium sm:text-[16px] lg:text-[18px]">
+                        {similar.currency && similar.currency !== "AED" ? similar.currency : t("public.common.aed")}{" "}
+                        {Number(similar.price ?? 0).toLocaleString()}
+                      </p>
+                      <img
+                        src={similarImage}
+                        alt={similarTitle}
+                        className="mt-4 h-[140px] w-full object-contain mix-blend-multiply sm:mt-6 sm:h-[180px] lg:mt-8 lg:h-[220px]"
+                        onError={(event) => {
+                          event.currentTarget.onerror = null;
+                          event.currentTarget.src = FALLBACK_IMAGE;
+                        }}
+                      />
+                    </button>
+                  );
+                })}
             </div>
           )}
         </section>
