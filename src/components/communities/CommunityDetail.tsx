@@ -33,7 +33,7 @@ import { PostFormModal, PostFormData } from './PostFormModal';
 type TabType = 'overview' | 'feed' | 'events' | 'tracks' | 'gallery' | 'members' | 'notifications';
 
 export function CommunityDetail() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const communityId = id || '';
@@ -783,8 +783,8 @@ export function CommunityDetail() {
                     <div className="flex items-center gap-2 mb-3 text-sm" style={{ color: '#666' }}>
                       <Calendar className="w-4 h-4" />
                       <span>
-                        {event.eventDate ? new Date(event.eventDate).toLocaleDateString() : '—'} •{' '}
-                        {event.eventTime || (event.eventDate ? new Date(event.eventDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—')}
+                        {event.eventDate ? new Date(event.eventDate).toLocaleDateString(i18n.language) : '—'} •{' '}
+                        {event.eventTime || (event.eventDate ? new Date(event.eventDate).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }) : '—')}
                       </span>
                     </div>
 

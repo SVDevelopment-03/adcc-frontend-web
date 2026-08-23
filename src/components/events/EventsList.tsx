@@ -522,7 +522,7 @@ export function EventsList({ role }: EventsListProps) {
                           <div className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" style={{ color: '#999' }} />
                             <span className="text-sm" style={{ color: '#666' }}>
-                              {new Date(event.eventDate).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                              {new Date(event.eventDate).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric' })}
                             </span>
                           </div>
                           <div className="flex items-center gap-1">

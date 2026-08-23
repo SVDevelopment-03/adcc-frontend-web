@@ -57,6 +57,10 @@ const FontLoader = () => (
     padding-bottom: 20px !important;
     padding-top: 20px !important;}
 
+html[dir='rtl'] .about-page .about-stats-grid > div {
+    border-left: none !important;
+}
+
 .about-stats-grid
 {
 margin-bottom: 3rem !important;}
@@ -84,6 +88,26 @@ margin-bottom: 3rem !important;}
       z-index: 1;
       pointer-events: none;
     }
+
+    /* RTL: the copy (eyebrow/title/button) mirrors to the right edge below,
+       so the rider photo needs to mirror to the left — otherwise both land
+       on the same side and the title/button overlap the image. The photo
+       itself is flipped too: the card is narrower than the photo, so some
+       bounding-box overlap with the text column is unavoidable either way
+       (the English layout has the same overlap, just reflected) — flipping
+       the pixels keeps the rider's empty space next to the text instead of
+       the busy side of the photo landing there. */
+    html[dir='rtl'] .journey-card__image {
+      left: 0;
+      right: 208px;
+    
+    }
+
+@media(min-width:600px){
+  html[dir='rtl'] .journey-card__image {
+           transform: scaleX(-1);
+    }
+}
 
     .value-card {
       background: #777777;
@@ -122,10 +146,24 @@ margin-bottom: 3rem !important;}
       z-index: 2;
     }
 
+    html[dir='rtl'] .journey-card__eyebrow {
+      left: auto;
+      right: 20px;
+      text-align: right;
+    }
+
     html[dir='rtl'] .journey-card__title {
+      left: auto;
+      right: 20px;
       top: 70px;
       font-size: 32px;
       line-height: 38px;
+      text-align: right;
+    }
+
+    html[dir='rtl'] .journey-card__button {
+      left: auto;
+      right: 20px;
     }
 
     .journey-card__community {
@@ -171,10 +209,13 @@ margin-bottom: 3rem !important;}
       white-space: nowrap;
     }
 
-    /* RTL: mirror the avatar stack to the right and the label to the left */
+    /* RTL: mirror the avatar stack to the right and the label to the left.
+       Match the 20px offset used by the eyebrow/title/button above it —
+       250px was left over from before the photo itself was mirrored, and
+       now overlaps the photo's new (mirrored) right edge. */
     html[dir='rtl'] .journey-card__community {
       left: auto;
-      right: 250px;
+      right: 20px;
     }
 
     html[dir='rtl'] .journey-card__avatar:nth-child(1) { left: auto; right: 0; }
@@ -195,6 +236,16 @@ margin-bottom: 3rem !important;}
       min-height: 0 !important;
       justify-content: flex-start !important;
       gap: 24px !important;
+    }
+
+    /* RTL: mirror the coach card caption to the right edge — Arabic also
+       runs visually larger than the Latin fallback at the same font-size,
+       so trim it down to keep the label from crowding the photo. */
+    html[dir='rtl'] .about-coach-label {
+      left: auto !important;
+      right: 20px !important;
+      text-align: right !important;
+      font-size: 20px !important;
     }
 
     .journey-card__button {
@@ -223,10 +274,12 @@ margin-bottom: 3rem !important;}
       }
 
       .journey-card__image {
-        left: 45%;
-        top: -78px;
-        width: 360px;
-        height: 420px;
+        left: auto;
+        right: 0;
+        top: 10%;
+        width: 50%;
+        height: 80%;
+        object-fit: contain;
       }
 
       .journey-card__community { top: 196px; }
@@ -332,9 +385,12 @@ margin-bottom: 3rem !important;}
         overflow: hidden !important;
       }
       .journey-card__image {
-        left: 42% !important;
-        width: min(360px, 74vw) !important;
-        height: auto !important;
+        left: auto !important;
+        right: 0 !important;
+        top: 10% !important;
+        width: 50% !important;
+        height: 80% !important;
+        object-fit: contain !important;
       }
       .journey-card__title {
         width: min(178px, 56vw) !important;
@@ -416,12 +472,15 @@ margin-bottom: 3rem !important;}
         grid-template-columns: 1fr !important;
       }
       .journey-card {
-        height: 330px !important;
+        height: 300px !important;
       }
       .journey-card__image {
-        left: 48% !important;
-        top: -34px !important;
-        width: 260px !important;
+        left: auto !important;
+        right: -60px !important;
+        top: 10% !important;
+        width: 55% !important;
+        height: 100% !important;
+        object-fit: contain !important;
       }
       .journey-card__title {
         font-size: 30px !important;
@@ -429,20 +488,30 @@ margin-bottom: 3rem !important;}
         width: 60% !important;
       }
       .journey-card__community {
-        top: 208px !important;
+        top: 160px !important;
         left: 18px !important;
       }
       html[dir='rtl'] .journey-card__community {
         left: auto !important;
         right: 120px !important;
       }html[dir='rtl'] .journey-card__title{
-          right: 155px;
-    font-size: 22px !important;    top: 40px;
+          right: 120px;
+    font-size: 22px !important;    top: 30px;
 }
+
+html[dir='rtl'] .journey-card__eyebrow{
+    right: 120px !important;}
+
+
+
+
+
       .journey-card__button {
-        top: 272px !important;
+        top: 220px !important;
         left: 18px !important;
         width: auto !important;
+        width: 160px !important;
+                right: 120px !important;
       }
       .about-cta-title {
         font-size: 40px !important;
@@ -492,8 +561,8 @@ function JourneyCard() {
         src="/img/image 2991.png"
         alt={t("public.common.journeyCard.riderAlt")}
         className="journey-card__image"
-        initial={{ opacity: 0, x: 200 }}
-        whileInView={{ opacity: 1, x: 0 }}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
         transition={{
           duration: 0.8,
           ease: "easeOut",
@@ -1068,7 +1137,7 @@ function CoachesSection() {
           lineHeight: 1.2,
           textAlign: "center",
           maxWidth: 640,
-          margin: "0 auto 40px",
+          margin: "0 auto 30px",
           textTransform: "capitalize",
         }}
       >

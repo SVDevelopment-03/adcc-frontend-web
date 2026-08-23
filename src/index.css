@@ -116,7 +116,7 @@ select {
   .home-about-stats {
     margin-bottom: 25px !important;
   }
-  .public-hero-bleed:not(.home-hero) h1[class*='-hero-title'] {
+  .public-hero-bleed:not(.home-hero) h1[class*="-hero-title"] {
     font-size: 34px !important;
   }
   .public-hero-bleed:not(.home-hero) {
@@ -132,7 +132,7 @@ select {
     bottom: 20px !important;
   }
 
-  .public-hero-bleed:not(.home-hero) p[class*='-hero-breadcrumb'] {
+  .public-hero-bleed:not(.home-hero) p[class*="-hero-breadcrumb"] {
     font-size: 17px !important;
   }
 
@@ -189,10 +189,16 @@ select {
    smaller than the shared PublicPageHero default (70px title / 22px breadcrumb).
    Mobile keeps the 34px/17px sizes set in the @media (max-width: 650px) block above. */
 @media (min-width: 651px) {
-  .public-hero-bleed:not(.home-hero) h1[class*='-hero-title'] {
+  .public-hero-bleed:not(.home-hero) h1[class*="-hero-title"] {
     font-size: 48px !important;
   }
-  .public-hero-bleed:not(.home-hero) p[class*='-hero-breadcrumb'] {
+  .public-hero-bleed:not(.home-hero) p[class*="-hero-breadcrumb"] {
     font-size: 17px !important;
+  }
+}
+@media (max-width: 600px) {
+  html[dir="rtl"] h1.grand-prix-hero-title.grand-prix-bebas,
+  html[dir="rtl"] .public-hero-content-pos h1 {
+    font-size: 28px !important;
   }
 }

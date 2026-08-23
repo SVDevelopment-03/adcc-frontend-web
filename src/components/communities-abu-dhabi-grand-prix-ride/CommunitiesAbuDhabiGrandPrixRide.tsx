@@ -372,6 +372,45 @@ const FontLoader = () => (
     @media (min-width: 641px) and (max-width: 1023px) {
       .grand-prix-hero { height: 100vh !important; min-height: 460px !important; }
     }
+
+    /* RTL: the Arabic fallback for 'Bebas Kai' runs visually larger than the
+       Latin font at the same size, so the hero title needs to come down a
+       size at every breakpoint to avoid the cramped multi-line wrap. */
+    html[dir='rtl'] .grand-prix-hero-title {
+      font-size: 26px !important;
+    }
+    @media (min-width: 640px) {
+      html[dir='rtl'] .grand-prix-hero-title {
+        font-size: 34px !important;
+      }
+    }
+    @media (min-width: 1024px) {
+      html[dir='rtl'] .grand-prix-hero-title {
+        font-size: 40px !important;
+      }
+    }
+
+    /* RTL: the facility pills pin the icon and label with a physical 'left'
+       offset, so they never mirrored for Arabic. Flip both to the right
+       edge — same offsets, same card size, just reflected — so the icon
+       sits on the right with the label reading toward it on the left. */
+    html[dir='rtl'] .facility-card-icon {
+      left: auto !important;
+      right: 14px !important;
+    }
+    html[dir='rtl'] .facility-card-title {
+      left: auto !important;
+      right: 60px !important;
+      text-align: right !important;
+    }
+    @media (min-width: 640px) {
+      html[dir='rtl'] .facility-card-icon {
+        right: 19px !important;
+      }
+      html[dir='rtl'] .facility-card-title {
+        right: 86px !important;
+      }
+    }
   `}</style>
 );
 
@@ -400,7 +439,7 @@ function HeroSection({ event }: { event: GrandPrixEvent }) {
             </span>
           ))}
         </div>
-        <h1 className="grand-prix-bebas text-[34px] uppercase leading-tight text-white sm:text-[44px] lg:text-[52px]">
+        <h1 className="grand-prix-bebas grand-prix-hero-title text-[34px] uppercase leading-tight text-white sm:text-[44px] lg:text-[52px]">
           {event.title}
         </h1>
       </div>
@@ -614,10 +653,10 @@ function FacilitiesSection({ facilities }: { facilities: Facility[] }) {
             key={title}
             className="group relative h-[70px] w-[170px] shrink-0 cursor-pointer rounded-[10px] bg-[#76767666] text-white transition-colors duration-200 hover:bg-white hover:text-[#333] sm:h-[97px] sm:w-[260px]"
           >
-            <span className="absolute left-[14px] top-1/2 flex h-[36px] w-[36px] -translate-y-1/2 items-center justify-center rounded-[8px] bg-white text-[#333] transition-colors duration-200 group-hover:bg-[#019839] group-hover:text-white sm:left-[19px] sm:top-5 sm:h-[50px] sm:w-[50px] sm:translate-y-0 sm:rounded-[10px]">
+            <span className="facility-card-icon absolute left-[14px] top-1/2 flex h-[36px] w-[36px] -translate-y-1/2 items-center justify-center rounded-[8px] bg-white text-[#333] transition-colors duration-200 group-hover:bg-[#019839] group-hover:text-white sm:left-[19px] sm:top-5 sm:h-[50px] sm:w-[50px] sm:translate-y-0 sm:rounded-[10px]">
               <Icon className="h-[18px] w-[18px] sm:h-[26px] sm:w-[26px]" />
             </span>
-            <b className="absolute left-[60px] top-1/2 flex h-[36px] max-w-[100px] -translate-y-1/2 items-center text-[13px] font-bold leading-[16px] sm:left-[86px] sm:top-5 sm:h-[50px] sm:max-w-[130px] sm:translate-y-0 sm:text-[20px] sm:leading-[22px]">
+            <b className="facility-card-title absolute left-[60px] top-1/2 flex h-[36px] max-w-[100px] -translate-y-1/2 items-center text-[13px] font-bold leading-[16px] sm:left-[86px] sm:top-5 sm:h-[50px] sm:max-w-[130px] sm:translate-y-0 sm:text-[20px] sm:leading-[22px]">
               {title}
             </b>
             <span className="absolute bottom-0 left-0 h-[3px] w-full rounded-b-[10px] bg-transparent transition-colors duration-200 group-hover:bg-[#019839] sm:h-[4px]" />
@@ -656,8 +695,8 @@ function ScheduleSection({
       </p>
 
       {/* <div className="grand-prix-shell mt-[45px] grid grid-cols-[460px_736px] gap-[53px] max-lg:grid-cols-1"> */}
-      <div className="grand-prix-shell mt-6 grid grid-cols-1 items-center gap-[53px] lg:mt-[45px] lg:grid-cols-[460px_minmax(0,1fr)]">
-        <div className="relative h-[478px] w-full max-w-[460px] max-lg:mx-auto">
+      <div className="grand-prix-shell mt-6 grid grid-cols-1 items-center gap-6 lg:mt-[45px] lg:gap-[53px] lg:grid-cols-[460px_minmax(0,1fr)]">
+        <div className="relative order-2 h-[478px] w-full max-w-[460px] max-lg:mx-auto lg:order-1">
           <div className="absolute bottom-0 left-0 h-[254px] w-full rounded-tl-xl rounded-br-xl rounded-tr-[60px] rounded-bl-[60px] bg-[#435974]" />
 
           <img
@@ -671,7 +710,7 @@ function ScheduleSection({
 
         {/* <div className="space-y-[16px]"> */}
         {/* <div className="w-[736px] space-y-[16px] max-lg:w-full"> */}
-        <div className="w-full min-w-0 space-y-[16px]">
+        <div className="order-1 w-full min-w-0 space-y-[16px] lg:order-2">
           {schedule.map((item, index) => (
             <article
               key={`${item.time}-${item.title}-${index}`}
@@ -680,11 +719,11 @@ function ScheduleSection({
                 index === 0 ? "bg-[#435974]" : "bg-[#7891AF]"
               }`}
             >
-              <time className="text-[13px] font-normal leading-snug sm:text-[16px] md:text-[18px]">
+              <time className="max-sm:order-2 text-[13px] font-normal leading-snug sm:text-[16px] md:text-[18px]">
                 {item.time}
               </time>
 
-              <div>
+              <div className="max-sm:order-1">
                 <h3 className="text-[15px] font-normal leading-snug sm:text-[18px] md:text-[22px]">
                   {item.title}
                 </h3>

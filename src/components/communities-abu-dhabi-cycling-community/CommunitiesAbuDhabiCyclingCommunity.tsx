@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { scrollToAppListing } from "../../utils/appStoreLink";
 import { useTranslation } from "react-i18next";
 import { CalendarDays, Users } from "lucide-react";
+import i18n from "../../i18n";
 import {
   CommunityApiResponse,
   getCommunityById,
@@ -118,7 +119,7 @@ const formatDate = (date?: string) => {
   if (!date) return "Date TBA";
   const parsed = new Date(date);
   if (Number.isNaN(parsed.getTime())) return "Date TBA";
-  return new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat(i18n.language, {
     month: "long",
     day: "numeric",
     year: "numeric",
@@ -412,7 +413,7 @@ function EventCard({ event }: { event: EventApiResponse }) {
 
       <div className="pt-5">
         <h3
-          className="bebas text-[24px] tracking-wide"
+          className="bebas event-card-title text-[24px] tracking-wide"
           style={{ marginBottom: 14 }}
         >
           {event.title}

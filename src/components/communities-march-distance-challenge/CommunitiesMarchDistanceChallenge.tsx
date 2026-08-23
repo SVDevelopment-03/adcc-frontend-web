@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Award, CalendarDays, Plus, Star, Trophy, Users } from "lucide-react";
 import { Challenge, getChallengeById } from "../../services/challengesApi";
 import { scrollToAppListing } from "../../utils/appStoreLink";
+import i18n from "../../i18n";
 
 const STATUS_TAB_KEYS: Record<string, string> = {
   Active: "active",
@@ -33,7 +34,7 @@ const FALLBACK_CHALLENGE: Challenge = {
 const formatDate = (value: string, dateTbaLabel: string) => {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return dateTbaLabel;
-  return new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat(i18n.language, {
     month: "long",
     day: "numeric",
     year: "numeric",
@@ -324,7 +325,7 @@ export default function ChallengeDetailPage() {
       <section className="challenge-guide-section px-4 py-14 sm:px-6 sm:py-16 md:px-10 lg:py-20">
         <div className="mx-auto max-w-[1268px]">
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
-            <h2 className="max-w-[487px] text-[22px] font-normal uppercase leading-tight sm:text-[30px] lg:text-[46px]">
+            <h2 className="max-w-[487px] text-center text-[22px] font-normal uppercase leading-tight sm:text-[30px] md:text-start lg:text-[46px]">
               {t("public.challenges.detail.guideHeading")}
             </h2>
             <button
