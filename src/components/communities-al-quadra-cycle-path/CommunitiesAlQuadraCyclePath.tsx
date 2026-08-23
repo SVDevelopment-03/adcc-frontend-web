@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { scrollToAppListing } from "../../utils/appStoreLink";
+import i18n from "../../i18n";
 import { AnimatedButton } from "../ui/AnimatedButton";
 import {
   Bike,
@@ -167,7 +168,7 @@ const formatDate = (date?: string, fallback = "Date TBA") => {
   if (!date) return fallback;
   const parsed = new Date(date);
   if (Number.isNaN(parsed.getTime())) return fallback;
-  return new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat(i18n.language, {
     month: "long",
     day: "numeric",
     year: "numeric",
@@ -489,10 +490,10 @@ function FacilitiesSection({ facilities }: { facilities: FacilityCard[] }) {
             className="group relative shrink-0 min-w-[200px] cursor-pointer rounded-xl bg-white/30 p-5 pb-6 text-white transition-colors duration-200 hover:bg-white hover:text-[#333]"
           >
             <div className="flex items-center gap-4">
-              <span className="shrink-0 rounded-lg bg-white p-3 text-[#333] transition-colors duration-200 group-hover:bg-[#019839] group-hover:text-white">
-                <Icon size={26} />
+              <span className="flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-[8px] bg-white text-[#333] transition-colors duration-200 group-hover:bg-[#019839] group-hover:text-white sm:h-[50px] sm:w-[50px] sm:rounded-[10px]">
+                <Icon className="h-[18px] w-[18px] sm:h-[26px] sm:w-[26px]" />
               </span>
-              <b className="text-[18px] leading-tight">{title}</b>
+              <b className="text-[13px] leading-[16px] sm:text-[20px] sm:leading-[22px]">{title}</b>
             </div>
             <div className="absolute bottom-0 left-0 h-[4px] w-full rounded-b-xl bg-transparent transition-colors duration-200 group-hover:bg-[#019839]" />
           </div>
@@ -555,7 +556,7 @@ function EventCard({ event }: { event: EventApiResponse }) {
 
       <div className="pt-5">
         <h3
-          className="bebas text-[24px] tracking-wide"
+          className="bebas event-card-title text-[24px] tracking-wide"
           style={{ marginBottom: 14 }}
         >
           {event.title}

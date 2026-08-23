@@ -132,8 +132,8 @@ html[dir='rtl'] .contact-page [class*='-title'] {
   font-size: clamp(26px, 3.4vw, 44px) !important;
 }
 
-html[dir='rtl'] .event-page .event-card-title {
-  font-size: 30px !important;
+html[dir='rtl'] .event-card-title {
+  font-size: 20px !important;
 }
 
 /* CTA banners run noticeably larger than regular section titles */
@@ -231,8 +231,8 @@ html[dir='rtl'] .home-app-section {
 
 html[dir='rtl'] .home-app-copy {
   text-align: start;
-  flex: 0 1 460px !important;
-  max-width: 460px;
+  flex: 0 1 760px !important;
+  max-width: 760px;
   min-width: 300px;
 }
 
@@ -402,6 +402,18 @@ html[dir='rtl'] .home-floating-bike {
     inset-inline-end: 16px !important;
   }
 
+  /* .home-app-copy's row-layout flex-basis (460px) becomes a *height* once
+     .home-app-section stacks into a column on mobile, forcing a huge gap
+     above the phone mockup. Reset it to a normal block so it only takes
+     the height its content needs. */
+  html[dir='rtl'] .home-app-copy {
+    flex: 1 1 auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    text-align: center !important;
+  }
+
   html[dir='rtl'] .home-platform-section,
   html[dir='rtl'] .home-store-section {
     padding-inline: 18px !important;
@@ -419,7 +431,7 @@ html[dir='rtl'] .home-floating-bike {
   html[dir='rtl'] .home-platform-title,
   html[dir='rtl'] [class*='-hero-title'],
   html[dir='rtl'] .about-page [class*='-title'],
-  html[dir='rtl'] .event-page [class*='-title'],
+  html[dir='rtl'] .event-page [class*='-title']:not(.event-card-title),
   html[dir='rtl'] .tracks-page [class*='-title'],
   html[dir='rtl'] .challenges-page h1,
   html[dir='rtl'] .challenges-page h2,
@@ -431,6 +443,10 @@ html[dir='rtl'] .home-floating-bike {
   html[dir='rtl'] .contact-page h2,
   html[dir='rtl'] .contact-page [class*='-title'] {
     font-size: 24px !important;
+  }
+
+  html[dir='rtl'] .event-card-title {
+    font-size: 17px !important;
   }
 
   html[dir='rtl'] .home-app-title {

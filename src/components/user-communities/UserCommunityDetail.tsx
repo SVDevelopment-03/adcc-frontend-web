@@ -19,6 +19,7 @@ import {
 import { EventApiResponse, getEventsPage } from "../../services/eventsApi";
 import { motion } from "framer-motion";
 import { useWordList } from "../public/publicPageHelpers";
+import i18n from "../../i18n";
 
 type CommunityTrack = {
   _id?: string;
@@ -78,7 +79,7 @@ const formatDate = (date?: string, naLabel = "Date TBA") => {
   if (!date) return naLabel;
   const parsed = new Date(date);
   if (Number.isNaN(parsed.getTime())) return naLabel;
-  return new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat(i18n.language, {
     month: "long",
     day: "numeric",
     year: "numeric",
@@ -624,7 +625,7 @@ function EventCard({ event }: { event: EventApiResponse }) {
           {event.category || t("public.common.eventFallback")}
         </span>
       </div>
-      <h3 className="mt-5 text-[22px] font-black uppercase sm:mt-6 sm:text-[26px]">{event.title}</h3>
+      <h3 className="event-card-title mt-5 text-[22px] font-black uppercase sm:mt-6 sm:text-[26px]">{event.title}</h3>
       <div className="mt-4 grid grid-cols-1 gap-y-3 text-[16px] text-black/70 sm:mt-5 sm:grid-cols-2 sm:text-[18px]">
         <p className="flex gap-2">
           <CalendarDays size={20} /> {formatDate(event.eventDate, t("public.common.dateTBA"))}

@@ -499,11 +499,11 @@ const formatTimeInput = (raw: string): string => {
                   <div>
                     <p className="text-sm mb-1" style={{ color: '#666' }}>{t('events.detail.labels.date')}</p>
                     <p style={{ color: '#333' }}>
-                      {new Date(event.eventDate).toLocaleDateString('en-US', { 
-                        weekday: 'long', 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
+                      {new Date(event.eventDate).toLocaleDateString(i18n.language, {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
                       })}
                     </p>
                   </div>
