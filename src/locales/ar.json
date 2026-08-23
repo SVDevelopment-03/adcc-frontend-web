@@ -1955,6 +1955,13 @@
       "Oman": "عُمان",
       "Qatar": "قطر"
     },
+    "conditions": {
+      "New": "جديد",
+      "Used": "مستعمل",
+      "Like New": "كالجديد",
+      "Good": "جيد",
+      "Fair": "مقبول"
+    },
     "locations": {
       "Abu Dhabi": "أبوظبي",
       "Al Ain": "العين",
@@ -2392,6 +2399,7 @@
         "trustedBy": "موثوق من قبل أكثر من 5,000 دراج",
         "sellerAlt": "البائع",
         "officialStore": "متجر ADCC الرسمي",
+        "officialStoreLocation": "أبوظبي، الإمارات العربية المتحدة",
         "fields": {
           "category": "الفئة",
           "condition": "الحالة",
@@ -2605,6 +2613,7 @@
       "dateTBA": "التاريخ قيد التحديد",
       "distanceTBA": "المسافة قيد التحديد",
       "km": "كم",
+      "aed": "درهم",
       "eventFallback": "فعالية",
       "communityFallback": "مجتمع",
       "untitledTrack": "مسار بدون عنوان",

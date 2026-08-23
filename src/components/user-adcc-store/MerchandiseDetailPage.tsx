@@ -210,10 +210,10 @@ export default function MerchandiseDetailPage() {
             </p>
 
             <h2 className="mt-5 text-[24px] sm:mt-6 sm:text-[28px] lg:text-[32px]">
-              {Number(product.price ?? 0).toLocaleString()} AED
+              {Number(product.price ?? 0).toLocaleString()} {t("public.common.aed")}
               {product.originalPrice ? (
                 <span className="ms-3 text-[16px] text-black/40 line-through sm:text-[20px]">
-                  {Number(product.originalPrice).toLocaleString()} AED
+                  {Number(product.originalPrice).toLocaleString()} {t("public.common.aed")}
                 </span>
               ) : null}
             </h2>
@@ -230,7 +230,8 @@ export default function MerchandiseDetailPage() {
                     {t("public.store.detail.officialStore")}
                   </h3>
                   <p className="mt-1 flex items-center gap-2 text-[13px] text-white/60 sm:text-[16px] lg:text-[16px]">
-                    <MapPin className="h-4 w-4 sm:h-5 sm:w-5" /> Abu Dhabi, UAE
+                    <MapPin className="h-4 w-4 sm:h-5 sm:w-5" />{" "}
+                    {t("public.store.detail.officialStoreLocation")}
                   </p>
                 </div>
               </div>
@@ -298,7 +299,7 @@ export default function MerchandiseDetailPage() {
               {t("public.store.detail.noSimilar")}
             </p>
           ) : (
-            <div className="mt-8 grid grid-cols-1 gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 lg:mt-8 lg:gap-8">
+            <div className="mt-8 grid grid-cols-2 gap-4 sm:mt-12 sm:gap-6 md:grid-cols-3 lg:mt-8 lg:gap-8">
               {similarProducts.map((similar) => {
                 const similarImage = similar.images?.[0] ?? FALLBACK_IMAGE;
                 return (
@@ -306,11 +307,11 @@ export default function MerchandiseDetailPage() {
                     type="button"
                     key={similar.id}
                     onClick={() => navigate(`/user-adcc-store/product/${similar.id}`)}
-                    className="cursor-pointer min-h-[220px] rounded-[10px] border border-black/10 p-5 text-start shadow-sm transition-all duration-300 hover:border-[#435974] hover:shadow-md sm:min-h-[280px] sm:p-6 lg:min-h-[340px] lg:p-8"
+                    className="cursor-pointer min-h-[220px] rounded-[10px] border border-black/10 bg-[#fbf3f3] p-5 text-start shadow-sm transition-all duration-300 hover:border-[#435974] hover:shadow-md sm:min-h-[280px] sm:p-6 lg:min-h-[340px] lg:p-8"
                   >
                     <h3 className="text-[16px] uppercase sm:text-[18px] lg:text-[22px]">{similar.name}</h3>
                     <p className="mt-1 text-[14px] font-medium sm:text-[16px] lg:text-[18px]">
-                      {Number(similar.price ?? 0).toLocaleString()} AED
+                      {Number(similar.price ?? 0).toLocaleString()} {t("public.common.aed")}
                     </p>
                     <img
                       src={similarImage}

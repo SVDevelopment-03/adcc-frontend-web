@@ -47,8 +47,9 @@ const getPaginationItems = (
 };
 
 function MerchandiseCard({ product }: { product: Product }) {
+  const { t } = useTranslation();
   const image = product.images?.[0] ?? "";
-  const price = `${product.price.toLocaleString()} AED`;
+  const price = `${product.price.toLocaleString()} ${t("public.common.aed")}`;
   return (
     <Link
       to={`/user-adcc-store/product/${product.id}`}
@@ -60,7 +61,7 @@ function MerchandiseCard({ product }: { product: Product }) {
         <img
           src={image}
           alt={product.name}
-          className="mt-4 h-30 w-full object-contain mix-blend-multiply sm:mt-8 sm:h-60"
+          className="mt-4 block h-30 w-full object-contain object-bottom mix-blend-multiply sm:mt-8 sm:h-60"
         />
       )}
     </Link>
@@ -278,7 +279,7 @@ export default function AdccStorePage() {
             {t("public.store.listing.noMerchandise")}
           </p>
         ) : (
-          <div className="mt-6 grid grid-cols-2 gap-5 sm:mt-8 sm:gap-8 lg:grid-cols-4">
+          <div className="mt-6 grid grid-cols-2 gap-2 sm:mt-8 sm:gap-8 lg:grid-cols-4">
             {merchandiseProducts.map((product) => (
               <MerchandiseCard key={product.id} product={product} />
             ))}
@@ -345,7 +346,7 @@ export default function AdccStorePage() {
         )}
       </section>
 
-      <section className="pt-8 relative grid w-full grid-cols-1 items-end gap-8 overflow-hidden px-4 pb-12 sm:gap-16 sm:px-6 sm:pb-28 md:px-10 lg:grid-cols-2 lg:px-20">
+      <section className="pt-8 relative grid w-full grid-cols-1 items-end gap-8 overflow-hidden px-4 pb-12 sm:gap-16 sm:px-6 sm:pb-28 md:px-10 lg:grid-cols-2 lg:px-20 bg-b-0">
         <div>
           <h2 className="max-w-[516px] overflow-hidden text-[28px] font-normal uppercase leading-tight sm:text-[38px] sm:leading-[46px] lg:text-[50px] lg:leading-[60px]">
             <AnimatedWords words={gearUpTitleWords} gap={16} />
@@ -366,7 +367,7 @@ export default function AdccStorePage() {
         <img
           src="/img/image 30691.png"
           alt={t("public.store.listing.gearUp.imageAlt")}
-          className="h-[300px] w-full max-w-[500px] object-contain sm:h-[500px] lg:absolute lg:bottom-[-25px] lg:end-0"
+          className="h-[300px] w-full max-w-[500px] object-contain sm:h-[500px] lg:absolute lg:bottom-[-25px] lg:end-0 mb--0"
         />
       </section>
 

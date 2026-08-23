@@ -2,7 +2,16 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Cloud, Calendar, User, Share2, ArrowLeft, Phone, Mail, MapPin } from "lucide-react";
+import {
+  Cloud,
+  Calendar,
+  User,
+  Share2,
+  ArrowLeft,
+  Phone,
+  Mail,
+  MapPin,
+} from "lucide-react";
 import { getNews, getNewsById, type NewsItem } from "../../services/newsApi";
 
 const FALLBACK_IMAGE = "/img/image 306912.png";
@@ -62,7 +71,11 @@ export default function UserNewsDetail() {
     getNews({ limit: 4 })
       .then(({ items }) => {
         if (!cancelled) {
-          setRelated(items.filter((item) => (item.id || item._id) !== currentId).slice(0, 3));
+          setRelated(
+            items
+              .filter((item) => (item.id || item._id) !== currentId)
+              .slice(0, 3),
+          );
         }
       })
       .catch(() => {
@@ -77,7 +90,10 @@ export default function UserNewsDetail() {
     const shareUrl = window.location.href;
     if (navigator.share) {
       try {
-        await navigator.share({ title: news?.title || "ADCC News", url: shareUrl });
+        await navigator.share({
+          title: news?.title || "ADCC News",
+          url: shareUrl,
+        });
       } catch {
         // user cancelled — no-op
       }
@@ -94,7 +110,9 @@ export default function UserNewsDetail() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-white text-black">
-        <p className="text-[16px] sm:text-[18px]">{t("public.news.detail.loading")}</p>
+        <p className="text-[16px] sm:text-[18px]">
+          {t("public.news.detail.loading")}
+        </p>
       </div>
     );
   }
@@ -102,7 +120,9 @@ export default function UserNewsDetail() {
   if (loadError || !news) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-white px-6 text-center text-black">
-        <p className="text-[18px] font-semibold sm:text-[22px]">{t("public.news.detail.notFound")}</p>
+        <p className="text-[18px] font-semibold sm:text-[22px]">
+          {t("public.news.detail.notFound")}
+        </p>
         <Link
           to="/user-news"
           className="rounded-full bg-[#019839] px-8 py-3 text-[15px] font-medium text-white sm:text-[16px]"
@@ -113,13 +133,23 @@ export default function UserNewsDetail() {
     );
   }
 
-  const authorName = news.author || news.createdBy?.fullName || t("public.news.listing.defaultAuthor");
-  const dateLabel = formatDate(news.publishedAt || news.createdAt, i18n.language);
+  const authorName =
+    news.author ||
+    news.createdBy?.fullName ||
+    t("public.news.listing.defaultAuthor");
+  const dateLabel = formatDate(
+    news.publishedAt || news.createdAt,
+    i18n.language,
+  );
 
   return (
     <div className="min-h-screen bg-white text-black">
       <header className="h-[134px] flex items-center justify-between px-10 md:px-20">
-        <img src="/ADCC-Logo.png" alt="ADCC" className="h-[57px] w-[135px] object-contain" />
+        <img
+          src="/ADCC-Logo.png"
+          alt="ADCC"
+          className="h-[57px] w-[135px] object-contain"
+        />
 
         <nav className="hidden lg:flex gap-12 text-[20px] font-medium">
           <span>{t("public.nav.aboutUs")}</span>
@@ -137,14 +167,7 @@ export default function UserNewsDetail() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-[900px] px-4 pt-24 pb-16 sm:px-6 sm:pt-28 lg:pt-32">
-        <Link
-          to="/user-news"
-          className="inline-flex items-center gap-2 text-[14px] font-medium text-black/60 hover:text-black sm:text-[15px]"
-        >
-          <ArrowLeft size={16} /> {t("public.news.detail.backToNews")}
-        </Link>
-
+      <main className="mx-auto max-w-[900px] px-4 pt-24 pb-16 sm:px-6 sm:pt-28 lg:pt-32 bg-[#eaf4ff]">
         {news.category && (
           <span className="mt-6 inline-block rounded-full bg-[#019839]/10 px-4 py-1.5 text-[12px] font-semibold uppercase text-[#019839] sm:text-[13px]">
             {news.category}
@@ -156,9 +179,6 @@ export default function UserNewsDetail() {
         </h1>
 
         <div className="mt-4 flex flex-wrap items-center gap-4 text-[13px] text-black/60 sm:text-[15px]">
-          <span className="flex items-center gap-2">
-            <User size={16} /> {authorName}
-          </span>
           {dateLabel && (
             <span className="flex items-center gap-2">
               <Calendar size={16} /> {dateLabel}
@@ -191,7 +211,7 @@ export default function UserNewsDetail() {
         />
 
         {related.length > 0 && (
-          <section className="mt-16 border-t border-black/10 pt-10 sm:mt-20 sm:pt-12">
+          <section className="mt-8 border-t border-black/10 pt-8 sm:mt-20 sm:pt-12">
             <h2 className="text-[20px] font-semibold uppercase sm:text-[24px]">
               {t("public.news.detail.relatedHeading")}
             </h2>
@@ -202,7 +222,9 @@ export default function UserNewsDetail() {
                   <button
                     type="button"
                     key={relatedId}
-                    onClick={() => relatedId && navigate(`/user-news/${relatedId}`)}
+                    onClick={() =>
+                      relatedId && navigate(`/user-news/${relatedId}`)
+                    }
                     className="flex flex-col overflow-hidden rounded-xl border border-black/5 text-start transition-shadow hover:shadow-md"
                   >
                     <div className="aspect-[4/3] w-full overflow-hidden bg-[#f4f4f4]">
@@ -232,7 +254,11 @@ export default function UserNewsDetail() {
       <footer className="mx-auto max-w-[1268px] px-10 py-24">
         <div className="grid grid-cols-1 gap-16 md:grid-cols-3">
           <div>
-            <img src="/ADCC-Logo.png" alt="ADCC" className="h-[63px] w-[149px] object-contain" />
+            <img
+              src="/ADCC-Logo.png"
+              alt="ADCC"
+              className="h-[63px] w-[149px] object-contain"
+            />
             <p className="mt-8 max-w-[402px] text-[18px] leading-[23px]">
               {t("public.footer.brandText")}
             </p>
@@ -249,7 +275,9 @@ export default function UserNewsDetail() {
           </div>
 
           <div>
-            <h4 className="text-[24px] font-black uppercase">{t("public.footer.quickLinks")}</h4>
+            <h4 className="text-[24px] font-black uppercase">
+              {t("public.footer.quickLinks")}
+            </h4>
             <ul className="mt-8 space-y-4 text-[18px]">
               <li>{t("public.nav.aboutUs")}</li>
               <li>{t("public.footer.rides")}</li>
@@ -260,14 +288,22 @@ export default function UserNewsDetail() {
           </div>
 
           <div>
-            <h4 className="text-[24px] font-black uppercase">{t("public.footer.contactUs")}</h4>
+            <h4 className="text-[24px] font-black uppercase">
+              {t("public.footer.contactUs")}
+            </h4>
             <ul className="mt-8 space-y-4 text-[18px]">
-              <li className="flex gap-3"><Phone size={22} /> +971 2 654 5645</li>
-              <li className="flex gap-3"><Phone size={22} /> 144226</li>
+              <li className="flex gap-3">
+                <Phone size={22} /> +971 2 654 5645
+              </li>
+              <li className="flex gap-3">
+                <Phone size={22} /> 144226
+              </li>
               <li className="flex gap-3">
                 <Mail size={22} /> {t("public.news.listing.footer.address")}
               </li>
-              <li className="flex gap-3"><MapPin size={22} /> info@adcyclingclub.ae</li>
+              <li className="flex gap-3">
+                <MapPin size={22} /> info@adcyclingclub.ae
+              </li>
             </ul>
           </div>
         </div>

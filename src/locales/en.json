@@ -1982,6 +1982,13 @@
       "Oman": "Oman",
       "Qatar": "Qatar"
     },
+    "conditions": {
+      "New": "New",
+      "Used": "Used",
+      "Like New": "Like New",
+      "Good": "Good",
+      "Fair": "Fair"
+    },
     "locations": {
       "Abu Dhabi": "Abu Dhabi",
       "Al Ain": "Al Ain",
@@ -2419,6 +2426,7 @@
         "trustedBy": "Trusted by 5,000+ Cyclists",
         "sellerAlt": "Seller",
         "officialStore": "Official ADCC Store",
+        "officialStoreLocation": "Abu Dhabi, UAE",
         "fields": {
           "category": "Category",
           "condition": "Condition",
@@ -2632,6 +2640,7 @@
       "dateTBA": "Date TBA",
       "distanceTBA": "Distance TBA",
       "km": "km",
+      "aed": "AED",
       "eventFallback": "Event",
       "communityFallback": "Community",
       "untitledTrack": "Untitled Track",

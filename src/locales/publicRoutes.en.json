@@ -23,6 +23,7 @@
     "dateTBA": "Date TBA",
     "distanceTBA": "Distance TBA",
     "km": "km",
+    "aed": "AED",
     "participants": "{{formattedCount}} participants",
     "members": "{{formattedCount}} members",
     "eventsCount": "{{formattedCount}} events",

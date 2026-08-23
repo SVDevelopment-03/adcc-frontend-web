@@ -137,12 +137,16 @@ export default function StoreDetailPage() {
 
   const infoRows: [string, string][] = item
     ? [
+        // Category is free text the seller typed in — no fixed set to translate against.
         [t("public.marketplace.detail.fields.category"), item.category || "—"],
         [
           t("public.marketplace.detail.fields.condition"),
-          item.condition || "—",
+          item.condition ? t(`data.conditions.${item.condition}`, item.condition) : "—",
         ],
-        [t("public.marketplace.detail.fields.location"), item.city || "—"],
+        [
+          t("public.marketplace.detail.fields.location"),
+          item.city ? t(`data.locations.${item.city}`, item.city) : "—",
+        ],
         [t("public.marketplace.detail.fields.posted"), postedLabel || "—"],
       ]
     : [];
@@ -270,7 +274,7 @@ export default function StoreDetailPage() {
             </p>
 
             <h2 className="mt-5 text-[24px]  sm:mt-6 sm:text-[28px] lg:text-[32px]">
-              {item.currency} {Number(item.price ?? 0).toLocaleString()}
+              {item.currency && item.currency !== "AED" ? item.currency : t("public.common.aed")} {Number(item.price ?? 0).toLocaleString()}
             </h2>
 
             <div className="mt-6 rounded-xl bg-[#323232] p-5 text-white sm:mt-8 sm:p-6 lg:max-w-[480px] lg:p-8 xl:max-w-[560px]">
@@ -288,10 +292,6 @@ export default function StoreDetailPage() {
                   <h3 className="text-[18px] sm:text-[22px] lg:text-[26px]">
                     {sellerName}
                   </h3>
-                  <p className="mt-1 flex items-center gap-2 text-[13px] text-white/60 sm:text-[16px] lg:text-[16px]">
-                    <MapPin className="h-4 w-4 sm:h-5 sm:w-5" />{" "}
-                    {item.city || "—"}
-                  </p>
                 </div>
               </div>
 
@@ -349,7 +349,7 @@ export default function StoreDetailPage() {
               {t("public.marketplace.detail.noSimilar")}
             </p>
           ) : (
-            <div className="mt-8 grid grid-cols-1 gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 lg:mt-8 lg:gap-8">
+            <div className="mt-8 grid grid-cols-2 gap-4 sm:mt-12 sm:gap-6 md:grid-cols-3 lg:mt-8 lg:gap-8">
               {similarItems.map((similar) => {
                 const similarId = similar.id || similar._id;
                 const similarImage =
@@ -367,7 +367,7 @@ export default function StoreDetailPage() {
                       {similar.title}
                     </h3>
                     <p className="mt-1 text-[14px] font-medium sm:text-[16px] lg:text-[18px]">
-                      {similar.currency}{" "}
+                      {similar.currency && similar.currency !== "AED" ? similar.currency : t("public.common.aed")}{" "}
                       {Number(similar.price ?? 0).toLocaleString()}
                     </p>
                     <img

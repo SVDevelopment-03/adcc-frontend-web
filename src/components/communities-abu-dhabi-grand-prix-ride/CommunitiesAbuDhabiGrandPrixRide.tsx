@@ -138,7 +138,7 @@ const formatFee = (event: GrandPrixEvent | null | undefined, t: TFunction) => {
   if (event.registrationFeeType !== "paid")
     return t("public.events.detail.register.free");
   const amount = event.registrationFeeAmount ?? 0;
-  return amount > 0 ? `AED ${amount}` : t("public.events.detail.register.paid");
+  return amount > 0 ? `${t("public.common.aed")} ${amount}` : t("public.events.detail.register.paid");
 };
 
 const getImage = (event?: GrandPrixEvent | null) =>

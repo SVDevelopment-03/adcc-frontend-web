@@ -1080,7 +1080,7 @@ function ValuesSection() {
                 fontSize: 17,
                 fontWeight: 500,
                 color: "#fff",
-                marginBottom: 56,
+                marginBottom: 30,
               }}
             >
               {v.num}

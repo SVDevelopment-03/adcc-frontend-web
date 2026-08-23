@@ -353,6 +353,7 @@ font-family: var(--font-satoshi) !important;}
     max-width: 1268px;
     margin: 0 auto;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
     padding-bottom: 8px;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
@@ -3403,6 +3404,7 @@ function StoreMarketplaceCarousel({
 function StoreSection() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { isRtl } = useLocale();
   const storeRailRef = useRef<HTMLDivElement | null>(null);
   const [storeCardsVisible, setStoreCardsVisible] = useState(false);
 
@@ -3423,6 +3425,16 @@ function StoreSection() {
 
     return () => observer.disconnect();
   }, []);
+
+  // The rail uses row-reverse + plain ltr scroll math for Arabic (see
+  // public-rtl.css), which visually places the first card on the right —
+  // but that means it opens scrolled to the *left* by default. Jump it to
+  // the right on mount so the first card is what's actually in view.
+  useEffect(() => {
+    const railEl = storeRailRef.current;
+    if (!railEl || !isRtl) return;
+    railEl.scrollLeft = railEl.scrollWidth - railEl.clientWidth;
+  }, [isRtl, storeCardsVisible]);
 
   return (
     <section id="store" className="home-store-section">
