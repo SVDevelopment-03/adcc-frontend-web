@@ -45,10 +45,15 @@ const getPaginationItems = (
 };
 
 function MarketplaceCard({ item }: { item: StoreItem }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { i18n } = useTranslation();
   const image = item.coverImage || item.photos?.[0] || "";
-  const price = `${Number(item.price ?? 0).toLocaleString()} ${item.currency || "AED"}`;
+  const currency =
+    item.currency && item.currency !== "AED"
+      ? item.currency
+      : t("public.common.aed");
+  const price = `${Number(item.price ?? 0).toLocaleString()} ${currency}`;
   const id = item.id || item._id;
   const title = i18n.language === 'ar' ? (item.titleAr || item.title) : item.title;
 
@@ -291,7 +296,7 @@ export default function UserMarketplace() {
             {t("public.marketplace.listing.noListings")}
           </p>
         ) : (
-          <div className="mt-6 grid grid-cols-2 gap-5 sm:mt-8 sm:gap-8 lg:grid-cols-4">
+          <div className="mt-6 grid grid-cols-2 gap-2 sm:mt-8 sm:gap-8 lg:grid-cols-4">
             {items.map((item) => (
               <MarketplaceCard key={item.id || item._id} item={item} />
             ))}
@@ -348,7 +353,7 @@ export default function UserMarketplace() {
         )}
       </section>
 
-      <section className="pt-8 relative grid w-full grid-cols-1 items-end gap-8 overflow-hidden px-4 pb-12 sm:gap-16 sm:px-6 sm:pb-28 md:px-10 lg:grid-cols-2 lg:px-20">
+      <section className="pt-8 relative grid w-full grid-cols-1 items-end gap-8 overflow-hidden px-4 pb-12 sm:gap-16 sm:px-6 sm:pb-28 md:px-10 lg:grid-cols-2 lg:px-20 bg-b-0">
         <div>
           <h2 className="max-w-[516px] overflow-hidden text-[28px] font-normal uppercase leading-tight sm:text-[38px] sm:leading-[46px] lg:text-[50px] lg:leading-[60px]">
             <AnimatedWords words={gearUpTitleWords} gap={16} />
@@ -369,7 +374,7 @@ export default function UserMarketplace() {
         <img
           src="/img/image 30691.png"
           alt={t("public.marketplace.listing.gearUp.imageAlt")}
-          className="h-[300px] w-full max-w-[500px] object-contain sm:h-[500px] lg:absolute lg:bottom-[-25px] lg:end-0"
+          className="h-[300px] mb--0 w-full max-w-[500px] object-contain sm:h-[500px] lg:absolute lg:bottom-[-25px] lg:end-0"
         />
       </section>
 

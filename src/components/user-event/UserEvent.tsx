@@ -370,10 +370,6 @@ function FilterBar({
             value: "advanced",
             label: t("public.events.listing.filters.levels.advanced"),
           },
-          {
-            value: "all",
-            label: t("public.events.listing.filters.levels.all"),
-          },
         ],
       },
       {
