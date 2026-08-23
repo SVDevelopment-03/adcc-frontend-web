@@ -8,6 +8,7 @@ export interface ProductBanner {
   group?: string;
   label?: string;
   title?: string;
+  targetScreen?: string;
   description?: string;
   image?: string;
   active?: boolean;
@@ -228,6 +229,7 @@ export const getProductBanners = async (): Promise<ProductBanner[]> => {
       label: banner.label,
       title: banner.title,
       description: banner.description,
+      targetScreen: banner.targetScreen,
       image: banner.image,
       active: banner.active,
       createdAt: banner.createdAt,
@@ -262,6 +264,7 @@ export const uploadProductBanners = async (files: File[]): Promise<ProductBanner
       label: banner.label,
       title: banner.title,
       description: banner.description,
+      targetScreen: banner.targetScreen,
       image: banner.image,
       active: banner.active,
       createdAt: banner.createdAt,
@@ -280,6 +283,31 @@ export const deleteProductBanner = async (key: string): Promise<void> => {
   }
 };
 
+export const updateProductBanner = async (key: string, payload: { label?: string; title?: string; description?: string; targetScreen?: string; active?: boolean; image?: string }): Promise<ProductBanner> => {
+  try {
+    const { data } = await api.patch<{ success: boolean; message?: string; data?: any }>(`/v1/product-banners/${encodeURIComponent(key)}`, payload);
+    if (!data?.success || !data?.data) {
+      throw new Error('Failed to update product banner');
+    }
+    const banner = data.data;
+    return {
+      id: banner.id || banner._id || String(banner._id),
+      key: banner.key,
+      group: banner.group,
+      label: banner.label,
+      title: banner.title,
+      description: banner.description,
+      targetScreen: banner.targetScreen,
+      image: banner.image,
+      active: banner.active,
+      createdAt: banner.createdAt,
+      updatedAt: banner.updatedAt,
+    };
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to update product banner'));
+  }
+};
+
 export const getProductBannersAr = async (): Promise<ProductBanner[]> => {
   try {
     const { data } = await api.get<{ success: boolean; message?: string; data?: { banners: any[] } }>('/v1/product-banners-ar');
@@ -293,6 +321,7 @@ export const getProductBannersAr = async (): Promise<ProductBanner[]> => {
       label: banner.label,
       title: banner.title,
       description: banner.description,
+      targetScreen: banner.targetScreen,
       image: banner.image,
       active: banner.active,
       createdAt: banner.createdAt,
@@ -342,6 +371,31 @@ export const deleteProductBannerAr = async (key: string): Promise<void> => {
     await api.delete(`/v1/product-banners-ar/${encodeURIComponent(key)}`);
   } catch (error) {
     throw new Error(getApiErrorMessage(error, 'Failed to delete Arabic product banner'));
+  }
+};
+
+export const updateProductBannerAr = async (key: string, payload: { label?: string; title?: string; description?: string; targetScreen?: string; active?: boolean; image?: string }): Promise<ProductBanner> => {
+  try {
+    const { data } = await api.patch<{ success: boolean; message?: string; data?: any }>(`/v1/product-banners-ar/${encodeURIComponent(key)}`, payload);
+    if (!data?.success || !data?.data) {
+      throw new Error('Failed to update Arabic product banner');
+    }
+    const banner = data.data;
+    return {
+      id: banner.id || banner._id || String(banner._id),
+      key: banner.key,
+      group: banner.group,
+      label: banner.label,
+      title: banner.title,
+      description: banner.description,
+      targetScreen: banner.targetScreen,
+      image: banner.image,
+      active: banner.active,
+      createdAt: banner.createdAt,
+      updatedAt: banner.updatedAt,
+    };
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to update Arabic product banner'));
   }
 };
 

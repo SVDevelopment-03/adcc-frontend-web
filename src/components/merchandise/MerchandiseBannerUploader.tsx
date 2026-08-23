@@ -9,6 +9,8 @@ import {
   ProductBanner,
   uploadProductBanners,
   uploadProductBannersAr,
+  updateProductBanner,
+  updateProductBannerAr,
 } from '../../services/merchandiseApi';
 import { ImagePickerModal } from '../media/ImagePickerModal';
 
@@ -47,6 +49,7 @@ export function MerchandiseBannerUploader({ variant = 'en', title, description }
   const [banners, setBanners] = useState<ProductBanner[]>([]);
   const [showLibraryPicker, setShowLibraryPicker] = useState(false);
   const [pickingFromLibrary, setPickingFromLibrary] = useState(false);
+  const [editing, setEditing] = useState<ProductBanner | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -287,24 +290,102 @@ export function MerchandiseBannerUploader({ variant = 'en', title, description }
                   </p>
                   <p className="text-xs text-gray-500">{banner.key}</p>
                 </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditing(banner)}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (!banner.key) return;
+                      try {
+                        await config.deleteBanner(banner.key);
+                        setBanners((prev) => prev.filter((item) => item.key !== banner.key));
+                        toast.success('Banner deleted');
+                      } catch (error: any) {
+                        toast.error(error?.message || 'Failed to delete banner');
+                      }
+                    }}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {editing && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-3">Edit Banner</h3>
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs text-gray-600">Title</label>
+                <input
+                  value={editing.title ?? ''}
+                  onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+                  className="w-full mt-1 p-2 border rounded"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-gray-600">Label</label>
+                <input
+                  value={editing.label ?? ''}
+                  onChange={(e) => setEditing({ ...editing, label: e.target.value })}
+                  className="w-full mt-1 p-2 border rounded"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-gray-600">Target Screen (route or product id)</label>
+                <input
+                  value={(editing.targetScreen as string) ?? ''}
+                  onChange={(e) => setEditing({ ...editing, targetScreen: e.target.value })}
+                  className="w-full mt-1 p-2 border rounded"
+                />
+              </div>
+              <div className="flex items-center gap-3">
+                <label className="text-xs text-gray-600">Active</label>
+                <input
+                  type="checkbox"
+                  checked={!!editing.active}
+                  onChange={(e) => setEditing({ ...editing, active: e.target.checked })}
+                />
+              </div>
+              <div className="flex justify-end gap-2 mt-4">
+                <button type="button" onClick={() => setEditing(null)} className="px-3 py-2 rounded bg-gray-100">Cancel</button>
                 <button
                   type="button"
                   onClick={async () => {
-                    if (!banner.key) return;
+                    if (!editing) return;
                     try {
-                      await config.deleteBanner(banner.key);
-                      setBanners((prev) => prev.filter((item) => item.key !== banner.key));
-                      toast.success('Banner deleted');
+                      const payload = {
+                        title: editing.title,
+                        label: editing.label,
+                        targetScreen: editing.targetScreen,
+                        active: editing.active,
+                      };
+                      const updated = variant === 'ar'
+                        ? await updateProductBannerAr(editing.key, payload)
+                        : await updateProductBanner(editing.key, payload);
+                      setBanners((prev) => prev.map((b) => (b.key === updated.key ? updated : b)));
+                      toast.success('Banner updated');
+                      setEditing(null);
                     } catch (error: any) {
-                      toast.error(error?.message || 'Failed to delete banner');
+                      toast.error(error?.message || 'Failed to update banner');
                     }
                   }}
-                  className="text-red-500 hover:text-red-700"
+                  className="px-3 py-2 rounded bg-blue-600 text-white"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  Save
                 </button>
               </div>
-            ))}
+            </div>
           </div>
         </div>
       )}
