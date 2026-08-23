@@ -128,6 +128,17 @@ export default function StoreDetailPage() {
 
   const galleryImages = item ? dedupeImages(item.coverImage, item.photos) : [];
 
+  const localizedTitle = item
+    ? i18n.language === 'ar'
+      ? item.titleAr || item.title
+      : item.title
+    : '';
+  const localizedDescription = item
+    ? i18n.language === 'ar'
+      ? item.descriptionAr || item.description
+      : item.description
+    : '';
+
   const sellerName =
     item?.sellerName ||
     item?.createdBy?.fullName ||
@@ -169,7 +180,7 @@ export default function StoreDetailPage() {
   const handleShare = async () => {
     const shareUrl = window.location.href;
     const shareData = {
-      title: item?.title || "ADCC Marketplace",
+      title: localizedTitle || "ADCC Marketplace",
       url: shareUrl,
     };
     if (navigator.share) {
@@ -262,11 +273,11 @@ export default function StoreDetailPage() {
             </div>
 
             <h1 className="mt-3 text-[26px]  uppercase leading-tight sm:mt-4 sm:text-[34px] lg:text-[42px]">
-              {item.title}
+              {localizedTitle}
             </h1>
 
             <p className="mt-3 max-w-[499px] text-[14px] leading-6 text-[#555] sm:mt-4 sm:text-[16px] lg:text-[18px]">
-              {item.description}
+              {localizedDescription}
             </p>
 
             <h2 className="mt-5 text-[24px]  sm:mt-6 sm:text-[28px] lg:text-[32px]">
@@ -334,7 +345,7 @@ export default function StoreDetailPage() {
               {t("public.marketplace.detail.aboutHeading")}
             </h2>
             <p className="mt-4 text-[14px] leading-6 text-black/70 sm:mt-6 sm:text-[16px] lg:text-[18px]">
-              {item.description}
+              {localizedDescription}
             </p>
           </div>
         </section>

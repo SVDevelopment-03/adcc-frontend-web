@@ -29,7 +29,9 @@ export interface StoreItem {
   id?: string;
   _id?: string;
   title: string;
+  titleAr?: string;
   description: string;
+  descriptionAr?: string;
   category: string;
   condition: string;
   currency: string;

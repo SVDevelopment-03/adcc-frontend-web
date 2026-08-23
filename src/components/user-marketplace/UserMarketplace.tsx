@@ -46,9 +46,11 @@ const getPaginationItems = (
 
 function MarketplaceCard({ item }: { item: StoreItem }) {
   const navigate = useNavigate();
+  const { i18n } = useTranslation();
   const image = item.coverImage || item.photos?.[0] || "";
   const price = `${Number(item.price ?? 0).toLocaleString()} ${item.currency || "AED"}`;
   const id = item.id || item._id;
+  const title = i18n.language === 'ar' ? (item.titleAr || item.title) : item.title;
 
   return (
     <div
@@ -63,12 +65,12 @@ function MarketplaceCard({ item }: { item: StoreItem }) {
       }}
       className="min-h-55 cursor-pointer rounded-[10px] border border-black/5 p-4 shadow-inner transition-all duration-300 sm:min-h-[381px] sm:p-8"
     >
-      <h3 className="text-[15px] uppercase sm:text-[24px]">{item.title}</h3>
+      <h3 className="text-[15px] uppercase sm:text-[24px]">{title}</h3>
       <p className="mt-1 text-[13px] sm:text-[18px]">{price}</p>
       {image && (
         <img
           src={image}
-          alt={item.title}
+          alt={title}
           className="mt-4 h-30 w-full object-contain mix-blend-multiply sm:mt-8 sm:h-60"
         />
       )}
