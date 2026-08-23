@@ -180,6 +180,7 @@ export interface PushNotificationPayload {
   scheduleDate?: string;
   scheduleTime?: string;
   externalEmails?: string;
+  communityId?: string;
 }
 
 // Send web push notification to staff (admin/staff users)
@@ -221,6 +222,7 @@ export const sendTestBroadcastPush = async (
       formData.append('selectedUserIds', payload.selectedUserIds.join(','));
     }
     if (payload.externalEmails) formData.append('externalEmails', payload.externalEmails);
+    if (payload.communityId) formData.append('communityId', payload.communityId);
     if (payload.title) formData.append('title', payload.title);
     if (payload.scheduleDate) formData.append('scheduleDate', payload.scheduleDate);
     if (payload.scheduleTime) formData.append('scheduleTime', payload.scheduleTime);

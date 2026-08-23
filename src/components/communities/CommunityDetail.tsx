@@ -271,6 +271,7 @@ export function CommunityDetail() {
         audienceType: 'selected_users',
         selectedUserIds,
         deliveryType: notifDeliveryType,
+        communityId: communityId,
       });
       const label = notifDeliveryType === 'app' ? 'push notification' : notifDeliveryType === 'email' ? 'email' : 'notification';
       setNotifResult({ ok: true, message: `${label} sent to ${selectedUserIds.length} member(s)` });

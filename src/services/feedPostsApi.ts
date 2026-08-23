@@ -113,15 +113,22 @@ export const getFeedPosts = async (params?: GetFeedPostsParams): Promise<FeedPos
 
     if (!Array.isArray(postsCandidate)) return [];
 
+    const locale = (typeof window !== 'undefined' && window.localStorage ? window.localStorage.getItem('locale') : 'en') || 'en';
+
     return postsCandidate.map((p: any) => ({
       ...p,
       _id: p?._id ?? p?.id,
       id: p?.id ?? p?._id,
+      // Prefer Arabic fields when client locale is Arabic or server provided `*Ar` values.
+      title: locale === 'ar' ? (p?.titleAr ?? p?.title) : (p?.title ?? p?.titleAr),
+      description:
+        locale === 'ar'
+          ? (p?.descriptionAr ?? p?.description)
+          : (p?.description ?? p?.descriptionAr),
       userId:
         (typeof p?.userId === 'string' ? p.userId : p?.userId?._id) ??
         (typeof p?.createdBy === 'string' ? undefined : p?.createdBy?._id),
-      title: p?.title ?? '',
-      description: p?.description ?? p?.caption ?? '',
+      
       image: p?.image ?? p?.imageUrl ?? p?.coverImage,
       banFeedPost: normalizeBoolean(
         p?.banFeedPost ??

@@ -430,10 +430,12 @@ export function CMS() {
     try {
       await createAppBanner({
         title: `App Banner ${Date.now()}`,
+        targetScreen: newBannerTarget,
         imageFile: newBannerFile,
       });
       toast.success(t('cms.appBanner.uploadSuccess'));
       clearNewBannerUpload();
+      setNewBannerTarget('home');
       await fetchAllGroupsSettings();
     } catch (error) {
       toast.error(getApiErrorMessage(error, t('cms.appBanner.uploadError')));
@@ -891,6 +893,22 @@ export function CMS() {
                             className="w-full border rounded-lg px-3 py-2 text-sm"
                             style={{ borderColor: '#E5DDD4' }}
                           />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="block text-xs font-medium" style={{ color: '#666' }}>
+                            Banner destination
+                          </label>
+                          <select
+                            value={bannerTargets[item.key] || item.targetScreen || 'home'}
+                            onChange={(e) => setBannerTargets((prev) => ({ ...prev, [item.key]: e.target.value }))}
+                            className="w-full border rounded-lg px-3 py-2 text-sm"
+                            style={{ borderColor: '#E5DDD4' }}
+                          >
+                            {bannerTargetOptions.map((option) => (
+                              <option key={option.value} value={option.value}>{option.label}</option>
+                            ))}
+                          </select>
                         </div>
 
                         <button
