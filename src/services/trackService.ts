@@ -503,6 +503,26 @@ export const updateTrack = async (
   }
 };
 
+// Remove a single image from a track's gallery — the generic PATCH /:trackId
+// update merges/appends gallery images rather than replacing the array, so
+// removing an already-saved gallery image has to go through this dedicated
+// endpoint instead (DELETE /:trackId/gallery), which does the actual $pull.
+export const deleteTrackGalleryImage = async (
+  trackId: string,
+  imageUrl: string,
+): Promise<string[]> => {
+  invalidateCache("tracks");
+  try {
+    const response = await api.delete<any>(`/v1/tracks/${trackId}/gallery`, {
+      data: { imageUrl },
+    });
+    return (response.data as any)?.data?.galleryImages ?? [];
+  } catch (error) {
+    console.error("Error removing track gallery image:", error);
+    throw error;
+  }
+};
+
 // Delete track
 export const deleteTrack = async (id: string): Promise<void> => {
   invalidateCache("tracks");

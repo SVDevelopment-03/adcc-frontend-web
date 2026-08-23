@@ -1359,7 +1359,8 @@
         "maxImages": "الحد الأقصى 10 صور",
         "requiredFields": "يرجى ملء الحقول المطلوبة",
         "invalidDistance": "المسافة يجب أن تكون أكبر من 0",
-        "disableError": "فشل في التعطيل"
+        "disableError": "فشل في التعطيل",
+        "removeGalleryFailed": "فشل في إزالة صورة المعرض"
       }
     },
     "detail": {
@@ -2345,9 +2346,9 @@
           "riders": "درّاج",
           "events": "فعالية",
           "years": "سنوات",
-          "ridersValue": "أكثر من 15 ألف",
-          "eventsValue": "أكثر من 100",
-          "yearsValue": "أكثر من 10"
+          "ridersValue": "+15K",
+          "eventsValue": "+100",
+          "yearsValue": "+10"
         },
         "readMore": "اعرف المزيد",
         "cyclistsAlt": "درّاجو ADCC",

@@ -1397,7 +1397,8 @@
         "maxImages": "Maximum 10 images allowed",
         "requiredFields": "Please fill in required fields",
         "invalidDistance": "Distance must be greater than 0",
-        "disableError": "Failed to disable"
+        "disableError": "Failed to disable",
+        "removeGalleryFailed": "Failed to remove gallery image"
       }
     },
     "detail": {

@@ -1930,7 +1930,8 @@ font-family: var(--font-satoshi) !important;}
       min-height: 583px !important;
       transform: scale(0.52) !important;
       transform-origin: left top !important;
-      margin-inline-end: -300px !important;
+      /* Physical, not logical — see the matching rule below for why. */
+      margin-right: -300px !important;
       margin-block-end: -280px !important;
     }
     .store-featured-product-media {
@@ -2113,7 +2114,13 @@ html[dir='rtl']  .store-featured-product-media{
       min-height: 583px !important;
       transform: scale(0.5) !important;
       transform-origin: left top !important;
-      margin-inline-end: -312px !important;
+      /* Physical, not logical: transform-origin above always anchors to the
+         literal top-left corner regardless of direction, so the negative
+         margin reclaiming the scaled-away space must also be physical
+         (margin-right). margin-inline-end resolves to margin-left once
+         .store-featured-card is direction:rtl for Arabic, which pulls the
+         wrong side and corrupts every card's position after it. */
+      margin-right: -312px !important;
       margin-block-end: -292px !important;
     }
     .home-about-left-image {
@@ -3404,7 +3411,6 @@ function StoreMarketplaceCarousel({
 function StoreSection() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { isRtl } = useLocale();
   const storeRailRef = useRef<HTMLDivElement | null>(null);
   const [storeCardsVisible, setStoreCardsVisible] = useState(false);
 
@@ -3425,16 +3431,6 @@ function StoreSection() {
 
     return () => observer.disconnect();
   }, []);
-
-  // The rail uses row-reverse + plain ltr scroll math for Arabic (see
-  // public-rtl.css), which visually places the first card on the right —
-  // but that means it opens scrolled to the *left* by default. Jump it to
-  // the right on mount so the first card is what's actually in view.
-  useEffect(() => {
-    const railEl = storeRailRef.current;
-    if (!railEl || !isRtl) return;
-    railEl.scrollLeft = railEl.scrollWidth - railEl.clientWidth;
-  }, [isRtl, storeCardsVisible]);
 
   return (
     <section id="store" className="home-store-section">

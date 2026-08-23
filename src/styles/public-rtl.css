@@ -18,6 +18,10 @@ html[dir='rtl'] .public-footer-cta {
   text-align: center;
 }
 
+html[dir='rtl'] .home-footer-copyright {
+  font-size: 13px !important;
+}
+
 html[dir='rtl'] .public-footer {
   direction: rtl;
 }
@@ -304,15 +308,8 @@ html[dir='rtl'] .home-platform-card-tag span {
   font-size: 15px !important;
 }
 
-/* Mirror the card order visually (first card on the right) without putting
-   the scroller itself in direction:rtl — browsers disagree on what
-   scrollLeft means once a scroll container is direction:rtl, which was
-   producing an empty gap / dead swipe direction at the boundary. row-reverse
-   gives the same right-to-left card order using plain, unambiguous ltr
-   scroll math instead; StoreSection sets the initial scrollLeft to match. */
 html[dir='rtl'] .store-rail {
-  direction: ltr;
-  flex-direction: row-reverse;
+  direction: rtl;
 }
 
 html[dir='rtl'] .store-featured-card {

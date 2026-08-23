@@ -662,7 +662,7 @@ function PublicFooter() {
         </div>
 
         <div className="mt-10! border-t border-black/15 pt-[20px]! text-center sm:mt-14! md:mt-20!">
-          <span className="inline-block h-[23px] w-fit max-w-full whitespace-nowrap text-[clamp(14px,4.6vw,18px)] font-normal leading-none text-black">
+          <span className="home-footer-copyright inline-block h-[23px] w-fit max-w-full whitespace-nowrap text-[clamp(14px,4.6vw,18px)] font-normal leading-none text-black">
             {t("public.footer.copyright")}
           </span>
         </div>

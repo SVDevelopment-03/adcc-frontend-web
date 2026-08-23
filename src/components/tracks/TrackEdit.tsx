@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, MapPin, Activity, Shield, Image as ImageIcon, Settings, Save, Archive, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { UserRole } from '../../App';
-import { getTrackById, getTrackResults, trackCommunityResults, updateTrack, deleteTrack, disableTrack, enableTrack, Track } from '../../services/trackService';
+import { getTrackById, getTrackResults, trackCommunityResults, updateTrack, deleteTrack, deleteTrackGalleryImage, disableTrack, enableTrack, Track } from '../../services/trackService';
 import { FacilityType } from '../../types/track.types';
 import { useLocale } from '../../contexts/LocaleContext';
 import { useTranslation } from 'react-i18next';
@@ -137,12 +137,33 @@ const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   };
 
 
-  const removeGalleryImage = (index: number) => {
-    URL.revokeObjectURL(galleryPreviews[index]);
-    const updatedImages = galleryImages.filter((_, i) => i !== index);
-    const updatedPreviews = galleryPreviews.filter((_, i) => i !== index);
-    setGalleryImages(updatedImages);
-    setGalleryPreviews(updatedPreviews);
+  const removeGalleryImage = async (index: number) => {
+    const preview = galleryPreviews[index];
+    const isNewlyAdded = preview.startsWith('blob:');
+
+    if (isNewlyAdded) {
+      // Not saved yet — just drop it locally. galleryImages (the File[]
+      // state) only holds newly-added files, so it isn't index-aligned with
+      // galleryPreviews (which also includes already-saved image URLs) —
+      // find the matching File by counting blob previews before this one.
+      URL.revokeObjectURL(preview);
+      const fileIndex = galleryPreviews
+        .slice(0, index)
+        .filter((p) => p.startsWith('blob:')).length;
+      setGalleryImages((prev) => prev.filter((_, i) => i !== fileIndex));
+    } else if (trackId) {
+      // Already-saved image — the generic save button only appends/merges
+      // gallery images, so removal has to go through the dedicated
+      // delete-gallery-image endpoint to actually persist.
+      try {
+        await deleteTrackGalleryImage(trackId, preview);
+      } catch (error) {
+        toast.error(t('tracks.edit.toasts.removeGalleryFailed'));
+        return;
+      }
+    }
+
+    setGalleryPreviews((prev) => prev.filter((_, i) => i !== index));
     setFormData((prev) => ({
       ...prev,
       galleryImages: prev.galleryImages.filter((_, i) => i !== index),
