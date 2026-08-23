@@ -40,7 +40,7 @@ const emptyProduct = (source: 'adcc' | 'vendor' = 'adcc'): Omit<Product, 'id' | 
   images: [],
   description: '',
   descriptionAr: '',
-  specifications: [{ label: '', value: '' }],
+  specifications: [{ label: '', value: '', labelAr: '', valueAr: '' }],
   variants: [emptyVariant()],
   status: 'draft',
   featured: false,
@@ -99,7 +99,9 @@ export function MerchandiseProducts({ products, categories, setProducts, default
       images: [...product.images],
       description: product.description,
       descriptionAr: product.descriptionAr || '',
-      specifications: product.specifications.map(s => ({ ...s })),
+      specifications: (product.specificationsAr && product.specificationsAr.length > 0)
+        ? product.specificationsAr.map((s: any) => ({ label: s.label || s.label, value: s.value || s.value, labelAr: s.labelAr || '', valueAr: s.valueAr || '' }))
+        : product.specifications.map(s => ({ ...s, labelAr: (s as any).labelAr || '', valueAr: (s as any).valueAr || '' })),
       variants: product.variants.map(v => ({ ...v })),
       status: product.status,
       featured: product.featured,
@@ -214,6 +216,13 @@ export function MerchandiseProducts({ products, categories, setProducts, default
   const addSpec = () => setForm(f => ({ ...f, specifications: [...f.specifications, { label: '', value: '' }] }));
   const removeSpec = (idx: number) => setForm(f => ({ ...f, specifications: f.specifications.filter((_, i) => i !== idx) }));
   const updateSpec = (idx: number, key: 'label' | 'value', value: string) => {
+    setForm(f => ({
+      ...f,
+      specifications: f.specifications.map((s, i) => i === idx ? { ...s, [key]: value } : s),
+    }));
+  };
+
+  const updateSpecAr = (idx: number, key: 'labelAr' | 'valueAr', value: string) => {
     setForm(f => ({
       ...f,
       specifications: f.specifications.map((s, i) => i === idx ? { ...s, [key]: value } : s),
@@ -568,22 +577,40 @@ export function MerchandiseProducts({ products, categories, setProducts, default
                   </div>
                   <div className="space-y-2">
                     {form.specifications.map((spec, idx) => (
-                      <div key={idx} className="flex gap-2">
-                        <input
-                          value={spec.label}
-                          onChange={e => updateSpec(idx, 'label', e.target.value)}
-                          placeholder="Label"
-                          className="flex-1 px-3 py-1.5 rounded-lg border border-gray-200 text-xs focus:outline-none focus:ring-1 focus:ring-red-600"
-                        />
-                        <input
-                          value={spec.value}
-                          onChange={e => updateSpec(idx, 'value', e.target.value)}
-                          placeholder="Value"
-                          className="flex-1 px-3 py-1.5 rounded-lg border border-gray-200 text-xs focus:outline-none focus:ring-1 focus:ring-red-600"
-                        />
-                        <button onClick={() => removeSpec(idx)} className="p-1 text-gray-400 hover:text-red-500">
-                          <X className="w-3 h-3" />
-                        </button>
+                      <div key={idx} className="space-y-1 w-full">
+                        <div className="flex gap-2">
+                          <input
+                            value={spec.label}
+                            onChange={e => updateSpec(idx, 'label', e.target.value)}
+                            placeholder="Label"
+                            className="flex-1 px-3 py-1.5 rounded-lg border border-gray-200 text-xs focus:outline-none focus:ring-1 focus:ring-red-600"
+                          />
+                          <input
+                            value={spec.value}
+                            onChange={e => updateSpec(idx, 'value', e.target.value)}
+                            placeholder="Value"
+                            className="flex-1 px-3 py-1.5 rounded-lg border border-gray-200 text-xs focus:outline-none focus:ring-1 focus:ring-red-600"
+                          />
+                          <button onClick={() => removeSpec(idx)} className="p-1 text-gray-400 hover:text-red-500">
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            value={spec.labelAr || ''}
+                            onChange={e => updateSpecAr(idx, 'labelAr', e.target.value)}
+                            placeholder="Label (Arabic)"
+                            dir="rtl"
+                            className="flex-1 px-3 py-1.5 rounded-lg border border-gray-100 text-xs focus:outline-none focus:ring-1 focus:ring-red-600 bg-gray-50"
+                          />
+                          <input
+                            value={spec.valueAr || ''}
+                            onChange={e => updateSpecAr(idx, 'valueAr', e.target.value)}
+                            placeholder="Value (Arabic)"
+                            dir="rtl"
+                            className="flex-1 px-3 py-1.5 rounded-lg border border-gray-100 text-xs focus:outline-none focus:ring-1 focus:ring-red-600 bg-gray-50"
+                          />
+                        </div>
                       </div>
                     ))}
                   </div>

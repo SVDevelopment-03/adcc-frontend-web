@@ -21,7 +21,8 @@ export interface Product {
   images: string[];
   description: string;
   descriptionAr?: string;
-  specifications: { label: string; value: string }[];
+  specifications: { label: string; value: string; labelAr?: string; valueAr?: string }[];
+  specificationsAr?: { label: string; value: string; labelAr?: string; valueAr?: string }[];
   variants: ProductVariant[];
   status: ProductStatus;
   featured: boolean;
