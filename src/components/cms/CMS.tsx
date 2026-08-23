@@ -445,21 +445,29 @@ export function CMS() {
 
   const handleBannerSave = async (bannerKey: string, bannerLabel: string) => {
     const file = bannerFiles[bannerKey];
-    if (!file) return;
+    const existing = appBannerItemsMemo.find((item) => item.key === bannerKey);
+    const selectedTarget = bannerTargets[bannerKey] || existing?.targetScreen || 'home';
+    const hasTargetChange = selectedTarget !== (existing?.targetScreen ?? 'home');
+    const hasPendingUpload = Boolean(file);
+
+    if (!hasPendingUpload && !hasTargetChange) {
+      return;
+    }
 
     setSavingBanners((prev) => ({ ...prev, [bannerKey]: true }));
     try {
-      const existing = appBannerItemsMemo.find((item) => item.key === bannerKey);
-      const targetScreen = bannerTargets[bannerKey] || existing?.targetScreen || 'home';
       if (existing) {
-        await updateAppBanner(bannerKey, { targetScreen, imageFile: file });
+        await updateAppBanner(bannerKey, {
+          targetScreen: selectedTarget,
+          ...(file ? { imageFile: file } : {}),
+        });
       } else {
         await createAppBanner({
           key: bannerKey,
           label: bannerLabel,
           title: bannerLabel,
-          targetScreen,
-          imageFile: file,
+          targetScreen: selectedTarget,
+          imageFile: file ?? undefined,
           active: true,
         });
       }
@@ -491,21 +499,29 @@ export function CMS() {
 
   const handleBannerArSave = async (bannerKey: string, bannerLabel: string) => {
     const file = bannerArFiles[bannerKey];
-    if (!file) return;
+    const existing = appBannerArItemsMemo.find((item) => item.key === bannerKey);
+    const selectedTarget = bannerArTargets[bannerKey] || existing?.targetScreen || 'home';
+    const hasTargetChange = selectedTarget !== (existing?.targetScreen ?? 'home');
+    const hasPendingUpload = Boolean(file);
+
+    if (!hasPendingUpload && !hasTargetChange) {
+      return;
+    }
 
     setSavingBannersAr((prev) => ({ ...prev, [bannerKey]: true }));
     try {
-      const existing = appBannerArItemsMemo.find((item) => item.key === bannerKey);
-      const targetScreen = bannerArTargets[bannerKey] || existing?.targetScreen || 'home';
       if (existing) {
-        await updateAppBannerAr(bannerKey, { targetScreen, imageFile: file });
+        await updateAppBannerAr(bannerKey, {
+          targetScreen: selectedTarget,
+          ...(file ? { imageFile: file } : {}),
+        });
       } else {
         await createAppBannerAr({
           key: bannerKey,
           label: bannerLabel,
           title: bannerLabel,
-          targetScreen,
-          imageFile: file,
+          targetScreen: selectedTarget,
+          imageFile: file ?? undefined,
           active: true,
         });
       }
@@ -894,7 +910,7 @@ export function CMS() {
 
                         <button
                           onClick={() => handleBannerSave(item.key, item.label || item.key)}
-                          disabled={!selectedFile || isSaving}
+                          disabled={isSaving || (!selectedFile && !(bannerTargets[item.key] || item.targetScreen || 'home'))}
                           className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-white text-sm disabled:opacity-50 transition-opacity"
                           style={{ backgroundColor: '#C12D32' }}
                         >
@@ -1001,7 +1017,7 @@ export function CMS() {
 
                         <button
                           onClick={() => handleBannerArSave(englishItem.key, englishItem.label || englishItem.key)}
-                          disabled={!selectedFile || isSaving}
+                          disabled={isSaving || (!selectedFile && !(bannerArTargets[englishItem.key] || arItem?.targetScreen || 'home'))}
                           className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-white text-sm disabled:opacity-50 transition-opacity"
                           style={{ backgroundColor: '#C12D32' }}
                         >
