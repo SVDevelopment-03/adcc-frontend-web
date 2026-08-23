@@ -139,6 +139,27 @@ export function MerchandiseBannerUploader({ variant = 'en', title, description }
 
     try {
       const files = selectedFiles.map((s) => s.file);
+
+      // Replace mode: delete all existing banners for this variant before uploading
+      try {
+        const existing = await config.getBanners();
+        await Promise.all(
+          existing.map(async (b) => {
+            try {
+              await config.deleteBanner(b.key);
+            } catch (e) {
+              // ignore individual delete failures
+              // eslint-disable-next-line no-console
+              console.error('Failed to delete existing banner', b.key, e);
+            }
+          })
+        );
+      } catch (e) {
+        // ignore fetch/delete errors and continue with upload
+        // eslint-disable-next-line no-console
+        console.error('Failed to clear existing banners before upload', e);
+      }
+
       const created = await config.uploadBanners(files);
 
       // If admin picked products for the uploaded files, update each created banner

@@ -428,6 +428,26 @@ export function CMS() {
 
     setSavingNewBanner(true);
     try {
+      // Replace existing app banners: attempt to delete all current entries
+      try {
+        const existing = await getAppBanners();
+        await Promise.all(
+          existing.map(async (b) => {
+            try {
+              await deleteAppBanner(b.key);
+            } catch (e) {
+              // ignore individual delete failures
+              // eslint-disable-next-line no-console
+              console.error('Failed to delete existing app banner', b.key, e);
+            }
+          })
+        );
+      } catch (e) {
+        // ignore fetch/delete errors and continue with upload
+        // eslint-disable-next-line no-console
+        console.error('Failed to clear existing app banners before upload', e);
+      }
+
       await createAppBanner({
         title: `App Banner ${Date.now()}`,
         targetScreen: newBannerTarget,
@@ -519,6 +539,26 @@ export function CMS() {
           ...(file ? { imageFile: file } : {}),
         });
       } else {
+        // Replace mode: delete all existing Arabic app banners before creating this one
+        try {
+          const existingAr = await getAppBannersAr();
+          await Promise.all(
+            existingAr.map(async (b) => {
+              try {
+                await deleteAppBannerAr(b.key);
+              } catch (e) {
+                // ignore individual delete failures
+                // eslint-disable-next-line no-console
+                console.error('Failed to delete existing Arabic app banner', b.key, e);
+              }
+            })
+          );
+        } catch (e) {
+          // ignore fetch/delete errors and continue with creation
+          // eslint-disable-next-line no-console
+          console.error('Failed to clear existing Arabic app banners before create', e);
+        }
+
         await createAppBannerAr({
           key: bannerKey,
           label: bannerLabel,
