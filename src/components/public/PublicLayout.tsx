@@ -499,6 +499,7 @@ function PublicFooter() {
   return (
     <>
       <section
+        id="start-your-ride"
         className="public-footer-cta relative flex min-h-[360px] items-center justify-center overflow-hidden bg-cover bg-center px-4 py-12 text-center text-white sm:min-h-[430px] sm:px-6 sm:py-16 lg:min-h-[502px]"
         style={{
           backgroundImage: " url('/images/footer-image.png')",

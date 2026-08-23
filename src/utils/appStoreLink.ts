@@ -25,3 +25,15 @@ export function getAppStoreLink(): string {
 export function openAppStoreLink() {
   window.open(getAppStoreLink(), "_blank", "noopener,noreferrer");
 }
+
+/**
+ * Scrolls to the shared "Start Your Ride Today" app-download section that
+ * PublicLayout renders at the bottom of every public page (see
+ * PublicLayout.tsx's `id="start-your-ride"`), instead of opening a store
+ * link directly — lets the visitor pick Google Play or App Store themselves.
+ */
+export function scrollToAppListing() {
+  document
+    .getElementById("start-your-ride")
+    ?.scrollIntoView({ behavior: "smooth" });
+}

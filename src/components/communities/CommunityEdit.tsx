@@ -101,7 +101,6 @@ export function CommunityEdit({ role }: CommunityEditProps) {
     country: string;
     area: string;
     primaryTrack: string;
-    primaryTrackIds: string[];
     foundedYear: number | string | null;
     ridesThisMonth: number | string | null;
     weeklyRides: number | string | null;
@@ -132,7 +131,6 @@ export function CommunityEdit({ role }: CommunityEditProps) {
     country: 'UAE',
     area: '',
     primaryTrack: '',
-    primaryTrackIds: [],
     foundedYear: null,
     ridesThisMonth: null,
     weeklyRides: null,
@@ -210,15 +208,13 @@ export function CommunityEdit({ role }: CommunityEditProps) {
     const mergedType = [...typeArr, ...parsedCategories];
 
     const raw = existingCommunity as unknown as Record<string, unknown>;
-    const trackIdRaw = existingCommunity.trackId ?? (Array.isArray(raw.primaryTracks) ? raw.primaryTracks : null) ?? raw.primaryTrackId ?? raw.track_id ?? (raw.track && typeof raw.track === 'object' ? (raw.track as { id?: string; _id?: string }).id ?? (raw.track as { _id?: string })._id : null) ?? raw.primaryTrackIds ?? [];
-    const parsedTrackIds = Array.isArray(trackIdRaw)
-      ? trackIdRaw
-          .map((item: any) => typeof item === 'string' ? item : item?._id ?? item?.id)
-          .filter((id): id is string => !!id)
-      : typeof trackIdRaw === 'string'
-        ? [trackIdRaw]
-        : [];
-    const primaryTrackStr = parsedTrackIds[0] ?? '';
+    const trackIdRaw = existingCommunity.trackId ?? (Array.isArray(raw.primaryTracks) ? raw.primaryTracks[0] : null) ?? raw.primaryTrackId ?? raw.track_id ?? (raw.track && typeof raw.track === 'object' ? (raw.track as { id?: string; _id?: string }).id ?? (raw.track as { _id?: string })._id : null) ?? raw.primaryTrackIds?.[0] ?? null;
+    const primaryTrackStr =
+      trackIdRaw == null
+        ? ''
+        : typeof trackIdRaw === 'string'
+          ? trackIdRaw
+          : (trackIdRaw as { _id?: string; id?: string })._id ?? (trackIdRaw as { id?: string }).id ?? '';
 
     const stats = existingCommunity.stats ?? (existingCommunity as any).stats;
 
@@ -242,7 +238,6 @@ export function CommunityEdit({ role }: CommunityEditProps) {
       country: country || 'UAE',
       area: existingCommunity.area ?? '',
       primaryTrack: primaryTrackStr,
-      primaryTrackIds: parsedTrackIds,
       foundedYear: existingCommunity.foundedYear ?? null,
       ridesThisMonth: existingCommunity.ridesThisMonth ?? stats?.ridesThisMonth ?? null,
       weeklyRides: existingCommunity.weeklyRides ?? stats?.weeklyRides ?? null,
@@ -326,17 +321,10 @@ export function CommunityEdit({ role }: CommunityEditProps) {
 
 
   const toggleTrack = (trackId: string) => {
-    setFormData(prev => {
-      const selected = prev.primaryTrackIds.includes(trackId)
-        ? prev.primaryTrackIds.filter(id => id !== trackId)
-        : [...prev.primaryTrackIds, trackId];
-
-      return {
-        ...prev,
-        primaryTrackIds: selected,
-        primaryTrack: selected[0] ?? '',
-      };
-    });
+    setFormData(prev => ({
+      ...prev,
+      primaryTrack: prev.primaryTrack === trackId ? '' : trackId,
+    }));
   };
 
   const handleLogoChange = async (
@@ -403,8 +391,7 @@ export function CommunityEdit({ role }: CommunityEditProps) {
       isFeatured: formData.isFeatured ?? false,
       isActive: formData.status === 'active',
       status: formData.status === 'active',
-      trackId: formData.primaryTrackIds.length > 0 ? formData.primaryTrackIds : undefined,
-      trackIds: formData.primaryTrackIds.length > 0 ? formData.primaryTrackIds : undefined,
+      trackId: formData.primaryTrack ?? undefined,
       purposeType: formData.purposeType ?? '',
       ridesThisMonth: String(formData.ridesThisMonth ?? ''),
       weeklyRides: String(formData.weeklyRides ?? ''),
@@ -731,7 +718,7 @@ export function CommunityEdit({ role }: CommunityEditProps) {
                       <input
                         type="checkbox"
                         name="primaryTrack"
-                        checked={formData.primaryTrackIds.includes(trackId)}
+                        checked={formData.primaryTrack === trackId}
                         onChange={() => toggleTrack(trackId)}
                         className="mt-1 w-4 h-4"
                         style={{ accentColor: '#C12D32' }}

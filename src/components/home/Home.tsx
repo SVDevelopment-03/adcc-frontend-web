@@ -2575,6 +2575,11 @@ function HeroSection() {
             showArrow={false}
             size="default"
             className="home-hero-download-btn"
+            onClick={() =>
+              document
+                .getElementById("start-your-ride")
+                ?.scrollIntoView({ behavior: "smooth" })
+            }
           >
             {t("public.home.hero.downloadApp")}{" "}
             <img
@@ -2726,7 +2731,7 @@ function CyclingJourneySection() {
       label: t("public.home.journey.cards.community"),
       bg: "#777777",
       img: "https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=400&q=80",
-      to: "/login",
+      to: "/user-communities",
     },
   ];
 
@@ -2973,7 +2978,7 @@ function AppSection() {
       style={{
         background: "#435974",
         width: "100%",
-        padding: "80px 86px",
+        padding: "40px 86px 80px",
         display: "flex",
         alignItems: "center",
         gap: 60,
@@ -3059,24 +3064,6 @@ function AppSection() {
           ))}
         </motion.p>
 
-        <motion.div
-          className="home-qr-box"
-          initial={{ opacity: 0, x: isRtl ? -80 : 80 }}
-          whileInView={{ opacity: 1, x: "0%" }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          viewport={{ once: true }}
-          style={{
-            width: 200,
-            height: 200,
-            background: "#fff",
-            borderRadius: 16,
-            padding: 10,
-            marginBottom: 32,
-          }}
-        >
-          <QRCodePlaceholder />
-        </motion.div>
-
         <div
           className="home-store-buttons"
           style={{ display: "flex", gap: 12, flexWrap: "wrap" }}
@@ -3096,7 +3083,7 @@ function AppSection() {
           display: "flex",
           justifyContent: "flex-end",
           alignItems: "center",
-          minHeight: 660,
+          minHeight: 520,
         }}
       >
         <img
@@ -3104,7 +3091,7 @@ function AppSection() {
           alt={t("public.home.app.phoneAlt")}
           style={{
             display: "block",
-            width: "120%",
+            width: "95%",
             maxWidth: "none",
             height: "auto",
             objectFit: "contain",
@@ -3674,7 +3661,7 @@ function AboutSection() {
         </div>
         <AnimatedButton
           className="home-about-read-btn"
-          onClick={() => navigate("/user-communities")}
+          onClick={() => navigate("/aboutus")}
         >
           {t("public.home.about.readMore")}
         </AnimatedButton>

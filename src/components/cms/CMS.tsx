@@ -13,7 +13,6 @@ export interface ContentSetting {
   title?: string;
   description?: string;
   image?: string;
-  targetScreen?: string;
   active?: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -73,7 +72,6 @@ const normalizeContentSettings = (rawResponse: unknown): ContentSetting[] => {
       title: typeof item.title === 'string' ? item.title : undefined,
       description: typeof item.description === 'string' ? item.description : undefined,
       image: typeof item.image === 'string' ? item.image : undefined,
-      targetScreen: typeof item.targetScreen === 'string' ? item.targetScreen : undefined,
       active: typeof item.active === 'boolean' ? item.active : undefined,
       createdAt: typeof item.createdAt === 'string' ? item.createdAt : undefined,
       updatedAt: typeof item.updatedAt === 'string' ? item.updatedAt : undefined,
@@ -153,7 +151,6 @@ const mapBannerItem = (item: Record<string, unknown>, fallbackGroup: string): Co
   title: typeof item.title === 'string' ? item.title : undefined,
   description: typeof item.description === 'string' ? item.description : undefined,
   image: typeof item.image === 'string' ? item.image : undefined,
-  targetScreen: typeof item.targetScreen === 'string' ? item.targetScreen : undefined,
   active: typeof item.active === 'boolean' ? item.active : undefined,
   createdAt: typeof item.createdAt === 'string' ? item.createdAt : undefined,
   updatedAt: typeof item.updatedAt === 'string' ? item.updatedAt : undefined,
@@ -182,7 +179,6 @@ export const createAppBanner = async (params: {
   label?: string;
   title?: string;
   description?: string;
-  targetScreen?: string;
   active?: boolean;
   imageFile?: File;
 }): Promise<void> => {
@@ -192,7 +188,6 @@ export const createAppBanner = async (params: {
     if (params.label) formData.append('label', params.label);
     if (params.title) formData.append('title', params.title);
     if (params.description !== undefined) formData.append('description', params.description);
-    if (params.targetScreen !== undefined) formData.append('targetScreen', params.targetScreen);
     if (params.active !== undefined) formData.append('active', String(params.active));
     if (params.imageFile) formData.append('image', params.imageFile);
     await api.post('/v1/app-banners', formData);
@@ -203,13 +198,12 @@ export const createAppBanner = async (params: {
 
 export const updateAppBanner = async (
   key: string,
-  payload: Partial<Pick<ContentSetting, 'title' | 'description' | 'targetScreen' | 'active'>> & { imageFile?: File }
+  payload: Partial<Pick<ContentSetting, 'title' | 'description' | 'active'>> & { imageFile?: File }
 ): Promise<void> => {
   try {
     const formData = new FormData();
     if (payload.title !== undefined) formData.append('title', payload.title);
     if (payload.description !== undefined) formData.append('description', payload.description);
-    if (payload.targetScreen !== undefined) formData.append('targetScreen', payload.targetScreen);
     if (payload.active !== undefined) formData.append('active', String(payload.active));
     if (payload.imageFile) {
       formData.append('image', payload.imageFile);
@@ -252,7 +246,6 @@ export const createAppBannerAr = async (params: {
   key?: string;
   label?: string;
   title?: string;
-  targetScreen?: string;
   active?: boolean;
   imageFile?: File;
 }): Promise<void> => {
@@ -261,7 +254,6 @@ export const createAppBannerAr = async (params: {
     if (params.key) formData.append('key', params.key);
     if (params.label) formData.append('label', params.label);
     if (params.title) formData.append('title', params.title);
-    if (params.targetScreen !== undefined) formData.append('targetScreen', params.targetScreen);
     if (params.active !== undefined) formData.append('active', String(params.active));
     if (params.imageFile) formData.append('image', params.imageFile);
     await api.post('/v1/app-banners-ar', formData);
@@ -272,12 +264,11 @@ export const createAppBannerAr = async (params: {
 
 export const updateAppBannerAr = async (
   key: string,
-  payload: Partial<Pick<ContentSetting, 'title' | 'targetScreen' | 'active'>> & { imageFile?: File }
+  payload: Partial<Pick<ContentSetting, 'title' | 'active'>> & { imageFile?: File }
 ): Promise<void> => {
   try {
     const formData = new FormData();
     if (payload.title !== undefined) formData.append('title', payload.title);
-    if (payload.targetScreen !== undefined) formData.append('targetScreen', payload.targetScreen);
     if (payload.active !== undefined) formData.append('active', String(payload.active));
     if (payload.imageFile) {
       formData.append('image', payload.imageFile);
@@ -331,14 +322,11 @@ export function CMS() {
   const [savingBanners, setSavingBanners] = useState<Record<string, boolean>>({});
   const [newBannerFile, setNewBannerFile] = useState<File | null>(null);
   const [newBannerPreview, setNewBannerPreview] = useState<string | null>(null);
-  const [newBannerTarget, setNewBannerTarget] = useState('home');
   const [savingNewBanner, setSavingNewBanner] = useState(false);
   const bannerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
-  const [bannerTargets, setBannerTargets] = useState<Record<string, string>>({});
 
   const [bannerArFiles, setBannerArFiles] = useState<Record<string, File | null>>({});
   const [bannerArPreviews, setBannerArPreviews] = useState<Record<string, string>>({});
-  const [bannerArTargets, setBannerArTargets] = useState<Record<string, string>>({});
   const [savingBannersAr, setSavingBannersAr] = useState<Record<string, boolean>>({});
   const bannerArInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
@@ -430,7 +418,6 @@ export function CMS() {
     try {
       await createAppBanner({
         title: `App Banner ${Date.now()}`,
-        targetScreen: newBannerTarget,
         imageFile: newBannerFile,
       });
       toast.success(t('cms.appBanner.uploadSuccess'));
@@ -456,6 +443,7 @@ export function CMS() {
 
     setSavingBanners((prev) => ({ ...prev, [bannerKey]: true }));
     try {
+      const existing = appBannerItemsMemo.find((item) => item.key === bannerKey);
       if (existing) {
         await updateAppBanner(bannerKey, {
           targetScreen: selectedTarget,
@@ -510,6 +498,7 @@ export function CMS() {
 
     setSavingBannersAr((prev) => ({ ...prev, [bannerKey]: true }));
     try {
+      const existing = appBannerArItemsMemo.find((item) => item.key === bannerKey);
       if (existing) {
         await updateAppBannerAr(bannerKey, {
           targetScreen: selectedTarget,
@@ -546,17 +535,6 @@ export function CMS() {
     return { homepageSections, activeSections, staticPages, publicPages };
   }, [homepageItems, staticItems]);
 
-  const bannerTargetOptions = [
-    { value: 'home', label: 'Home' },
-    { value: 'events', label: 'Events' },
-    { value: 'communities', label: 'Communities' },
-    { value: 'routes', label: 'Routes' },
-    { value: 'club_store', label: 'Club Store' },
-    { value: 'challenges', label: 'Challenges' },
-    { value: 'leaderboard', label: 'Leaderboard' },
-    { value: 'profile', label: 'Profile' },
-  ];
-
   const fetchAllGroupsSettings = async () => {
     setIsLoading(true);
     setErrorMessage(null);
@@ -569,8 +547,6 @@ export function CMS() {
       setAllItems(data);
       setAppBannerItems(bannerData);
       setAppBannerArItems(bannerArData);
-      setBannerTargets(Object.fromEntries(bannerData.map((item) => [item.key, item.targetScreen || 'home'])));
-      setBannerArTargets(Object.fromEntries(bannerArData.map((item) => [item.key, item.targetScreen || 'home'])));
     } catch (error) {
       const message = getApiErrorMessage(error, t('cms.toasts.loadError'));
       setErrorMessage(message);
@@ -787,22 +763,6 @@ export function CMS() {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <label className="block text-xs font-medium" style={{ color: '#666' }}>
-                    Banner destination
-                  </label>
-                  <select
-                    value={newBannerTarget}
-                    onChange={(e) => setNewBannerTarget(e.target.value)}
-                    className="w-full border rounded-lg px-3 py-2 text-sm"
-                    style={{ borderColor: '#E5DDD4' }}
-                  >
-                    {bannerTargetOptions.map((option) => (
-                      <option key={option.value} value={option.value}>{option.label}</option>
-                    ))}
-                  </select>
-                </div>
-
                 {newBannerPreview ? (
                   <div className="rounded-lg overflow-hidden border" style={{ borderColor: '#E5DDD4' }}>
                     <img src={newBannerPreview} alt="New banner preview" className="w-full h-32 object-cover" />
@@ -890,22 +850,6 @@ export function CMS() {
                             className="w-full border rounded-lg px-3 py-2 text-sm"
                             style={{ borderColor: '#E5DDD4' }}
                           />
-                        </div>
-
-                        <div className="space-y-2">
-                          <label className="block text-xs font-medium" style={{ color: '#666' }}>
-                            Banner destination
-                          </label>
-                          <select
-                            value={bannerTargets[item.key] || item.targetScreen || 'home'}
-                            onChange={(e) => setBannerTargets((prev) => ({ ...prev, [item.key]: e.target.value }))}
-                            className="w-full border rounded-lg px-3 py-2 text-sm"
-                            style={{ borderColor: '#E5DDD4' }}
-                          >
-                            {bannerTargetOptions.map((option) => (
-                              <option key={option.value} value={option.value}>{option.label}</option>
-                            ))}
-                          </select>
                         </div>
 
                         <button
@@ -997,22 +941,6 @@ export function CMS() {
                             className="w-full border rounded-lg px-3 py-2 text-sm"
                             style={{ borderColor: '#E5DDD4' }}
                           />
-                        </div>
-
-                        <div className="space-y-2">
-                          <label className="block text-xs font-medium" style={{ color: '#666' }}>
-                            Banner destination
-                          </label>
-                          <select
-                            value={bannerArTargets[englishItem.key] || arItem?.targetScreen || 'home'}
-                            onChange={(e) => setBannerArTargets((prev) => ({ ...prev, [englishItem.key]: e.target.value }))}
-                            className="w-full border rounded-lg px-3 py-2 text-sm"
-                            style={{ borderColor: '#E5DDD4' }}
-                          >
-                            {bannerTargetOptions.map((option) => (
-                              <option key={option.value} value={option.value}>{option.label}</option>
-                            ))}
-                          </select>
                         </div>
 
                         <button

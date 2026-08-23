@@ -22,6 +22,7 @@
     "noCommunities": "No communities found. Try adjusting your search or filters.",
     "dateTBA": "Date TBA",
     "distanceTBA": "Distance TBA",
+    "km": "km",
     "participants": "{{formattedCount}} participants",
     "members": "{{formattedCount}} members",
     "eventsCount": "{{formattedCount}} events",

@@ -240,7 +240,7 @@
 }
 
 .home-page .home-app-section {
-  padding-block: 80px !important;
+  padding-block: 40px 80px !important;
   padding-inline: 86px !important;
   gap: 60px !important;
 }

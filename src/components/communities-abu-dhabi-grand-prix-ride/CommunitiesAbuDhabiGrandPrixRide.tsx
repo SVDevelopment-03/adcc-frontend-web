@@ -16,10 +16,14 @@ import {
   Wrench,
 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
-import { getAppStoreLink } from "../../utils/appStoreLink";
+import { scrollToAppListing } from "../../utils/appStoreLink";
 import { useTranslation } from "react-i18next";
 import i18n from "../../i18n";
-import { EventApiResponse, getEventById, getEventsPage } from "../../services/eventsApi";
+import {
+  EventApiResponse,
+  getEventById,
+  getEventsPage,
+} from "../../services/eventsApi";
 
 type TFunction = (key: string, options?: Record<string, unknown>) => string;
 
@@ -63,7 +67,8 @@ type GrandPrixEvent = EventApiResponse & {
 
 const TARGET_EVENT_TITLE = "Abu Dhabi Grand Prix Ride";
 const TARGET_EVENT_SLUG = "abu-dhabi-grand-prix-ride";
-const FALLBACK_HERO_IMAGE = "/img/pexels-ander-garcia-1317358711-25016478 1.png";
+const FALLBACK_HERO_IMAGE =
+  "/img/pexels-ander-garcia-1317358711-25016478 1.png";
 const SCHEDULE_IMAGE = "/img/505801846.png";
 
 const FALLBACK_EVENT: GrandPrixEvent = {
@@ -89,11 +94,32 @@ const FALLBACK_EVENT: GrandPrixEvent = {
   category: "Race",
   rewards: { points: 0, badgeName: "" },
   galleryImages: [],
-  amenities: ["Water Stations", "Medical Support", "Bike Repair", "Restrooms", "Parking"],
+  amenities: [
+    "Water Stations",
+    "Medical Support",
+    "Bike Repair",
+    "Restrooms",
+    "Parking",
+  ],
   schedule: [
-    { time: "6:00 AM", title: "Registration Opens", description: "Check-in and collect your race packet", order: 1 },
-    { time: "7:00 AM", title: "Event Start", description: "The ride begins!", order: 2 },
-    { time: "11:00 AM", title: "Awards Ceremony", description: "Celebration and prizes", order: 3 },
+    {
+      time: "6:00 AM",
+      title: "Registration Opens",
+      description: "Check-in and collect your race packet",
+      order: 1,
+    },
+    {
+      time: "7:00 AM",
+      title: "Event Start",
+      description: "The ride begins!",
+      order: 2,
+    },
+    {
+      time: "11:00 AM",
+      title: "Awards Ceremony",
+      description: "Celebration and prizes",
+      order: 3,
+    },
   ],
 };
 
@@ -109,13 +135,17 @@ const formatDate = (date: string | undefined, t: TFunction) => {
 
 const formatFee = (event: GrandPrixEvent | null | undefined, t: TFunction) => {
   if (!event) return t("public.events.detail.register.loading");
-  if (event.registrationFeeType !== "paid") return t("public.events.detail.register.free");
+  if (event.registrationFeeType !== "paid")
+    return t("public.events.detail.register.free");
   const amount = event.registrationFeeAmount ?? 0;
   return amount > 0 ? `AED ${amount}` : t("public.events.detail.register.paid");
 };
 
 const getImage = (event?: GrandPrixEvent | null) =>
-  event?.mainImage || event?.eventImage || event?.galleryImages?.[0] || FALLBACK_HERO_IMAGE;
+  event?.mainImage ||
+  event?.eventImage ||
+  event?.galleryImages?.[0] ||
+  FALLBACK_HERO_IMAGE;
 
 const getParticipants = (event?: GrandPrixEvent | null) =>
   event?.currentParticipants ?? event?.registrations ?? 0;
@@ -136,10 +166,16 @@ const getLevel = (event: GrandPrixEvent | null | undefined, t: TFunction) => {
 // `city` is always dashboard-translated (see backend localizeEventStatic); `address`
 // is free text that may not have an Arabic version filled in for a given event, so
 // prefer the guaranteed-localized city when the UI is in Arabic.
-const getLocalizedLocation = (event: GrandPrixEvent | null | undefined, fallback: string) => {
+const getLocalizedLocation = (
+  event: GrandPrixEvent | null | undefined,
+  fallback: string,
+) => {
   if (!event) return fallback;
   const preferCity = i18n.language?.startsWith("ar");
-  return (preferCity ? event.city || event.address : event.address || event.city) || fallback;
+  return (
+    (preferCity ? event.city || event.address : event.address || event.city) ||
+    fallback
+  );
 };
 
 const titleCase = (value: string) =>
@@ -149,7 +185,10 @@ const titleCase = (value: string) =>
     .trim()
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
-const getStats = (event: GrandPrixEvent | null | undefined, t: TFunction): StatCard[] => [
+const getStats = (
+  event: GrandPrixEvent | null | undefined,
+  t: TFunction,
+): StatCard[] => [
   {
     icon: CalendarDays,
     title: formatDate(event?.eventDate, t),
@@ -159,13 +198,15 @@ const getStats = (event: GrandPrixEvent | null | undefined, t: TFunction): StatC
     icon: MapPin,
     title:
       typeof event?.distance === "number"
-        ? `${event.distance} km`
+        ? `${event.distance} ${t("public.common.km")}`
         : t("public.common.distanceTBA"),
     label: t("public.tracks.detail.distance"),
   },
   {
     icon: Users,
-    title: t("public.events.detail.stats.ridersCount", { count: getParticipants(event) }),
+    title: t("public.events.detail.stats.ridersCount", {
+      count: getParticipants(event),
+    }),
     label: t("public.events.detail.stats.participantsLabel"),
   },
   {
@@ -186,7 +227,10 @@ const facilityIconMap: Array<{ match: RegExp; icon: LucideIcon }> = [
   { match: /restroom|toilet|washroom|دورات/i, icon: Users },
   { match: /water|drink|hydration|ماء|مياه/i, icon: Droplets },
   { match: /medical|aid|health|ambulance|طبي|صحي|إسعاف/i, icon: Cross },
-  { match: /repair|bike|mechanic|workshop|دراجات|تصليح|إصلاح|ورشة/i, icon: Wrench },
+  {
+    match: /repair|bike|mechanic|workshop|دراجات|تصليح|إصلاح|ورشة/i,
+    icon: Wrench,
+  },
   { match: /parking|موقف|مواقف/i, icon: ParkingCircle },
   { match: /light|إضاءة/i, icon: Lightbulb },
 ];
@@ -201,7 +245,10 @@ const getFacilities = (event?: GrandPrixEvent | null): Facility[] =>
     active: index === 0,
   }));
 
-const getSchedule = (event: GrandPrixEvent | null | undefined, t: TFunction): ScheduleItem[] => {
+const getSchedule = (
+  event: GrandPrixEvent | null | undefined,
+  t: TFunction,
+): ScheduleItem[] => {
   const eventSchedule = event?.schedule || [];
   if (eventSchedule.length > 0) {
     return [...eventSchedule]
@@ -219,7 +266,10 @@ const getSchedule = (event: GrandPrixEvent | null | undefined, t: TFunction): Sc
     {
       time: event.eventTime || t("public.events.detail.schedule.timeTBA"),
       title: t("public.events.detail.schedule.eventStart"),
-      description: getLocalizedLocation(event, t("public.events.detail.schedule.locationTBA")),
+      description: getLocalizedLocation(
+        event,
+        t("public.events.detail.schedule.locationTBA"),
+      ),
     },
     ...(event.endTime
       ? [
@@ -241,7 +291,10 @@ const getFaqs = (event: GrandPrixEvent | null | undefined, t: TFunction) => {
   if (!event) return [];
   const fee = formatFee(event, t);
   const level = titleCase(getLevel(event, t));
-  const location = event.city || event.address || t("public.events.detail.faq.locationFallback");
+  const location =
+    event.city ||
+    event.address ||
+    t("public.events.detail.faq.locationFallback");
   return [
     t("public.events.detail.faq.whenScheduled", { title: event.title }),
     t("public.events.detail.faq.whereTakingPlace", { title: event.title }),
@@ -326,7 +379,10 @@ function HeroSection({ event }: { event: GrandPrixEvent }) {
   const tags = [event.category, event.city].filter(Boolean);
 
   return (
-    <section className="grand-prix-hero public-hero-bleed relative w-full overflow-hidden" style={{ height: "100vh", minHeight: 480 }}>
+    <section
+      className="grand-prix-hero public-hero-bleed relative w-full overflow-hidden"
+      style={{ height: "100vh", minHeight: 480 }}
+    >
       <img
         src={getImage(event)}
         alt={event.title}
@@ -362,15 +418,27 @@ function AboutSection({ event }: { event: GrandPrixEvent }) {
       <p className="mx-auto mt-4 max-w-[851px] text-[14px] font-normal leading-relaxed text-black sm:text-[17px] md:text-[20px] lg:text-[24px]">
         {event.description}
       </p>
-      <a
-        href={getAppStoreLink()}
-        target="_blank"
-        rel="noopener noreferrer"
+      <button
+        type="button"
+        onClick={scrollToAppListing}
         className="mt-5 inline-flex h-[44px] items-center justify-center gap-3 rounded-full bg-[#019839] px-6 text-[16px] font-bold leading-none text-white transition hover:bg-[#017a2e] sm:h-[49px] sm:px-[28px] sm:text-[18px]"
       >
         {t("public.events.detail.joinEvent")}
-        <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
-      </a>
+        <svg
+          width="22"
+          height="21"
+          viewBox="0 0 22 21"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
     </section>
   );
 }
@@ -409,7 +477,9 @@ function RegisterCard({ event }: { event: GrandPrixEvent }) {
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#019839] lg:h-10 lg:w-10">
             <Bike className="h-[14px] w-[14px] lg:h-4 lg:w-4" />
           </span>
-          <b className="grand-prix-bebas text-[24px] leading-tight lg:text-[30px]">ADCC</b>
+          <b className="grand-prix-bebas text-[24px] leading-tight lg:text-[30px]">
+            ADCC
+          </b>
         </div>
       </div>
 
@@ -431,9 +501,15 @@ function RegisterCard({ event }: { event: GrandPrixEvent }) {
   );
 }
 
-function StatsStrip({ event, stats }: { event: GrandPrixEvent; stats: StatCard[] }) {
+function StatsStrip({
+  event,
+  stats,
+}: {
+  event: GrandPrixEvent;
+  stats: StatCard[];
+}) {
   return (
-    <section className="grand-prix-section mx-auto mt-10 max-w-[1192px] overflow-x-auto rounded-2xl bg-[#A2BFDB] p-3 lg:mt-[60px] lg:overflow-visible">
+    <section className="grand-prix-section mx-auto mt-10 mb-20 max-w-[1192px] overflow-x-auto rounded-2xl bg-[#A2BFDB] p-3 lg:mt-[60px] lg:overflow-visible">
       <div className="flex w-max gap-2 lg:gap-3">
         <RegisterCard event={event} />
         {stats.map(({ icon: Icon, title, label }) => (
@@ -487,7 +563,7 @@ function FacilitiesSection({ facilities }: { facilities: Facility[] }) {
 
   return (
     <section
-        className="grand-prix-section mt-[130px] max-md:mt-16 max-sm:mt-10 bg-cover bg-center bg-no-repeat py-16 text-white"
+      className="grand-prix-section  max-md:mt-16 max-sm:mt-10 bg-cover bg-center bg-no-repeat py-16 text-white"
       style={{ backgroundImage: "url('/img/image 3518.png')" }}
     >
       {/* <div className="grand-prix-shell relative h-full"> */}
@@ -502,10 +578,22 @@ function FacilitiesSection({ facilities }: { facilities: Facility[] }) {
             className="mt-[35px] inline-flex h-[50px] items-center justify-center gap-[14px] rounded-full bg-[#019839] px-[27px] text-[18px] font-bold leading-none text-white transition hover:bg-[#017a2e] max-lg:mt-0"
           >
             {t("public.common.getInTouch")}
-            <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
+            <svg
+              width="22"
+              height="21"
+              viewBox="0 0 22 21"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z"
+                fill="currentColor"
+              />
+            </svg>
           </Link>
         </div>
-
       </div>
 
       <div
@@ -513,7 +601,8 @@ function FacilitiesSection({ facilities }: { facilities: Facility[] }) {
         className="facility-scroll mt-[42px] flex gap-3 overflow-x-auto pl-3 sm:gap-5 md:pl-6 lg:pl-[max(1.5rem,calc((100vw-1268px)/2))] cursor-grab select-none active:cursor-grabbing"
         style={{
           maskImage: "linear-gradient(to right, black 85%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to right, black 85%, transparent 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to right, black 85%, transparent 100%)",
         }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -553,27 +642,31 @@ function ScheduleSection({
   return (
     <section
       id="grand-prix-schedule"
-      className="grand-prix-section relative z-10 block w-full bg-[#323232] pb-[78px] pt-[69px] text-white max-md:pb-12 max-md:pt-10"
+      className="grand-prix-section relative z-10 block w-full bg-[#323232] pb-[78px] pt-[69px] text-white max-md:pb-8 max-md:pt-6"
     >
       <h2 className="grand-prix-bebas mx-auto max-w-[621px] text-center text-[26px] uppercase leading-tight sm:text-[34px] md:text-[42px] lg:text-[50px]">
         {t("public.events.detail.schedule.titleSuffix", { title: event.title })}
       </h2>
 
       <p className="mx-auto mb-8 mt-3 max-w-[795px] text-center text-[13px] leading-relaxed text-white/70 sm:text-[16px] md:text-[18px] lg:text-[22px] lg:mb-[45px] lg:mt-[22px]">
-        {getLocalizedLocation(event, t("public.events.detail.schedule.subtitleFallback"))}
+        {getLocalizedLocation(
+          event,
+          t("public.events.detail.schedule.subtitleFallback"),
+        )}
       </p>
 
       {/* <div className="grand-prix-shell mt-[45px] grid grid-cols-[460px_736px] gap-[53px] max-lg:grid-cols-1"> */}
-      <div className="grand-prix-shell mt-[45px] grid grid-cols-1 items-center gap-[53px] lg:grid-cols-[460px_minmax(0,1fr)]">
+      <div className="grand-prix-shell mt-6 grid grid-cols-1 items-center gap-[53px] lg:mt-[45px] lg:grid-cols-[460px_minmax(0,1fr)]">
         <div className="relative h-[478px] w-full max-w-[460px] max-lg:mx-auto">
           <div className="absolute bottom-0 left-0 h-[254px] w-full rounded-tl-xl rounded-br-xl rounded-tr-[60px] rounded-bl-[60px] bg-[#435974]" />
 
           <img
             src={event.galleryImages?.[1] || SCHEDULE_IMAGE}
-            alt={t("public.events.detail.schedule.participantAlt", { title: event.title })}
+            alt={t("public.events.detail.schedule.participantAlt", {
+              title: event.title,
+            })}
             className="absolute bottom-0 left-[41px] h-[478px] w-[377px] object-contain"
           />
-
         </div>
 
         {/* <div className="space-y-[16px]"> */}
@@ -583,7 +676,7 @@ function ScheduleSection({
             <article
               key={`${item.time}-${item.title}-${index}`}
               className={`grid min-h-[98px] w-full grid-cols-[168px_1fr] items-center rounded-[11.91px] px-[19px] text-white max-lg:w-full max-sm:h-auto max-sm:grid-cols-1 max-sm:gap-2 max-sm:py-5 ${
-              // className={`grid min-h-[98px] grid-cols-[149px_1fr] items-center rounded-[12px] px-[19px] text-white max-sm:grid-cols-1 max-sm:gap-2 max-sm:py-5 ${
+                // className={`grid min-h-[98px] grid-cols-[149px_1fr] items-center rounded-[12px] px-[19px] text-white max-sm:grid-cols-1 max-sm:gap-2 max-sm:py-5 ${
                 index === 0 ? "bg-[#435974]" : "bg-[#7891AF]"
               }`}
             >
@@ -633,12 +726,16 @@ function FaqSection({ faqs }: { faqs: string[] }) {
             role="button"
             tabIndex={0}
             onClick={() => toggle(index)}
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") toggle(index); }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") toggle(index);
+            }}
             className="cursor-pointer overflow-hidden rounded-xl border border-[#ccc] px-4 text-start text-[16px] font-medium sm:px-6 sm:text-[20px]"
           >
             <div className="flex min-h-16 items-center justify-between gap-3 py-3 sm:min-h-25 sm:gap-4 sm:py-4">
               <span>{faq}</span>
-              <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-black text-[16px] font-normal leading-none transition-transform duration-300 sm:h-7 sm:w-7 sm:text-[18px] ${openIndex === index ? "rotate-45" : ""}`}>
+              <span
+                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-black text-[16px] font-normal leading-none transition-transform duration-300 sm:h-7 sm:w-7 sm:text-[18px] ${openIndex === index ? "rotate-45" : ""}`}
+              >
                 +
               </span>
             </div>
@@ -697,7 +794,10 @@ export default function CommunitiesAbuDhabiGrandPrixRide() {
         const events = (data.events || []) as GrandPrixEvent[];
         const matchedEvent =
           events.find((item) => item.slug === TARGET_EVENT_SLUG) ||
-          events.find((item) => item.title.toLowerCase() === TARGET_EVENT_TITLE.toLowerCase()) ||
+          events.find(
+            (item) =>
+              item.title.toLowerCase() === TARGET_EVENT_TITLE.toLowerCase(),
+          ) ||
           events[0];
 
         if (matchedEvent) setEvent(matchedEvent);
@@ -730,7 +830,9 @@ export default function CommunitiesAbuDhabiGrandPrixRide() {
       <FontLoader />
       {loading && (
         <section className="grand-prix-section grand-prix-shell py-24 text-center">
-          <p className="text-[22px] font-medium text-black/70">{t("public.events.detail.loading")}</p>
+          <p className="text-[22px] font-medium text-black/70">
+            {t("public.events.detail.loading")}
+          </p>
         </section>
       )}
       {!loading && error && (

@@ -72,11 +72,12 @@ const getTrackImage = (track: Track) =>
 const formatDistance = (
   distance: number | string | undefined,
   naLabel: string,
+  unitLabel = "km",
 ) => {
   if (distance === undefined || distance === null || distance === "")
     return naLabel;
   const numeric = Number(distance);
-  return Number.isFinite(numeric) ? `${numeric} km` : String(distance);
+  return Number.isFinite(numeric) ? `${numeric} ${unitLabel}` : String(distance);
 };
 
 const normalizeTrack = (
@@ -97,7 +98,11 @@ const normalizeTrack = (
       ? track.city
       : [track.area, track.city].filter(Boolean).join(", ") || track.city) ||
     t("public.tracks.listing.uaeFallback"),
-  distance: formatDistance(track.distance, t("public.common.na")),
+  distance: formatDistance(
+    track.distance,
+    t("public.common.na"),
+    t("public.common.km"),
+  ),
   elevation: track.elevation ? String(track.elevation) : t("public.common.na"),
   level:
     translateDifficulty(track.difficulty, t) ||
@@ -248,8 +253,8 @@ text-transform: Capitalize !important;}
        applies unchanged at every breakpoint since no media query below
        overrides this block's positioning. */
     html[dir='rtl'] .tracks-journey-card__community {
-      left: 20px;
-      right: auto;
+      right: 20px;
+      left: auto;
     }
 
     html[dir='rtl'] .tracks-journey-card__avatar:nth-child(1) { left: auto; right: 0; }
@@ -490,14 +495,25 @@ text-transform: Capitalize !important;}
       }
       .tracks-journey-card__image {
         left: 50% !important;
-        top: -94px !important;
+        top: -47px !important;
         width: 240px !important;
       }
+
+
+html[dir='rtl'] .tracks-journey-card__image{
+left: 0px !important;
+}
+html[dir='rtl'] .tracks-journey-card__title, html[dir='rtl'] .tracks-journey-card__eyebrow{
+    left: auto !important;
+    right: 20px !important;
+}
+      
       .tracks-journey-card__title {
         width: 170px !important;
-        font-size: 24px !important;
-        line-height: 28px !important;
-      }
+        font-size: 22px !important;
+        line-height: 20px !important;
+      }.tracks-journey-card__eyebrow{
+      font-size:14px !important;}
       .track-video,
       .track-card-image {
         height: 200px !important;
