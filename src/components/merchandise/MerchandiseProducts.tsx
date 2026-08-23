@@ -140,6 +140,7 @@ export function MerchandiseProducts({ products, categories, setProducts, default
           payload.specificationsAr = specsAr;
         }
       }
+      console.log('Submitting payload.specificationsAr ->', payload.specificationsAr);
       if (editProduct) {
         const updated = await updateMerchandiseProduct(editProduct.id, payload);
         setProducts(prev => prev.map(p => p.id === editProduct.id ? { ...updated, totalStock, source: updated.source ?? editProduct.source ?? defaultSource ?? 'adcc' } : p));
