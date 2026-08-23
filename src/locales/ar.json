@@ -1963,6 +1963,9 @@
       "Good": "جيد",
       "Fair": "مقبول"
     },
+    "categories": {
+      "Accessories": "إكسسوارات"
+    },
     "locations": {
       "Abu Dhabi": "أبوظبي",
       "Al Ain": "العين",

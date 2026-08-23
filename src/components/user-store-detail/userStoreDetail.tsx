@@ -128,6 +128,17 @@ export default function StoreDetailPage() {
 
   const galleryImages = item ? dedupeImages(item.coverImage, item.photos) : [];
 
+  const localizedTitle = item
+    ? i18n.language === 'ar'
+      ? item.titleAr || item.title
+      : item.title
+    : '';
+  const localizedDescription = item
+    ? i18n.language === 'ar'
+      ? item.descriptionAr || item.description
+      : item.description
+    : '';
+
   const sellerName =
     item?.sellerName ||
     item?.createdBy?.fullName ||
@@ -136,19 +147,30 @@ export default function StoreDetailPage() {
   const postedLabel = formatRelativeTime(item?.createdAt, i18n.language);
 
   const infoRows: [string, string][] = item
-    ? [
-        // Category is free text the seller typed in — no fixed set to translate against.
-        [t("public.marketplace.detail.fields.category"), item.category || "—"],
-        [
-          t("public.marketplace.detail.fields.condition"),
-          item.condition ? t(`data.conditions.${item.condition}`, item.condition) : "—",
-        ],
-        [
-          t("public.marketplace.detail.fields.location"),
-          item.city ? t(`data.locations.${item.city}`, item.city) : "—",
-        ],
-        [t("public.marketplace.detail.fields.posted"), postedLabel || "—"],
-      ]
+    ? (() => {
+        // Normalize category (handle common typos) and try translations via locales
+        const rawCategory = item.category || '';
+        const normalizedCategory = rawCategory === 'Assesories' ? 'Accessories' : rawCategory;
+        const categoryLabel = normalizedCategory
+          ? t(`data.categories.${normalizedCategory}`, { defaultValue: normalizedCategory })
+          : '—';
+
+        // Normalize condition (map 'Brand New' and variants to 'New')
+        const rawCondition = item.condition || '';
+        const normalizedCondition = /new/i.test(rawCondition) ? 'New' : rawCondition;
+        const conditionLabel = rawCondition
+          ? t(`data.conditions.${normalizedCondition}`, { defaultValue: rawCondition })
+          : '—';
+
+        const locationLabel = item.city ? t(`data.locations.${item.city}`, { defaultValue: item.city }) : '—';
+
+        return [
+          [t('public.marketplace.detail.fields.category'), categoryLabel || '—'],
+          [t('public.marketplace.detail.fields.condition'), conditionLabel || '—'],
+          [t('public.marketplace.detail.fields.location'), locationLabel || '—'],
+          [t('public.marketplace.detail.fields.posted'), postedLabel || '—'],
+        ];
+      })()
     : [];
 
   const contactDigits = (item?.phoneNumber || "").replace(/[^\d+]/g, "");
@@ -173,7 +195,7 @@ export default function StoreDetailPage() {
   const handleShare = async () => {
     const shareUrl = window.location.href;
     const shareData = {
-      title: item?.title || "ADCC Marketplace",
+      title: localizedTitle || "ADCC Marketplace",
       url: shareUrl,
     };
     if (navigator.share) {
@@ -266,11 +288,11 @@ export default function StoreDetailPage() {
             </div>
 
             <h1 className="mt-3 text-[26px]  uppercase leading-tight sm:mt-4 sm:text-[34px] lg:text-[42px]">
-              {item.title}
+              {localizedTitle}
             </h1>
 
             <p className="mt-3 max-w-[499px] text-[14px] leading-6 text-[#555] sm:mt-4 sm:text-[16px] lg:text-[18px]">
-              {item.description}
+              {localizedDescription}
             </p>
 
             <h2 className="mt-5 text-[24px]  sm:mt-6 sm:text-[28px] lg:text-[32px]">
@@ -334,7 +356,7 @@ export default function StoreDetailPage() {
               {t("public.marketplace.detail.aboutHeading")}
             </h2>
             <p className="mt-4 text-[14px] leading-6 text-black/70 sm:mt-6 sm:text-[16px] lg:text-[18px]">
-              {item.description}
+              {localizedDescription}
             </p>
           </div>
         </section>
@@ -350,38 +372,39 @@ export default function StoreDetailPage() {
             </p>
           ) : (
             <div className="mt-8 grid grid-cols-2 gap-4 sm:mt-12 sm:gap-6 md:grid-cols-3 lg:mt-8 lg:gap-8">
-              {similarItems.map((similar) => {
-                const similarId = similar.id || similar._id;
-                const similarImage =
-                  similar.coverImage || similar.photos?.[0] || FALLBACK_IMAGE;
-                return (
-                  <button
-                    type="button"
-                    key={similarId}
-                    onClick={() =>
-                      similarId && navigate(`/user-marketplace/${similarId}`)
-                    }
-                    className="cursor-pointer min-h-[220px] rounded-[10px] border border-black/10 p-5 text-start shadow-sm transition-all duration-300 hover:border-[#435974] hover:shadow-md sm:min-h-[280px] sm:p-6 lg:min-h-[340px] lg:p-8"
-                  >
-                    <h3 className="text-[16px] uppercase sm:text-[18px] lg:text-[22px]">
-                      {similar.title}
-                    </h3>
-                    <p className="mt-1 text-[14px] font-medium sm:text-[16px] lg:text-[18px]">
-                      {similar.currency && similar.currency !== "AED" ? similar.currency : t("public.common.aed")}{" "}
-                      {Number(similar.price ?? 0).toLocaleString()}
-                    </p>
-                    <img
-                      src={similarImage}
-                      alt={similar.title}
-                      className="mt-4 h-[140px] w-full object-contain mix-blend-multiply sm:mt-6 sm:h-[180px] lg:mt-8 lg:h-[220px]"
-                      onError={(event) => {
-                        event.currentTarget.onerror = null;
-                        event.currentTarget.src = FALLBACK_IMAGE;
-                      }}
-                    />
-                  </button>
-                );
-              })}
+                {similarItems.map((similar) => {
+                  const similarId = similar.id || similar._id;
+                  const similarImage =
+                    similar.coverImage || similar.photos?.[0] || FALLBACK_IMAGE;
+                  const similarTitle = i18n.language === 'ar' ? (similar.titleAr || similar.title) : similar.title;
+                  return (
+                    <button
+                      type="button"
+                      key={similarId}
+                      onClick={() =>
+                        similarId && navigate(`/user-marketplace/${similarId}`)
+                      }
+                      className="cursor-pointer min-h-[220px] rounded-[10px] border border-black/10 p-5 text-start shadow-sm transition-all duration-300 hover:border-[#435974] hover:shadow-md sm:min-h-[280px] sm:p-6 lg:min-h-[340px] lg:p-8"
+                    >
+                      <h3 className="text-[16px] uppercase sm:text-[18px] lg:text-[22px]">
+                        {similarTitle}
+                      </h3>
+                      <p className="mt-1 text-[14px] font-medium sm:text-[16px] lg:text-[18px]">
+                        {similar.currency && similar.currency !== "AED" ? similar.currency : t("public.common.aed")}{" "}
+                        {Number(similar.price ?? 0).toLocaleString()}
+                      </p>
+                      <img
+                        src={similarImage}
+                        alt={similarTitle}
+                        className="mt-4 h-[140px] w-full object-contain mix-blend-multiply sm:mt-6 sm:h-[180px] lg:mt-8 lg:h-[220px]"
+                        onError={(event) => {
+                          event.currentTarget.onerror = null;
+                          event.currentTarget.src = FALLBACK_IMAGE;
+                        }}
+                      />
+                    </button>
+                  );
+                })}
             </div>
           )}
         </section>
