@@ -374,6 +374,14 @@ export const deleteProductBannerAr = async (key: string): Promise<void> => {
   }
 };
 
+export const deleteAllProductBannersAr = async (): Promise<void> => {
+  try {
+    await api.delete(`/v1/product-banners-ar/bulk`);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to delete all Arabic product banners'));
+  }
+};
+
 export const updateProductBannerAr = async (key: string, payload: { label?: string; title?: string; description?: string; targetScreen?: string; active?: boolean; image?: string }): Promise<ProductBanner> => {
   try {
     const { data } = await api.patch<{ success: boolean; message?: string; data?: any }>(`/v1/product-banners-ar/${encodeURIComponent(key)}`, payload);

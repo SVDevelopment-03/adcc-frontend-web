@@ -51,6 +51,7 @@ import { BadgesList } from './badges/BadgesList';
 import { BadgesCreate } from './badges/BadgesCreate';
 import { LanguagesList } from './languages/LanguagesList';
 import { AdminNotificationsPage } from './notifications/AdminNotificationsPage';
+import { ProductBannersArAdmin } from './admin/ProductBannersArAdmin';
 import { getMyPermissions, getMyRbac, getRoleById, type RbacRole } from '../services/rbacService';
 import { toast } from 'sonner';
 import { useAuth } from '../contexts/AuthContext';
@@ -253,6 +254,7 @@ export function Layout() {
             <Route path="/newsletter" element={withPermission('manage_cms', <NewsletterSubscribersList />)} />
             <Route path="/config" element={withPermission('app_configuration', <AppConfig />)} />
             <Route path="/static-data" element={withPermission('app_configuration', <StaticDataManager />)} />
+            <Route path="/admin/product-banners-ar" element={withPermission('app_configuration', <ProductBannersArAdmin />)} />
             <Route path="/roles" element={withPermission('manage_roles', <RolesPermissions />)} />
             <Route path="/roles/:id" element={withPermission('manage_roles', <RoleDetail />)} />
             <Route path="/roles/:id/edit" element={withPermission('manage_roles', <RoleEdit />)} />
