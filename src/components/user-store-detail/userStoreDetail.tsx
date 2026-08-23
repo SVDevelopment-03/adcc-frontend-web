@@ -147,19 +147,30 @@ export default function StoreDetailPage() {
   const postedLabel = formatRelativeTime(item?.createdAt, i18n.language);
 
   const infoRows: [string, string][] = item
-    ? [
-        // Category is free text the seller typed in — no fixed set to translate against.
-        [t("public.marketplace.detail.fields.category"), item.category || "—"],
-        [
-          t("public.marketplace.detail.fields.condition"),
-          item.condition ? t(`data.conditions.${item.condition}`, item.condition) : "—",
-        ],
-        [
-          t("public.marketplace.detail.fields.location"),
-          item.city ? t(`data.locations.${item.city}`, item.city) : "—",
-        ],
-        [t("public.marketplace.detail.fields.posted"), postedLabel || "—"],
-      ]
+    ? (() => {
+        // Normalize category (handle common typos) and try translations via locales
+        const rawCategory = item.category || '';
+        const normalizedCategory = rawCategory === 'Assesories' ? 'Accessories' : rawCategory;
+        const categoryLabel = normalizedCategory
+          ? t(`data.categories.${normalizedCategory}`, { defaultValue: normalizedCategory })
+          : '—';
+
+        // Normalize condition (map 'Brand New' and variants to 'New')
+        const rawCondition = item.condition || '';
+        const normalizedCondition = /new/i.test(rawCondition) ? 'New' : rawCondition;
+        const conditionLabel = rawCondition
+          ? t(`data.conditions.${normalizedCondition}`, { defaultValue: rawCondition })
+          : '—';
+
+        const locationLabel = item.city ? t(`data.locations.${item.city}`, { defaultValue: item.city }) : '—';
+
+        return [
+          [t('public.marketplace.detail.fields.category'), categoryLabel || '—'],
+          [t('public.marketplace.detail.fields.condition'), conditionLabel || '—'],
+          [t('public.marketplace.detail.fields.location'), locationLabel || '—'],
+          [t('public.marketplace.detail.fields.posted'), postedLabel || '—'],
+        ];
+      })()
     : [];
 
   const contactDigits = (item?.phoneNumber || "").replace(/[^\d+]/g, "");

@@ -1989,6 +1989,9 @@
       "Good": "Good",
       "Fair": "Fair"
     },
+    "categories": {
+      "Accessories": "Accessories"
+    },
     "locations": {
       "Abu Dhabi": "Abu Dhabi",
       "Al Ain": "Al Ain",
