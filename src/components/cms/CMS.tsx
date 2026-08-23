@@ -532,33 +532,12 @@ export function CMS() {
 
     setSavingBannersAr((prev) => ({ ...prev, [bannerKey]: true }));
     try {
-      const existing = appBannerArItemsMemo.find((item) => item.key === bannerKey);
       if (existing) {
         await updateAppBannerAr(bannerKey, {
           targetScreen: selectedTarget,
           ...(file ? { imageFile: file } : {}),
         });
       } else {
-        // Replace mode: delete all existing Arabic app banners before creating this one
-        try {
-          const existingAr = await getAppBannersAr();
-          await Promise.all(
-            existingAr.map(async (b) => {
-              try {
-                await deleteAppBannerAr(b.key);
-              } catch (e) {
-                // ignore individual delete failures
-                // eslint-disable-next-line no-console
-                console.error('Failed to delete existing Arabic app banner', b.key, e);
-              }
-            })
-          );
-        } catch (e) {
-          // ignore fetch/delete errors and continue with creation
-          // eslint-disable-next-line no-console
-          console.error('Failed to clear existing Arabic app banners before create', e);
-        }
-
         await createAppBannerAr({
           key: bannerKey,
           label: bannerLabel,
@@ -580,6 +559,8 @@ export function CMS() {
       setSavingBannersAr((prev) => ({ ...prev, [bannerKey]: false }));
     }
   };
+
+  const arabicBannerSlots = useMemo(() => ['banner_ar_1', 'banner_ar_2', 'banner_ar_3'], []);
 
   const cmsStats = useMemo(() => {
     const homepageSections = homepageItems.length;
@@ -980,107 +961,103 @@ export function CMS() {
               <p className="text-sm mb-6" style={{ color: '#666' }}>{t('cms.appBanner.arHint')}</p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {appBannerItemsMemo.length === 0 ? (
-                  <div className="rounded-xl border p-6 text-center" style={{ borderColor: '#E5DDD4' }}>
-                    {t('cms.appBanner.noBanners')}
-                  </div>
-                ) : (
-                  appBannerItemsMemo.map((englishItem) => {
-                    const arItem = appBannerArItemsMemo.find((ar) => ar.key === englishItem.key);
-                    const previewUrl = bannerArPreviews[englishItem.key] || arItem?.image || '';
-                    const selectedFile = bannerArFiles[englishItem.key];
-                    const isSaving = savingBannersAr[englishItem.key] ?? false;
+                {arabicBannerSlots.map((slotKey, index) => {
+                  const arItem = appBannerArItemsMemo.find((item) => item.key === slotKey) ?? appBannerArItemsMemo[index] ?? null;
+                  const previewUrl = bannerArPreviews[slotKey] || arItem?.image || '';
+                  const selectedFile = bannerArFiles[slotKey];
+                  const isSaving = savingBannersAr[slotKey] ?? false;
+                  const slotLabel = `Arabic Banner ${index + 1}`;
 
-                    return (
-                      <div key={englishItem.key} className="rounded-xl border p-5 space-y-4" style={{ borderColor: '#E5DDD4' }}>
-                        <div className="flex items-center gap-2">
-                          <ImageIcon className="w-5 h-5" style={{ color: '#C12D32' }} />
-                          <div>
-                            <h3 className="text-sm font-medium" style={{ color: '#333' }}>
-                              {englishItem.label || englishItem.title || englishItem.key}
-                            </h3>
-                            {!arItem ? (
-                              <span className="text-xs" style={{ color: '#999' }}>
-                                {t('cms.appBanner.noArabicVersion')}
-                              </span>
-                            ) : null}
-                          </div>
+                  return (
+                    <div key={slotKey} className="rounded-xl border p-5 space-y-4" style={{ borderColor: '#E5DDD4' }}>
+                      <div className="flex items-center gap-2">
+                        <ImageIcon className="w-5 h-5" style={{ color: '#C12D32' }} />
+                        <div>
+                          <h3 className="text-sm font-medium" style={{ color: '#333' }}>
+                            {slotLabel}
+                          </h3>
+                          {!arItem ? (
+                            <span className="text-xs" style={{ color: '#999' }}>
+                              {t('cms.appBanner.noArabicVersion')}
+                            </span>
+                          ) : null}
                         </div>
-
-                        <div
-                          className="w-full rounded-lg overflow-hidden flex items-center justify-center"
-                          style={{ backgroundColor: '#F3EEE7', minHeight: '160px' }}
-                        >
-                          {previewUrl ? (
-                            <img
-                              src={previewUrl}
-                              alt={englishItem.label || englishItem.key}
-                              className="w-full object-cover"
-                              style={{ maxHeight: '200px' }}
-                            />
-                          ) : (
-                            <div className="flex flex-col items-center gap-2 py-8">
-                              <ImageIcon className="w-10 h-10" style={{ color: '#CCC' }} />
-                              <span className="text-xs" style={{ color: '#999' }}>
-                                {t('cms.appBanner.noBanner')}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="space-y-2">
-                          <label className="block text-xs font-medium" style={{ color: '#666' }}>
-                            {t('cms.appBanner.uploadBanner')}
-                          </label>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            ref={(el) => { bannerArInputRefs.current[englishItem.key] = el; }}
-                            onChange={(e) => handleBannerArFileChange(englishItem.key, e.target.files?.[0] ?? null)}
-                            className="w-full border rounded-lg px-3 py-2 text-sm"
-                            style={{ borderColor: '#E5DDD4' }}
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <label className="block text-xs font-medium" style={{ color: '#666' }}>
-                            Banner destination
-                          </label>
-                          <select
-                            value={bannerArTargets[englishItem.key] || arItem?.targetScreen || 'home'}
-                            onChange={(e) => setBannerArTargets((prev) => ({ ...prev, [englishItem.key]: e.target.value }))}
-                            className="w-full border rounded-lg px-3 py-2 text-sm"
-                            style={{ borderColor: '#E5DDD4' }}
-                          >
-                            {bannerTargetOptions.map((option) => (
-                              <option key={option.value} value={option.value}>{option.label}</option>
-                            ))}
-                          </select>
-                        </div>
-
-                        <button
-                          onClick={() => handleBannerArSave(englishItem.key, englishItem.label || englishItem.key)}
-                          disabled={isSaving || (!selectedFile && !(bannerArTargets[englishItem.key] || arItem?.targetScreen || 'home'))}
-                          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-white text-sm disabled:opacity-50 transition-opacity"
-                          style={{ backgroundColor: '#C12D32' }}
-                        >
-                          <Upload className="w-4 h-4" />
-                          {isSaving ? t('cms.saving') : t('cms.appBanner.saveBanner')}
-                        </button>
-                        {arItem ? (
-                          <button
-                            onClick={() => handleDelete(arItem)}
-                            disabled={isDeleting}
-                            className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm border border-red-200 text-red-600 disabled:opacity-50 transition-opacity"
-                            style={{ backgroundColor: '#FFF5F5' }}
-                          >
-                            {t('cms.delete', 'Delete')}
-                          </button>
-                        ) : null}
                       </div>
-                    );
-                  })
-                )}
+
+                      <div
+                        className="w-full rounded-lg overflow-hidden flex items-center justify-center"
+                        style={{ backgroundColor: '#F3EEE7', minHeight: '160px' }}
+                      >
+                        {previewUrl ? (
+                          <img
+                            src={previewUrl}
+                            alt={slotLabel}
+                            className="w-full object-cover"
+                            style={{ maxHeight: '200px' }}
+                          />
+                        ) : (
+                          <div className="flex flex-col items-center gap-2 py-8">
+                            <ImageIcon className="w-10 h-10" style={{ color: '#CCC' }} />
+                            <span className="text-xs" style={{ color: '#999' }}>
+                              {t('cms.appBanner.noBanner')}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="block text-xs font-medium" style={{ color: '#666' }}>
+                          {t('cms.appBanner.uploadBanner')}
+                        </label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          ref={(el) => { bannerArInputRefs.current[slotKey] = el; }}
+                          onChange={(e) => handleBannerArFileChange(slotKey, e.target.files?.[0] ?? null)}
+                          className="w-full border rounded-lg px-3 py-2 text-sm"
+                          style={{ borderColor: '#E5DDD4' }}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="block text-xs font-medium" style={{ color: '#666' }}>
+                          Banner destination
+                        </label>
+                        <select
+                          value={bannerArTargets[slotKey] || arItem?.targetScreen || 'home'}
+                          onChange={(e) => setBannerArTargets((prev) => ({ ...prev, [slotKey]: e.target.value }))}
+                          className="w-full border rounded-lg px-3 py-2 text-sm"
+                          style={{ borderColor: '#E5DDD4' }}
+                        >
+                          {bannerTargetOptions.map((option) => (
+                            <option key={option.value} value={option.value}>{option.label}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <button
+                        onClick={() => handleBannerArSave(slotKey, slotLabel)}
+                        disabled={isSaving || (!selectedFile && !(bannerArTargets[slotKey] || arItem?.targetScreen || 'home'))}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-white text-sm disabled:opacity-50 transition-opacity"
+                        style={{ backgroundColor: '#C12D32' }}
+                      >
+                        <Upload className="w-4 h-4" />
+                        {isSaving ? t('cms.saving') : t('cms.appBanner.saveBanner')}
+                      </button>
+
+                      {arItem ? (
+                        <button
+                          onClick={() => handleDelete(arItem)}
+                          disabled={isDeleting}
+                          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm border border-red-200 text-red-600 disabled:opacity-50 transition-opacity"
+                          style={{ backgroundColor: '#FFF5F5' }}
+                        >
+                          {t('cms.delete', 'Delete')}
+                        </button>
+                      ) : null}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           ) : activeTab === 'homepage' ? (
