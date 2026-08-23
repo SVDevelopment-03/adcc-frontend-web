@@ -123,10 +123,23 @@ export function MerchandiseProducts({ products, categories, setProducts, default
     }
     const totalStock = form.variants.reduce((s, v) => s + (v.stock || 0), 0);
     try {
-      const payload = {
+      const payload: any = {
         ...form,
         source: form.source ?? editProduct?.source ?? defaultSource ?? 'adcc',
       };
+
+      // If Arabic specification fields were entered, include a `specificationsAr` array
+      if (Array.isArray(form.specifications) && form.specifications.length > 0) {
+        const specsAr = form.specifications.map(s => ({
+          label: s.label || '',
+          value: s.value || '',
+          labelAr: s.labelAr || '',
+          valueAr: s.valueAr || '',
+        }));
+        if (specsAr.some(s => (s.labelAr || s.valueAr))) {
+          payload.specificationsAr = specsAr;
+        }
+      }
       if (editProduct) {
         const updated = await updateMerchandiseProduct(editProduct.id, payload);
         setProducts(prev => prev.map(p => p.id === editProduct.id ? { ...updated, totalStock, source: updated.source ?? editProduct.source ?? defaultSource ?? 'adcc' } : p));
