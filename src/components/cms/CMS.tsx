@@ -718,6 +718,33 @@ export function CMS() {
     }
   };
 
+  const handleDeleteAllArabicBanners = async () => {
+    if (!appBannerArItemsMemo.length) return;
+    const confirmed = window.confirm('Delete all Arabic app banners? This is temporary and removes the full Arabic banner set.');
+    if (!confirmed) return;
+
+    setIsDeleting(true);
+    try {
+      const existing = await getAppBannersAr();
+      await Promise.all(
+        existing.map(async (item) => {
+          try {
+            await deleteAppBannerAr(item.key);
+          } catch (e) {
+            // eslint-disable-next-line no-console
+            console.error('Failed to delete Arabic banner', item.key, e);
+          }
+        })
+      );
+      toast.success('All Arabic app banners deleted');
+      await fetchAllGroupsSettings();
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, 'Failed to delete Arabic app banners'));
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
@@ -976,32 +1003,45 @@ export function CMS() {
             </div>
           ) : activeTab === 'appBannerAr' ? (
             <div className="p-6 rounded-2xl shadow-sm bg-white">
-              <h2 className="text-xl mb-1" style={{ color: '#333' }}>{t('cms.tabs.appBannerAr')}</h2>
-              <p className="text-sm mb-6" style={{ color: '#666' }}>{t('cms.appBanner.arHint')}</p>
+              <div className="flex items-center justify-between gap-3 mb-4">
+                <div>
+                  <h2 className="text-xl mb-1" style={{ color: '#333' }}>{t('cms.tabs.appBannerAr')}</h2>
+                  <p className="text-sm" style={{ color: '#666' }}>{t('cms.appBanner.arHint')}</p>
+                </div>
+                <button
+                  onClick={handleDeleteAllArabicBanners}
+                  disabled={!appBannerArItemsMemo.length || isDeleting}
+                  className="px-3 py-2 text-xs font-medium rounded-lg border border-red-200 text-red-600 disabled:opacity-50"
+                  style={{ backgroundColor: '#FFF5F5' }}
+                >
+                  Delete all Arabic banners
+                </button>
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {appBannerItemsMemo.length === 0 ? (
+                {appBannerArItemsMemo.length === 0 ? (
                   <div className="rounded-xl border p-6 text-center" style={{ borderColor: '#E5DDD4' }}>
                     {t('cms.appBanner.noBanners')}
                   </div>
                 ) : (
-                  appBannerItemsMemo.map((englishItem) => {
-                    const arItem = appBannerArItemsMemo.find((ar) => ar.key === englishItem.key);
-                    const previewUrl = bannerArPreviews[englishItem.key] || arItem?.image || '';
-                    const selectedFile = bannerArFiles[englishItem.key];
-                    const isSaving = savingBannersAr[englishItem.key] ?? false;
+                  appBannerArItemsMemo.map((arItem) => {
+                    const englishItem = appBannerItemsMemo.find((english) => english.key === arItem.key);
+                    const previewUrl = bannerArPreviews[arItem.key] || arItem.image || englishItem?.image || '';
+                    const selectedFile = bannerArFiles[arItem.key];
+                    const isSaving = savingBannersAr[arItem.key] ?? false;
+                    const label = englishItem?.label || arItem.label || arItem.title || arItem.key;
 
                     return (
-                      <div key={englishItem.key} className="rounded-xl border p-5 space-y-4" style={{ borderColor: '#E5DDD4' }}>
+                      <div key={arItem.key} className="rounded-xl border p-5 space-y-4" style={{ borderColor: '#E5DDD4' }}>
                         <div className="flex items-center gap-2">
                           <ImageIcon className="w-5 h-5" style={{ color: '#C12D32' }} />
                           <div>
                             <h3 className="text-sm font-medium" style={{ color: '#333' }}>
-                              {englishItem.label || englishItem.title || englishItem.key}
+                              {label}
                             </h3>
-                            {!arItem ? (
+                            {!englishItem ? (
                               <span className="text-xs" style={{ color: '#999' }}>
-                                {t('cms.appBanner.noArabicVersion')}
+                                Temporary stale Arabic banner
                               </span>
                             ) : null}
                           </div>
@@ -1014,7 +1054,7 @@ export function CMS() {
                           {previewUrl ? (
                             <img
                               src={previewUrl}
-                              alt={englishItem.label || englishItem.key}
+                              alt={label}
                               className="w-full object-cover"
                               style={{ maxHeight: '200px' }}
                             />
@@ -1035,8 +1075,8 @@ export function CMS() {
                           <input
                             type="file"
                             accept="image/*"
-                            ref={(el) => { bannerArInputRefs.current[englishItem.key] = el; }}
-                            onChange={(e) => handleBannerArFileChange(englishItem.key, e.target.files?.[0] ?? null)}
+                            ref={(el) => { bannerArInputRefs.current[arItem.key] = el; }}
+                            onChange={(e) => handleBannerArFileChange(arItem.key, e.target.files?.[0] ?? null)}
                             className="w-full border rounded-lg px-3 py-2 text-sm"
                             style={{ borderColor: '#E5DDD4' }}
                           />
@@ -1047,8 +1087,8 @@ export function CMS() {
                             Banner destination
                           </label>
                           <select
-                            value={bannerArTargets[englishItem.key] || arItem?.targetScreen || 'home'}
-                            onChange={(e) => setBannerArTargets((prev) => ({ ...prev, [englishItem.key]: e.target.value }))}
+                            value={bannerArTargets[arItem.key] || arItem.targetScreen || 'home'}
+                            onChange={(e) => setBannerArTargets((prev) => ({ ...prev, [arItem.key]: e.target.value }))}
                             className="w-full border rounded-lg px-3 py-2 text-sm"
                             style={{ borderColor: '#E5DDD4' }}
                           >
@@ -1059,24 +1099,22 @@ export function CMS() {
                         </div>
 
                         <button
-                          onClick={() => handleBannerArSave(englishItem.key, englishItem.label || englishItem.key)}
-                          disabled={isSaving || (!selectedFile && !(bannerArTargets[englishItem.key] || arItem?.targetScreen || 'home'))}
+                          onClick={() => handleBannerArSave(arItem.key, label)}
+                          disabled={isSaving || (!selectedFile && !(bannerArTargets[arItem.key] || arItem.targetScreen || 'home'))}
                           className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-white text-sm disabled:opacity-50 transition-opacity"
                           style={{ backgroundColor: '#C12D32' }}
                         >
                           <Upload className="w-4 h-4" />
                           {isSaving ? t('cms.saving') : t('cms.appBanner.saveBanner')}
                         </button>
-                        {arItem ? (
-                          <button
-                            onClick={() => handleDelete(arItem)}
-                            disabled={isDeleting}
-                            className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm border border-red-200 text-red-600 disabled:opacity-50 transition-opacity"
-                            style={{ backgroundColor: '#FFF5F5' }}
-                          >
-                            {t('cms.delete', 'Delete')}
-                          </button>
-                        ) : null}
+                        <button
+                          onClick={() => handleDelete(arItem)}
+                          disabled={isDeleting}
+                          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm border border-red-200 text-red-600 disabled:opacity-50 transition-opacity"
+                          style={{ backgroundColor: '#FFF5F5' }}
+                        >
+                          {t('cms.delete', 'Delete')}
+                        </button>
                       </div>
                     );
                   })
