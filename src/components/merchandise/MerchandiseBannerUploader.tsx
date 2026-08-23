@@ -13,6 +13,7 @@ import {
   updateProductBannerAr,
 } from '../../services/merchandiseApi';
 import { ImagePickerModal } from '../media/ImagePickerModal';
+import ProductPickerModal from './ProductPickerModal';
 
 export interface MerchandiseBannerUploaderProps {
   /** Which banner set this instance manages. Defaults to 'en'. */
@@ -42,7 +43,7 @@ const VARIANT_CONFIG = {
 
 export function MerchandiseBannerUploader({ variant = 'en', title, description }: MerchandiseBannerUploaderProps = {}) {
   const config = VARIANT_CONFIG[variant];
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<Array<{ file: File; picked?: { id: string; title?: string } }>>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
@@ -50,10 +51,11 @@ export function MerchandiseBannerUploader({ variant = 'en', title, description }
   const [showLibraryPicker, setShowLibraryPicker] = useState(false);
   const [pickingFromLibrary, setPickingFromLibrary] = useState(false);
   const [editing, setEditing] = useState<ProductBanner | null>(null);
+  const [showProductPicker, setShowProductPicker] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    const urls = selectedFiles.map((file) => URL.createObjectURL(file));
+    const urls = selectedFiles.map((f) => URL.createObjectURL(f.file));
     setPreviewUrls(urls);
 
     return () => {
@@ -104,7 +106,7 @@ export function MerchandiseBannerUploader({ variant = 'en', title, description }
       setUploadError('');
     }
 
-    setSelectedFiles((prev) => [...prev, ...acceptedFiles]);
+    setSelectedFiles((prev) => [...prev, ...acceptedFiles.map((f) => ({ file: f }))]);
   };
 
   // Re-fetches an already-hosted image's bytes and wraps them as a File so
@@ -117,7 +119,7 @@ export function MerchandiseBannerUploader({ variant = 'en', title, description }
       const blob = await response.blob();
       const name = decodeURIComponent(url.split('/').pop() || 'banner.jpg').split('?')[0];
       const file = new File([blob], name, { type: blob.type || 'image/jpeg' });
-      setSelectedFiles((prev) => [...prev, file]);
+      setSelectedFiles((prev) => [...prev, { file }]);
       setUploadError('');
     } catch (error) {
       setUploadError('Failed to load the selected image.');
@@ -127,6 +129,8 @@ export function MerchandiseBannerUploader({ variant = 'en', title, description }
     }
   };
 
+  const [pickIndex, setPickIndex] = useState<number | null>(null);
+
   const handleUpload = async () => {
     if (!selectedFiles.length) return;
 
@@ -134,7 +138,25 @@ export function MerchandiseBannerUploader({ variant = 'en', title, description }
     setUploadError('');
 
     try {
-      await config.uploadBanners(selectedFiles);
+      const files = selectedFiles.map((s) => s.file);
+      const created = await config.uploadBanners(files);
+
+      // If admin picked products for the uploaded files, update each created banner
+      await Promise.all(created.map(async (banner, idx) => {
+        const pick = selectedFiles[idx]?.picked;
+        if (pick && banner?.key) {
+          try {
+            if (variant === 'ar') {
+              await updateProductBannerAr(banner.key, { targetScreen: pick.id });
+            } else {
+              await updateProductBanner(banner.key, { targetScreen: pick.id });
+            }
+          } catch (e) {
+            console.error('Failed to set targetScreen for banner', banner.key, e);
+          }
+        }
+      }));
+
       const items = await config.getBanners();
       setBanners(items);
       toast.success('Product banners uploaded successfully');
@@ -231,13 +253,23 @@ export function MerchandiseBannerUploader({ variant = 'en', title, description }
             </div>
           )}
           <div className="space-y-3">
-            {selectedFiles.map((file, index) => (
-              <div key={`${file.name}-${index}`} className="flex items-center justify-between gap-3 rounded-xl border border-gray-200 p-3 bg-white">
-                <div>
-                  <p className="text-sm font-medium text-gray-800">{file.name}</p>
-                  <p className="text-xs text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+            {selectedFiles.map((entry, index) => (
+              <div key={`${entry.file.name}-${index}`} className="flex items-center justify-between gap-3 rounded-xl border border-gray-200 p-3 bg-white">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-gray-800 truncate">{entry.file.name}</p>
+                  <p className="text-xs text-gray-500">{(entry.file.size / 1024 / 1024).toFixed(2)} MB</p>
+                  <div className="text-xs text-gray-500 mt-1">{entry.picked ? `Selected: ${entry.picked.title ?? entry.picked.id}` : 'No product selected'}</div>
                 </div>
-                <span className="text-xs text-gray-500">{index + 1}</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => { setPickIndex(index); setShowProductPicker(true); }}
+                    className="px-3 py-1 rounded bg-gray-100 text-sm"
+                  >
+                    Pick Product
+                  </button>
+                  <span className="text-xs text-gray-500">{index + 1}</span>
+                </div>
               </div>
             ))}
           </div>
@@ -348,6 +380,16 @@ export function MerchandiseBannerUploader({ variant = 'en', title, description }
                   onChange={(e) => setEditing({ ...editing, targetScreen: e.target.value })}
                   className="w-full mt-1 p-2 border rounded"
                 />
+                <div className="mt-2 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowProductPicker(true)}
+                    className="px-3 py-1 rounded bg-gray-100 text-sm"
+                  >
+                    Pick Product
+                  </button>
+                  <div className="text-xs text-gray-500">Or paste product id / route</div>
+                </div>
               </div>
               <div className="flex items-center gap-3">
                 <label className="text-xs text-gray-600">Active</label>
@@ -388,6 +430,25 @@ export function MerchandiseBannerUploader({ variant = 'en', title, description }
             </div>
           </div>
         </div>
+      )}
+      {showProductPicker && (
+        <ProductPickerModal
+          onClose={() => { setShowProductPicker(false); setPickIndex(null); }}
+          onSelect={(id, title) => {
+            // If editing an existing banner, set its targetScreen
+            if (editing) {
+              setEditing({ ...editing, targetScreen: id });
+              setShowProductPicker(false);
+              return;
+            }
+
+            // Otherwise, we are picking for a selected file during upload
+            if (pickIndex === null) return;
+            setSelectedFiles((prev) => prev.map((e, i) => i === pickIndex ? { ...e, picked: { id, title } } : e));
+            setShowProductPicker(false);
+            setPickIndex(null);
+          }}
+        />
       )}
     </div>
   );
