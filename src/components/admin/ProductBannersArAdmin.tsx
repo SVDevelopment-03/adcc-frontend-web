@@ -1,34 +1,36 @@
 import React, { useEffect, useState } from 'react';
-import { toast } from 'sonner';
 import { getProductBannersAr, deleteProductBannerAr, deleteAllProductBannersAr, ProductBanner } from '../../services/merchandiseApi';
+import { toast } from 'sonner';
 
-export function ProductBannersArAdmin() {
+export const ProductBannersArAdmin: React.FC = () => {
   const [banners, setBanners] = useState<ProductBanner[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [deletingAll, setDeletingAll] = useState(false);
 
   const load = async () => {
     setLoading(true);
     try {
-      const items = await getProductBannersAr();
-      setBanners(items);
-    } catch (e: any) {
-      toast.error(e?.message || 'Failed to load Arabic product banners');
+      const res = await getProductBannersAr();
+      setBanners(res);
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to load Arabic product banners');
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { void load(); }, []);
+  useEffect(() => {
+    void load();
+  }, []);
 
   const handleDelete = async (key: string) => {
-    if (!confirm(`Delete banner ${key}?`)) return;
+    if (!confirm('Delete this Arabic banner?')) return;
     try {
       await deleteProductBannerAr(key);
-      setBanners(prev => prev.filter(b => b.key !== key));
-      toast.success('Banner deleted');
-    } catch (e: any) {
-      toast.error(e?.message || 'Delete failed');
+      toast.success('Deleted');
+      setBanners((s) => s.filter((b) => b.key !== key));
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to delete banner');
     }
   };
 
@@ -39,51 +41,52 @@ export function ProductBannersArAdmin() {
       await deleteAllProductBannersAr();
       setBanners([]);
       toast.success('All Arabic banners deleted');
-    } catch (e: any) {
-      toast.error(e?.message || 'Delete all failed');
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to delete all banners');
     } finally {
       setDeletingAll(false);
     }
   };
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl">Arabic Product Banners</h1>
-          <p className="text-sm text-gray-500">List and delete Arabic product banners used by the mobile app.</p>
-        </div>
+    <div className="rounded-2xl p-8 bg-white shadow-sm">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl" style={{ color: '#333' }}>Arabic Product Banners</h2>
         <div>
           <button
+            className="px-4 py-2 rounded bg-red-600 text-white mr-2"
             onClick={handleDeleteAll}
-            className="px-3 py-2 rounded bg-red-600 text-white"
-            disabled={deletingAll || loading}
+            disabled={deletingAll || banners.length === 0}
           >
-            {deletingAll ? 'Deleting…' : 'Delete All Arabic Banners'}
+            {deletingAll ? 'Deleting...' : 'Delete All'}
+          </button>
+          <button className="px-4 py-2 rounded bg-gray-100" onClick={load} disabled={loading}>
+            {loading ? 'Loading...' : 'Refresh'}
           </button>
         </div>
       </div>
 
       {loading ? (
-        <div className="py-10 text-center text-gray-500">Loading…</div>
+        <div>Loading...</div>
       ) : banners.length === 0 ? (
-        <div className="py-10 text-center text-gray-500">No Arabic product banners found.</div>
+        <div className="p-6 text-gray-600">No Arabic banners found.</div>
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-3 gap-4">
           {banners.map((b) => (
-            <div key={b.key} className="flex items-center gap-3 p-3 rounded border">
-              <img src={b.image} alt={b.title || b.label} className="w-28 h-16 object-cover rounded" />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-medium text-sm truncate" style={{ maxWidth: 600 }}>{b.title || b.label || b.key}</div>
-                    <div className="text-xs text-gray-500">{b.key} • {b.active ? 'active' : 'inactive'}</div>
-                  </div>
-                  <div className="text-right text-xs text-gray-500">{b.createdAt ? new Date(b.createdAt).toLocaleString() : ''}</div>
-                </div>
+            <div key={b.key} className="border rounded p-3 flex flex-col">
+              {b.image ? (
+                // eslint-disable-next-line jsx-a11y/img-redundant-alt
+                <img src={b.image} alt={`banner-${b.key}`} className="w-full h-40 object-contain mb-3" />
+              ) : (
+                <div className="w-full h-40 bg-gray-100 mb-3 flex items-center justify-center">No image</div>
+              )}
+              <div className="flex-1">
+                <div className="font-semibold text-lg text-gray-800">{b.title || b.label || b.key}</div>
+                <div className="text-sm text-gray-600 mt-1">{b.description}</div>
               </div>
-              <div>
-                <button onClick={() => handleDelete(b.key)} className="px-3 py-1 rounded bg-red-100 text-red-600">Delete</button>
+              <div className="mt-3 flex gap-2">
+                <button className="px-3 py-1 rounded bg-red-600 text-white" onClick={() => handleDelete(b.key)}>Delete</button>
+                <a className="px-3 py-1 rounded bg-blue-600 text-white" href={b.image} target="_blank" rel="noreferrer">Open</a>
               </div>
             </div>
           ))}
@@ -91,6 +94,6 @@ export function ProductBannersArAdmin() {
       )}
     </div>
   );
-}
+};
 
 export default ProductBannersArAdmin;
