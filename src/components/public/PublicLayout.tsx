@@ -119,7 +119,7 @@ function Logo({ compact = false }: { compact?: boolean }) {
 
   return (
     <img
-      src="/images/adcc-logo.png"
+      src={compact ? "/images/adcc-logo.png" : "/images/adcc-logo-header.png"}
       alt={t("public.nav.logoAlt")}
       onClick={() => navigate("/home")}
       className={
@@ -191,7 +191,7 @@ function PublicHeader() {
         }
         .public-header-logo-wrap img {
             height: 65px;
-            filter: brightness(0) invert(1);
+      
         }
         .pub-nav-link {
           white-space: nowrap;
