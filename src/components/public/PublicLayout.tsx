@@ -85,10 +85,26 @@ const navItems: NavItem[] = [
 ];
 
 const socialLinks = [
-  { labelKey: "public.footer.social.twitter", href: "https://twitter.com/adcyclingclub", Icon: Twitter },
-  { labelKey: "public.footer.social.facebook", href: "https://www.facebook.com/adcyclingclub/", Icon: Facebook },
-  { labelKey: "public.footer.social.instagram", href: "https://www.instagram.com/adcyclingclub/", Icon: Instagram },
-  { labelKey: "public.footer.social.youtube", href: "https://www.youtube.com/channel/UCmAQA4sNHPvpae86czU-U4g", Icon: Youtube },
+  {
+    labelKey: "public.footer.social.twitter",
+    href: "https://twitter.com/adcyclingclub",
+    Icon: Twitter,
+  },
+  {
+    labelKey: "public.footer.social.facebook",
+    href: "https://www.facebook.com/adcyclingclub/",
+    Icon: Facebook,
+  },
+  {
+    labelKey: "public.footer.social.instagram",
+    href: "https://www.instagram.com/adcyclingclub/",
+    Icon: Instagram,
+  },
+  {
+    labelKey: "public.footer.social.youtube",
+    href: "https://www.youtube.com/channel/UCmAQA4sNHPvpae86czU-U4g",
+    Icon: Youtube,
+  },
 ];
 
 function isNavItemActive(item: NavItem | NavChild, pathname: string): boolean {
@@ -103,12 +119,12 @@ function Logo({ compact = false }: { compact?: boolean }) {
 
   return (
     <img
-      src="/images/adcc-logo.png"
+      src={compact ? "/images/adcc-logo.png" : "/images/adcc-logo-white.png"}
       alt={t("public.nav.logoAlt")}
       onClick={() => navigate("/home")}
       className={
         compact
-          ? "h-14 w-34 object-contain sm:h-16 sm:w-38 cursor-pointer"
+          ? "h-16 w-40 object-contain object-left sm:h-20 sm:w-44 cursor-pointer"
           : "h-8 w-20 object-contain object-left sm:h-9 sm:w-22 lg:h-10 lg:w-24 xl:h-11 xl:w-28 cursor-pointer"
       }
     />
@@ -117,7 +133,9 @@ function Logo({ compact = false }: { compact?: boolean }) {
 
 function PublicHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(null);
+  const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(
+    null,
+  );
   const [headerVisible, setHeaderVisible] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
@@ -172,7 +190,7 @@ function PublicHeader() {
           margin-top: 30px;
         }
         .public-header-logo-wrap img {
-          filter: brightness(0) invert(1);
+            height: 65px;
         }
         .pub-nav-link {
           white-space: nowrap;
@@ -188,7 +206,7 @@ function PublicHeader() {
             width: calc(100% - 24px) !important;
           }
           .public-header-logo-wrap img {
-            width: 84px !important;
+            width: 55px !important;
             height: auto !important;
             display: block !important;
           }
@@ -384,7 +402,9 @@ function PublicHeader() {
                         />
                       </button>
                       {isOpen && (
-                        <div className={`flex flex-col ${isRtl ? "pe-4" : "ps-4"}`}>
+                        <div
+                          className={`flex flex-col ${isRtl ? "pe-4" : "ps-4"}`}
+                        >
                           {item.children.map((child) => {
                             const isChildActive = isNavItemActive(
                               child,
@@ -396,7 +416,9 @@ function PublicHeader() {
                                 to={child.to}
                                 onClick={() => setMenuOpen(false)}
                                 className={`pub-nav-link self-start px-4 py-2 text-[15px] font-medium ${
-                                  isChildActive ? "!text-[#019839]" : "!text-black/70"
+                                  isChildActive
+                                    ? "!text-[#019839]"
+                                    : "!text-black/70"
                                 }`}
                               >
                                 {t(child.labelKey)}
@@ -523,7 +545,7 @@ function PublicFooter() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(280px,1fr)_190px_minmax(280px,1fr)] lg:gap-12">
           <div className="sm:col-span-2 lg:col-span-1">
             <Logo compact />
-            <p className="mt-6! max-w-[390px] text-[16px] leading-6 text-black sm:mt-8! sm:text-[18px] lg:mt-9!">
+            <p className="mt-5! max-w-[390px] text-[16px] leading-6 text-black sm:mt-8! sm:text-[18px] lg:mt-9!">
               {t("public.footer.brandText")}
             </p>
             <div className="mt-6! flex h-12 w-full max-w-[360px] overflow-hidden rounded-lg bg-[#8DDF93] p-1 max-[380px]:h-auto max-[380px]:flex-col sm:mt-7!">
