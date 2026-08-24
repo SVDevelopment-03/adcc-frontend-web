@@ -119,12 +119,12 @@ function Logo({ compact = false }: { compact?: boolean }) {
 
   return (
     <img
-      src={compact ? "/images/adcc-logo.png" : "/images/adcc-logo-white.png"}
+      src="/images/adcc-logo.png"
       alt={t("public.nav.logoAlt")}
       onClick={() => navigate("/home")}
       className={
         compact
-          ? "h-16 w-40 object-contain object-left sm:h-20 sm:w-44 cursor-pointer"
+          ? "h-14 w-34 object-contain sm:h-16 sm:w-38 cursor-pointer"
           : "h-8 w-20 object-contain object-left sm:h-9 sm:w-22 lg:h-10 lg:w-24 xl:h-11 xl:w-28 cursor-pointer"
       }
     />
@@ -191,6 +191,7 @@ function PublicHeader() {
         }
         .public-header-logo-wrap img {
             height: 65px;
+            filter: brightness(0) invert(1);
         }
         .pub-nav-link {
           white-space: nowrap;
