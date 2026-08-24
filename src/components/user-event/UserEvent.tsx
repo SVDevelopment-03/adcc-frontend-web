@@ -46,6 +46,11 @@ font-family: 'Satoshi', sans-serif !important;
       inset-inline-start: calc(var(--adcc-btn-arrow-inset) - var(--adcc-btn-arrow-shift) + 15px);
     }
 
+
+.event-grid-wrap{
+margin-bottom:40px !important;}
+
+
     @media (max-width: 768px) {
       .event-local-nav {
         height: 78px !important;
