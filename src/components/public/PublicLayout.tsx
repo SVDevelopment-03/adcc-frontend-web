@@ -124,7 +124,7 @@ function Logo({ compact = false }: { compact?: boolean }) {
       onClick={() => navigate("/home")}
       className={
         compact
-          ? "h-14 w-34 object-contain sm:h-16 sm:w-38 cursor-pointer"
+          ? "block h-16 w-40 object-contain object-left mr-auto sm:h-18 sm:w-44 cursor-pointer"
           : "h-8 w-20 object-contain object-left sm:h-9 sm:w-22 lg:h-10 lg:w-24 xl:h-11 xl:w-28 cursor-pointer"
       }
     />
@@ -207,7 +207,7 @@ function PublicHeader() {
             width: calc(100% - 24px) !important;
           }
           .public-header-logo-wrap img {
-            width: 55px !important;
+            width: 75px !important;
             height: auto !important;
             display: block !important;
           }
@@ -287,10 +287,9 @@ function PublicHeader() {
       <div className="public-header-bar relative mx-auto flex h-full w-full max-w-[1400px] items-center justify-between bg-black/30 backdrop-blur-[2px] px-5 py-2 md:px-10! lg:px-14! xl:px-22!">
         <div className="public-header-logo-wrap flex items-center gap-3">
           <Logo />
-          <LanguageSwitcher className="md:hidden" />
         </div>
 
-        <nav className="hidden items-center gap-4 text-[15px] font-medium xl:flex 2xl:gap-6 2xl:text-[17px]">
+        <nav className="hidden items-center gap-0 text-[15px] font-medium lg:flex 2xl:gap-6 2xl:text-[17px]">
           {navItems.map((item) => {
             const isActive = isNavItemActive(item, location.pathname);
 
@@ -358,7 +357,7 @@ function PublicHeader() {
 
         <div className="public-header-actions flex items-center gap-3 sm:gap-4 lg:gap-5 xl:gap-7">
           <HeaderWeather />
-          <LanguageSwitcher />
+          <LanguageSwitcher className="block" />
           <button
             type="button"
             aria-expanded={menuOpen}
@@ -367,14 +366,14 @@ function PublicHeader() {
               setMenuOpen((value) => !value);
               setOpenMobileDropdown(null);
             }}
-            className="public-menu-toggle flex h-11 w-11 items-center justify-center rounded-full bg-[#019839] text-white transition-colors hover:bg-black sm:h-11 sm:w-11 xl:hidden"
+            className="public-menu-toggle flex h-11 w-11 items-center justify-center rounded-full bg-[#019839] text-white transition-colors hover:bg-black sm:h-11 sm:w-11 lg:hidden"
           >
             <Menu className="h-5 w-5" />
           </button>
         </div>
 
         {menuOpen && (
-          <div className="public-mobile-menu absolute left-0 right-0 top-full max-h-[calc(100vh-80px)] overflow-y-auto border-t border-black/10 bg-white px-5 py-5 shadow-lg sm:px-6 md:px-10 xl:hidden">
+          <div className="public-mobile-menu absolute left-0 right-0 top-full max-h-[calc(100vh-80px)] overflow-y-auto border-t border-black/10 bg-white px-5 py-5 shadow-lg sm:px-6 md:px-10 lg:hidden">
             <nav className="flex flex-col gap-2 text-[16px] font-semibold">
               {navItems.map((item) => {
                 const isActive = isNavItemActive(item, location.pathname);

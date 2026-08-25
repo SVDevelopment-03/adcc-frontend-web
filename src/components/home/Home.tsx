@@ -1021,15 +1021,22 @@ font-family: var(--font-satoshi) !important;}
     opacity: 1;
   }
 
-  @media (max-width: 1310px) and (min-width: 1025px) {
+  @media (max-width: 1310px) and (min-width: 1024px) {
     .home-platform-cards {
       justify-content: flex-start;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
+      height: 480px !important;
     }
     .home-platform-card {
       scroll-snap-align: start;
+      height: 480px !important;
+    }
+  }
+  @media (max-width: 1310px) {
+    .store-rail {
+      justify-content: flex-start !important;
     }
   }
 
@@ -1350,6 +1357,77 @@ font-family: var(--font-satoshi) !important;}
     }
   }
 
+  @media (max-width: 1023px) {
+    .home-app-section {
+      padding: 56px 32px !important;
+      flex-wrap: wrap !important;
+      gap: 34px !important;
+    }
+    .home-app-copy {
+      flex: 1 1 280px !important;
+      width: 100% !important;
+    }
+    .home-app-title {
+      font-size: 58px !important;
+    }
+    .home-qr-box {
+      width: 160px !important;
+      height: 160px !important;
+    }
+    .home-phone-stage {
+      order: 1 !important;
+      flex: 1 1 100% !important;
+      min-height: 300px !important;
+      width: 100% !important;
+    }
+    .home-phone-stage img {
+      width: 100% !important;
+      max-width: 100% !important;
+      height: auto !important;
+    }
+    .home-feature-list {
+      flex: 1 1 100% !important;
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 22px !important;
+      min-width: 0 !important;
+    }
+  }
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    .home-app-title {
+      font-size: 56px !important;
+    }
+    .home-phone-stage img {
+      width: 115% !important;
+    }
+    .app-phone-stage img {
+      left: -10px !important;
+      top: 50px;
+    }
+  }
+  @media (max-width: 1023px) {
+    .home-platform-cards {
+      height: auto !important;
+      flex-direction: column !important;
+      overflow: visible !important;
+      max-width: 100% !important;
+    }
+    .home-platform-card {
+      flex: none !important;
+      width: 100% !important;
+      max-width: 422.67px !important;
+      height: 520px !important;
+      margin: 0 auto !important;
+      border-inline-start: none !important;
+      border-radius: 20px !important;
+      border-top: 2px solid rgba(255,255,255,0.3) !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .home-platform-card:first-child {
+      border-top: none !important;
+    }
+  }
   @media (max-width: 1024px) {
     .home-header {
       height: 92px !important;
@@ -1471,40 +1549,6 @@ font-family: var(--font-satoshi) !important;}
       font-size: 18px !important;
       line-height: 26px !important;
     }
-    .home-app-section {
-      padding: 56px 32px !important;
-      flex-wrap: wrap !important;
-      gap: 34px !important;
-    }
-    .home-app-copy {
-      flex: 1 1 280px !important;
-      width: 100% !important;
-    }
-    .home-app-title {
-      font-size: 58px !important;
-    }
-    .home-qr-box {
-      width: 160px !important;
-      height: 160px !important;
-    }
-    .home-phone-stage {
-      order: 1 !important;
-      flex: 1 1 100% !important;
-      min-height: 300px !important;
-      width: 100% !important;
-    }
-    .home-phone-stage img {
-      width: 100% !important;
-      max-width: 100% !important;
-      height: auto !important;
-    }
-    .home-feature-list {
-      flex: 1 1 100% !important;
-      display: grid !important;
-      grid-template-columns: 1fr 1fr !important;
-      gap: 22px !important;
-      min-width: 0 !important;
-    }
     .home-community-section {
       padding: 82px 32px !important;
     }
@@ -1542,27 +1586,6 @@ font-family: var(--font-satoshi) !important;}
     .home-store-title {
       font-size: clamp(44px, 8vw, 56px) !important;
       line-height: 100.7% !important;
-    }
-    .home-platform-cards {
-      height: auto !important;
-      flex-direction: column !important;
-      overflow: visible !important;
-      max-width: 100% !important;
-    }
-    .home-platform-card {
-      flex: none !important;
-      width: 100% !important;
-      max-width: 422.67px !important;
-      height: 520px !important;
-      margin: 0 auto !important;
-      border-inline-start: none !important;
-      border-radius: 20px !important;
-      border-top: 2px solid rgba(255,255,255,0.3) !important;
-      opacity: 1 !important;
-      transform: none !important;
-    }
-    .home-platform-card:first-child {
-      border-top: none !important;
     }
     .home-section-title {
       font-size: 56px !important;
