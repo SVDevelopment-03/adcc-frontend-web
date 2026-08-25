@@ -22,7 +22,7 @@
     "config": "App Configuration",
     "languages": "Languages",
     "roles": "Roles & Permissions",
-    "staticData": "Static Data"
+    "staticData": "Data & Categories"
   },
   "topbar": {
     "search": "Search...",

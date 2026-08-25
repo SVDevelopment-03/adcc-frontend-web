@@ -2142,22 +2142,21 @@ html[dir='rtl']  .store-featured-product-media{
 
 function useHomePageStyles() {
   useEffect(() => {
+    // Only the webfont link needs to be injected imperatively — loading it a
+    // beat late just means a font swap, not a layout flash. The page's own
+    // CSS is rendered inline via <style>{CSS}</style> in Home() below so it's
+    // present in the very first paint (see the ticker-icon flash this used
+    // to cause when it was injected here instead, after mount).
     const fontLink = document.createElement("link");
     fontLink.rel = "stylesheet";
     fontLink.href =
       "https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap";
     fontLink.dataset.pageStyle = "home";
 
-    const styleEl = document.createElement("style");
-    styleEl.textContent = CSS;
-    styleEl.dataset.pageStyle = "home";
-
     document.head.appendChild(fontLink);
-    document.head.appendChild(styleEl);
 
     return () => {
       fontLink.remove();
-      styleEl.remove();
     };
   }, []);
 }
@@ -2844,8 +2843,8 @@ function CyclingJourneySection() {
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
+                    fillRule="evenodd"
+                    clipRule="evenodd"
                     d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z"
                     fill="#C12D32"
                   />
@@ -4152,6 +4151,11 @@ export function Home() {
         flexDirection: "column",
       }}
     >
+      {/* Rendered inline (not injected via useEffect) so it's present in the
+          very first paint — otherwise elements it sizes (e.g. the stats
+          ticker icons) briefly flash at browser-default size before the
+          effect runs. */}
+      <style>{CSS}</style>
       <HeroSection />
       <StatsTicker />
       <CyclingJourneySection />

@@ -682,7 +682,7 @@ const formatTimeInput = (raw: string): string => {
               <h3 className="text-lg mb-4" style={{ color: '#333' }}>{t('events.detail.quickActions')}</h3>
               
               <button
-                onClick={() => navigate('event-participants', { selectedEventId: eventId })}
+                onClick={() => navigate(`/events/${eventId}/event-participants`)}
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-white transition-all hover:shadow-md"
                 style={{ backgroundColor: '#3B82F6' }}
               >
@@ -708,7 +708,7 @@ const formatTimeInput = (raw: string): string => {
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg" style={{ color: '#333' }}>{t('events.detail.participantsTab.heading')}</h3>
             <button
-              onClick={() => navigate('event-participants', { selectedEventId: id })}
+              onClick={() => navigate(`/events/${eventId}/event-participants`)}
               className="px-4 py-2 rounded-lg text-white transition-all hover:shadow-md"
               style={{ backgroundColor: '#C12D32' }}
             >

@@ -55,6 +55,7 @@ import { ProductBannersArAdmin } from './admin/ProductBannersArAdmin';
 import { getMyPermissions, getMyRbac, getRoleById, type RbacRole } from '../services/rbacService';
 import { toast } from 'sonner';
 import { useAuth } from '../contexts/AuthContext';
+import { useLocale } from '../contexts/LocaleContext';
 import {
   createPermissionChecker,
   permissionKeysFromRole,
@@ -96,6 +97,19 @@ export function Layout() {
   const [myRole, setMyRole] = useState<Partial<RbacRole> | undefined>(undefined);
   const [permissionSet, setPermissionSet] = useState<Set<string>>(new Set<string>());
   const [rbacLoaded, setRbacLoaded] = useState(false);
+  const { locale, setLocale } = useLocale();
+
+  // The admin dashboard is English-only, regardless of whatever language the
+  // public site was left in (they share one locale/i18n instance). Force it
+  // back to English the moment the admin shell mounts.
+  useEffect(() => {
+    if (locale !== 'en') {
+      void setLocale('en');
+    }
+    // Intentionally run once on mount only — this isn't meant to fight a user
+    // re-selecting a language elsewhere while the dashboard is open.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const loadMyAccess = async () => {

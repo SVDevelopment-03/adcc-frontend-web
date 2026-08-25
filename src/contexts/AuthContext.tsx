@@ -57,10 +57,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Function to refresh user profile (defined early so it can be used in useEffect)
   const refreshUserProfile = async () => {
     try {
-      console.log('👤 Fetching current user profile...');
+      if (import.meta.env.DEV) console.log('👤 Fetching current user profile...');
       const response = await getCurrentUser();
       setUserProfile(response.data);
-      console.log('✅ User profile refreshed:', response.data);
+      if (import.meta.env.DEV) console.log('✅ User profile refreshed');
     } catch (error: any) {
       console.error('❌ Error refreshing user profile:', error);
       console.error('❌ Profile error details:', {
@@ -87,17 +87,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // On page reload: Don't call verify API, just load profile if tokens exist
         // This prevents creating new refresh tokens on every page reload
         if (isInitialMount.current) {
-          console.log('🔄 Page reload detected - skipping verify API call');
+          if (import.meta.env.DEV) console.log('🔄 Page reload detected - skipping verify API call');
           const existingAccessToken = localStorage.getItem('accessToken');
           const existingRefreshToken = localStorage.getItem('refreshToken');
-          
+
           if (existingAccessToken && existingRefreshToken) {
-            console.log('✅ Tokens found in localStorage - loading user profile');
+            if (import.meta.env.DEV) console.log('✅ Tokens found in localStorage - loading user profile');
             try {
               // Just load the user profile using existing tokens
               // The API interceptor will handle token refresh if needed
               await refreshUserProfile();
-              console.log('✅ User profile loaded from existing tokens');
+              if (import.meta.env.DEV) console.log('✅ User profile loaded from existing tokens');
             } catch (error: any) {
               console.error('❌ Error loading user profile:', error);
               // If profile load fails (e.g., tokens expired), clear and let user login again
