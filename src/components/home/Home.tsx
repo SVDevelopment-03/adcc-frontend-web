@@ -1629,7 +1629,7 @@ font-family: var(--font-satoshi) !important;}
       display: none !important;
     }
     .home-about-content {
-      padding-inline-end: 0 !important;
+      padding-inline-end: 32px !important;
     }
     .store-animated-card {
       opacity: 1 !important;

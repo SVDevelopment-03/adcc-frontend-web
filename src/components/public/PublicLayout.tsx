@@ -652,17 +652,17 @@ function PublicFooter() {
               <li className="flex gap-3">
                 <Phone className="mt-0.5 h-5 w-5 shrink-0" />
                 <a
-                  href="tel:+97126545645"
+                  href="tel:+97126216594"
                   className="transition-colors hover:text-[#019839]"
                 >
-                  +971 2 654 5645
+                  +971 2 621 6594
                 </a>
               </li>
               {/* <li className="flex gap-3"><MessageCircle className="mt-0.5 h-5 w-5 shrink-0" /> <span>144226</span></li> */}
               <li className="flex gap-3">
                 <MapPin className="mt-0.5 h-5 w-5 shrink-0" />
                 <a
-                  href="https://www.google.com/maps/search/?api=1&query=Abu%20Dhabi%2C%20Yas%20Island%2C%20Yas%20Marina%20Circuit%2C%20Villa%2018"
+                  href="https://maps.app.goo.gl/5dx641z5VDFrqrhH7"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="transition-colors hover:text-[#019839]"
