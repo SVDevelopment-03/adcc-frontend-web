@@ -792,7 +792,13 @@ export default function TrackDetailPage() {
     return <ErrorState message={error || t("public.tracks.detail.notFound")} />;
 
   return (
-    <main className="font-satoshi min-h-screen bg-[#eaf4ff] text-black">
+    <main className="track-detail-page font-satoshi min-h-screen bg-[#eaf4ff] text-black">
+      <style>{`
+        .track-detail-page .adcc-btn--arrow:hover .adcc-btn__arrow--enter,
+        .track-detail-page .adcc-btn--arrow:focus-visible .adcc-btn__arrow--enter {
+          inset-inline-start: calc(var(--adcc-btn-arrow-inset) - var(--adcc-btn-arrow-shift) + 15px);
+        }
+      `}</style>
       <HeroSection track={track} />
       <AboutSection track={track} />
       <StatsSection track={track} />

@@ -19,6 +19,7 @@ import {
 import { EventApiResponse, getEventsPage } from "../../services/eventsApi";
 import { motion } from "framer-motion";
 import { useWordList } from "../public/publicPageHelpers";
+import { AnimatedButton } from "../ui/AnimatedButton";
 import i18n from "../../i18n";
 
 type CommunityTrack = {
@@ -613,6 +614,7 @@ function TracksSection({ tracks }: { tracks: CommunityTrack[] }) {
 
 function EventCard({ event }: { event: EventApiResponse }) {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const image = event.mainImage || event.eventImage || event.galleryImages?.[0] || FALLBACK_EVENT_IMAGE;
   const participants = event.currentParticipants ?? event.registrations ?? 0;
   const formattedParticipants = Number(participants).toLocaleString(i18n.language);
@@ -640,6 +642,19 @@ function EventCard({ event }: { event: EventApiResponse }) {
           <MapPin size={20} /> {event.city || event.address || t("public.communities.detail.locationTBA")}
         </p>
       </div>
+      <AnimatedButton
+        variant="outline"
+        size="sm"
+        className="event-card-button mt-5 sm:mt-6"
+        onClick={() => {
+          const eventSlug = event.slug || event._id || event.id;
+          if (eventSlug) {
+            navigate(`/user-event/${encodeURIComponent(eventSlug)}`);
+          }
+        }}
+      >
+        {t("public.common.viewDetails")}
+      </AnimatedButton>
     </article>
   );
 }
@@ -830,7 +845,13 @@ export default function UserCommunityDetail() {
   if (error || !community) return <ErrorState message={error || t("public.communities.detail.notFound")} />;
 
   return (
-    <main className="font-satoshi min-h-screen bg-[#eaf4ff] text-black">
+    <main className="user-community-detail-page font-satoshi min-h-screen bg-[#eaf4ff] text-black">
+      <style>{`
+        .user-community-detail-page .adcc-btn--arrow:hover .adcc-btn__arrow--enter,
+        .user-community-detail-page .adcc-btn--arrow:focus-visible .adcc-btn__arrow--enter {
+          inset-inline-start: calc(var(--adcc-btn-arrow-inset) - var(--adcc-btn-arrow-shift) + 15px);
+        }
+      `}</style>
       <div className="mx-auto max-w-[1272px] px-4 pb-5 sm:px-6 md:px-10 md:pb-6">
         <button
           type="button"

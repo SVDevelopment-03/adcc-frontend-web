@@ -640,7 +640,13 @@ export default function CommunityDetailPage() {
     );
 
   return (
-    <main className="font-satoshi min-h-screen bg-[#eaf4ff] text-black">
+    <main className="community-detail-page font-satoshi min-h-screen bg-[#eaf4ff] text-black">
+      <style>{`
+        .community-detail-page .adcc-btn--arrow:hover .adcc-btn__arrow--enter,
+        .community-detail-page .adcc-btn--arrow:focus-visible .adcc-btn__arrow--enter {
+          inset-inline-start: calc(var(--adcc-btn-arrow-inset) - var(--adcc-btn-arrow-shift) + 15px);
+        }
+      `}</style>
       <HeroSection community={community} />
       <AboutSection community={community} />
       <StatsSection community={community} />
