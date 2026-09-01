@@ -19,6 +19,15 @@
     gap: 10px;
     box-sizing: border-box;
     overflow: hidden;
+    /* Chromium can let the scaling hover-fill circle below bleed past the
+       rounded corners mid-transition — the transformed pseudo-element gets
+       promoted to its own GPU compositing layer, and the ancestor's
+       overflow/clip-path clip doesn't reliably apply to a layer painted
+       separately from it. Promoting this element to a layer too (via
+       translateZ) puts the clip and the transform in the same compositing
+       pass, which keeps the clip exact for the whole transition. */
+    clip-path: inset(0 round 30px);
+    transform: translateZ(0);
     min-height: var(--adcc-btn-min-height);
     padding-block: var(--adcc-btn-padding-y);
     padding-inline: var(--adcc-btn-padding-x);

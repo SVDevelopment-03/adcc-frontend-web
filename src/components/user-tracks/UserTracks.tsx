@@ -77,7 +77,9 @@ const formatDistance = (
   if (distance === undefined || distance === null || distance === "")
     return naLabel;
   const numeric = Number(distance);
-  return Number.isFinite(numeric) ? `${numeric} ${unitLabel}` : String(distance);
+  return Number.isFinite(numeric)
+    ? `${numeric} ${unitLabel}`
+    : String(distance);
 };
 
 const normalizeTrack = (
@@ -252,10 +254,19 @@ text-transform: Capitalize !important;}
     /* RTL: mirror the avatar stack to the right and the label to the left —
        applies unchanged at every breakpoint since no media query below
        overrides this block's positioning. */
+       
     html[dir='rtl'] .tracks-journey-card__community {
-      right: 20px;
-      left: auto;
+      left: 20px;
+      right: auto;
     }
+
+@media(max-width:650px){
+  html[dir='rtl'] .tracks-journey-card__community {
+      left: auto !important;
+      right: 20px !important;
+    }}
+
+
 
     html[dir='rtl'] .tracks-journey-card__avatar:nth-child(1) { left: auto; right: 0; }
     html[dir='rtl'] .tracks-journey-card__avatar:nth-child(2) { left: auto; right: 20.67px; }
@@ -267,6 +278,7 @@ text-transform: Capitalize !important;}
       left: auto;
       right: 94.52px;
       text-align: right;
+      color: #000;
     }
 
     @media (max-width: 620px) {
@@ -495,8 +507,8 @@ text-transform: Capitalize !important;}
       }
       .tracks-journey-card__image {
         left: 50% !important;
-        top: -47px !important;
-        width: 240px !important;
+        top: -33px !important;
+        width: 170px !important;
       }
 
 

@@ -583,7 +583,7 @@ export function EventsList({ role }: EventsListProps) {
 
                       {event.category === 'Race' && (
                         <button
-                          onClick={() => navigate('event-results', { selectedEventId: eventId })}
+                          onClick={() => navigate(`/events/${eventId}/results`)}
                           className="flex items-center gap-1 px-3 py-2 rounded-lg transition-all hover:shadow-md"
                           style={{ backgroundColor: '#E5E7EB', color: '#333' }}
                         >

@@ -125,7 +125,7 @@ export function StaticDataManager() {
           <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#FFF9EF' }}>
             <Database className="w-5 h-5" style={{ color: '#C12D32' }} />
           </div>
-          <h1 className="text-3xl" style={{ color: '#333' }}>Static Data</h1>
+          <h1 className="text-3xl" style={{ color: '#333' }}>Data & Categories</h1>
         </div>
         <p style={{ color: '#666' }}>
           Manage the dropdown, filter and category values used across the app — with English and Arabic

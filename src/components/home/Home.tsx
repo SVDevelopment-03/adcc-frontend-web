@@ -1021,15 +1021,22 @@ font-family: var(--font-satoshi) !important;}
     opacity: 1;
   }
 
-  @media (max-width: 1310px) and (min-width: 1025px) {
+  @media (max-width: 1310px) and (min-width: 1024px) {
     .home-platform-cards {
       justify-content: flex-start;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
+      height: 480px !important;
     }
     .home-platform-card {
       scroll-snap-align: start;
+      height: 480px !important;
+    }
+  }
+  @media (max-width: 1310px) {
+    .store-rail {
+      justify-content: flex-start !important;
     }
   }
 
@@ -1350,6 +1357,77 @@ font-family: var(--font-satoshi) !important;}
     }
   }
 
+  @media (max-width: 1023px) {
+    .home-app-section {
+      padding: 56px 32px !important;
+      flex-wrap: wrap !important;
+      gap: 34px !important;
+    }
+    .home-app-copy {
+      flex: 1 1 280px !important;
+      width: 100% !important;
+    }
+    .home-app-title {
+      font-size: 58px !important;
+    }
+    .home-qr-box {
+      width: 160px !important;
+      height: 160px !important;
+    }
+    .home-phone-stage {
+      order: 1 !important;
+      flex: 1 1 100% !important;
+      min-height: 300px !important;
+      width: 100% !important;
+    }
+    .home-phone-stage img {
+      width: 100% !important;
+      max-width: 100% !important;
+      height: auto !important;
+    }
+    .home-feature-list {
+      flex: 1 1 100% !important;
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 22px !important;
+      min-width: 0 !important;
+    }
+  }
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    .home-app-title {
+      font-size: 56px !important;
+    }
+    .home-phone-stage img {
+      width: 115% !important;
+    }
+    .app-phone-stage img {
+      left: -10px !important;
+      top: 50px;
+    }
+  }
+  @media (max-width: 1023px) {
+    .home-platform-cards {
+      height: auto !important;
+      flex-direction: column !important;
+      overflow: visible !important;
+      max-width: 100% !important;
+    }
+    .home-platform-card {
+      flex: none !important;
+      width: 100% !important;
+      max-width: 422.67px !important;
+      height: 520px !important;
+      margin: 0 auto !important;
+      border-inline-start: none !important;
+      border-radius: 20px !important;
+      border-top: 2px solid rgba(255,255,255,0.3) !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .home-platform-card:first-child {
+      border-top: none !important;
+    }
+  }
   @media (max-width: 1024px) {
     .home-header {
       height: 92px !important;
@@ -1471,40 +1549,6 @@ font-family: var(--font-satoshi) !important;}
       font-size: 18px !important;
       line-height: 26px !important;
     }
-    .home-app-section {
-      padding: 56px 32px !important;
-      flex-wrap: wrap !important;
-      gap: 34px !important;
-    }
-    .home-app-copy {
-      flex: 1 1 280px !important;
-      width: 100% !important;
-    }
-    .home-app-title {
-      font-size: 58px !important;
-    }
-    .home-qr-box {
-      width: 160px !important;
-      height: 160px !important;
-    }
-    .home-phone-stage {
-      order: 1 !important;
-      flex: 1 1 100% !important;
-      min-height: 300px !important;
-      width: 100% !important;
-    }
-    .home-phone-stage img {
-      width: 100% !important;
-      max-width: 100% !important;
-      height: auto !important;
-    }
-    .home-feature-list {
-      flex: 1 1 100% !important;
-      display: grid !important;
-      grid-template-columns: 1fr 1fr !important;
-      gap: 22px !important;
-      min-width: 0 !important;
-    }
     .home-community-section {
       padding: 82px 32px !important;
     }
@@ -1542,27 +1586,6 @@ font-family: var(--font-satoshi) !important;}
     .home-store-title {
       font-size: clamp(44px, 8vw, 56px) !important;
       line-height: 100.7% !important;
-    }
-    .home-platform-cards {
-      height: auto !important;
-      flex-direction: column !important;
-      overflow: visible !important;
-      max-width: 100% !important;
-    }
-    .home-platform-card {
-      flex: none !important;
-      width: 100% !important;
-      max-width: 422.67px !important;
-      height: 520px !important;
-      margin: 0 auto !important;
-      border-inline-start: none !important;
-      border-radius: 20px !important;
-      border-top: 2px solid rgba(255,255,255,0.3) !important;
-      opacity: 1 !important;
-      transform: none !important;
-    }
-    .home-platform-card:first-child {
-      border-top: none !important;
     }
     .home-section-title {
       font-size: 56px !important;
@@ -1606,7 +1629,7 @@ font-family: var(--font-satoshi) !important;}
       display: none !important;
     }
     .home-about-content {
-      padding-inline-end: 0 !important;
+      padding-inline-end: 32px !important;
     }
     .store-animated-card {
       opacity: 1 !important;
@@ -2142,22 +2165,21 @@ html[dir='rtl']  .store-featured-product-media{
 
 function useHomePageStyles() {
   useEffect(() => {
+    // Only the webfont link needs to be injected imperatively — loading it a
+    // beat late just means a font swap, not a layout flash. The page's own
+    // CSS is rendered inline via <style>{CSS}</style> in Home() below so it's
+    // present in the very first paint (see the ticker-icon flash this used
+    // to cause when it was injected here instead, after mount).
     const fontLink = document.createElement("link");
     fontLink.rel = "stylesheet";
     fontLink.href =
       "https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap";
     fontLink.dataset.pageStyle = "home";
 
-    const styleEl = document.createElement("style");
-    styleEl.textContent = CSS;
-    styleEl.dataset.pageStyle = "home";
-
     document.head.appendChild(fontLink);
-    document.head.appendChild(styleEl);
 
     return () => {
       fontLink.remove();
-      styleEl.remove();
     };
   }, []);
 }
@@ -2844,8 +2866,8 @@ function CyclingJourneySection() {
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
+                    fillRule="evenodd"
+                    clipRule="evenodd"
                     d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z"
                     fill="#C12D32"
                   />
@@ -4152,6 +4174,11 @@ export function Home() {
         flexDirection: "column",
       }}
     >
+      {/* Rendered inline (not injected via useEffect) so it's present in the
+          very first paint — otherwise elements it sizes (e.g. the stats
+          ticker icons) briefly flash at browser-default size before the
+          effect runs. */}
+      <style>{CSS}</style>
       <HeroSection />
       <StatsTicker />
       <CyclingJourneySection />

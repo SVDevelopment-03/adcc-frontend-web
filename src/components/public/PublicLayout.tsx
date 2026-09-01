@@ -85,10 +85,26 @@ const navItems: NavItem[] = [
 ];
 
 const socialLinks = [
-  { labelKey: "public.footer.social.twitter", href: "https://twitter.com/adcyclingclub", Icon: Twitter },
-  { labelKey: "public.footer.social.facebook", href: "https://www.facebook.com/adcyclingclub/", Icon: Facebook },
-  { labelKey: "public.footer.social.instagram", href: "https://www.instagram.com/adcyclingclub/", Icon: Instagram },
-  { labelKey: "public.footer.social.youtube", href: "https://www.youtube.com/channel/UCmAQA4sNHPvpae86czU-U4g", Icon: Youtube },
+  {
+    labelKey: "public.footer.social.twitter",
+    href: "https://twitter.com/adcyclingclub",
+    Icon: Twitter,
+  },
+  {
+    labelKey: "public.footer.social.facebook",
+    href: "https://www.facebook.com/adcyclingclub/",
+    Icon: Facebook,
+  },
+  {
+    labelKey: "public.footer.social.instagram",
+    href: "https://www.instagram.com/adcyclingclub/",
+    Icon: Instagram,
+  },
+  {
+    labelKey: "public.footer.social.youtube",
+    href: "https://www.youtube.com/channel/UCmAQA4sNHPvpae86czU-U4g",
+    Icon: Youtube,
+  },
 ];
 
 function isNavItemActive(item: NavItem | NavChild, pathname: string): boolean {
@@ -103,12 +119,12 @@ function Logo({ compact = false }: { compact?: boolean }) {
 
   return (
     <img
-      src="/images/adcc-logo.png"
+      src={compact ? "/images/adcc-logo.png" : "/images/adcc-logo-header.png"}
       alt={t("public.nav.logoAlt")}
       onClick={() => navigate("/home")}
       className={
         compact
-          ? "h-14 w-34 object-contain sm:h-16 sm:w-38 cursor-pointer"
+          ? "block h-16 w-40 object-contain object-left mr-auto sm:h-18 sm:w-44 cursor-pointer"
           : "h-8 w-20 object-contain object-left sm:h-9 sm:w-22 lg:h-10 lg:w-24 xl:h-11 xl:w-28 cursor-pointer"
       }
     />
@@ -117,7 +133,9 @@ function Logo({ compact = false }: { compact?: boolean }) {
 
 function PublicHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(null);
+  const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(
+    null,
+  );
   const [headerVisible, setHeaderVisible] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
@@ -172,7 +190,8 @@ function PublicHeader() {
           margin-top: 30px;
         }
         .public-header-logo-wrap img {
-          filter: brightness(0) invert(1);
+            height: 65px;
+      
         }
         .pub-nav-link {
           white-space: nowrap;
@@ -188,7 +207,7 @@ function PublicHeader() {
             width: calc(100% - 24px) !important;
           }
           .public-header-logo-wrap img {
-            width: 84px !important;
+            width: 75px !important;
             height: auto !important;
             display: block !important;
           }
@@ -268,10 +287,9 @@ function PublicHeader() {
       <div className="public-header-bar relative mx-auto flex h-full w-full max-w-[1400px] items-center justify-between bg-black/30 backdrop-blur-[2px] px-5 py-2 md:px-10! lg:px-14! xl:px-22!">
         <div className="public-header-logo-wrap flex items-center gap-3">
           <Logo />
-          <LanguageSwitcher className="md:hidden" />
         </div>
 
-        <nav className="hidden items-center gap-4 text-[15px] font-medium xl:flex 2xl:gap-6 2xl:text-[17px]">
+        <nav className="hidden items-center gap-0 text-[15px] font-medium lg:flex 2xl:gap-6 2xl:text-[17px]">
           {navItems.map((item) => {
             const isActive = isNavItemActive(item, location.pathname);
 
@@ -339,7 +357,7 @@ function PublicHeader() {
 
         <div className="public-header-actions flex items-center gap-3 sm:gap-4 lg:gap-5 xl:gap-7">
           <HeaderWeather />
-          <LanguageSwitcher />
+          <LanguageSwitcher className="block" />
           <button
             type="button"
             aria-expanded={menuOpen}
@@ -348,14 +366,14 @@ function PublicHeader() {
               setMenuOpen((value) => !value);
               setOpenMobileDropdown(null);
             }}
-            className="public-menu-toggle flex h-11 w-11 items-center justify-center rounded-full bg-[#019839] text-white transition-colors hover:bg-black sm:h-11 sm:w-11 xl:hidden"
+            className="public-menu-toggle flex h-11 w-11 items-center justify-center rounded-full bg-[#019839] text-white transition-colors hover:bg-black sm:h-11 sm:w-11 lg:hidden"
           >
             <Menu className="h-5 w-5" />
           </button>
         </div>
 
         {menuOpen && (
-          <div className="public-mobile-menu absolute left-0 right-0 top-full max-h-[calc(100vh-80px)] overflow-y-auto border-t border-black/10 bg-white px-5 py-5 shadow-lg sm:px-6 md:px-10 xl:hidden">
+          <div className="public-mobile-menu absolute left-0 right-0 top-full max-h-[calc(100vh-80px)] overflow-y-auto border-t border-black/10 bg-white px-5 py-5 shadow-lg sm:px-6 md:px-10 lg:hidden">
             <nav className="flex flex-col gap-2 text-[16px] font-semibold">
               {navItems.map((item) => {
                 const isActive = isNavItemActive(item, location.pathname);
@@ -384,7 +402,9 @@ function PublicHeader() {
                         />
                       </button>
                       {isOpen && (
-                        <div className={`flex flex-col ${isRtl ? "pe-4" : "ps-4"}`}>
+                        <div
+                          className={`flex flex-col ${isRtl ? "pe-4" : "ps-4"}`}
+                        >
                           {item.children.map((child) => {
                             const isChildActive = isNavItemActive(
                               child,
@@ -396,7 +416,9 @@ function PublicHeader() {
                                 to={child.to}
                                 onClick={() => setMenuOpen(false)}
                                 className={`pub-nav-link self-start px-4 py-2 text-[15px] font-medium ${
-                                  isChildActive ? "!text-[#019839]" : "!text-black/70"
+                                  isChildActive
+                                    ? "!text-[#019839]"
+                                    : "!text-black/70"
                                 }`}
                               >
                                 {t(child.labelKey)}
@@ -523,7 +545,7 @@ function PublicFooter() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(280px,1fr)_190px_minmax(280px,1fr)] lg:gap-12">
           <div className="sm:col-span-2 lg:col-span-1">
             <Logo compact />
-            <p className="mt-6! max-w-[390px] text-[16px] leading-6 text-black sm:mt-8! sm:text-[18px] lg:mt-9!">
+            <p className="mt-5! max-w-[390px] text-[16px] leading-6 text-black sm:mt-8! sm:text-[18px] lg:mt-9!">
               {t("public.footer.brandText")}
             </p>
             <div className="mt-6! flex h-12 w-full max-w-[360px] overflow-hidden rounded-lg bg-[#8DDF93] p-1 max-[380px]:h-auto max-[380px]:flex-col sm:mt-7!">
@@ -630,17 +652,17 @@ function PublicFooter() {
               <li className="flex gap-3">
                 <Phone className="mt-0.5 h-5 w-5 shrink-0" />
                 <a
-                  href="tel:+97126545645"
+                  href="tel:+97126216594"
                   className="transition-colors hover:text-[#019839]"
                 >
-                  +971 2 654 5645
+                  +971 2 621 6594
                 </a>
               </li>
               {/* <li className="flex gap-3"><MessageCircle className="mt-0.5 h-5 w-5 shrink-0" /> <span>144226</span></li> */}
               <li className="flex gap-3">
                 <MapPin className="mt-0.5 h-5 w-5 shrink-0" />
                 <a
-                  href="https://www.google.com/maps/search/?api=1&query=Abu%20Dhabi%2C%20Yas%20Island%2C%20Yas%20Marina%20Circuit%2C%20Villa%2018"
+                  href="https://maps.app.goo.gl/5dx641z5VDFrqrhH7"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="transition-colors hover:text-[#019839]"

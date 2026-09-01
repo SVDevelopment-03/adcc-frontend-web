@@ -8,7 +8,7 @@ import { COUNTRY_CODES, DEFAULT_COUNTRY_CODE } from "../../constants/countryCode
 
 const CONTACT_DETAILS = {
   email: "info@adcyclingclub.ae",
-  phone: "+971 2 654 5645",
+  phone: "+971 2 621 6594",
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -63,7 +63,7 @@ export default function ContactUsPage() {
       Icon: MapPin,
       labelKey: "location",
       value: address,
-      href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`,
+      href: "https://maps.app.goo.gl/5dx641z5VDFrqrhH7",
     },
   ];
 

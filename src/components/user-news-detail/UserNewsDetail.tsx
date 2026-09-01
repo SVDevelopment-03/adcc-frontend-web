@@ -143,7 +143,7 @@ export default function UserNewsDetail() {
   );
 
   return (
-    <div className="min-h-screen bg-white text-black">
+    <div className="min-h-screen bg-[#eaf4ff] text-black">
       <header className="h-[134px] flex items-center justify-between px-10 md:px-20">
         <img
           src="/ADCC-Logo.png"
@@ -167,14 +167,14 @@ export default function UserNewsDetail() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-[900px] px-4 pt-24 pb-16 sm:px-6 sm:pt-28 lg:pt-32 bg-[#eaf4ff]">
+      <main className="mx-auto max-w-[1268px] px-4 pt-24 pb-16 sm:px-6 sm:pt-28 lg:pt-32 bg-[#eaf4ff]">
         {news.category && (
           <span className="mt-6 inline-block rounded-full bg-[#019839]/10 px-4 py-1.5 text-[12px] font-semibold uppercase text-[#019839] sm:text-[13px]">
             {news.category}
           </span>
         )}
 
-        <h1 className="mt-4 text-[26px] font-semibold uppercase leading-tight sm:mt-5 sm:text-[38px] lg:text-[46px]">
+        <h1 className="mt-4 text-[26px]  uppercase leading-tight sm:mt-5 sm:text-[38px] lg:text-[46px]">
           {news.title}
         </h1>
 
@@ -211,8 +211,8 @@ export default function UserNewsDetail() {
         />
 
         {related.length > 0 && (
-          <section className="mt-8 border-t border-black/10 pt-8 sm:mt-20 sm:pt-12">
-            <h2 className="text-[20px] font-semibold uppercase sm:text-[24px]">
+          <section className="mt-5 border-t border-black/10 pt-8 sm:mt-8 sm:pt-8">
+            <h2 className="text-[20px] uppercase sm:text-[28px]">
               {t("public.news.detail.relatedHeading")}
             </h2>
             <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-6">
@@ -239,7 +239,7 @@ export default function UserNewsDetail() {
                       />
                     </div>
                     <div className="p-4">
-                      <h3 className="line-clamp-2 text-[14px] font-semibold uppercase leading-snug sm:text-[15px]">
+                      <h3 className="line-clamp-2 text-[16px] uppercase leading-snug sm:text-[18px]">
                         {item.title}
                       </h3>
                     </div>

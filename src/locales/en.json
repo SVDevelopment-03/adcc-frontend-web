@@ -22,7 +22,7 @@
     "config": "App Configuration",
     "languages": "Languages",
     "roles": "Roles & Permissions",
-    "staticData": "Static Data"
+    "staticData": "Data & Categories"
   },
   "topbar": {
     "search": "Search...",
@@ -2266,7 +2266,7 @@
       "cyclistsCorner": "Cyclist's Corner",
       "copyright": "Copyright 2026. Abu Dhabi Cycling Club",
       "cyclingShortcut": "Cycling shortcut",
-      "address": "Abu Dhabi, Yas Island, Yas Marina Circuit, Villa 18.",
+      "address": "Abu Dhabi Cycling Club HQ, Hudayriyat Island, Abu Dhabi, UAE.",
       "social": {
         "twitter": "Follow us on Twitter",
         "facebook": "Follow us on Facebook",

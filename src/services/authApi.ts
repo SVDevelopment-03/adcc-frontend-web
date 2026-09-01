@@ -151,9 +151,9 @@ export const logout = async (refreshToken: string): Promise<void> => {
 // Get current user
 export const getCurrentUser = async (): Promise<CurrentUserResponse> => {
   try {
-    console.log('📋 getCurrentUser called');
+    if (import.meta.env.DEV) console.log('📋 getCurrentUser called');
     const response = await api.get<CurrentUserResponse>('/v1/auth/me');
-    console.log('📥 getCurrentUser response:', response.data);
+    if (import.meta.env.DEV) console.log('📥 getCurrentUser response received');
     return response.data;
   } catch (error) {
     console.error('❌ Error getting current user:', error);
