@@ -39,7 +39,7 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { labelKey: "public.nav.home", to: "/home", match: ["/home"] },
+  { labelKey: "public.nav.home", to: "/", match: ["/", "/home"] },
   { labelKey: "public.nav.aboutUs", to: "/aboutus", match: ["/aboutus"] },
   {
     labelKey: "public.nav.events",
@@ -121,7 +121,7 @@ function Logo({ compact = false }: { compact?: boolean }) {
     <img
       src={compact ? "/images/adcc-logo.png" : "/images/adcc-logo-header.png"}
       alt={t("public.nav.logoAlt")}
-      onClick={() => navigate("/home")}
+      onClick={() => navigate("/")}
       className={
         compact
           ? "block h-16 w-40 object-contain object-left mr-auto sm:h-18 sm:w-44 cursor-pointer"
@@ -146,7 +146,7 @@ function PublicHeader() {
   const handleAuthAction = async () => {
     if (isAuthenticated) {
       await logout();
-      navigate("/home");
+      navigate("/");
       return;
     }
 
