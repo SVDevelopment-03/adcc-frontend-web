@@ -172,16 +172,22 @@ export const getFeedPosts = async (params?: GetFeedPostsParams): Promise<FeedPos
 };
 
 /**
- * Same as getFeedPosts but via the auth-less publicApi instance, so a failure
- * on a public page (e.g. the home feed) never triggers the token-refresh /
- * redirect-to-login flow in the authenticated interceptor.
+ * Public approved feed (GET /v1/feed) — the guest/mobile endpoint that only
+ * ever returns `status: "approved"` posts (enforced server-side). Uses the
+ * auth-less publicApi instance so a failure on a public page (e.g. the home
+ * feed) never triggers the token-refresh / redirect-to-login flow in the
+ * authenticated interceptor. Only `q`, `page` and `limit` are supported.
  */
 export const getPublicFeedPosts = async (
-  params?: GetFeedPostsParams,
+  params?: Pick<GetFeedPostsParams, 'q' | 'page' | 'limit'>,
 ): Promise<FeedPost[]> => {
   try {
-    const { data } = await publicApi.get<any>('/v1/feed-posts', {
-      params: buildFeedPostsQuery(params),
+    const { data } = await publicApi.get<any>('/v1/feed', {
+      params: {
+        q: params?.q,
+        page: params?.page,
+        limit: params?.limit,
+      },
     });
     return mapFeedPostsPayload(data);
   } catch {

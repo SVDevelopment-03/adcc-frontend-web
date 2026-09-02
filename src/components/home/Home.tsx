@@ -1066,12 +1066,27 @@ font-family: var(--font-satoshi) !important;}
   .home-feed-track.is-static {
     animation: none;
   }
+  /* When the marquee can't run (reduced-motion), fall back to a swipeable
+     horizontal carousel and drop the seamless-loop duplicates. */
   @media (prefers-reduced-motion: reduce) {
+    .home-feed-rail {
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+    }
+    .home-feed-rail::-webkit-scrollbar {
+      display: none;
+    }
     .home-feed-track {
       animation: none;
-      flex-wrap: wrap;
-      width: 100%;
-      justify-content: center;
+      padding-inline: 18px;
+    }
+    .home-feed-card {
+      scroll-snap-align: start;
+    }
+    .home-feed-card.is-feed-dup {
+      display: none;
     }
   }
   .home-feed-card {
@@ -1199,6 +1214,12 @@ font-family: var(--font-satoshi) !important;}
     .home-feed-card {
       flex: 0 0 min(300px, calc(100vw - 60px));
       height: 380px;
+    }
+    /* backdrop-filter can jank badly on mobile during the marquee transform. */
+    .home-feed-card-body {
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      background: rgba(0, 0, 0, 0.62);
     }
   }
 
@@ -3883,11 +3904,7 @@ function FeedSection() {
     let alive = true;
     (async () => {
       try {
-        const data = await getPublicFeedPosts({
-          status: "approved",
-          reported: false,
-          limit: 12,
-        });
+        const data = await getPublicFeedPosts({ limit: 12 });
         if (!alive) return;
         setPosts(
           data.filter(
@@ -3933,11 +3950,13 @@ function FeedSection() {
 
   if (!showSkeleton && cards.length === 0) return null;
 
-  const renderCard = (card: FeedCardData | null, key: string) => (
+  const renderCard = (card: FeedCardData | null, key: string, dup = false) => (
     <article
       key={key}
-      className={`home-feed-card${card ? "" : " is-skeleton"}`}
-      aria-hidden={card ? undefined : true}
+      className={`home-feed-card${card ? "" : " is-skeleton"}${
+        dup ? " is-feed-dup" : ""
+      }`}
+      aria-hidden={card && !dup ? undefined : true}
     >
       {card?.bg ? (
         <img
@@ -3968,9 +3987,6 @@ function FeedSection() {
     </article>
   );
 
-  // Duplicate the cards so the marquee (translateX -50%) loops seamlessly.
-  const trackCards = showSkeleton ? [null, null, null] : [...cards, ...cards];
-
   return (
     <section id="feed" className="home-feed-section">
       <div className="home-feed-head">
@@ -3980,9 +3996,19 @@ function FeedSection() {
 
       <div className="home-feed-rail">
         <div className={`home-feed-track${showSkeleton ? " is-static" : ""}`}>
-          {trackCards.map((card, i) =>
-            renderCard(card, card ? `${card.key}-${i}` : `skeleton-${i}`),
-          )}
+          {showSkeleton
+            ? [null, null, null].map((_, i) =>
+                renderCard(null, `skeleton-${i}`),
+              )
+            : [
+                // Real cards, then a duplicate set so the marquee loops
+                // seamlessly (translateX -50%). Duplicates are hidden when
+                // the animation is off (reduced-motion / manual scroll).
+                ...cards.map((card) => renderCard(card, card.key)),
+                ...cards.map((card) =>
+                  renderCard(card, `${card.key}-dup`, true),
+                ),
+              ]}
         </div>
       </div>
     </section>
