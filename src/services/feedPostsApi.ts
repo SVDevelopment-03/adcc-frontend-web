@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import api from './api';
+import api, { publicApi } from './api';
 
 export type FeedPostStatus = 'pending' | 'rejected' | 'approved';
 
@@ -90,28 +90,16 @@ export const getFeedPostsCount = async (params?: GetFeedPostsParams): Promise<nu
   }
 };
 
-export const getFeedPosts = async (params?: GetFeedPostsParams): Promise<FeedPost[]> => {
-  try {
-    const { data } = await api.get<any>('/v1/feed-posts', {
-      params: {
-        status: params?.status,
-        // Backend expects "true"/"false" strings (per spec).
-        reported: params?.reported === undefined ? undefined : String(params.reported),
-        q: params?.q,
-        page: params?.page,
-        limit: params?.limit,
-      },
-    });
+const mapFeedPostsPayload = (data: any): FeedPost[] => {
+  const payload = data?.data ?? data;
+  const postsCandidate =
+    payload?.posts ??
+    payload?.feedPosts ??
+    data?.posts ??
+    data?.feedPosts ??
+    [];
 
-    const payload = data?.data ?? data;
-    const postsCandidate =
-      payload?.posts ??
-      payload?.feedPosts ??
-      data?.posts ??
-      data?.feedPosts ??
-      [];
-
-    if (!Array.isArray(postsCandidate)) return [];
+  if (!Array.isArray(postsCandidate)) return [];
 
     const locale = (typeof window !== 'undefined' && window.localStorage ? window.localStorage.getItem('locale') : 'en') || 'en';
 
@@ -161,8 +149,43 @@ export const getFeedPosts = async (params?: GetFeedPostsParams): Promise<FeedPos
         p?.rejectedReason ?? p?.rejectionReason ?? p?.moderation?.reason ?? p?.moderation?.rejectionReason,
       createdBy: p?.createdBy ?? p?.userId ?? p?.user,
     }));
+};
+
+const buildFeedPostsQuery = (params?: GetFeedPostsParams) => ({
+  status: params?.status,
+  // Backend expects "true"/"false" strings (per spec).
+  reported: params?.reported === undefined ? undefined : String(params.reported),
+  q: params?.q,
+  page: params?.page,
+  limit: params?.limit,
+});
+
+export const getFeedPosts = async (params?: GetFeedPostsParams): Promise<FeedPost[]> => {
+  try {
+    const { data } = await api.get<any>('/v1/feed-posts', {
+      params: buildFeedPostsQuery(params),
+    });
+    return mapFeedPostsPayload(data);
   } catch (error) {
     throw new Error(getApiErrorMessage(error, 'Failed to load feed posts'));
+  }
+};
+
+/**
+ * Same as getFeedPosts but via the auth-less publicApi instance, so a failure
+ * on a public page (e.g. the home feed) never triggers the token-refresh /
+ * redirect-to-login flow in the authenticated interceptor.
+ */
+export const getPublicFeedPosts = async (
+  params?: GetFeedPostsParams,
+): Promise<FeedPost[]> => {
+  try {
+    const { data } = await publicApi.get<any>('/v1/feed-posts', {
+      params: buildFeedPostsQuery(params),
+    });
+    return mapFeedPostsPayload(data);
+  } catch {
+    return [];
   }
 };
 

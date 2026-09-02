@@ -56,9 +56,11 @@ function AppContent() {
   const location = useLocation();
   const { isAuthenticated, loading } = useAuth();
   const pathname = normalizePathname(location.pathname);
-  const isPublicRoute = publicRoutePrefixes.some(
-    (route) => pathname === route || (route !== '/' && pathname.startsWith(`${route}/`)),
-  );
+  const isPublicRoute =
+    pathname === '/' ||
+    publicRoutePrefixes.some(
+      (route) => pathname === route || (route !== '/' && pathname.startsWith(`${route}/`)),
+    );
 
   // Redirect to login when user becomes unauthenticated
   useEffect(() => {
@@ -159,10 +161,10 @@ function AppContent() {
         } 
       />
       
-      {/* Root redirect */}
-      <Route 
-        path="/" 
-        element={<Navigate to={isAuthenticated ? "/dashboard" : "/home"} replace />} 
+      {/* Root - show Home page by default (no redirect) */}
+      <Route
+        path="/"
+        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : publicPage(<Home />)}
       />
     </Routes>
   );

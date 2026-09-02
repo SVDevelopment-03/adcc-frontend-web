@@ -2313,6 +2313,47 @@
           "routes": "Discover Cycling\nRoutes"
         }
       },
+      "darrajaApp": {
+        "welcome": "Welcome to Darraja.",
+        "tagline": "Discover it all, right at your fingertips",
+        "downloadLabel": "Download the Darraja App"
+      },
+      "partners": {
+        "title": "Partners",
+        "subtitle": "Working together with trusted partners to support cycling, community, and active living across Abu Dhabi"
+      },
+      "venue": {
+        "title1": "Book Your Venue.",
+        "title2": "Your Next Experience Starts Here.",
+        "imageTitle": "Your All-In-One Event Venue",
+        "imageSubtitle": "Flexible spaces designed to bring your event to life.",
+        "imageAlt": "Your all-in-one event venue",
+        "eventsTitle": "Events & Experiences",
+        "eventsText": "Host events, races, rides, launches, and unforgettable experiences.",
+        "spacesTitle": "Spaces & Gatherings",
+        "spacesText": "Flexible spaces for meetings, training, community gatherings, and more.",
+        "text": "From sporting events and training sessions to meetings, private gatherings, and corporate experiences, discover versatile spaces designed around your needs.",
+        "bookNow": "Book Now"
+      },
+      "feed": {
+        "title": "Voices from the Community",
+        "subtitle": "Hear what our passionate riders, weekend warriors, and community cyclists are saying about their journey with ADCC.",
+        "avatarAlt": "Community member",
+        "samples": [
+          {
+            "quote": "Darraja makes it so much easier to stay connected with cycling in Abu Dhabi. I can discover rides, events & routes all in one place.",
+            "name": "Aisha Al Marzouqi"
+          },
+          {
+            "quote": "I love finding upcoming rides and events without searching multiple platforms. It makes joining the community easier.",
+            "name": "Mohammed Fares"
+          },
+          {
+            "quote": "Finding cycling events has never felt this simple. I can see what's coming up, check details and join the rides that fit me.",
+            "name": "Sarah El Din"
+          }
+        ]
+      },
       "community": {
         "eyebrow": "For the Cycling Community",
         "title": "Eat • Sleep • Bike • Repeat",

@@ -11,7 +11,8 @@ import {
   HOME_STORE_PRODUCTS,
 } from "../../data/homeStoreProducts";
 import { AppStoreButton } from "../public/AppStoreButton";
-import { Bike, CalendarDays, MapPin, Users } from "lucide-react";
+import { Bike, CalendarDays, MapPin, Users, UserRound } from "lucide-react";
+import { getPublicFeedPosts, FeedPost } from "../../services/feedPostsApi";
 
 const TICKER_ITEMS = [
   {
@@ -590,7 +591,7 @@ font-family: var(--font-satoshi) !important;}
     display: flex;
     gap: 43px;
     overflow: hidden;
-    padding-block-start: 150px;
+    padding-block-start: 90px;
     padding-inline: 86px 0;
   }
   .journey-copy {
@@ -682,9 +683,525 @@ font-family: var(--font-satoshi) !important;}
   // }
   .home-community-section {
     background: #EAF4FF;
-    padding: 125px 86px;
+    padding: 80px 86px;
     text-align: center;
   }
+
+  .home-partners-section {
+    background: #435974;
+    padding: 48px 86px 52px;
+    text-align: center;
+  }
+  .home-partners-title {
+    font-family: 'Bebas Kai', sans-serif;
+    font-weight: 400;
+    font-size: 64px;
+    line-height: 100.7%;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0 0 20px;
+  }
+  .home-partners-subtitle {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 26px;
+    color: rgba(255, 255, 255, 0.75);
+    max-width: 620px;
+    margin: 0 auto 56px;
+  }
+  .home-partners-marquee {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow: hidden;
+    direction: ltr;
+  }
+  .home-partners-marquee::before,
+  .home-partners-marquee::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 140px;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .home-partners-marquee::before {
+    left: 0;
+    background: linear-gradient(to right, #435974 0%, rgba(67, 89, 116, 0) 100%);
+  }
+  .home-partners-marquee::after {
+    right: 0;
+    background: linear-gradient(to left, #435974 0%, rgba(67, 89, 116, 0) 100%);
+  }
+  .home-partners-track {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    width: max-content;
+    direction: ltr;
+    animation: ticker-group-left 32s linear infinite;
+  }
+  .home-partners-marquee:hover .home-partners-track {
+    animation-play-state: paused;
+  }
+  .home-partner-card {
+    flex: 0 0 178px;
+    width: 178px;
+    height: 96px;
+    background: #ffffff;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 20px;
+    overflow: hidden;
+  }
+  .home-partner-card img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .home-partner-fallback {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 1.3;
+    color: #435974;
+    text-align: center;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .home-partners-track {
+      animation: none;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+  }
+  @media (max-width: 1024px) {
+    .home-partners-section {
+      padding: 64px 32px 72px;
+    }
+    .home-partners-title {
+      font-size: clamp(40px, 8vw, 52px);
+    }
+    .home-partners-track {
+      gap: 16px;
+      animation-duration: 24s;
+    }
+    .home-partner-card {
+      flex-basis: 150px;
+      width: 150px;
+      height: 84px;
+    }
+    .home-partners-marquee::before,
+    .home-partners-marquee::after {
+      width: 72px;
+    }
+  }
+  @media (max-width: 640px) {
+    .home-partners-section {
+      padding: 40px 18px 40px;
+    }
+    .home-partners-title {
+      font-size: 28px !important;
+      margin-bottom: 12px !important;
+    }
+    .home-partners-track {
+      gap: 14px;
+      animation-duration: 18s;
+    }.home-partners-subtitle{
+        font-size: 16px !important;
+        line-height: 22px !important;
+    
+    }.home-partners-subtitle{
+        margin: 0 auto 25px !important;}
+    .home-partner-card {
+      flex: 0 0 132px;
+      width: 132px;
+      height: 74px;
+      padding: 12px 16px;
+    }
+    .home-partners-marquee::before,
+    .home-partners-marquee::after {
+      width: 44px;
+    }
+  }
+
+  .home-venue-section {
+    background: #435974;
+    padding: 90px 86px 100px;
+    text-align: center;
+  }
+  .home-venue-title {
+    font-family: 'Bebas Kai', sans-serif;
+    font-weight: 400;
+    font-size: 56px;
+    line-height: 108%;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0 auto 56px;
+    max-width: 900px;
+  }
+  .home-venue-grid {
+    display: flex;
+    align-items: stretch;
+    gap: 32px;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: start;
+  }
+  .home-venue-image-card {
+    position: relative;
+    flex: 0 0 clamp(360px, 44%, 520px);
+    border-radius: 16px;
+    overflow: hidden;
+    min-height: 460px;
+  }
+  .home-venue-image-card img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .home-venue-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,0.78) 100%);
+  }
+  .home-venue-image-caption {
+    position: absolute;
+    inset-inline: 28px;
+    bottom: 26px;
+    z-index: 1;
+  }
+  .home-venue-image-caption h3 {
+    font-family: 'Bebas Kai', sans-serif;
+    font-weight: 400;
+    font-size: 26px;
+    line-height: 100.7%;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0 0 8px;
+  }
+  .home-venue-image-caption p {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 22px;
+    color: rgba(255,255,255,0.85);
+    margin: 0;
+  }
+  .home-venue-content {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .home-venue-cards {
+    display: flex;
+    gap: 20px;
+  }
+  .home-venue-card {
+    flex: 1 1 0;
+    min-width: 0;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 24px 22px;
+  }
+  .home-venue-card-icon {
+    width: 34px;
+    height: 34px;
+    color: #ffffff;
+    margin-bottom: 16px;
+  }
+  .home-venue-card h4 {
+    font-family: 'Bebas Kai', sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 100.7%;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0 0 10px;
+  }
+  .home-venue-card p {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 22px;
+    color: rgba(255,255,255,0.78);
+    margin: 0;
+  }
+  .home-venue-text {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 28px;
+    color: rgba(255,255,255,0.88);
+    margin: 32px 0 28px;
+    max-width: 620px;
+  }
+  .home-venue-book-btn {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: #019839;
+    color: #ffffff;
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 1;
+    padding: 14px 26px;
+    border-radius: 30px;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .home-venue-book-btn:hover {
+    background: #017a2e;
+    transform: translateY(-2px);
+  }
+  @media (max-width: 1024px) {
+    .home-venue-section {
+      padding: 64px 32px 72px;
+    }
+    .home-venue-title {
+      font-size: clamp(36px, 6vw, 46px);
+      margin-bottom: 40px;
+    }
+    .home-venue-grid {
+      flex-direction: column;
+      gap: 24px;
+    }
+    .home-venue-image-card {
+      flex: none;
+      width: 100%;
+      min-height: 280px;
+    }
+  }
+  @media (max-width: 640px) {
+    .home-venue-section {
+      padding: 35px 18px 30px;
+    }
+    .home-venue-title {
+      font-size: 26px !important;
+      margin-bottom: 28px !important;
+    }
+    .home-venue-image-caption h3 {
+      font-size: 20px !important;
+    }
+    .home-venue-image-caption p {
+      font-size: 13px !important;
+      line-height: 19px !important;
+    }
+    .home-venue-cards {
+      flex-direction: column;
+      gap: 14px;
+    }
+    .home-venue-card h4 {
+      font-size: 17px !important;
+    }
+    .home-venue-text {
+      font-size: 16px;
+      line-height: 25px;
+    }
+  }
+
+  .home-feed-section {
+    background: #EAF4FF;
+    padding: 20px 86px 30px;
+  }
+  .home-feed-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 40px;
+    max-width: 1268px;
+    margin: 0 auto 48px;
+  }
+  .home-feed-title {
+    font-family: 'Bebas Kai', sans-serif;
+    font-weight: 400;
+    font-size: 56px;
+    line-height: 100.7%;
+    text-transform: uppercase;
+    color: #000000;
+    margin: 0;
+    max-width: 420px;
+  }
+  .home-feed-subtitle {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 24px;
+    color: #000;
+    margin: 0;
+    max-width: 350px;
+
+  }
+  .home-feed-rail {
+    /* Direction-agnostic full-bleed: pull to the viewport edges on both
+       inline sides regardless of LTR/RTL. */
+    width: auto;
+    margin-inline: calc(50% - 50vw);
+    overflow: hidden;
+    direction: ltr;
+  }
+  .home-feed-track {
+    display: flex;
+    gap: 20px;
+    width: max-content;
+    direction: ltr;
+    animation: ticker-group-left 40s linear infinite;
+  }
+  .home-feed-rail:hover .home-feed-track {
+    animation-play-state: paused;
+  }
+  .home-feed-track.is-static {
+    animation: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .home-feed-track {
+      animation: none;
+      flex-wrap: wrap;
+      width: 100%;
+      justify-content: center;
+    }
+  }
+  .home-feed-card {
+    position: relative;
+    flex: 0 0 clamp(280px, 32vw, 409px);
+    height: 420px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #435974;
+  }
+  .home-feed-card-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .home-feed-card-bg--fallback {
+    background: linear-gradient(160deg, #566f8d 0%, #435974 55%, #2f3f52 100%);
+  }
+  .home-feed-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(0,0,0,0.45) 100%);
+  }
+  .home-feed-card-body {
+    position: absolute;
+    inset-inline: 16px;
+    bottom: 16px;
+    z-index: 1;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.5);
+    /* Note: backdrop-filter has minimal browser support */
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+  }
+  /* The rail is forced LTR for the marquee; keep Arabic card copy RTL. */
+  html[dir='rtl'] .home-feed-card-body {
+    direction: rtl;
+    text-align: right;
+  }
+  .home-feed-quote {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 22px;
+    color: #ffffff;
+    margin: 0 0 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .home-feed-author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .home-feed-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+  }
+  .home-feed-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .home-feed-author-name {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 18px;
+    color: #ffffff;
+  }
+  .home-feed-card.is-skeleton {
+    background: rgba(67, 89, 116, 0.18);
+  }
+  .home-feed-card.is-skeleton .home-feed-card-overlay {
+    display: none;
+  }
+  @media (max-width: 1024px) {
+    .home-feed-section {
+      padding: 64px 32px 72px;
+    }
+    .home-feed-head {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .home-feed-title {
+      font-size: clamp(36px, 6vw, 46px);
+    }
+    .home-feed-subtitle {
+      text-align: start;
+      max-width: 640px;
+    }
+    .home-feed-track {
+      gap: 16px;
+      animation-duration: 28s;
+    }
+  }
+  @media (max-width: 640px) {
+    .home-feed-section {
+      padding: 35px 18px 20px;
+    }
+    .home-feed-title {
+      font-size: 26px !important;
+    }
+    .home-feed-track {
+      gap: 14px;
+      animation-duration: 22s;
+    }
+    .home-feed-card {
+      flex: 0 0 min(300px, calc(100vw - 60px));
+      height: 380px;
+    }
+  }
+
   .home-community-eyebrow {
     font-family: 'Satoshi', sans-serif;
     font-style: normal;
@@ -2041,12 +2558,44 @@ font-family: var(--font-satoshi) !important;}
 
   @media (max-width: 650px) {
     .home-hero-title,
-    .home-app-title,
     .home-community-title,
     .home-section-title,
     .home-about-title,
     .home-cta-title {
       font-size: 30px !important;
+    }
+.home-ticker{    height: auto !important;}
+section.journey-section {
+        padding-top: 40px !important;
+    }
+
+    .home-app-title {
+      font-size: 22px !important;
+      line-height: 1 !important;
+      margin-bottom: 12px !important;
+    }
+    .home-download-label {
+      font-size: 34px !important;
+      line-height: 1.05 !important;
+      margin-bottom: 12px !important;
+    }
+    .home-app-download-label {
+      font-size: 15px !important;
+      margin-top: 28px !important;
+    }
+    html[dir='rtl'] .home-app-copy {
+      text-align: right !important;
+      align-items: stretch !important;
+    }
+    html[dir='rtl'] .home-app-copy > img {
+      margin-left: auto !important;
+      margin-right: 0 !important;
+    }
+    html[dir='rtl'] .home-app-title,
+    html[dir='rtl'] .home-download-label,
+    html[dir='rtl'] .home-app-download-label {
+      text-align: right !important;
+      max-width: 100% !important;
     }
     .home-hero-content {
       width: min(300px, calc(100% - 36px)) !important;
@@ -2117,7 +2666,7 @@ html[dir='rtl']  .store-featured-product-media{
               text-align: center !important;
     }
     .home-platform-card {
-      height: 350px !important;
+      height: 300px !important;
     }
     .home-platform-card-title {
       font-size: 17px !important;
@@ -2147,7 +2696,7 @@ html[dir='rtl']  .store-featured-product-media{
       margin-block-end: -292px !important;
     }
     .home-about-left-image {
-      height: 380px !important;
+      height: 300px !important;
       aspect-ratio: unset !important;
     }
     .home-about-stats {
@@ -3006,9 +3555,12 @@ function AppSection() {
       id="app"
       className="home-app-section"
       style={{
-        background: "#435974",
+        backgroundImage: "url('/images/bg1.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
         width: "100%",
-        padding: "40px 86px 80px",
+        padding: "140px 86px 80px",
         display: "flex",
         alignItems: "center",
         gap: 60,
@@ -3026,73 +3578,61 @@ function AppSection() {
           minWidth: 0,
         }}
       >
-        <h2
+        <img
+          src="/images/darraja.png"
+          alt="Darraja"
+          style={{
+            display: "block",
+            width: 180,
+            height: "auto",
+            objectFit: "contain",
+            marginBottom: 24,
+          }}
+        />
+
+        <p
           className="home-app-title overflow-hidden"
           style={{
             fontFamily: "'Bebas Kai', sans-serif",
-            fontSize: 80,
-            lineHeight: 1,
+            fontSize: 30,
+            lineHeight: "30px",
             textTransform: "uppercase",
-            color: "#fff",
-            marginBottom: 32,
+            color: "#8F2888",
+            marginBottom: 24,
           }}
         >
-          {appTitleWords.slice(0, 3).join(" ")}
-          <br />
-          {appTitleWords.slice(3).join(" ")}
+          {t("public.home.darrajaApp.welcome")}
+        </p>
+
+        <h2
+          className="home-download-label overflow-hidden"
+          style={{
+            fontFamily: "'Bebas Kai', sans-serif",
+            fontSize: 60,
+            color: "#000",
+            textTransform: "uppercase",
+            marginBottom: 100,
+            lineHeight: 1.05,
+            maxWidth: 430,
+          }}
+        >
+          {t("public.home.darrajaApp.tagline")}
         </h2>
 
-        <motion.p
-          className="home-download-label overflow-hidden font-satoshi"
+        <p
+          className="font-satoshi home-app-download-label"
           style={{
+            marginTop: "auto",
+            marginBottom: 14,
             fontWeight: 700,
-            fontSize: 30,
-            color: "#fff",
+            fontSize: 20,
+            color: "#000",
             textTransform: "uppercase",
-            marginBottom: 23,
-            lineHeight: "30px",
+            lineHeight: 1.2,
           }}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
         >
-          {downloadLine1.map((word, index) => (
-            <span
-              key={index}
-              className="home-word-gap-sm inline-block overflow-hidden"
-            >
-              <motion.span
-                className="inline-block"
-                variants={{
-                  hidden: { y: "120%", opacity: 0 },
-                  visible: { y: "0%", opacity: 1 },
-                }}
-                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              >
-                {word}
-              </motion.span>
-            </span>
-          ))}
-          <br />
-          {downloadLine2.map((word, index) => (
-            <span
-              key={index}
-              className="home-word-gap-sm inline-block overflow-hidden"
-            >
-              <motion.span
-                className="inline-block"
-                variants={{
-                  hidden: { y: "120%", opacity: 0 },
-                  visible: { y: "0%", opacity: 1 },
-                }}
-                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              >
-                {word}
-              </motion.span>
-            </span>
-          ))}
-        </motion.p>
+          {t("public.home.darrajaApp.downloadLabel")}
+        </p>
 
         <div
           className="home-store-buttons"
@@ -3121,7 +3661,7 @@ function AppSection() {
           alt={t("public.home.app.phoneAlt")}
           style={{
             display: "block",
-            width: "95%",
+            width: "80%",
             maxWidth: "none",
             height: "auto",
             objectFit: "contain",
@@ -3165,14 +3705,18 @@ function AppSection() {
                 flexShrink: 0,
               }}
             >
-              <img src={f.icon} alt={f.label.replace("\n", " ")} />
+              <img
+                src={f.icon}
+                alt={f.label.replace("\n", " ")}
+                style={{ filter: "brightness(0)" }}
+              />
             </div>
             <span
               className="font-satoshi"
               style={{
                 fontWeight: 700,
                 fontSize: 16,
-                color: "#fff",
+                color: "#000",
                 textTransform: "uppercase",
                 lineHeight: 1.2,
                 whiteSpace: "pre-line",
@@ -3182,6 +3726,264 @@ function AppSection() {
             </span>
           </div>
         ))}
+      </div>
+    </section>
+  );
+}
+
+/* ─── PARTNERS ──────────────────────────────────────────────────────────────*/
+
+const PARTNERS = [
+  { name: "Partner 1", logo: "/images/logos/logo1.png" },
+  { name: "Partner 2", logo: "/images/logos/logo2.png" },
+  { name: "Partner 3", logo: "/images/logos/logo3.png" },
+  { name: "Partner 4", logo: "/images/logos/logo4.png" },
+  { name: "Partner 5", logo: "/images/logos/logo5.png" },
+  { name: "Partner 6", logo: "/images/logos/logo6.png" },
+  { name: "Partner 7", logo: "/images/logos/logo7.png" },
+  { name: "Partner 8", logo: "/images/logos/logo8.png" },
+];
+
+function PartnersSection() {
+  const { t } = useTranslation();
+  // Duplicated so the marquee track can loop seamlessly (translateX -50%).
+  const marqueeLogos = [...PARTNERS, ...PARTNERS];
+
+  return (
+    <section id="partners" className="home-partners-section">
+      <h2 className="home-partners-title">{t("public.home.partners.title")}</h2>
+      <p className="home-partners-subtitle">
+        {t("public.home.partners.subtitle")}
+      </p>
+      <div className="home-partners-marquee">
+        <div className="home-partners-track">
+          {marqueeLogos.map((partner, i) => (
+            <div key={`${partner.name}-${i}`} className="home-partner-card">
+              <img
+                src={partner.logo}
+                alt={partner.name}
+                loading="lazy"
+                onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                  const img = e.currentTarget;
+                  img.style.display = "none";
+                  const parent = img.parentElement;
+                  if (
+                    parent &&
+                    !parent.querySelector(".home-partner-fallback")
+                  ) {
+                    const span = document.createElement("span");
+                    span.className = "home-partner-fallback";
+                    span.textContent = partner.name;
+                    parent.appendChild(span);
+                  }
+                }}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── BOOK YOUR VENUE ───────────────────────────────────────────────────────*/
+
+const VENUE_BOOK_URL =
+  "https://erp.adcyclingclub.ae/contracts/venue/public/book/";
+
+function BookVenueSection() {
+  const { t } = useTranslation();
+  return (
+    <section id="book-venue" className="home-venue-section">
+      <h2 className="home-venue-title">
+        {t("public.home.venue.title1")}
+        <br />
+        {t("public.home.venue.title2")}
+      </h2>
+
+      <div className="home-venue-grid">
+        <div className="home-venue-image-card">
+          <img
+            src="/images/book-venue.png"
+            alt={t("public.home.venue.imageAlt")}
+          />
+          <div className="home-venue-image-overlay" />
+          <div className="home-venue-image-caption">
+            <h3>{t("public.home.venue.imageTitle")}</h3>
+            <p>{t("public.home.venue.imageSubtitle")}</p>
+          </div>
+        </div>
+
+        <div className="home-venue-content">
+          <div className="home-venue-cards">
+            <div className="home-venue-card">
+              <CalendarDays
+                className="home-venue-card-icon"
+                strokeWidth={1.75}
+              />
+              <h4>{t("public.home.venue.eventsTitle")}</h4>
+              <p>{t("public.home.venue.eventsText")}</p>
+            </div>
+            <div className="home-venue-card">
+              <Users className="home-venue-card-icon" strokeWidth={1.75} />
+              <h4>{t("public.home.venue.spacesTitle")}</h4>
+              <p>{t("public.home.venue.spacesText")}</p>
+            </div>
+          </div>
+
+          <p className="home-venue-text">{t("public.home.venue.text")}</p>
+
+          <a
+            className="home-venue-book-btn"
+            href={VENUE_BOOK_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span>{t("public.home.venue.bookNow")}</span>
+            <ArrowRight color="#ffffff" size={16} />
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── VOICES FROM THE COMMUNITY (FEED) ──────────────────────────────────────*/
+
+function feedAuthorName(post: FeedPost): string {
+  if (typeof post.createdBy === "string") return post.createdBy;
+  return post.createdBy?.fullName ?? "ADCC Rider";
+}
+
+function feedAuthorAvatar(post: FeedPost): string | null {
+  if (typeof post.createdBy === "string") return null;
+  return post.createdBy?.profileImage ?? null;
+}
+
+const FEED_SAMPLE_IMAGES = [
+  "/images/journey-1.png",
+  "/images/journey-2.png",
+  "/images/journey-3.png",
+];
+
+interface FeedCardData {
+  key: string;
+  quote: string;
+  name: string;
+  avatar: string | null;
+  bg: string | null;
+}
+
+function FeedSection() {
+  const { t } = useTranslation();
+  const [posts, setPosts] = useState<FeedPost[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const data = await getPublicFeedPosts({
+          status: "approved",
+          reported: false,
+          limit: 12,
+        });
+        if (!alive) return;
+        setPosts(
+          data.filter(
+            (p: FeedPost) => (p.description || p.title || "").trim().length > 0,
+          ),
+        );
+      } catch {
+        if (alive) setPosts([]);
+      } finally {
+        if (alive) setLoaded(true);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const rawSamples = t("public.home.feed.samples", { returnObjects: true });
+  const samples: { quote: string; name: string }[] = Array.isArray(rawSamples)
+    ? (rawSamples as { quote: string; name: string }[])
+    : [];
+
+  let cards: FeedCardData[];
+  if (posts.length > 0) {
+    cards = posts.map((post: FeedPost, i: number) => ({
+      key: post._id ?? post.id ?? `post-${i}`,
+      quote: post.description || post.title || "",
+      name: feedAuthorName(post),
+      avatar: feedAuthorAvatar(post),
+      bg: post.image ?? FEED_SAMPLE_IMAGES[i % FEED_SAMPLE_IMAGES.length],
+    }));
+  } else {
+    cards = samples.map((s, i) => ({
+      key: `sample-${i}`,
+      quote: s.quote,
+      name: s.name,
+      avatar: null,
+      bg: FEED_SAMPLE_IMAGES[i % FEED_SAMPLE_IMAGES.length],
+    }));
+  }
+
+  const showSkeleton = !loaded && cards.length === 0;
+
+  if (!showSkeleton && cards.length === 0) return null;
+
+  const renderCard = (card: FeedCardData | null, key: string) => (
+    <article
+      key={key}
+      className={`home-feed-card${card ? "" : " is-skeleton"}`}
+      aria-hidden={card ? undefined : true}
+    >
+      {card?.bg ? (
+        <img
+          className="home-feed-card-bg"
+          src={card.bg}
+          alt=""
+          loading="lazy"
+        />
+      ) : (
+        <div className="home-feed-card-bg home-feed-card-bg--fallback" />
+      )}
+      <div className="home-feed-card-overlay" />
+      <div className="home-feed-card-body">
+        {card?.quote ? <p className="home-feed-quote">“{card.quote}”</p> : null}
+        {card ? (
+          <div className="home-feed-author">
+            <span className="home-feed-avatar">
+              {card.avatar ? (
+                <img src={card.avatar} alt={t("public.home.feed.avatarAlt")} />
+              ) : (
+                <UserRound size={18} />
+              )}
+            </span>
+            <span className="home-feed-author-name">{card.name}</span>
+          </div>
+        ) : null}
+      </div>
+    </article>
+  );
+
+  // Duplicate the cards so the marquee (translateX -50%) loops seamlessly.
+  const trackCards = showSkeleton ? [null, null, null] : [...cards, ...cards];
+
+  return (
+    <section id="feed" className="home-feed-section">
+      <div className="home-feed-head">
+        <h2 className="home-feed-title">{t("public.home.feed.title")}</h2>
+        <p className="home-feed-subtitle">{t("public.home.feed.subtitle")}</p>
+      </div>
+
+      <div className="home-feed-rail">
+        <div className={`home-feed-track${showSkeleton ? " is-static" : ""}`}>
+          {trackCards.map((card, i) =>
+            renderCard(card, card ? `${card.key}-${i}` : `skeleton-${i}`),
+          )}
+        </div>
       </div>
     </section>
   );
@@ -4181,12 +4983,15 @@ export function Home() {
       <style>{CSS}</style>
       <HeroSection />
       <StatsTicker />
-      <CyclingJourneySection />
       <AppSection />
+      <CyclingJourneySection />
+      <PartnersSection />
       <CommunitySection />
       <ExplorePlatformSection />
       <StoreSection />
+      <FeedSection />
       <AboutSection />
+      <BookVenueSection />
       {/* <CTABanner />
       <Footer /> */}
     </div>
