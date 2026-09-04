@@ -24,14 +24,14 @@ const INITIAL = {
 
 const FontLoader = () => (
   <style>{`
-.contact-page-hero{
-padding-inline-start: 86px;
+.contact-page-hero-content {
+  inset-inline-start: 96px !important;
+}
+@media (max-width: 1024px) {
+  .contact-page-hero-content { inset-inline-start: 32px !important; }
 }
 @media (max-width: 768px) {
-  .contact-page-hero { padding-inline-start: 18px !important; }
-}
-@media (max-width: 640px) {
-  .contact-page-hero { padding-inline-start: 16px !important; }
+  .contact-page-hero-content { inset-inline-start: 18px !important; }
 }
   `}</style>
 );
