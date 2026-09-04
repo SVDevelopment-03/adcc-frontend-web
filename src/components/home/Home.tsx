@@ -1207,19 +1207,54 @@ font-family: var(--font-satoshi) !important;}
     .home-feed-title {
       font-size: 26px !important;
     }
+    .home-feed-subtitle {
+      font-size: 14px;
+      line-height: 20px;
+    }
     .home-feed-track {
       gap: 14px;
       animation-duration: 22s;
     }
     .home-feed-card {
       flex: 0 0 min(300px, calc(100vw - 60px));
-      height: 380px;
+      height: 300px;
     }
+
+.home-feed-quote{
+font-size: 14px;
+    line-height: 22px;}
+
+
     /* backdrop-filter can jank badly on mobile during the marquee transform. */
     .home-feed-card-body {
       -webkit-backdrop-filter: none;
       backdrop-filter: none;
       background: rgba(0, 0, 0, 0.62);
+    }
+  }
+  /* Touch devices (phones/tablets) have no hover state to pause the marquee
+     and no way to drag it — the autoplay-only track just reads as broken
+     when someone tries to swipe it. Give touch/coarse-pointer devices the
+     same swipeable, snap-scrolling fallback used for reduced-motion. */
+  @media (hover: none), (pointer: coarse) {
+    .home-feed-rail {
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+    }
+    .home-feed-rail::-webkit-scrollbar {
+      display: none;
+    }
+    .home-feed-track {
+      animation: none;
+      padding-inline: 18px;
+    }
+    .home-feed-card {
+      scroll-snap-align: start;
+    }
+    .home-feed-card.is-feed-dup {
+      display: none;
     }
   }
 
@@ -2223,11 +2258,15 @@ font-family: var(--font-satoshi) !important;}
       font-size: 14px !important;
     }
     .home-hero {
-      height: 130vh !important;
+      height: 100vh !important;
       min-height: 400px !important;
       max-height: none !important;
     }
+.home-page .home-hero-title{
+margin-block-end: 20px !important;}
+
     .home-hero-bg {
+      background-image: url('/images/mobile-bg.png') !important;
       background-position: center 30% !important;
     }
     .home-hero-content {
@@ -2591,14 +2630,14 @@ section.journey-section {
     }
 
     .home-app-title {
-      font-size: 22px !important;
-      line-height: 1 !important;
+      font-size: 36px !important;
+      line-height: 1.05 !important;
       margin-bottom: 12px !important;
     }
     .home-download-label {
-      font-size: 34px !important;
-      line-height: 1.05 !important;
-      margin-bottom: 12px !important;
+      font-size: 17px !important;
+      line-height: 1.3 !important;
+      margin-bottom: 24px !important;
     }
     .home-app-download-label {
       font-size: 15px !important;
@@ -3611,34 +3650,36 @@ function AppSection() {
           }}
         />
 
-        <p
+        <h2
           className="home-app-title overflow-hidden"
           style={{
             fontFamily: "'Bebas Kai', sans-serif",
-            fontSize: 30,
-            lineHeight: "30px",
+            fontSize: 58,
+            lineHeight: 1.05,
             textTransform: "uppercase",
             color: "#8F2888",
-            marginBottom: 24,
+            marginBottom: 20,
+            maxWidth: 430,
+            whiteSpace: "pre-line",
           }}
         >
-          {t("public.home.darrajaApp.welcome")}
-        </p>
+          {t("public.home.darrajaApp.headline")}
+        </h2>
 
-        <h2
-          className="home-download-label overflow-hidden"
+        <p
+          className="home-download-label overflow-hidden font-satoshi"
           style={{
-            fontFamily: "'Bebas Kai', sans-serif",
-            fontSize: 60,
+            fontWeight: 700,
+            fontSize: 20,
             color: "#000",
             textTransform: "uppercase",
-            marginBottom: 100,
-            lineHeight: 1.05,
-            maxWidth: 430,
+            marginBottom: 60,
+            lineHeight: 1.3,
+            maxWidth: 360,
           }}
         >
           {t("public.home.darrajaApp.tagline")}
-        </h2>
+        </p>
 
         <p
           className="font-satoshi home-app-download-label"

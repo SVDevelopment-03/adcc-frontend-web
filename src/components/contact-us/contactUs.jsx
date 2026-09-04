@@ -130,7 +130,7 @@ export default function ContactUsPage() {
           classPrefix="contact-page"
         />
 
-        <section className="mx-auto max-w-[1268px] px-10 py-28 max-md:px-5 max-md:py-16 max-sm:px-4 max-sm:py-12">
+        <section className="mx-auto max-w-[1268px] px-10 pt-6 pb-14 max-md:px-5 max-md:pt-4 max-md:pb-8 max-sm:px-4 max-sm:pt-3 max-sm:pb-6">
           <div className="text-center">
             <h2 className="contact-intro-title text-[60px] uppercase max-md:text-[44px] max-sm:text-[36px]">
               {t("public.contact.intro.title")}
@@ -138,7 +138,7 @@ export default function ContactUsPage() {
             <p className="mt-4 text-[24px] max-md:text-[18px]">{t("public.contact.intro.body")}</p>
           </div>
 
-          <div className="mt-20 grid grid-cols-1 items-stretch gap-8 lg:grid-cols-2 max-md:mt-12 max-sm:mt-8">
+          <div className="mt-10 grid grid-cols-1 items-stretch gap-8 lg:grid-cols-2 max-md:mt-6 max-sm:mt-4">
             <div className="flex h-full flex-col">
               <img
                 src="/img/490796704_1417267435941639_5633845168834004037_n. 1 (1).png"

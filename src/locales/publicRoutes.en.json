@@ -529,5 +529,11 @@
       }
     },
     "imageAlt": "Cycling group"
+  },
+  "privacyPolicy": {
+    "hero": {
+      "titleWords": ["Privacy", "Policy"],
+      "breadcrumb": ["Home", "/", "Privacy Policy"]
+    }
   }
 }
