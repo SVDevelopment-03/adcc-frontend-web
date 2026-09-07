@@ -250,7 +250,7 @@ export default function ChallengeDetailPage() {
 
       {/* Stats strip */}
       <section className="mx-auto mb-16 max-w-[min(1192px,calc(100vw-2rem))] rounded-2xl bg-[#A2BFDB] p-4 lg:mb-28">
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_repeat(3,180px)]">
+        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1fr)_repeat(3,180px)]">
           <div className="rounded-2xl bg-[#435974] p-5 text-white sm:p-8">
             <p className="text-[13px] text-white/70 sm:text-[14px]">
               • {t("public.common.joinChallenge")}
@@ -287,37 +287,40 @@ export default function ChallengeDetailPage() {
               </div>
             </div>
           </div>
-          {(
-            [
+          {/* Mobile: 2-up grid; desktop (lg:contents): items flow into the parent grid unchanged */}
+          <div className="grid grid-cols-2 gap-4 lg:contents">
+            {(
               [
-                Users,
-                String(challenge.participants),
-                t("public.challenges.detail.stats.participants"),
-              ],
-              [
-                CalendarDays,
-                formatDate(challenge.endDate, t("public.common.dateTBA")),
-                t("public.challenges.detail.stats.ends"),
-              ],
-              [Trophy, reward, t("public.challenges.detail.stats.prize")],
-            ] as [typeof Users, string, string][]
-          ).map(([Icon, value, label]) => (
-            <div
-              key={label}
-              className="rounded-xl bg-[#435974] p-5 text-white sm:p-8"
-            >
-              <span className="inline-flex rounded-full bg-white p-3 text-[#019839] sm:p-4">
-                <Icon size={20} className="sm:hidden" />
-                <Icon size={25} className="hidden sm:block" />
-              </span>
-              <h3 className="mt-10 text-[22px] font-normal uppercase sm:mt-20 sm:text-[26px] lg:text-[30px]">
-                {value}
-              </h3>
-              <p className="text-[13px] text-white/60 sm:text-[17px] lg:text-[20px]">
-                {label}
-              </p>
-            </div>
-          ))}
+                [
+                  Users,
+                  String(challenge.participants),
+                  t("public.challenges.detail.stats.participants"),
+                ],
+                [
+                  CalendarDays,
+                  formatDate(challenge.endDate, t("public.common.dateTBA")),
+                  t("public.challenges.detail.stats.ends"),
+                ],
+                [Trophy, reward, t("public.challenges.detail.stats.prize")],
+              ] as [typeof Users, string, string][]
+            ).map(([Icon, value, label]) => (
+              <div
+                key={label}
+                className="rounded-xl bg-[#435974] p-4 text-white sm:p-8"
+              >
+                <span className="inline-flex rounded-full bg-white p-3 text-[#019839] sm:p-4">
+                  <Icon size={20} className="sm:hidden" />
+                  <Icon size={25} className="hidden sm:block" />
+                </span>
+                <h3 className="mt-4 text-[18px] font-normal uppercase sm:mt-20 sm:text-[26px] lg:text-[30px]">
+                  {value}
+                </h3>
+                <p className="text-[13px] text-white/60 sm:text-[17px] lg:text-[20px]">
+                  {label}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

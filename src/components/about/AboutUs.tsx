@@ -404,13 +404,54 @@ margin-bottom: 3rem !important;}
         color: #000 !important;
         // text-shadow: 0 1px 8px rgba(0,0,0,0.45);
       }
+      /* RTL: rider photo on the left, copy aligned to the right edge. */
+      html[dir='rtl'] .journey-card__image {
+        left: 0 !important;
+        right: auto !important;
+        transform: scaleX(-1) !important;
+      }
+      html[dir='rtl'] .journey-card__eyebrow,
+      html[dir='rtl'] .journey-card__title,
+      html[dir='rtl'] .journey-card__community,
+      html[dir='rtl'] .journey-card__button {
+        left: auto !important;
+        right: 20px !important;
+      }
+      /* Mobile: values become a swipeable horizontal slider with shorter,
+         tighter cards and smaller headings. */
       .about-values-grid {
-        display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
-        gap: 18px !important;
+        display: flex !important;
+        grid-template-columns: none !important;
+        gap: 14px !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+        margin-inline: -18px !important;
+        padding-inline: 18px !important;
+        scroll-padding-inline: 18px !important;
+      }
+      .about-values-grid::-webkit-scrollbar {
+        display: none !important;
       }
       .about-value-card {
-        min-height: 220px !important;
+        flex: 0 0 78% !important;
+        max-width: 300px !important;
+        min-height: 0 !important;
+        padding: 18px 18px 20px !important;
+        scroll-snap-align: start !important;
+      }
+      .about-value-card > div:first-child {
+        margin-bottom: 14px !important;
+        font-size: 15px !important;
+      }
+      .about-value-card .bebas {
+        font-size: 22px !important;
+        margin-bottom: 8px !important;
+      }
+      .about-value-card p {
+        font-size: 14px !important;
+        line-height: 1.5 !important;
       }
       .about-coaches-grid {
         flex-direction: column !important;
@@ -467,9 +508,11 @@ margin-bottom: 3rem !important;}
       .about-coaches-title {
         font-size: 34px !important;
       }
-      .about-stats-grid,
-      .about-values-grid {
+      .about-stats-grid {
         grid-template-columns: 1fr !important;
+      }
+      .about-value-card {
+        flex-basis: 82% !important;
       }
       .journey-card {
         height: 300px !important;
@@ -478,40 +521,53 @@ margin-bottom: 3rem !important;}
         left: auto !important;
         right: -60px !important;
         top: 10% !important;
-        width: 55% !important;
+        width: 60% !important;
         height: 100% !important;
         object-fit: contain !important;
       }
       .journey-card__title {
-        font-size: 30px !important;
-        line-height: 34px !important;
-        width: 60% !important;
+        font-size: 25px !important;
+        line-height: 30px !important;
+        width: 45% !important;
       }
       .journey-card__community {
         top: 160px !important;
         left: 18px !important;
       }
-      html[dir='rtl'] .journey-card__community {
-        left: auto !important;
-        right: 120px !important;
-      }html[dir='rtl'] .journey-card__title{
-          right: 120px;
-    font-size: 22px !important;    top: 30px;
-}
-
-html[dir='rtl'] .journey-card__eyebrow{
-    right: 120px !important;}
-
-
-
-
-
       .journey-card__button {
         top: 220px !important;
         left: 18px !important;
-        width: auto !important;
         width: 160px !important;
-                right: 120px !important;
+      }
+
+      /* RTL mobile: the rider photo moves to the LEFT (mirrored) and every
+         piece of copy aligns cleanly to the right edge — no more 120px
+         inset that left the text floating mid-card. */
+      html[dir='rtl'] .journey-card__image {
+        left: -60px !important;
+        right: auto !important;
+        transform: scaleX(-1) !important;
+      }
+      html[dir='rtl'] .journey-card__eyebrow {
+        left: auto !important;
+        right: 20px !important;
+      }
+      html[dir='rtl'] .journey-card__title {
+        left: auto !important;
+        right: 20px !important;
+        top: 30px !important;
+        width: 52% !important;
+        font-size: 22px !important;
+        line-height: 28px !important;
+      }
+      html[dir='rtl'] .journey-card__community {
+        left: auto !important;
+        right: 20px !important;
+      }
+      html[dir='rtl'] .journey-card__button {
+        left: auto !important;
+        right: 20px !important;
+        width: 160px !important;
       }
       .about-cta-title {
         font-size: 40px !important;
@@ -868,7 +924,7 @@ function MissionSection() {
             flexDirection: "column",
             justifyContent: "space-between",
             gap: 0,
-            minHeight: 380,
+            minHeight: 340,
           }}
         >
           {/* 01. Mission */}
@@ -888,7 +944,7 @@ function MissionSection() {
               ease: [0.22, 1, 0.36, 1],
             }}
             style={{
-              background: "#fff",
+              border: "1px solid rgba(0,0,0,0.22)",
               borderRadius: 18,
               padding: "28px 32px",
             }}
@@ -899,9 +955,9 @@ function MissionSection() {
 
             <p
               style={{
-                fontSize: 15,
+                fontSize: 16,
                 color: "rgba(0,0,0,0.6)",
-                lineHeight: 1.6,
+                lineHeight: 1.5,
               }}
             >
               {t("public.about.mission.body")}
@@ -1076,7 +1132,7 @@ function ValuesSection() {
           >
             <div
               style={{
-                fontFamily: "'Bebas Kai',sans-serif",
+                fontFamily: "'Outfit',sans-serif",
                 fontSize: 17,
                 fontWeight: 500,
                 color: "#fff",
@@ -1099,7 +1155,7 @@ function ValuesSection() {
 
             <p
               style={{
-                fontFamily: "'Bebas Kai',sans-serif",
+                fontFamily: "'Outfit',sans-serif",
                 fontSize: 16,
                 color: "#fff",
                 lineHeight: 1.55,

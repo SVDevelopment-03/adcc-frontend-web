@@ -414,7 +414,7 @@ font-family: var(--font-satoshi) !important;}
     width: 106px;
     font-family: 'Outfit', sans-serif;
     font-weight: 400;
-    font-size: 22px;
+    font-size: 20px;
     line-height: 28px;
     color: #000;
     text-align: end;
@@ -748,15 +748,15 @@ font-family: var(--font-satoshi) !important;}
     animation-play-state: paused;
   }
   .home-partner-card {
-    flex: 0 0 178px;
-    width: 178px;
-    height: 96px;
+    flex: 0 0 200px;
+    width: 200px;
+    height: 100px;
     background: #ffffff;
     border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 16px 20px;
+    padding: 0px 20px;
     overflow: hidden;
   }
   .home-partner-card img {
@@ -806,6 +806,12 @@ font-family: var(--font-satoshi) !important;}
     .home-partners-section {
       padding: 40px 18px 40px;
     }
+
+.home-page #about.home-about-section{
+    padding-bottom: 180px !important;}
+
+
+
     .home-partners-title {
       font-size: 28px !important;
       margin-bottom: 12px !important;
@@ -820,10 +826,10 @@ font-family: var(--font-satoshi) !important;}
     }.home-partners-subtitle{
         margin: 0 auto 25px !important;}
     .home-partner-card {
-      flex: 0 0 132px;
-      width: 132px;
-      height: 74px;
-      padding: 12px 16px;
+    flex: 0 0 150px;
+        width: 150px;
+        height: 80px;
+        padding: 5px 16px;
     }
     .home-partners-marquee::before,
     .home-partners-marquee::after {
@@ -1491,7 +1497,7 @@ font-size: 14px;
   .home-platform-card {
     flex: 0 0 422.67px;
     width: 422.67px;
-    height: 631px;
+    height: 580px;
     position: relative;
     overflow: hidden;
     cursor: pointer;
@@ -1545,7 +1551,7 @@ font-size: 14px;
     font-family: 'Outfit', sans-serif !important;
     font-style: normal;
     font-weight: 400;
-    font-size: 18.6068px;
+    font-size: 16px;
     line-height: 100.7%;
     text-transform: uppercase;
     color: #ffffff;
@@ -1570,7 +1576,7 @@ font-size: 14px;
     font-family: 'Outfit', sans-serif !important;
     font-style: normal;
     font-weight: 400;
-    font-size: 22px;
+    font-size: 18px;
     line-height: 28px;
     color: #F6EFE7;
     display: inline-block;
@@ -2477,13 +2483,31 @@ margin-block-end: 20px !important;}
       padding-top: 0 !important;
     }
     .home-platform-cards {
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
       gap: 14px !important;
       border-radius: 0 !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      scroll-snap-type: x mandatory !important;
+      -webkit-overflow-scrolling: touch !important;
+      scrollbar-width: none !important;
+      margin-inline: -18px !important;
+      padding-inline: 18px !important;
+      scroll-padding-inline: 18px !important;
+    }
+    .home-platform-cards::-webkit-scrollbar {
+      display: none !important;
     }
     .home-platform-card {
+      flex: 0 0 82% !important;
+      width: 82% !important;
+      max-width: 340px !important;
       height: 280px !important;
       border-radius: 14px !important;
+      border-top: none !important;
       margin: 0 !important;
+      scroll-snap-align: start !important;
     }
     .home-platform-card:first-child,
     .home-platform-card:last-child {
@@ -2554,6 +2578,20 @@ margin-block-end: 20px !important;}
       height: 260px !important;
       aspect-ratio: unset !important;
       object-fit: cover !important;
+    }
+    /* On mobile the cyclist drops out of its absolute corner and sits in the
+       normal column flow, full-width, beneath the Read More button. */
+    .home-about-rider {
+           display: block !important;
+        position: absolute !important;
+        width: 100% !important;
+         margin-top: 4px !important;
+        pointer-events: auto !important;
+        z-index: 0 !important;
+        right: 0px;
+    }
+    .home-about-rider img {
+       transform: none !important;
     }
     .home-about-title {
       font-size: 42px !important;
@@ -3963,29 +4001,16 @@ function FeedSection() {
     };
   }, []);
 
-  const rawSamples = t("public.home.feed.samples", { returnObjects: true });
-  const samples: { quote: string; name: string }[] = Array.isArray(rawSamples)
-    ? (rawSamples as { quote: string; name: string }[])
-    : [];
-
-  let cards: FeedCardData[];
-  if (posts.length > 0) {
-    cards = posts.map((post: FeedPost, i: number) => ({
-      key: post._id ?? post.id ?? `post-${i}`,
-      quote: post.description || post.title || "",
-      name: feedAuthorName(post),
-      avatar: feedAuthorAvatar(post),
-      bg: post.image ?? FEED_SAMPLE_IMAGES[i % FEED_SAMPLE_IMAGES.length],
-    }));
-  } else {
-    cards = samples.map((s, i) => ({
-      key: `sample-${i}`,
-      quote: s.quote,
-      name: s.name,
-      avatar: null,
-      bg: FEED_SAMPLE_IMAGES[i % FEED_SAMPLE_IMAGES.length],
-    }));
-  }
+  // Content is driven entirely by the moderation backend (GET /v1/feed —
+  // approved posts only). No static fallback: while the request is in flight
+  // we show a skeleton, and if there are no approved posts the section hides.
+  const cards: FeedCardData[] = posts.map((post: FeedPost, i: number) => ({
+    key: post._id ?? post.id ?? `post-${i}`,
+    quote: post.description || post.title || "",
+    name: feedAuthorName(post),
+    avatar: feedAuthorAvatar(post),
+    bg: post.image ?? FEED_SAMPLE_IMAGES[i % FEED_SAMPLE_IMAGES.length],
+  }));
 
   const showSkeleton = !loaded && cards.length === 0;
 

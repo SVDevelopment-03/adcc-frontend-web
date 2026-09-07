@@ -278,7 +278,7 @@ function StatsSection({ community }: { community: CommunityApiResponse }) {
 
   return (
     <section className="mx-auto mb-0 max-w-[min(1192px,calc(100vw-2rem))] rounded-2xl bg-[#A2BFDB] p-4 lg:mb-0">
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_210px_210px]">
+      <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1fr)_210px_210px]">
         <div className="rounded-2xl bg-[#435974] p-5 text-white sm:p-8">
           <p className="text-[13px] text-white/70 sm:text-[14px]">
             • {t("public.communities.detail.stats.joinCommunityEyebrow")}
@@ -324,36 +324,39 @@ function StatsSection({ community }: { community: CommunityApiResponse }) {
           </div>
         </div>
 
-        {(
-          [
+        {/* Mobile: 2-up grid; desktop (lg:contents): items flow into the parent grid unchanged */}
+        <div className="grid grid-cols-2 gap-4 lg:contents">
+          {(
             [
-              String(memberCount),
-              t("public.communities.detail.stats.activeMembers"),
-              Users,
-            ],
-            [
-              String(eventsOrganized),
-              t("public.communities.detail.stats.eventsOrganized"),
-              CalendarDays,
-            ],
-          ] as [string, string, typeof Users][]
-        ).map(([value, label, Icon]) => (
-          <div
-            key={label}
-            className="rounded-xl bg-[#435974] p-5 text-white sm:p-8"
-          >
-            <span className="inline-flex rounded-full bg-white p-3 text-[#019839] sm:p-4">
-              <Icon size={20} className="sm:hidden" />
-              <Icon size={25} className="hidden sm:block" />
-            </span>
-            <h3 className="mt-10 text-[28px] font-normal uppercase sm:mt-20 sm:text-[34px] lg:text-[40px]">
-              {value}
-            </h3>
-            <p className="text-[14px] text-white/60 sm:text-[18px] lg:text-[20px]">
-              {label}
-            </p>
-          </div>
-        ))}
+              [
+                String(memberCount),
+                t("public.communities.detail.stats.activeMembers"),
+                Users,
+              ],
+              [
+                String(eventsOrganized),
+                t("public.communities.detail.stats.eventsOrganized"),
+                CalendarDays,
+              ],
+            ] as [string, string, typeof Users][]
+          ).map(([value, label, Icon]) => (
+            <div
+              key={label}
+              className="rounded-xl bg-[#435974] p-5 text-white sm:p-8"
+            >
+              <span className="inline-flex rounded-full bg-white p-3 text-[#019839] sm:p-4">
+                <Icon size={20} className="sm:hidden" />
+                <Icon size={25} className="hidden sm:block" />
+              </span>
+              <h3 className="mt-4 text-[28px] font-normal uppercase sm:mt-20 sm:text-[34px] lg:text-[40px]">
+                {value}
+              </h3>
+              <p className="text-[14px] text-white/60 sm:text-[18px] lg:text-[20px]">
+                {label}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
