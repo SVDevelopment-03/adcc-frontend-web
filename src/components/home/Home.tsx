@@ -2485,11 +2485,12 @@ margin-block-end: 20px !important;}
     .home-platform-cards {
       flex-direction: row !important;
       flex-wrap: nowrap !important;
+      justify-content: flex-start !important;
       gap: 14px !important;
       border-radius: 0 !important;
       overflow-x: auto !important;
       overflow-y: hidden !important;
-      scroll-snap-type: x mandatory !important;
+      scroll-snap-type: x proximity !important;
       -webkit-overflow-scrolling: touch !important;
       scrollbar-width: none !important;
       margin-inline: -18px !important;
