@@ -307,7 +307,7 @@ export default function MerchandiseDetailPage() {
                     type="button"
                     key={similar.id}
                     onClick={() => navigate(`/user-adcc-store/product/${similar.id}`)}
-                    className="cursor-pointer min-h-[220px] rounded-[10px] border border-black/10 bg-[#fbf3f3] p-5 text-start shadow-sm transition-all duration-300 hover:border-[#435974] hover:shadow-md sm:min-h-[280px] sm:p-6 lg:min-h-[340px] lg:p-8"
+                    className="cursor-pointer min-h-[220px] rounded-[10px] border border-black/10 bg-transparent p-5 text-start shadow-sm transition-all duration-300 hover:border-[#435974] hover:shadow-md sm:min-h-[280px] sm:p-6 lg:min-h-[340px] lg:p-8"
                   >
                     <h3 className="text-[16px] uppercase sm:text-[18px] lg:text-[22px]">{similar.name}</h3>
                     <p className="mt-1 text-[14px] font-medium sm:text-[16px] lg:text-[18px]">

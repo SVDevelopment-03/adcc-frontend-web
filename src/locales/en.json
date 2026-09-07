@@ -2264,6 +2264,7 @@
       "contactUs": "Contact Us",
       "rides": "Tracks",
       "cyclistsCorner": "Cyclist's Corner",
+      "privacyPolicy": "Privacy Policy",
       "copyright": "Copyright 2026. Abu Dhabi Cycling Club",
       "cyclingShortcut": "Cycling shortcut",
       "address": "Abu Dhabi Cycling Club HQ, Hudayriyat Island, Abu Dhabi, UAE.",
@@ -2315,6 +2316,7 @@
       },
       "darrajaApp": {
         "welcome": "Welcome to Darraja.",
+        "headline": "One Community.\nEndless Rides.",
         "tagline": "Discover it all, right at your fingertips",
         "downloadLabel": "Download the Darraja App"
       },

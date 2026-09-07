@@ -24,6 +24,7 @@ import StoreDetailPage from './components/user-store-detail/userStoreDetail';
 import UserNews from './components/user-news/UserNews';
 import UserNewsDetail from './components/user-news-detail/UserNewsDetail';
 import ContactUs from './components/contact-us/contactUs.jsx';
+import PrivacyPolicy from './components/privacy-policy/PrivacyPolicy';
 import { Home } from './components/home/Home';
 
 
@@ -44,6 +45,7 @@ const publicRoutePrefixes = [
   '/user-marketplace',
   '/user-news',
   '/contact-us',
+  '/privacy-policy',
 ];
 
 function normalizePathname(pathname: string) {
@@ -148,6 +150,7 @@ function AppContent() {
       <Route path="/user-store-detail/*" element={publicPage(<StoreDetailPage />)} />
 
       <Route path="/contact-us/*" element={publicPage(<ContactUs />)} />
+      <Route path="/privacy-policy/*" element={publicPage(<PrivacyPolicy />)} />
 
       <Route path="/home/*" element={publicPage(<Home />)} />
       

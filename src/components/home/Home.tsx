@@ -414,7 +414,7 @@ font-family: var(--font-satoshi) !important;}
     width: 106px;
     font-family: 'Outfit', sans-serif;
     font-weight: 400;
-    font-size: 22px;
+    font-size: 20px;
     line-height: 28px;
     color: #000;
     text-align: end;
@@ -748,15 +748,15 @@ font-family: var(--font-satoshi) !important;}
     animation-play-state: paused;
   }
   .home-partner-card {
-    flex: 0 0 178px;
-    width: 178px;
-    height: 96px;
+    flex: 0 0 200px;
+    width: 200px;
+    height: 100px;
     background: #ffffff;
     border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 16px 20px;
+    padding: 0px 20px;
     overflow: hidden;
   }
   .home-partner-card img {
@@ -806,6 +806,12 @@ font-family: var(--font-satoshi) !important;}
     .home-partners-section {
       padding: 40px 18px 40px;
     }
+
+.home-page #about.home-about-section{
+    padding-bottom: 180px !important;}
+
+
+
     .home-partners-title {
       font-size: 28px !important;
       margin-bottom: 12px !important;
@@ -820,10 +826,10 @@ font-family: var(--font-satoshi) !important;}
     }.home-partners-subtitle{
         margin: 0 auto 25px !important;}
     .home-partner-card {
-      flex: 0 0 132px;
-      width: 132px;
-      height: 74px;
-      padding: 12px 16px;
+    flex: 0 0 150px;
+        width: 150px;
+        height: 80px;
+        padding: 5px 16px;
     }
     .home-partners-marquee::before,
     .home-partners-marquee::after {
@@ -1207,19 +1213,54 @@ font-family: var(--font-satoshi) !important;}
     .home-feed-title {
       font-size: 26px !important;
     }
+    .home-feed-subtitle {
+      font-size: 14px;
+      line-height: 20px;
+    }
     .home-feed-track {
       gap: 14px;
       animation-duration: 22s;
     }
     .home-feed-card {
       flex: 0 0 min(300px, calc(100vw - 60px));
-      height: 380px;
+      height: 300px;
     }
+
+.home-feed-quote{
+font-size: 14px;
+    line-height: 22px;}
+
+
     /* backdrop-filter can jank badly on mobile during the marquee transform. */
     .home-feed-card-body {
       -webkit-backdrop-filter: none;
       backdrop-filter: none;
       background: rgba(0, 0, 0, 0.62);
+    }
+  }
+  /* Touch devices (phones/tablets) have no hover state to pause the marquee
+     and no way to drag it — the autoplay-only track just reads as broken
+     when someone tries to swipe it. Give touch/coarse-pointer devices the
+     same swipeable, snap-scrolling fallback used for reduced-motion. */
+  @media (hover: none), (pointer: coarse) {
+    .home-feed-rail {
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+    }
+    .home-feed-rail::-webkit-scrollbar {
+      display: none;
+    }
+    .home-feed-track {
+      animation: none;
+      padding-inline: 18px;
+    }
+    .home-feed-card {
+      scroll-snap-align: start;
+    }
+    .home-feed-card.is-feed-dup {
+      display: none;
     }
   }
 
@@ -1456,7 +1497,7 @@ font-family: var(--font-satoshi) !important;}
   .home-platform-card {
     flex: 0 0 422.67px;
     width: 422.67px;
-    height: 631px;
+    height: 580px;
     position: relative;
     overflow: hidden;
     cursor: pointer;
@@ -1510,7 +1551,7 @@ font-family: var(--font-satoshi) !important;}
     font-family: 'Outfit', sans-serif !important;
     font-style: normal;
     font-weight: 400;
-    font-size: 18.6068px;
+    font-size: 16px;
     line-height: 100.7%;
     text-transform: uppercase;
     color: #ffffff;
@@ -1535,7 +1576,7 @@ font-family: var(--font-satoshi) !important;}
     font-family: 'Outfit', sans-serif !important;
     font-style: normal;
     font-weight: 400;
-    font-size: 22px;
+    font-size: 18px;
     line-height: 28px;
     color: #F6EFE7;
     display: inline-block;
@@ -2223,11 +2264,15 @@ font-family: var(--font-satoshi) !important;}
       font-size: 14px !important;
     }
     .home-hero {
-      height: 130vh !important;
+      height: 100vh !important;
       min-height: 400px !important;
       max-height: none !important;
     }
+.home-page .home-hero-title{
+margin-block-end: 20px !important;}
+
     .home-hero-bg {
+      background-image: url('/images/mobile-bg.png') !important;
       background-position: center 30% !important;
     }
     .home-hero-content {
@@ -2438,13 +2483,31 @@ font-family: var(--font-satoshi) !important;}
       padding-top: 0 !important;
     }
     .home-platform-cards {
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
       gap: 14px !important;
       border-radius: 0 !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      scroll-snap-type: x mandatory !important;
+      -webkit-overflow-scrolling: touch !important;
+      scrollbar-width: none !important;
+      margin-inline: -18px !important;
+      padding-inline: 18px !important;
+      scroll-padding-inline: 18px !important;
+    }
+    .home-platform-cards::-webkit-scrollbar {
+      display: none !important;
     }
     .home-platform-card {
+      flex: 0 0 82% !important;
+      width: 82% !important;
+      max-width: 340px !important;
       height: 280px !important;
       border-radius: 14px !important;
+      border-top: none !important;
       margin: 0 !important;
+      scroll-snap-align: start !important;
     }
     .home-platform-card:first-child,
     .home-platform-card:last-child {
@@ -2515,6 +2578,20 @@ font-family: var(--font-satoshi) !important;}
       height: 260px !important;
       aspect-ratio: unset !important;
       object-fit: cover !important;
+    }
+    /* On mobile the cyclist drops out of its absolute corner and sits in the
+       normal column flow, full-width, beneath the Read More button. */
+    .home-about-rider {
+           display: block !important;
+        position: absolute !important;
+        width: 100% !important;
+         margin-top: 4px !important;
+        pointer-events: auto !important;
+        z-index: 0 !important;
+        right: 0px;
+    }
+    .home-about-rider img {
+       transform: none !important;
     }
     .home-about-title {
       font-size: 42px !important;
@@ -2591,14 +2668,14 @@ section.journey-section {
     }
 
     .home-app-title {
-      font-size: 22px !important;
-      line-height: 1 !important;
+      font-size: 36px !important;
+      line-height: 1.05 !important;
       margin-bottom: 12px !important;
     }
     .home-download-label {
-      font-size: 34px !important;
-      line-height: 1.05 !important;
-      margin-bottom: 12px !important;
+      font-size: 17px !important;
+      line-height: 1.3 !important;
+      margin-bottom: 24px !important;
     }
     .home-app-download-label {
       font-size: 15px !important;
@@ -3611,34 +3688,36 @@ function AppSection() {
           }}
         />
 
-        <p
+        <h2
           className="home-app-title overflow-hidden"
           style={{
             fontFamily: "'Bebas Kai', sans-serif",
-            fontSize: 30,
-            lineHeight: "30px",
+            fontSize: 58,
+            lineHeight: 1.05,
             textTransform: "uppercase",
             color: "#8F2888",
-            marginBottom: 24,
+            marginBottom: 20,
+            maxWidth: 430,
+            whiteSpace: "pre-line",
           }}
         >
-          {t("public.home.darrajaApp.welcome")}
-        </p>
+          {t("public.home.darrajaApp.headline")}
+        </h2>
 
-        <h2
-          className="home-download-label overflow-hidden"
+        <p
+          className="home-download-label overflow-hidden font-satoshi"
           style={{
-            fontFamily: "'Bebas Kai', sans-serif",
-            fontSize: 60,
+            fontWeight: 700,
+            fontSize: 20,
             color: "#000",
             textTransform: "uppercase",
-            marginBottom: 100,
-            lineHeight: 1.05,
-            maxWidth: 430,
+            marginBottom: 60,
+            lineHeight: 1.3,
+            maxWidth: 360,
           }}
         >
           {t("public.home.darrajaApp.tagline")}
-        </h2>
+        </p>
 
         <p
           className="font-satoshi home-app-download-label"
@@ -3922,29 +4001,16 @@ function FeedSection() {
     };
   }, []);
 
-  const rawSamples = t("public.home.feed.samples", { returnObjects: true });
-  const samples: { quote: string; name: string }[] = Array.isArray(rawSamples)
-    ? (rawSamples as { quote: string; name: string }[])
-    : [];
-
-  let cards: FeedCardData[];
-  if (posts.length > 0) {
-    cards = posts.map((post: FeedPost, i: number) => ({
-      key: post._id ?? post.id ?? `post-${i}`,
-      quote: post.description || post.title || "",
-      name: feedAuthorName(post),
-      avatar: feedAuthorAvatar(post),
-      bg: post.image ?? FEED_SAMPLE_IMAGES[i % FEED_SAMPLE_IMAGES.length],
-    }));
-  } else {
-    cards = samples.map((s, i) => ({
-      key: `sample-${i}`,
-      quote: s.quote,
-      name: s.name,
-      avatar: null,
-      bg: FEED_SAMPLE_IMAGES[i % FEED_SAMPLE_IMAGES.length],
-    }));
-  }
+  // Content is driven entirely by the moderation backend (GET /v1/feed —
+  // approved posts only). No static fallback: while the request is in flight
+  // we show a skeleton, and if there are no approved posts the section hides.
+  const cards: FeedCardData[] = posts.map((post: FeedPost, i: number) => ({
+    key: post._id ?? post.id ?? `post-${i}`,
+    quote: post.description || post.title || "",
+    name: feedAuthorName(post),
+    avatar: feedAuthorAvatar(post),
+    bg: post.image ?? FEED_SAMPLE_IMAGES[i % FEED_SAMPLE_IMAGES.length],
+  }));
 
   const showSkeleton = !loaded && cards.length === 0;
 

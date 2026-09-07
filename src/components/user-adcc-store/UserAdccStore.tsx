@@ -53,7 +53,7 @@ function MerchandiseCard({ product }: { product: Product }) {
   return (
     <Link
       to={`/user-adcc-store/product/${product.id}`}
-      className="block min-h-55 rounded-md border border-black/5 bg-[#fbf3f3] p-4 text-black no-underline shadow-inner transition-all duration-300 hover:border-[#435974] hover:shadow-md sm:min-h-[381px] sm:p-8"
+      className="block min-h-55 rounded-md border border-black/5 bg-transparent p-4 text-black no-underline shadow-inner transition-all duration-300 hover:border-[#435974] hover:shadow-md sm:min-h-[381px] sm:p-8"
     >
       <h3 className="text-[15px] uppercase sm:text-[24px]">{product.name}</h3>
       <p className="mt-1 text-[13px] sm:text-[18px]">{price}</p>
@@ -266,7 +266,7 @@ export default function AdccStorePage() {
         </div>
         <div className="mt-2 h-px bg-black/10" />
         {merchandiseLoading ? (
-          <div className="mt-6 grid grid-cols-2 gap-5 sm:mt-8 sm:gap-8 lg:grid-cols-4">
+          <div className="mt-6 grid grid-cols-1 gap-5 sm:mt-8 sm:grid-cols-2 sm:gap-8 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
@@ -279,7 +279,7 @@ export default function AdccStorePage() {
             {t("public.store.listing.noMerchandise")}
           </p>
         ) : (
-          <div className="mt-6 grid grid-cols-2 gap-2 sm:mt-8 sm:gap-8 lg:grid-cols-4">
+          <div className="mt-6 grid grid-cols-1 gap-2 sm:mt-8 sm:grid-cols-2 sm:gap-8 lg:grid-cols-4">
             {merchandiseProducts.map((product) => (
               <MerchandiseCard key={product.id} product={product} />
             ))}

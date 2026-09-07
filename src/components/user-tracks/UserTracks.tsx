@@ -354,8 +354,31 @@ text-transform: Capitalize !important;}
         line-height: 1.08 !important;
         max-width: 100% !important;
       }
+      /* Mobile stacking order: title -> video -> description -> journey card.
+         The two intro columns collapse to display:contents so their children
+         become direct flex items of .track-intro-wrap and can be ordered. */
+      .track-intro-left,
+      .track-intro-right {
+        display: contents !important;
+      }
+      .track-intro-title {
+        order: 1 !important;
+        width: 100% !important;
+        margin-bottom: 16px !important;
+      }
+      .track-video {
+        order: 2 !important;
+        width: 100% !important;
+        margin-bottom: 0 !important;
+      }
+      .track-intro-text {
+        order: 3 !important;
+        width: 100% !important;
+      }
       .track-journey-offset {
-        padding-top: 34px !important;
+        order: 4 !important;
+        width: 100% !important;
+        padding-top: 0 !important;
       }
       .tracks-journey-card {
         width: 100% !important;
@@ -366,6 +389,30 @@ text-transform: Capitalize !important;}
         top: -116px !important;
         width: min(320px, 70vw) !important;
         height: auto !important;
+      }
+      /* Arabic mobile: the rider photo moves to the LEFT (mirrored) so it
+         clears the right-aligned copy, and the title is widened so the
+         phrase stops wrapping "ADCC" onto its own line. */
+      html[dir='rtl'] .tracks-journey-card.v1 .tracks-journey-card__image {
+        left: -24px !important;
+        right: auto !important;
+        transform: scaleX(-1) !important;
+      }
+      html[dir='rtl'] .tracks-journey-card__eyebrow {
+        left: auto !important;
+        right: 20px !important;
+        text-align: right !important;
+      }
+      html[dir='rtl'] .tracks-journey-card__title {
+        left: auto !important;
+        right: 20px !important;
+        width: min(210px, 58%) !important;
+        line-height: 28px !important;
+        text-align: right !important;
+      }
+      html[dir='rtl'] .tracks-journey-card__community {
+        left: auto !important;
+        right: 20px !important;
       }
       .track-video {
         height: 240px !important;
@@ -383,8 +430,27 @@ text-transform: Capitalize !important;}
       .track-why-image {
         min-height: 260px !important;
       }
+      /* Mobile: feature cards become a swipeable horizontal slider. */
       .track-why-grid {
-        grid-template-columns: 1fr 1fr !important;
+        display: flex !important;
+        grid-template-columns: none !important;
+        gap: 14px !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+        margin-inline: -18px !important;
+        padding-inline: 18px !important;
+        scroll-padding-inline: 18px !important;
+      }
+      .track-why-grid::-webkit-scrollbar {
+        display: none !important;
+      }
+      .track-why-grid > div {
+        flex: 0 0 80% !important;
+        max-width: 300px !important;
+        scroll-snap-align: start !important;
+        padding: 20px 18px !important;
       }
       .track-grid-section {
         padding: 48px 18px !important;
@@ -502,8 +568,8 @@ text-transform: Capitalize !important;}
       .track-cta-title {
         font-size: 34px !important;
       }
-      .track-why-grid {
-        grid-template-columns: 1fr !important;
+      .track-why-grid > div {
+        flex-basis: 82% !important;
       }
       .tracks-journey-card__image {
         left: 50% !important;
@@ -545,7 +611,7 @@ function TracksJourneyCard() {
   ];
 
   return (
-    <div className="tracks-journey-card">
+    <div className="tracks-journey-card v1">
       <img
         src="/img/image 2991.png"
         alt={t("public.common.journeyCard.riderAlt")}

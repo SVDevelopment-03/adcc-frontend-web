@@ -3,6 +3,8 @@ import type { LucideIcon } from "lucide-react";
 import {
   Bike,
   CalendarDays,
+  ChevronLeft,
+  ChevronRight,
   Cross,
   Droplets,
   Heart,
@@ -361,6 +363,7 @@ const FontLoader = () => (
     .facility-scroll::-webkit-scrollbar { display: none; }
     .facility-scroll { scrollbar-width: none; }
 
+
     /* FAQ font */
     .grand-prix-faq-item {
       font-family: 'Outfit', 'Satoshi', sans-serif;
@@ -409,6 +412,15 @@ const FontLoader = () => (
       }
       html[dir='rtl'] .facility-card-title {
         right: 86px !important;
+      }
+    }
+
+    /* RTL: the schedule gallery is pinned with a physical 'left' offset on
+       desktop; mirror it to the right edge so it sits inside its column. */
+    @media (min-width: 1024px) {
+      html[dir='rtl'] .schedule-gallery {
+        left: auto !important;
+        right: 41px !important;
       }
     }
   `}</style>
@@ -494,7 +506,7 @@ function RegisterCard({ event }: { event: GrandPrixEvent }) {
       : t("public.events.detail.register.openRegistration");
 
   return (
-    <article className="relative h-[200px] w-[300px] shrink-0 rounded-2xl bg-[#435974] text-white lg:h-[236px] lg:w-[426px] max-sm:w-[calc(100vw-56px)]">
+    <article className="relative h-[200px] w-full shrink-0 rounded-2xl bg-[#435974] text-white lg:h-[236px] lg:w-[426px]">
       <p className="absolute left-4 top-[14px] flex items-center gap-[6px] text-[12px] font-medium leading-[18px] lg:left-6 lg:top-[19px] lg:text-[14px]">
         <span className="h-[7px] w-[7px] rounded-full bg-white" />
         {t("public.events.detail.register.registerNow")}
@@ -548,25 +560,53 @@ function StatsStrip({
   stats: StatCard[];
 }) {
   return (
-    <section className="grand-prix-section mx-auto mt-10 mb-20 max-w-[1192px] overflow-x-auto rounded-2xl bg-[#A2BFDB] p-3 lg:mt-[60px] lg:overflow-visible">
-      <div className="flex w-max gap-2 lg:gap-3">
-        <RegisterCard event={event} />
-        {stats.map(({ icon: Icon, title, label }) => (
-          <article
-            key={title}
-            className="relative h-[200px] w-[140px] shrink-0 overflow-hidden rounded-[10px] bg-[#435974] text-white lg:h-[236px] lg:w-[171px]"
-          >
-            <span className="absolute left-4 top-4 flex h-[38px] w-[38px] items-center justify-center rounded-full bg-white text-[#019839] lg:h-[50px] lg:w-[50px] lg:left-5 lg:top-5">
-              <Icon className="h-[18px] w-[18px] lg:h-[25px] lg:w-[25px]" />
-            </span>
-            <h3 className="grand-prix-bebas absolute left-4 top-[125px] whitespace-nowrap text-[22px] uppercase leading-tight lg:left-5 lg:top-[155px] lg:text-[30px]">
-              {title}
-            </h3>
-            <p className="absolute left-4 top-[152px] text-[14px] leading-5 text-white/60 lg:left-5 lg:top-[191px] lg:text-[18px]">
-              {label}
-            </p>
-          </article>
-        ))}
+    <section className="grand-prix-section mt-10 mb-20 px-4 lg:mt-[60px] lg:px-0">
+      {/* Mobile (< lg): register card stacked on top of a 2x2 stats grid */}
+      <div className="mx-auto w-full max-w-[600px] rounded-2xl bg-[#A2BFDB] p-3 lg:hidden">
+        <div className="flex flex-col gap-3">
+          <RegisterCard event={event} />
+          <div className="grid grid-cols-2 gap-3">
+            {stats.map(({ icon: Icon, title, label }) => (
+              <article
+                key={title}
+                className="relative overflow-hidden rounded-[14px] bg-[#435974] p-4 text-white sm:p-5"
+              >
+                <span className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-white text-[#019839] sm:h-[50px] sm:w-[50px]">
+                  <Icon className="h-[20px] w-[20px] sm:h-[25px] sm:w-[25px]" />
+                </span>
+                <h3 className="grand-prix-bebas mt-4 text-[22px] uppercase leading-tight sm:mt-8 sm:text-[30px]">
+                  {title}
+                </h3>
+                <p className="mt-1 text-[13px] leading-5 text-white/60 sm:text-[16px]">
+                  {label}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop (lg+): original horizontal strip (unchanged) */}
+      <div className="mx-auto hidden max-w-[1192px] overflow-x-auto rounded-2xl bg-[#A2BFDB] p-3 lg:block lg:overflow-visible">
+        <div className="flex w-max gap-2 lg:gap-3">
+          <RegisterCard event={event} />
+          {stats.map(({ icon: Icon, title, label }) => (
+            <article
+              key={title}
+              className="relative h-[200px] w-[140px] shrink-0 overflow-hidden rounded-[10px] bg-[#435974] text-white lg:h-[236px] lg:w-[171px]"
+            >
+              <span className="absolute left-4 top-4 flex h-[38px] w-[38px] items-center justify-center rounded-full bg-white text-[#019839] lg:h-[50px] lg:w-[50px] lg:left-5 lg:top-5">
+                <Icon className="h-[18px] w-[18px] lg:h-[25px] lg:w-[25px]" />
+              </span>
+              <h3 className="grand-prix-bebas absolute left-4 top-[125px] whitespace-nowrap text-[22px] uppercase leading-tight lg:left-5 lg:top-[155px] lg:text-[30px]">
+                {title}
+              </h3>
+              <p className="absolute left-4 top-[152px] text-[14px] leading-5 text-white/60 lg:left-5 lg:top-[191px] lg:text-[18px]">
+                {label}
+              </p>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -602,7 +642,7 @@ function FacilitiesSection({ facilities }: { facilities: Facility[] }) {
 
   return (
     <section
-      className="grand-prix-section  max-md:mt-16 max-sm:mt-10 bg-cover bg-center bg-no-repeat py-16 text-white"
+      className="grand-prix-section  max-md:mt-16 max-sm:mt-10 bg-cover bg-center bg-no-repeat py-8 text-white sm:py-16"
       style={{ backgroundImage: "url('/img/image 3518.png')" }}
     >
       {/* <div className="grand-prix-shell relative h-full"> */}
@@ -668,6 +708,83 @@ function FacilitiesSection({ facilities }: { facilities: Facility[] }) {
   );
 }
 
+function ScheduleGallery({ images, alt }: { images: string[]; alt: string }) {
+  const [index, setIndex] = useState(0);
+  const count = images.length;
+
+  useEffect(() => {
+    setIndex((i) => (i >= count ? 0 : i));
+  }, [count]);
+
+  useEffect(() => {
+    if (count <= 1) return;
+    const id = window.setInterval(
+      () => setIndex((i) => (i + 1) % count),
+      4000,
+    );
+    return () => window.clearInterval(id);
+  }, [count]);
+
+  const go = (next: number) => setIndex(((next % count) + count) % count);
+
+  return (
+    <div className="schedule-gallery absolute bottom-0 left-[41px] h-[260px] w-[377px] max-lg:left-0 max-lg:w-full lg:h-[478px]">
+      <div className="relative h-full w-full overflow-hidden rounded-xl">
+        <div
+          dir="ltr"
+          className="flex h-full w-full transition-transform duration-500 ease-out"
+          style={{ transform: `translateX(-${index * 100}%)` }}
+        >
+          {images.map((src, i) => (
+            <img
+              key={`${src}-${i}`}
+              src={src}
+              alt={alt}
+              loading="lazy"
+              className="h-full w-full shrink-0 object-cover"
+            />
+          ))}
+        </div>
+
+        {count > 1 && (
+          <>
+            <button
+              type="button"
+              aria-label="Previous image"
+              onClick={() => go(index - 1)}
+              className="absolute left-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur transition hover:bg-black/60"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              type="button"
+              aria-label="Next image"
+              onClick={() => go(index + 1)}
+              className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur transition hover:bg-black/60"
+            >
+              <ChevronRight size={18} />
+            </button>
+
+            <div className="absolute inset-x-0 bottom-3 flex items-center justify-center gap-1.5">
+              {images.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  aria-label={`Go to image ${i + 1}`}
+                  onClick={() => go(i)}
+                  className={`h-1.5 rounded-full transition-all ${
+                    i === index ? "w-5 bg-white" : "w-1.5 bg-white/50"
+                  }`}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function ScheduleSection({
   event,
   schedule,
@@ -677,6 +794,14 @@ function ScheduleSection({
 }) {
   const { t } = useTranslation();
   if (schedule.length === 0) return null;
+
+  const galleryImages = (
+    event.galleryImages && event.galleryImages.length > 0
+      ? event.galleryImages
+      : [getImage(event), SCHEDULE_IMAGE]
+  )
+    .filter(Boolean)
+    .slice(0, 4);
 
   return (
     <section
@@ -694,17 +819,15 @@ function ScheduleSection({
         )}
       </p>
 
-      {/* <div className="grand-prix-shell mt-[45px] grid grid-cols-[460px_736px] gap-[53px] max-lg:grid-cols-1"> */}
       <div className="grand-prix-shell mt-6 grid grid-cols-1 items-center gap-6 lg:mt-[45px] lg:gap-[53px] lg:grid-cols-[460px_minmax(0,1fr)]">
-        <div className="relative order-2 h-[478px] w-full max-w-[460px] max-lg:mx-auto lg:order-1">
-          <div className="absolute bottom-0 left-0 h-[254px] w-full rounded-tl-xl rounded-br-xl rounded-tr-[60px] rounded-bl-[60px] bg-[#435974]" />
+        <div className="relative order-2 h-[260px] w-full max-w-[460px] max-lg:mx-auto lg:order-1 lg:h-[478px]">
+          <div className="absolute bottom-0 left-0 h-[150px] w-full rounded-tl-xl rounded-br-xl rounded-tr-[60px] rounded-bl-[60px] bg-[#435974] lg:h-[254px]" />
 
-          <img
-            src={event.galleryImages?.[1] || SCHEDULE_IMAGE}
+          <ScheduleGallery
+            images={galleryImages}
             alt={t("public.events.detail.schedule.participantAlt", {
               title: event.title,
             })}
-            className="absolute bottom-0 left-[41px] h-[478px] w-[377px] object-contain"
           />
         </div>
 
