@@ -112,6 +112,18 @@ export function PushNotifications() {
     [title, message, audience, deliveryType, selectedUserIds, scheduleDate, scheduleTime]
   );
 
+  const filteredUsers = useMemo(() => {
+    const query = userSearch.trim().toLowerCase();
+    if (!query) return users;
+    return users.filter((user) => {
+      return (
+        (user.fullName || '').toLowerCase().includes(query) ||
+        (user.email || '').toLowerCase().includes(query) ||
+        (user.phone || '').toLowerCase().includes(query)
+      );
+    });
+  }, [users, userSearch]);
+
   const handleSend = async () => {
     
     if (isSending) return;
