@@ -107,7 +107,7 @@ export function PushNotifications() {
                       if (!selectedFile) return;
                       try {
                         setIsUploading(true);
-                        const media = await uploadToMediaLibrary(selectedFile, 'push');
+                        const media = await uploadToMediaLibrary(selectedFile, 'galleries');
                         setImageUrlInput(media.url);
                         setUploadedMediaName(media.name ?? selectedFile.name);
                         setUploadedMediaSize(media.size ?? selectedFile.size ?? null);
@@ -398,7 +398,7 @@ export function PushNotifications() {
                       if (!selectedFile) return;
                       try {
                         setIsUploading(true);
-                        const media = await uploadToMediaLibrary(selectedFile, 'push');
+                        const media = await uploadToMediaLibrary(selectedFile, 'galleries');
                         setImageUrlInput(media.url);
                         toast.success('Image uploaded');
                         setSelectedFile(null);
