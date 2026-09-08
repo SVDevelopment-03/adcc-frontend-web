@@ -30,6 +30,7 @@ export function PushNotifications() {
   const { t } = useTranslation();
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
+  const [imageUrlInput, setImageUrlInput] = useState('');
   const [scheduleDate, setScheduleDate] = useState('');
   const [scheduleTime, setScheduleTime] = useState('');
   const [audience, setAudience] = useState('all');
@@ -136,6 +137,7 @@ export function PushNotifications() {
     const nextPayload = {
       title: values.title.trim() || undefined,
       body: values.message.trim(),
+      image: imageUrlInput?.trim() || undefined,
       audienceType: audience,
       deliveryType,
       selectedUserIds: selectedUserIds.length > 0 ? selectedUserIds : undefined,
@@ -356,6 +358,16 @@ export function PushNotifications() {
               {touched.message && errors.message ? (
                 <p className="mt-1 text-sm text-red-600">{errors.message}</p>
               ) : null}
+            </div>
+            <div>
+              <label className="block text-sm mb-2" style={{ color: '#666' }}>Image URL (optional)</label>
+              <input
+                type="text"
+                placeholder="https://example.com/image.jpg"
+                className="w-full px-4 py-2 rounded-lg border border-gray-200"
+                value={imageUrlInput}
+                onChange={(e) => setImageUrlInput(e.target.value)}
+              />
             </div>
             <div>
               <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('push.audience')}</label>

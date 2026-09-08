@@ -26,6 +26,7 @@ export function EventDetail() {
   // Notifications tab state
   const [notifTitle, setNotifTitle] = useState('');
   const [notifMessage, setNotifMessage] = useState('');
+  const [notifImageUrl, setNotifImageUrl] = useState('');
   const [notifDeliveryType, setNotifDeliveryType] = useState<'app' | 'email' | 'both'>('app');
   const [notifAudience, setNotifAudience] = useState<'all' | 'registered' | 'checked-in'>('all');
   const [isSendingNotif, setIsSendingNotif] = useState(false);
@@ -260,6 +261,7 @@ const formatTimeInput = (raw: string): string => {
         audienceType: 'selected_users',
         selectedUserIds,
         deliveryType: notifDeliveryType,
+        image: notifImageUrl?.trim() || undefined,
       });
       const label = notifDeliveryType === 'app'
         ? 'push notification'
@@ -270,6 +272,7 @@ const formatTimeInput = (raw: string): string => {
       toast.success(`Notification sent to ${selectedUserIds.length} participant(s)`);
       setNotifTitle('');
       setNotifMessage('');
+      setNotifImageUrl('');
     } catch (err: any) {
       const msg = err?.response?.data?.message || err?.message || 'Failed to send notification';
       setNotifResult({ ok: false, message: msg, count: 0 });
@@ -1028,6 +1031,16 @@ const formatTimeInput = (raw: string): string => {
             {/* Delivery type */}
             <div>
               <label className="block text-sm font-medium mb-2" style={{ color: '#555' }}>Delivery Method</label>
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: '#555' }}>Image URL (optional)</label>
+              <input
+                type="text"
+                value={notifImageUrl}
+                onChange={e => setNotifImageUrl(e.target.value)}
+                placeholder="https://example.com/image.jpg"
+                className="w-full px-4 py-2 rounded-lg border border-gray-200"
+              />
+            </div>
               <div className="flex gap-3">
                 {(['app', 'email', 'both'] as const).map(type => (
                   <button

@@ -61,6 +61,7 @@ export function CommunityDetail() {
   const [notifDeliveryType, setNotifDeliveryType] = useState<'app' | 'email' | 'both'>('app');
   const [isSendingNotif, setIsSendingNotif] = useState(false);
   const [notifResult, setNotifResult] = useState<{ ok: boolean; message: string } | null>(null);
+  const [notifImageUrl, setNotifImageUrl] = useState('');
 
   const openCreatePostModal = () => setPostModal({ mode: 'create' });
   const openEditPostModal = (post: CommunityPost) => setPostModal({ mode: 'edit', post });
@@ -272,12 +273,14 @@ export function CommunityDetail() {
         selectedUserIds,
         deliveryType: notifDeliveryType,
         communityId: communityId,
+        image: notifImageUrl?.trim() || undefined,
       });
       const label = notifDeliveryType === 'app' ? 'push notification' : notifDeliveryType === 'email' ? 'email' : 'notification';
       setNotifResult({ ok: true, message: `${label} sent to ${selectedUserIds.length} member(s)` });
       toast.success(`Notification sent to ${selectedUserIds.length} member(s)`);
       setNotifTitle('');
       setNotifMessage('');
+      setNotifImageUrl('');
     } catch (err: any) {
       const msg = err?.response?.data?.message || err?.message || 'Failed to send notification';
       setNotifResult({ ok: false, message: msg });
@@ -417,6 +420,16 @@ export function CommunityDetail() {
               <div className="flex items-center gap-4 text-sm flex-wrap">
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: '#555' }}>Image URL (optional)</label>
+              <input
+                type="text"
+                value={notifImageUrl}
+                onChange={e => setNotifImageUrl(e.target.value)}
+                placeholder="https://example.com/image.jpg"
+                className="w-full px-4 py-2 rounded-lg border border-gray-200"
+              />
+            </div>
                   <span>{community.location || '—'}</span>
                 </div>
                 {(() => {

@@ -21,6 +21,7 @@ export function ChallengeDetail({ role }: ChallengeDetailProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'participants' | 'leaderboard' | 'notifications'>('overview');
   const [notifTitle, setNotifTitle] = useState('');
   const [notifMessage, setNotifMessage] = useState('');
+  const [notifImageUrl, setNotifImageUrl] = useState('');
   const [notifDeliveryType, setNotifDeliveryType] = useState<'app' | 'email' | 'both'>('app');
   const [isSendingNotif, setIsSendingNotif] = useState(false);
   const [notifResult, setNotifResult] = useState<{ ok: boolean; message: string } | null>(null);
@@ -50,13 +51,14 @@ export function ChallengeDetail({ role }: ChallengeDetailProps) {
     setIsSendingNotif(true);
     setNotifResult(null);
     try {
-      await sendTestBroadcastPush({
-        title: notifTitle.trim(),
-        body: notifMessage.trim(),
-        audienceType: 'selected_users',
-        selectedUserIds,
-        deliveryType: notifDeliveryType,
-      });
+        await sendTestBroadcastPush({
+          title: notifTitle.trim(),
+          body: notifMessage.trim(),
+          audienceType: 'selected_users',
+          selectedUserIds,
+          deliveryType: notifDeliveryType,
+          image: notifImageUrl?.trim() || undefined,
+        });
       const label = notifDeliveryType === 'app' ? 'push notification' : notifDeliveryType === 'email' ? 'email' : 'notification';
       setNotifResult({ ok: true, message: `${label} sent to ${selectedUserIds.length} participant(s)` });
       toast.success(`Notification sent to ${selectedUserIds.length} participant(s)`);
@@ -442,6 +444,16 @@ export function ChallengeDetail({ role }: ChallengeDetailProps) {
                 placeholder="Write your message to challenge participants..."
                 rows={4}
                 className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600 resize-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: '#555' }}>Image URL (optional)</label>
+              <input
+                type="text"
+                value={notifImageUrl}
+                onChange={e => setNotifImageUrl(e.target.value)}
+                placeholder="https://example.com/image.jpg"
+                className="w-full px-4 py-2 rounded-lg border border-gray-200"
               />
             </div>
 
