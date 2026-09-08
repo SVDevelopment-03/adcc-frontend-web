@@ -100,32 +100,17 @@ export function PushNotifications() {
   );
 
   const payload = useMemo(
-                  <button
-                    type="button"
-                    disabled={!selectedFile || isUploading}
-                    onClick={async () => {
-                      if (!selectedFile) return;
-                      try {
-                        setIsUploading(true);
-                        const media = await uploadToMediaLibrary(selectedFile, 'galleries');
-                        setImageUrlInput(media.url);
-                        setUploadedMediaName(media.name ?? selectedFile.name);
-                        setUploadedMediaSize(media.size ?? selectedFile.size ?? null);
-                        setUploadedFromUpload(true);
-                        toast.success('Image uploaded');
-                        setSelectedFile(null);
-                      } catch (err) {
-                        console.error('Upload failed', err);
-                        toast.error('Upload failed');
-                      } finally {
-                        setIsUploading(false);
-                      }
-                    }}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
-                  >
-                    {isUploading ? 'Uploading...' : 'Upload & Use'}
-                  </button>
-  }, [users, userSearch]);
+    () => ({
+      title: title.trim() || undefined,
+      body: message.trim(),
+      audienceType: audience,
+      deliveryType,
+      selectedUserIds,
+      scheduleDate: scheduleDate || undefined,
+      scheduleTime: scheduleTime || undefined,
+    }),
+    [title, message, audience, deliveryType, selectedUserIds, scheduleDate, scheduleTime]
+  );
 
   const handleSend = async () => {
     
