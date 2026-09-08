@@ -37,6 +37,9 @@ export function PushNotifications() {
   const [actionsList, setActionsList] = useState<Array<{ title: string; action: string; icon?: string }>>([]);
   const [newActionTitle, setNewActionTitle] = useState('');
   const [newActionRoute, setNewActionRoute] = useState('');
+  const [uploadedMediaName, setUploadedMediaName] = useState<string | null>(null);
+  const [uploadedMediaSize, setUploadedMediaSize] = useState<number | null>(null);
+  const [uploadedFromUpload, setUploadedFromUpload] = useState(false);
   const [scheduleDate, setScheduleDate] = useState('');
   const [scheduleTime, setScheduleTime] = useState('');
   const [audience, setAudience] = useState('all');
@@ -97,28 +100,31 @@ export function PushNotifications() {
   );
 
   const payload = useMemo(
-    () => ({
-      title: title.trim() || undefined,
-      body: message.trim(),
-      audienceType: audience,
-      deliveryType,
-      selectedUserIds,
-      scheduleDate: scheduleDate || undefined,
-      scheduleTime: scheduleTime || undefined,
-    }),
-    [title, message, audience, deliveryType, selectedUserIds, scheduleDate, scheduleTime]
-  );
-
-  const filteredUsers = useMemo(() => {
-    const query = userSearch.trim().toLowerCase();
-    if (!query) return users;
-    return users.filter((user) => {
-      return (
-        user.fullName.toLowerCase().includes(query) ||
-        user.email.toLowerCase().includes(query) ||
-        user.phone.toLowerCase().includes(query)
-      );
-    });
+                  <button
+                    type="button"
+                    disabled={!selectedFile || isUploading}
+                    onClick={async () => {
+                      if (!selectedFile) return;
+                      try {
+                        setIsUploading(true);
+                        const media = await uploadToMediaLibrary(selectedFile, 'push');
+                        setImageUrlInput(media.url);
+                        setUploadedMediaName(media.name ?? selectedFile.name);
+                        setUploadedMediaSize(media.size ?? selectedFile.size ?? null);
+                        setUploadedFromUpload(true);
+                        toast.success('Image uploaded');
+                        setSelectedFile(null);
+                      } catch (err) {
+                        console.error('Upload failed', err);
+                        toast.error('Upload failed');
+                      } finally {
+                        setIsUploading(false);
+                      }
+                    }}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
+                  >
+                    {isUploading ? 'Uploading...' : 'Upload & Use'}
+                  </button>
   }, [users, userSearch]);
 
   const handleSend = async () => {
@@ -421,6 +427,33 @@ export function PushNotifications() {
               {imageUrlInput ? (
                 <div className="mt-3">
                   <img src={imageUrlInput} alt="preview" className="max-h-48 rounded-lg shadow-sm object-cover w-full" />
+                </div>
+              ) : null}
+              {uploadedFromUpload && uploadedMediaName ? (
+                <div className="mt-3 p-3 rounded-lg border bg-white flex items-center gap-4">
+                  <div className="w-24 h-24 rounded overflow-hidden border bg-gray-50">
+                    <img src={imageUrlInput} alt={uploadedMediaName} className="object-cover w-full h-full" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-gray-800 truncate">{uploadedMediaName}</div>
+                    {uploadedMediaSize ? <div className="text-xs text-gray-500">{(uploadedMediaSize / 1024).toFixed(1)} KB</div> : null}
+                    <div className="text-xs text-gray-500 mt-1">Uploaded via media library</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImageUrlInput('');
+                        setUploadedMediaName(null);
+                        setUploadedMediaSize(null);
+                        setUploadedFromUpload(false);
+                        toast('Image removed');
+                      }}
+                      className="px-3 py-1 border rounded bg-white"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
               ) : null}
             </div>
