@@ -379,11 +379,12 @@ export function PushNotifications() {
                   </div>
                 </div>
                 <div className="ml-auto flex items-center gap-2">
-                  <input id="push-image-file" type="file" accept="image/*" className="hidden" onChange={(e) => setSelectedFile(e.target.files?.[0] || null)} />
+                  <input id="push-image-file" type="file" accept="image/*" className="sr-only" onChange={(e) => setSelectedFile(e.target.files?.[0] || null)} />
                   <label htmlFor="push-image-file" className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 cursor-pointer">
                     <UploadCloud className="w-4 h-4" />
                     <span className="text-sm text-gray-700">Choose file</span>
                   </label>
+                  {selectedFile ? <div className="text-sm text-gray-600 ml-2">{selectedFile.name}</div> : null}
                   <button
                     type="button"
                     disabled={!selectedFile || isUploading}
@@ -481,60 +482,7 @@ export function PushNotifications() {
                 </div>
               </div>
             </div>
-            <div className="mt-4">
-              <label className="block text-sm mb-2" style={{ color: '#666' }}>Actions (optional)</label>
-              <div className="space-y-2">
-                {actionsList.map((a, idx) => (
-                  <div key={idx} className="flex items-center gap-2">
-                    <div className="flex-1">
-                      <div className="text-sm font-medium">{a.title}</div>
-                      <div className="text-xs text-gray-600">{a.action}</div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setActionsList((prev) => prev.filter((_, i) => i !== idx))}
-                      className="text-sm px-2 py-1 border rounded"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                ))}
-
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="text"
-                    placeholder="Button title (e.g. View)"
-                    className="px-3 py-2 rounded border border-gray-200"
-                    value={newActionTitle}
-                    onChange={(e) => setNewActionTitle(e.target.value)}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Action (route or URL)"
-                    className="px-3 py-2 rounded border border-gray-200"
-                    value={newActionRoute}
-                    onChange={(e) => setNewActionRoute(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!newActionTitle.trim() || !newActionRoute.trim()) {
-                        toast.error('Provide title and action');
-                        return;
-                      }
-                      setActionsList((prev) => [...prev, { title: newActionTitle.trim(), action: newActionRoute.trim() }]);
-                      setNewActionTitle('');
-                      setNewActionRoute('');
-                    }}
-                    className="px-3 py-1 rounded bg-gray-100 border"
-                  >
-                    Add Action
-                  </button>
-                </div>
-              </div>
-            </div>
+            
             <div>
               <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('push.audience')}</label>
               <select
