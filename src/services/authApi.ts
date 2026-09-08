@@ -182,6 +182,7 @@ export interface PushNotificationPayload {
   externalEmails?: string;
   communityId?: string;
   image?: string;
+  actions?: any;
 }
 
 // Send web push notification to staff (admin/staff users)
@@ -197,6 +198,7 @@ export const sendStaffWebPush = async (
     if (payload.title) formData.append('title', payload.title);
     if (payload.scheduleDate) formData.append('scheduleDate', payload.scheduleDate);
     if ((payload as any).image) formData.append('image', (payload as any).image);
+    if ((payload as any).actions) formData.append('actions', typeof (payload as any).actions === 'string' ? (payload as any).actions : JSON.stringify((payload as any).actions));
     if (payload.scheduleTime) formData.append('scheduleTime', payload.scheduleTime);
 
     const response = await api.post<SendStaffWebPushResponse>(
@@ -228,6 +230,7 @@ export const sendTestBroadcastPush = async (
     if (payload.title) formData.append('title', payload.title);
     if (payload.scheduleDate) formData.append('scheduleDate', payload.scheduleDate);
     if ((payload as any).image) formData.append('image', (payload as any).image);
+    if ((payload as any).actions) formData.append('actions', typeof (payload as any).actions === 'string' ? (payload as any).actions : JSON.stringify((payload as any).actions));
     if (payload.scheduleTime) formData.append('scheduleTime', payload.scheduleTime);
 
     const response = await api.post<SendStaffWebPushResponse>(

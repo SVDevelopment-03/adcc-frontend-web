@@ -3,6 +3,7 @@ import { Send, Users, Clock, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { sendStaffWebPush, sendTestBroadcastPush } from '../../services/authApi';
+import { uploadToMediaLibrary } from '../../services/mediaApi';
 import { getAllUsers, type User } from '../../services/usersApi';
 import { getAllEvents } from '../../services/eventsApi';
 //import { getAllCommunities } from '../../services/communitiesApi';
@@ -31,6 +32,11 @@ export function PushNotifications() {
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
   const [imageUrlInput, setImageUrlInput] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [actionsList, setActionsList] = useState<Array<{ title: string; action: string; icon?: string }>>([]);
+  const [newActionTitle, setNewActionTitle] = useState('');
+  const [newActionRoute, setNewActionRoute] = useState('');
   const [scheduleDate, setScheduleDate] = useState('');
   const [scheduleTime, setScheduleTime] = useState('');
   const [audience, setAudience] = useState('all');
@@ -138,6 +144,7 @@ export function PushNotifications() {
       title: values.title.trim() || undefined,
       body: values.message.trim(),
       image: imageUrlInput?.trim() || undefined,
+      actions: actionsList.length > 0 ? actionsList : undefined,
       audienceType: audience,
       deliveryType,
       selectedUserIds: selectedUserIds.length > 0 ? selectedUserIds : undefined,
@@ -368,6 +375,90 @@ export function PushNotifications() {
                 value={imageUrlInput}
                 onChange={(e) => setImageUrlInput(e.target.value)}
               />
+              <div className="mt-2 flex items-center gap-2">
+                <input type="file" accept="image/*" onChange={(e) => setSelectedFile(e.target.files?.[0] || null)} />
+                <button
+                  type="button"
+                  disabled={!selectedFile || isUploading}
+                  onClick={async () => {
+                    if (!selectedFile) return;
+                    try {
+                      setIsUploading(true);
+                      const media = await uploadToMediaLibrary(selectedFile, 'push');
+                      setImageUrlInput(media.url);
+                      toast.success('Image uploaded');
+                      setSelectedFile(null);
+                    } catch (err) {
+                      console.error('Upload failed', err);
+                      toast.error('Upload failed');
+                    } finally {
+                      setIsUploading(false);
+                    }
+                  }}
+                  className="px-3 py-1 rounded bg-gray-100 border"
+                >
+                  {isUploading ? 'Uploading...' : 'Upload'}
+                </button>
+              </div>
+              {imageUrlInput ? (
+                <div className="mt-2">
+                  <img src={imageUrlInput} alt="preview" className="max-h-40 rounded" />
+                </div>
+              ) : null}
+            </div>
+            <div className="mt-4">
+              <label className="block text-sm mb-2" style={{ color: '#666' }}>Actions (optional)</label>
+              <div className="space-y-2">
+                {actionsList.map((a, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <div className="flex-1">
+                      <div className="text-sm font-medium">{a.title}</div>
+                      <div className="text-xs text-gray-600">{a.action}</div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setActionsList((prev) => prev.filter((_, i) => i !== idx))}
+                      className="text-sm px-2 py-1 border rounded"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="text"
+                    placeholder="Button title (e.g. View)"
+                    className="px-3 py-2 rounded border border-gray-200"
+                    value={newActionTitle}
+                    onChange={(e) => setNewActionTitle(e.target.value)}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Action (route or URL)"
+                    className="px-3 py-2 rounded border border-gray-200"
+                    value={newActionRoute}
+                    onChange={(e) => setNewActionRoute(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!newActionTitle.trim() || !newActionRoute.trim()) {
+                        toast.error('Provide title and action');
+                        return;
+                      }
+                      setActionsList((prev) => [...prev, { title: newActionTitle.trim(), action: newActionRoute.trim() }]);
+                      setNewActionTitle('');
+                      setNewActionRoute('');
+                    }}
+                    className="px-3 py-1 rounded bg-gray-100 border"
+                  >
+                    Add Action
+                  </button>
+                </div>
+              </div>
             </div>
             <div>
               <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('push.audience')}</label>
