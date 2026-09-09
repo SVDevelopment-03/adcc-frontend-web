@@ -122,7 +122,7 @@ export default function UserNews() {
 
   return (
     <div className="min-h-screen bg-[#eaf4ff] text-black">
-      <header className="flex h-[78px] items-center justify-between px-4 sm:h-[96px] sm:px-6 md:px-10 lg:h-[134px] lg:px-20">
+      <header className="flex h-[78px] items-center justify-between px-4 sm:h-[96px] sm:px-6 md:px-10 lg:h-[134px] lg:px-12 xl:px-20">
         <img
           src="/ADCC-Logo.png"
           alt="ADCC"
@@ -153,7 +153,7 @@ export default function UserNews() {
         breadcrumbFontSize={17}
       />
 
-      <section className="w-full px-4 py-10 sm:px-6 sm:py-20 md:px-10 lg:px-20 lg:py-24">
+      <section className="w-full px-4 py-10 sm:px-6 sm:py-20 md:px-10 lg:px-12 lg:py-24 xl:px-20">
         <h2 className="text-center text-[26px] uppercase leading-tight sm:text-[36px] lg:text-[44px]">
           {t("public.news.listing.heading")}
         </h2>
@@ -232,7 +232,7 @@ export default function UserNews() {
         )}
       </section>
 
-      <footer className="w-full px-4 py-24 sm:px-6 md:px-10 lg:px-20">
+      <footer className="w-full px-4 py-24 sm:px-6 md:px-10 lg:px-12 xl:px-20">
         <div className="grid grid-cols-1 gap-16 md:grid-cols-3">
           <div>
             <img

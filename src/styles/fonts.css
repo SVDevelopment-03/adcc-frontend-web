@@ -182,3 +182,12 @@ html[dir="rtl"] .public-footer * {
     margin-bottom: 30px !important;
   }
 }
+
+@media (max-width: 1024px) {
+  section.public-hero-bleed {
+    height: 30vh !important;
+  }
+  .public-hero-content-pos {
+    bottom: 40px !important;
+  }
+}

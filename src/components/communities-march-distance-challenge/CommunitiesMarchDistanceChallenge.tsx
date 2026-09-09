@@ -45,7 +45,7 @@ function FaqSection({ faqs }: { faqs: string[] }) {
   const { t } = useTranslation();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   return (
-    <section className="w-full px-4 pb-16 pt-14 text-center sm:px-6 md:px-10 lg:px-16 lg:pb-28 xl:px-20 2xl:px-24">
+    <section className="w-full px-4 pb-16 pt-14 text-center sm:px-6 md:px-10 lg:px-12 lg:pb-28 xl:px-20 2xl:px-24">
       <h2 className="text-[30px] font-normal uppercase sm:text-[38px] lg:text-[46px]">
         {t("public.tracks.faq.title")}
       </h2>

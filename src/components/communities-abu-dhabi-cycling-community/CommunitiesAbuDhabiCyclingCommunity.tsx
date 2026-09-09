@@ -489,7 +489,7 @@ function FaqSection({ community }: { community: CommunityApiResponse }) {
   }, []);
 
   return (
-    <section className="w-full px-4 pb-16 pt-14 text-center sm:px-6 sm:pt-16 md:px-10 lg:px-16 lg:pb-28 lg:pt-20 xl:px-20 2xl:px-24">
+    <section className="w-full px-4 pb-16 pt-14 text-center sm:px-6 sm:pt-16 md:px-10 lg:px-12 lg:pb-28 lg:pt-20 xl:px-20 2xl:px-24">
       <h2 className="text-[30px] font-normal uppercase sm:text-[38px] lg:text-[46px]">
         {t("public.communities.detail.faq.title")}
       </h2>

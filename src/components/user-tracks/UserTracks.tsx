@@ -1653,7 +1653,7 @@ function FAQ() {
 
   return (
     <section
-      className="track-faq-section w-full px-4 pb-16 text-center sm:px-6 md:px-10 lg:px-16 lg:pb-28 xl:px-20 2xl:px-24"
+      className="track-faq-section w-full px-4 pb-16 text-center sm:px-6 md:px-10 lg:px-12 lg:pb-28 xl:px-20 2xl:px-24"
       style={{ background: "#EAF4FF" }}
     >
       <h2

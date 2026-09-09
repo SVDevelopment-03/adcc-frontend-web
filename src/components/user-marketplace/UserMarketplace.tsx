@@ -160,7 +160,7 @@ export default function UserMarketplace() {
 
   return (
     <div className="min-h-screen bg-[#eaf4ff] text-black">
-      <header className="flex h-[78px] items-center justify-between px-4 sm:h-[96px] sm:px-6 md:px-10 lg:h-[134px] lg:px-20">
+      <header className="flex h-[78px] items-center justify-between px-4 sm:h-[96px] sm:px-6 md:px-10 lg:h-[134px] lg:px-12 xl:px-20">
         <img
           src="/ADCC-Logo.png"
           alt="ADCC"
@@ -191,7 +191,7 @@ export default function UserMarketplace() {
         breadcrumbFontSize={17}
       />
 
-      <section className="w-full px-4 py-10 sm:px-6 sm:py-20 md:px-10 lg:px-20 lg:py-24">
+      <section className="w-full px-4 py-10 sm:px-6 sm:py-20 md:px-10 lg:px-12 lg:py-24 xl:px-20">
         <h2 className="flex justify-center overflow-hidden text-center text-[28px] font-normal uppercase sm:text-[38px] lg:text-[50px]">
           <AnimatedWords words={browseTitleWords} gap={16} />
         </h2>
@@ -353,7 +353,7 @@ export default function UserMarketplace() {
         )}
       </section>
 
-      <section className="pt-8 relative grid w-full grid-cols-1 items-end gap-8 overflow-hidden px-4 pb-12 sm:gap-16 sm:px-6 sm:pb-28 md:px-10 lg:grid-cols-2 lg:px-20 bg-b-0">
+      <section className="pt-8 relative grid w-full grid-cols-1 items-end gap-8 overflow-hidden px-4 pb-12 sm:gap-16 sm:px-6 sm:pb-28 md:px-10 lg:grid-cols-2 lg:px-12 xl:px-20 bg-b-0">
         <div>
           <h2 className="max-w-[516px] overflow-hidden text-[28px] font-normal uppercase leading-tight sm:text-[38px] sm:leading-[46px] lg:text-[50px] lg:leading-[60px]">
             <AnimatedWords words={gearUpTitleWords} gap={16} />
@@ -378,7 +378,7 @@ export default function UserMarketplace() {
         />
       </section>
 
-      <footer className="w-full px-4 py-24 sm:px-6 md:px-10 lg:px-20">
+      <footer className="w-full px-4 py-24 sm:px-6 md:px-10 lg:px-12 xl:px-20">
         <div className="grid grid-cols-1 gap-16 md:grid-cols-3">
           <div>
             <img
