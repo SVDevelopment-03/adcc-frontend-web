@@ -750,9 +750,9 @@ font-family: var(--font-satoshi) !important;}
     animation-play-state: paused;
   }
   .home-partner-card {
-    flex: 0 0 200px;
-    width: 200px;
-    height: 100px;
+    flex: 0 0 250px;
+    width: 250px;
+    height: 120px;
     background: transparent;
     border-radius: 6px;
     display: flex;
@@ -2579,9 +2579,13 @@ margin-block-end: 20px !important;}
       scroll-snap-type: x proximity !important;
       -webkit-overflow-scrolling: touch !important;
       scrollbar-width: none !important;
-      margin-inline: -18px !important;
-      padding-inline: 18px !important;
-      scroll-padding-inline: 18px !important;
+      /* The section now has 0 right padding (see public-spacing.css), so the
+         old symmetric -18px / 18px would leave an 18px dead strip on the right
+         and overflow past the viewport. Zero out the trailing side: 18px
+         gutter on the left only, cards run flush to the right edge. */
+      margin-inline: -18px 0 !important;
+      padding-inline: 18px 0 !important;
+      scroll-padding-inline: 18px 0 !important;
     }
     .home-platform-cards::-webkit-scrollbar {
       display: none !important;
@@ -2742,6 +2746,11 @@ margin-block-end: 20px !important;}
   }
 
   @media (max-width: 650px) {
+
+ html[dir='rtl'] .home-page .home-store-section{
+         padding-inline: 18px 0px !important;}
+
+
     .home-hero-title,
     .home-community-title,
     .home-section-title,
@@ -2749,6 +2758,13 @@ margin-block-end: 20px !important;}
     .home-cta-title {
       font-size: 30px !important;
     }
+
+.home-store-section{
+padding-right: 0px !important;}
+
+section.home-platform-section, section.home-store-section{
+padding-right: 0px !important;}
+    
 .home-ticker{    height: auto !important;}
 section.journey-section {
         padding-top: 40px !important;
