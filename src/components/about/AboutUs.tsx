@@ -1283,11 +1283,6 @@ function CoachesSection() {
           </motion.div>
         ))}
       </div>
-      <div style={{ textAlign: "center", marginTop: 36 }}>
-        <AnimatedButton onClick={() => navigate("/contact-us")}>
-          {t("public.about.coaches.explore")}
-        </AnimatedButton>
-      </div>
     </section>
   );
 }

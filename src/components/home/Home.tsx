@@ -840,6 +840,10 @@ section.home-hero{
     .home-partners-marquee::after {
       width: 44px;
     }
+
+    div.home-about-rider{
+    bottom: 0px !important;
+            width: 85% !important;}
   }
 
   .home-venue-section {
