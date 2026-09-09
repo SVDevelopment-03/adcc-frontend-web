@@ -753,7 +753,7 @@ font-family: var(--font-satoshi) !important;}
     flex: 0 0 200px;
     width: 200px;
     height: 100px;
-    background: #ffffff;
+    background: transparent;
     border-radius: 6px;
     display: flex;
     align-items: center;
@@ -814,7 +814,7 @@ section.home-hero{
       padding: 40px 18px 40px;
     }
 .home-page #platform.home-platform-section{
-        padding-block: 30px 40px !important;}
+        padding-block: 30px 50px !important;}
 
 
 
@@ -923,6 +923,7 @@ section.home-hero{
     min-width: 0;
     display: flex;
     flex-direction: column;
+    justify-content: center;
   }
   .home-venue-cards {
     display: flex;
@@ -2894,6 +2895,9 @@ html[dir='rtl']  .store-featured-product-media{
     div.home-about-stats{
             grid-template-columns: 1fr 1fr 1fr !important;}
   }
+
+  .home-page .home-platform-section{
+  padding-block: 50px 25px !important;}
 `;
 
 function useHomePageStyles() {
