@@ -315,7 +315,7 @@ export default function CommunitiesPage() {
         classPrefix="communities-page"
       />
 
-      <section className="grid w-full grid-cols-1 items-center gap-8 px-4 py-12 sm:px-6 sm:py-16 md:px-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,592px)] lg:gap-[42px] lg:px-16 lg:py-20 xl:px-20 2xl:px-24">
+      <section className="grid w-full grid-cols-1 items-center gap-8 px-4 py-12 sm:px-6 sm:py-16 md:px-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,592px)] lg:gap-[42px] lg:px-12 lg:py-20 xl:px-20 2xl:px-24">
         <div className="max-w-[634px]">
           <AnimatedWords
             words={introTitleWords}
@@ -337,7 +337,7 @@ export default function CommunitiesPage() {
         </div>
       </section>
 
-      <section className="w-full px-4 pb-16 sm:px-6 md:px-10 lg:px-16 lg:pb-28 xl:px-20 2xl:px-24">
+      <section className="w-full px-4 pb-16 sm:px-6 md:px-10 lg:px-12 lg:pb-28 xl:px-20 2xl:px-24">
         <AnimatedWords
           words={exploreTitleWords}
           gap={14}

@@ -265,7 +265,7 @@ export default function StoreDetailPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1440px] px-4 py-10 pt-24 sm:px-6 sm:py-14 sm:pt-28 md:px-10 lg:px-20 lg:py-16 lg:pt-32 xl:pt-36">
+      <main className="mx-auto max-w-[1440px] px-4 py-10 pt-24 sm:px-6 sm:py-14 sm:pt-28 md:px-10 lg:px-12 lg:py-16 lg:pt-32 xl:px-20 xl:pt-36">
         <section className="grid grid-cols-1 items-start gap-8 sm:gap-10 lg:grid-cols-[480px_1fr] lg:gap-14 xl:grid-cols-[560px_1fr]">
           <ProductGallery
             key={item.id || item._id}

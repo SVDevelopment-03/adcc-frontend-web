@@ -258,7 +258,7 @@ justify-content: center !important;}
         classPrefix="challenges-page"
       />
 
-      <section className="grid w-full grid-cols-1 gap-8 px-4 py-12 sm:px-6 sm:py-16 md:px-10 lg:grid-cols-2 lg:gap-12 lg:px-16 lg:py-28 xl:px-20 2xl:px-24">
+      <section className="grid w-full grid-cols-1 gap-8 px-4 py-12 sm:px-6 sm:py-16 md:px-10 lg:grid-cols-2 lg:gap-12 lg:px-12 lg:py-28 xl:px-20 2xl:px-24">
         <div>
           <AnimatedWords
             words={introTitleWords}
@@ -310,7 +310,7 @@ justify-content: center !important;}
         </div>
       </section>
 
-      <section className="w-full px-4 pb-16 sm:px-6 md:px-10 lg:px-16 lg:pb-28 xl:px-20 2xl:px-24">
+      <section className="w-full px-4 pb-16 sm:px-6 md:px-10 lg:px-12 lg:pb-28 xl:px-20 2xl:px-24">
         <motion.video
           initial={{ opacity: 0, y: 120 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -331,7 +331,7 @@ justify-content: center !important;}
         </motion.video>
       </section>
 
-      <section className="w-full px-4 pb-16 sm:px-6 md:px-10 lg:px-16 lg:pb-28 xl:px-20 2xl:px-24">
+      <section className="w-full px-4 pb-16 sm:px-6 md:px-10 lg:px-12 lg:pb-28 xl:px-20 2xl:px-24">
         <div className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-center lg:mb-14">
           <AnimatedWords
             words={listTitleWords}

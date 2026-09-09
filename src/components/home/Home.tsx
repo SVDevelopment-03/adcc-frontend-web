@@ -801,6 +801,11 @@ font-family: var(--font-satoshi) !important;}
     .home-partners-marquee::after {
       width: 72px;
     }
+section.home-hero{
+        height: 70vh !important;}
+.home-page .home-community-section{
+    padding-block: 50px !important;}
+
   }
   @media (max-width: 640px) {
     .home-partners-section {
@@ -988,7 +993,7 @@ font-family: var(--font-satoshi) !important;}
     .home-venue-image-card {
       flex: none;
       width: 100%;
-      min-height: 280px;
+      min-height: 400px;
     }
   }
   @media (max-width: 640px) {
@@ -1186,7 +1191,7 @@ font-family: var(--font-satoshi) !important;}
   }
   @media (max-width: 1024px) {
     .home-feed-section {
-      padding: 64px 32px 72px;
+      padding: 0px 32px 0px;
     }
     .home-feed-head {
       flex-direction: column;
@@ -1938,16 +1943,27 @@ font-size: 14px;
 
   @media (max-width: 1023px) {
     .home-app-section {
-      padding: 56px 32px !important;
-      flex-wrap: wrap !important;
-      gap: 34px !important;
+      padding: 64px 40px !important;
+      flex-direction: column !important;
+      flex-wrap: nowrap !important;
+      align-items: stretch !important;
+      gap: 40px !important;
     }
     .home-app-copy {
-      flex: 1 1 280px !important;
+      order: 0 !important;
+      flex: 0 0 auto !important;
       width: 100% !important;
+      align-items: flex-start !important;
     }
     .home-app-title {
-      font-size: 58px !important;
+      font-size: 46px !important;
+      max-width: 100% !important;
+    }
+    .home-download-label {
+      max-width: 100% !important;
+    }
+    .home-app-download-label {
+      margin-top: 0 !important;
     }
     .home-qr-box {
       width: 160px !important;
@@ -1955,20 +1971,26 @@ font-size: 14px;
     }
     .home-phone-stage {
       order: 1 !important;
-      flex: 1 1 100% !important;
-      min-height: 300px !important;
+      flex: 0 0 auto !important;
+      min-height: auto !important;
       width: 100% !important;
+      justify-content: center !important;
     }
-    .home-phone-stage img {
+    .home-phone-stage img,
+    .app-phone-stage img {
       width: 100% !important;
-      max-width: 100% !important;
+      max-width: 480px !important;
       height: auto !important;
+      left: 0 !important;
+      top: 0 !important;
     }
     .home-feature-list {
-      flex: 1 1 100% !important;
+      order: 2 !important;
+      flex: 0 0 auto !important;
+      width: 100% !important;
       display: grid !important;
       grid-template-columns: 1fr 1fr !important;
-      gap: 22px !important;
+      gap: 24px !important;
       min-width: 0 !important;
     }
   }
@@ -1987,24 +2009,30 @@ font-size: 14px;
   @media (max-width: 1023px) {
     .home-platform-cards {
       height: auto !important;
-      flex-direction: column !important;
+      flex-direction: row !important;
+      flex-wrap: wrap !important;
+      justify-content: center !important;
+      gap: 16px !important;
       overflow: visible !important;
       max-width: 100% !important;
+      border-radius: 0 !important;
     }
     .home-platform-card {
-      flex: none !important;
-      width: 100% !important;
-      max-width: 422.67px !important;
-      height: 520px !important;
-      margin: 0 auto !important;
+      flex: 1 1 300px !important;
+      width: auto !important;
+      min-width: 260px !important;
+      max-width: 460px !important;
+      height: 360px !important;
+      margin: 0 !important;
       border-inline-start: none !important;
-      border-radius: 20px !important;
-      border-top: 2px solid rgba(255,255,255,0.3) !important;
+      border-top: none !important;
+      border-radius: 16px !important;
       opacity: 1 !important;
       transform: none !important;
     }
-    .home-platform-card:first-child {
-      border-top: none !important;
+    .home-platform-card:first-child,
+    .home-platform-card:last-child {
+      border-radius: 16px !important;
     }
   }
   @media (max-width: 1024px) {
@@ -2129,7 +2157,7 @@ font-size: 14px;
       line-height: 26px !important;
     }
     .home-community-section {
-      padding: 82px 32px !important;
+      padding: 20px 32px !important;
     }
     .home-community-eyebrow,
     .home-community-subtitle {
@@ -2172,26 +2200,36 @@ font-size: 14px;
     }
     .home-about-section {
       padding: 56px 32px 70px !important;
-      flex-wrap: wrap !important;
-      gap: 34px !important;
+      flex-direction: column !important;
+      flex-wrap: nowrap !important;
+      align-items: stretch !important;
+      gap: 32px !important;
+      min-height: 0 !important;
     }
     .home-about-left-image {
-      width: min(100%, 396px) !important;
-      height: auto !important;
-      max-height: 400px !important;
-      aspect-ratio: 396 / 599;
+      width: 100% !important;
+      max-width: 100% !important;
+      height: 420px !important;
+      max-height: none !important;
+      aspect-ratio: auto !important;
+    }
+    .home-about-content {
+      width: 100% !important;
+      flex: 0 0 auto !important;
+      padding-inline-end: 0 !important;
     }
     .home-about-title {
-      font-size: clamp(44px, 8vw, 58px) !important;
+      font-size: clamp(40px, 7vw, 56px) !important;
       max-width: 100% !important;
     }
     .home-about-text {
-      font-size: 20px !important;
-      line-height: 28px !important;
-      max-width: 100% !important;
+      font-size: 18px !important;
+      line-height: 27px !important;
+      max-width: 640px !important;
     }
     .home-about-stats {
       gap: 40px !important;
+      flex-wrap: wrap !important;
     }
     .home-about-stat-number {
       font-size: 42px !important;
@@ -2206,9 +2244,6 @@ font-size: 14px;
     }
     .home-about-rider {
       display: none !important;
-    }
-    .home-about-content {
-      padding-inline-end: 32px !important;
     }
     .store-animated-card {
       opacity: 1 !important;
@@ -2240,6 +2275,40 @@ font-size: 14px;
     }
   }
 
+  /* Store rail on tablets (641-1023px): the featured cards have pixel-tuned
+     absolute layouts locked to 624x583, so shrink them with transform +
+     compensating negative margins (same trick as the <=640 block) so BOTH
+     cards sit in the viewport together. Placed after the max-width:1024 block
+     so it overrides that block's store-animated-card transform:none reset; the
+     max-width:640 / :650 blocks own everything below 641px. */
+  @media (min-width: 641px) and (max-width: 1023px) {
+    .store-rail {
+      justify-content: center !important;
+      align-items: flex-start !important;
+      gap: 16px !important;
+      /* Cards keep their 583px box for the scale math, so the flex line stays
+         583px tall and leaves a big void below. Clamp the rail to the scaled
+         visual height (583 * 0.52) and clip the phantom space. */
+      height: 305px !important;
+      min-height: 0 !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+    }
+    .store-featured-card,
+    .store-featured-card:hover {
+      flex: 0 0 624px !important;
+      width: 624px !important;
+      height: 583px !important;
+      min-width: 624px !important;
+      min-height: 583px !important;
+      transform: scale(0.52) !important;
+      transform-origin: top center !important;
+      margin-left: -150px !important;
+      margin-right: -150px !important;
+      margin-block-end: -280px !important;
+    }
+  }
+
   @media (max-width: 640px) {
     .home-platform-card-image,
     .home-platform-card .adcc-image__img {
@@ -2247,6 +2316,12 @@ font-size: 14px;
       opacity: 1 !important;
       transform: none !important;
     }
+
+
+
+
+
+
     .home-header {
       height: 78px !important;
       padding: 0 16px !important;
