@@ -542,7 +542,7 @@ function PublicFooter() {
       </section>
 
       <footer className="public-footer relative bg-[#EAF4FF] px-4! pt-6! pb-[26px]! sm:px-6! sm:pt-8! md:px-10! lg:px-16! lg:pt-10! xl:px-20! xl:pt-12!">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(280px,1fr)_190px_minmax(280px,1fr)] lg:gap-12">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(280px,1fr)_minmax(300px,1.1fr)_minmax(260px,1fr)] lg:gap-12">
           <div className="sm:col-span-2 lg:col-span-1">
             <Logo compact />
             <p className="mt-5! max-w-[390px] text-[16px] leading-6 text-black sm:mt-8! sm:text-[18px] lg:mt-9!">
@@ -610,43 +610,62 @@ function PublicFooter() {
             <h3 className="text-[22px] uppercase sm:text-[24px]">
               {t("public.footer.quickLinks")}
             </h3>
-            <ul className="!mt-5 space-y-1.5! text-[16px] sm:!mt-7 sm:space-y-2! sm:text-[18px]">
-              <li>
-                <NavLink to="/aboutus" className="pub-footer-link">
-                  {t("public.nav.aboutUs")}
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/user-tracks" className="pub-footer-link">
-                  {t("public.footer.rides")}
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/user-event" className="pub-footer-link">
-                  {t("public.nav.events")}
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/user-challenges" className="pub-footer-link">
-                  {t("public.footer.cyclistsCorner")}
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/user-news" className="pub-footer-link">
-                  {t("public.nav.news")}
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/contact-us" className="pub-footer-link">
-                  {t("public.footer.contactUs")}
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/privacy-policy" className="pub-footer-link">
-                  {t("public.footer.privacyPolicy")}
-                </NavLink>
-              </li>
-            </ul>
+            <div className="mt-5! grid grid-cols-2 gap-x-6 text-[16px] sm:mt-7! sm:gap-x-10 sm:text-[18px]">
+              <ul className="space-y-1.5! sm:space-y-2!">
+                <li>
+                  <NavLink to="/aboutus" className="pub-footer-link">
+                    {t("public.nav.aboutUs")}
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/user-communities" className="pub-footer-link">
+                    {t("public.footer.communities")}
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/user-event" className="pub-footer-link">
+                    {t("public.nav.events")}
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/user-challenges" className="pub-footer-link">
+                    {t("public.footer.cyclistsCorner")}
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/user-tracks" className="pub-footer-link">
+                    {t("public.footer.rides")}
+                  </NavLink>
+                </li>
+                <li>
+                  <a
+                    href="https://erp.adcyclingclub.ae/contracts/venue/public/book/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="pub-footer-link"
+                  >
+                    {t("public.footer.venueBooking")}
+                  </a>
+                </li>
+              </ul>
+              <ul className="space-y-1.5! sm:space-y-2!">
+                <li>
+                  <NavLink to="/user-adcc-store" className="pub-footer-link">
+                    {t("public.nav.clubStore")}
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/user-marketplace" className="pub-footer-link">
+                    {t("public.nav.marketplace")}
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/contact-us" className="pub-footer-link">
+                    {t("public.footer.contactUs")}
+                  </NavLink>
+                </li>
+              </ul>
+            </div>
           </div>
 
           <div>

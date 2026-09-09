@@ -682,15 +682,16 @@ font-family: var(--font-satoshi) !important;}
   //   flex-shrink: 0;
   // }
   .home-community-section {
-    background: #EAF4FF;
+    background: #C3D5E7;
     padding: 80px 86px;
     text-align: center;
   }
 
   .home-partners-section {
-    background: #435974;
+    background: transparent;
     padding: 48px 86px 52px;
     text-align: center;
+    overflow: hidden;
   }
   .home-partners-title {
     font-family: 'Bebas Kai', sans-serif;
@@ -698,7 +699,7 @@ font-family: var(--font-satoshi) !important;}
     font-size: 64px;
     line-height: 100.7%;
     text-transform: uppercase;
-    color: #ffffff;
+    color: #000000;
     margin: 0 0 20px;
   }
   .home-partners-subtitle {
@@ -706,15 +707,16 @@ font-family: var(--font-satoshi) !important;}
     font-weight: 400;
     font-size: 18px;
     line-height: 26px;
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(0, 0, 0, 0.65);
     max-width: 620px;
     margin: 0 auto 56px;
   }
   .home-partners-marquee {
     position: relative;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
     overflow: hidden;
     direction: ltr;
   }
@@ -730,11 +732,11 @@ font-family: var(--font-satoshi) !important;}
   }
   .home-partners-marquee::before {
     left: 0;
-    background: linear-gradient(to right, #435974 0%, rgba(67, 89, 116, 0) 100%);
+    background: linear-gradient(to right, #EAF4FF 0%, rgba(234, 244, 255, 0) 100%);
   }
   .home-partners-marquee::after {
     right: 0;
-    background: linear-gradient(to left, #435974 0%, rgba(67, 89, 116, 0) 100%);
+    background: linear-gradient(to left, #EAF4FF 0%, rgba(234, 244, 255, 0) 100%);
   }
   .home-partners-track {
     display: flex;
@@ -804,13 +806,17 @@ font-family: var(--font-satoshi) !important;}
 section.home-hero{
         height: 70vh !important;}
 .home-page .home-community-section{
-    padding-block: 50px !important;}
+    padding-block: 60px 90px !important;}
 
   }
   @media (max-width: 640px) {
     .home-partners-section {
       padding: 40px 18px 40px;
     }
+.home-page #platform.home-platform-section{
+        padding-block: 30px 40px !important;}
+
+
 
 .home-page #about.home-about-section{
     padding-bottom: 180px !important;}
@@ -5157,11 +5163,11 @@ export function Home() {
       <StatsTicker />
       <AppSection />
       <CyclingJourneySection />
-      <PartnersSection />
       <CommunitySection />
       <ExplorePlatformSection />
       <StoreSection />
       <FeedSection />
+      <PartnersSection />
       <AboutSection />
       <BookVenueSection />
       {/* <CTABanner />
