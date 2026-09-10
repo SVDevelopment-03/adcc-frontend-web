@@ -169,6 +169,9 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   });
 
   const [customAmenityInput, setCustomAmenityInput] = useState('');
+  const [eligibilityCustom, setEligibilityCustom] = useState<{ id: string; value: string }[]>([
+    { id: 'eligibility-0', value: '' },
+  ]);
 
   // Country → City → Track cascade (same as tracks module, using gccLocations)
   const availableCountries = gccCountries as unknown as string[];
@@ -257,6 +260,18 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         i === index ? { ...item, [field]: value } : item
       ),
     }));
+  };
+
+  const addEligibilityItem = () => {
+    setEligibilityCustom(prev => [...prev, { id: `eligibility-${Date.now()}-${Math.random()}`, value: '' }]);
+  };
+
+  const updateEligibilityItem = (id: string, value: string) => {
+    setEligibilityCustom(prev => prev.map(item => item.id === id ? { ...item, value } : item));
+  };
+
+  const removeEligibilityItem = (id: string) => {
+    setEligibilityCustom(prev => prev.length > 1 ? prev.filter(item => item.id !== id) : prev);
   };
 
   // Helper function to compress and resize image before converting to base64
@@ -380,6 +395,11 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsSubmitting(true);
     try {
       // Send images as File in FormData (backend multer: mainImage, eventImage)
+      const customEligibility = eligibilityCustom
+        .map((item) => item.value.trim())
+        .filter(Boolean)
+        .map((value) => ({ label: value }));
+
       const payload = {
         title: formData.title.trim() || formData.titleAr?.trim() || '',
         ...(formData.titleAr?.trim() ? { titleAr: formData.titleAr.trim() } : {}),
@@ -411,12 +431,19 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         eventImage: coverImage || coverImageUrl || undefined,
         galleryImages,
         minAge: formData.eligibilityAge,
-        eligibility: {
-          helmetRequired: formData.eligibilityHelmet,
-          roadBikeOnly: formData.eligibilityRoadBikeOnly,
-          experienceLevel: formData.eligibilityExperience,
-          gender: formData.eligibilityGender,
-        },
+        eligibility: [
+          {
+            helmetRequired: formData.eligibilityHelmet,
+            roadBikeOnly: formData.eligibilityRoadBikeOnly,
+            experienceLevel: formData.eligibilityExperience,
+            gender: formData.eligibilityGender,
+          },
+          ...customEligibility,
+        ].filter((entry) => {
+          if (!entry || typeof entry !== 'object') return false;
+          if ('label' in entry && typeof entry.label === 'string' && entry.label.trim()) return true;
+          return Object.values(entry).some((value) => value !== undefined && value !== null && value !== false && value !== 'all');
+        }),
         status: action === 'draft' ? 'Draft' : formData.status,
         isFeatured: !!formData.isFeatured,
         allowCancellation: !!formData.allowCancellation,
@@ -967,6 +994,38 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                   />
                   <span className="text-sm" style={{ color: '#666' }}>{t('events.create.roadBikeOnly', 'Road Bike Only')}</span>
                 </label>
+              </div>
+
+              <div className="space-y-3">
+                <label className="block text-sm mb-2" style={{ color: '#666' }}>Custom requirements</label>
+                {eligibilityCustom.map((item, index) => (
+                  <div key={item.id} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={item.value}
+                      onChange={(e) => updateEligibilityItem(item.id, e.target.value)}
+                      placeholder={index === 0 ? 'Helmet Required, Road Bike Only...' : 'Add another requirement'}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeEligibilityItem(item.id)}
+                      className="p-2 rounded-lg border border-gray-200 hover:bg-gray-100"
+                      aria-label="Remove requirement"
+                    >
+                      <X className="w-4 h-4" style={{ color: '#666' }} />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={addEligibilityItem}
+                  className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-gray-300 hover:bg-gray-50"
+                  style={{ color: '#333' }}
+                >
+                  <Plus className="w-4 h-4" />
+                  Add requirement
+                </button>
               </div>
 
               <div>

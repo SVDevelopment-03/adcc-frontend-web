@@ -626,9 +626,19 @@ const formatTimeInput = (raw: string): string => {
             <div className="p-6 rounded-2xl bg-white shadow-sm">
               <h3 className="text-lg mb-4" style={{ color: '#333' }}>{t('events.detail.eligibility')}</h3>
               {(() => {
-                const elig = Array.isArray((event as any).eligibility)
-                  ? (event as any).eligibility[0]
-                  : (event as any).eligibility;
+                const eligArray = Array.isArray((event as any).eligibility)
+                  ? (event as any).eligibility
+                  : ((event as any).eligibility ? [(event as any).eligibility] : []);
+
+                const customItems = eligArray
+                  .flatMap((elig: any) => {
+                    const text = elig?.label || elig?.text || elig?.requirement || elig?.value;
+                    return text ? [String(text)] : [];
+                  })
+                  .filter(Boolean);
+
+                const primary = eligArray[0] || {};
+
                 return (
                   <div className="space-y-3">
                     <div>
@@ -637,12 +647,22 @@ const formatTimeInput = (raw: string): string => {
                     </div>
                     <div>
                       <p className="text-sm mb-1" style={{ color: '#666' }}>{t('events.detail.labels.bikeType')}</p>
-                      <p style={{ color: '#333' }}>{elig?.roadBikeOnly ? t('events.detail.roadBikeOnly', 'Road Bike Only') : t('events.detail.anyBike', 'Any')}</p>
+                      <p style={{ color: '#333' }}>{primary?.roadBikeOnly ? t('events.detail.roadBikeOnly', 'Road Bike Only') : t('events.detail.anyBike', 'Any')}</p>
                     </div>
                     <div>
                       <p className="text-sm mb-1" style={{ color: '#666' }}>{t('events.detail.labels.experienceLevel')}</p>
-                      <p style={{ color: '#333' }} className="capitalize">{elig?.experienceLevel || '-'}</p>
+                      <p style={{ color: '#333' }} className="capitalize">{primary?.experienceLevel || '-'}</p>
                     </div>
+                    {customItems.length > 0 && (
+                      <div>
+                        <p className="text-sm mb-1" style={{ color: '#666' }}>Requirements</p>
+                        <ul className="space-y-1 list-disc pl-5" style={{ color: '#333' }}>
+                          {customItems.map((item, index) => (
+                            <li key={`${item}-${index}`}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 );
               })()}
