@@ -36,6 +36,7 @@ const SECTIONS: SectionDef[] = [
     label: 'Community Purpose Types',
     itemLabel: 'Purpose',
     description: 'Special-purpose community classifications (Awareness, Charity, ...).',
+    supportsIcon: true,
   },
   {
     key: 'community_terrain',
@@ -43,6 +44,7 @@ const SECTIONS: SectionDef[] = [
     label: 'Terrain Types',
     itemLabel: 'Terrain',
     description: 'Terrain options used on community and track forms.',
+    supportsIcon: true,
   },
   {
     key: 'country',
@@ -50,6 +52,7 @@ const SECTIONS: SectionDef[] = [
     label: 'Countries',
     itemLabel: 'Country',
     description: 'Countries offered across event, community and track location fields.',
+    supportsIcon: true,
   },
   {
     key: 'city',
@@ -57,6 +60,7 @@ const SECTIONS: SectionDef[] = [
     label: 'Cities',
     itemLabel: 'City',
     description: 'Cities offered across location fields, grouped by country.',
+    supportsIcon: true,
   },
   {
     key: 'track_facility',
@@ -88,6 +92,7 @@ const SECTIONS: SectionDef[] = [
     label: 'Challenge Units',
     itemLabel: 'Unit',
     description: 'Target units offered when creating challenges (km, hours, rides, events).',
+    supportsIcon: true,
   },
   {
     key: 'news_category',
@@ -95,6 +100,7 @@ const SECTIONS: SectionDef[] = [
     label: 'News Categories',
     itemLabel: 'Category',
     description: 'Categories used when creating or filtering news articles.',
+    supportsIcon: true,
   },
 ];
 
@@ -176,6 +182,7 @@ export function StaticDataManager() {
                   itemLabel="City"
                   parentValue={effectiveCountry}
                   emptyState="No cities yet for this country."
+                  supportsIcon={true}
                 />
               ) : (
                 <div className="bg-white rounded-2xl shadow-sm p-10 text-center" style={{ color: '#666' }}>

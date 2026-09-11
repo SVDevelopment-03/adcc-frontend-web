@@ -26,6 +26,7 @@ export function EventDetail() {
   // Notifications tab state
   const [notifTitle, setNotifTitle] = useState('');
   const [notifMessage, setNotifMessage] = useState('');
+  const [notifImageUrl, setNotifImageUrl] = useState('');
   const [notifDeliveryType, setNotifDeliveryType] = useState<'app' | 'email' | 'both'>('app');
   const [notifAudience, setNotifAudience] = useState<'all' | 'registered' | 'checked-in'>('all');
   const [isSendingNotif, setIsSendingNotif] = useState(false);
@@ -260,6 +261,7 @@ const formatTimeInput = (raw: string): string => {
         audienceType: 'selected_users',
         selectedUserIds,
         deliveryType: notifDeliveryType,
+        image: notifImageUrl?.trim() || undefined,
       });
       const label = notifDeliveryType === 'app'
         ? 'push notification'
@@ -270,6 +272,7 @@ const formatTimeInput = (raw: string): string => {
       toast.success(`Notification sent to ${selectedUserIds.length} participant(s)`);
       setNotifTitle('');
       setNotifMessage('');
+      setNotifImageUrl('');
     } catch (err: any) {
       const msg = err?.response?.data?.message || err?.message || 'Failed to send notification';
       setNotifResult({ ok: false, message: msg, count: 0 });
@@ -623,9 +626,19 @@ const formatTimeInput = (raw: string): string => {
             <div className="p-6 rounded-2xl bg-white shadow-sm">
               <h3 className="text-lg mb-4" style={{ color: '#333' }}>{t('events.detail.eligibility')}</h3>
               {(() => {
-                const elig = Array.isArray((event as any).eligibility)
-                  ? (event as any).eligibility[0]
-                  : (event as any).eligibility;
+                const eligArray = Array.isArray((event as any).eligibility)
+                  ? (event as any).eligibility
+                  : ((event as any).eligibility ? [(event as any).eligibility] : []);
+
+                const customItems = eligArray
+                  .flatMap((elig: any) => {
+                    const text = elig?.label || elig?.text || elig?.requirement || elig?.value;
+                    return text ? [String(text)] : [];
+                  })
+                  .filter(Boolean);
+
+                const primary = eligArray[0] || {};
+
                 return (
                   <div className="space-y-3">
                     <div>
@@ -634,12 +647,22 @@ const formatTimeInput = (raw: string): string => {
                     </div>
                     <div>
                       <p className="text-sm mb-1" style={{ color: '#666' }}>{t('events.detail.labels.bikeType')}</p>
-                      <p style={{ color: '#333' }}>{elig?.roadBikeOnly ? t('events.detail.roadBikeOnly', 'Road Bike Only') : t('events.detail.anyBike', 'Any')}</p>
+                      <p style={{ color: '#333' }}>{primary?.roadBikeOnly ? t('events.detail.roadBikeOnly', 'Road Bike Only') : t('events.detail.anyBike', 'Any')}</p>
                     </div>
                     <div>
                       <p className="text-sm mb-1" style={{ color: '#666' }}>{t('events.detail.labels.experienceLevel')}</p>
-                      <p style={{ color: '#333' }} className="capitalize">{elig?.experienceLevel || '-'}</p>
+                      <p style={{ color: '#333' }} className="capitalize">{primary?.experienceLevel || '-'}</p>
                     </div>
+                    {customItems.length > 0 && (
+                      <div>
+                        <p className="text-sm mb-1" style={{ color: '#666' }}>Requirements</p>
+                        <ul className="space-y-1 list-disc pl-5" style={{ color: '#333' }}>
+                          {customItems.map((item, index) => (
+                            <li key={`${item}-${index}`}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 );
               })()}
@@ -1028,6 +1051,16 @@ const formatTimeInput = (raw: string): string => {
             {/* Delivery type */}
             <div>
               <label className="block text-sm font-medium mb-2" style={{ color: '#555' }}>Delivery Method</label>
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: '#555' }}>Image URL (optional)</label>
+              <input
+                type="text"
+                value={notifImageUrl}
+                onChange={e => setNotifImageUrl(e.target.value)}
+                placeholder="https://example.com/image.jpg"
+                className="w-full px-4 py-2 rounded-lg border border-gray-200"
+              />
+            </div>
               <div className="flex gap-3">
                 {(['app', 'email', 'both'] as const).map(type => (
                   <button

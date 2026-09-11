@@ -1212,7 +1212,7 @@ function Footer() {
             "About Us",
             "Rides",
             "Events",
-            "Cyclist's Corner",
+            "Challenges",
             "Contact Us",
           ].map((l) => (
             <p key={l} style={{ fontSize: 16, marginBottom: 10 }}>

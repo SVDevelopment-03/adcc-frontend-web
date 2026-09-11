@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Bell, Globe, Mail, Save, Settings, Shield, SlidersHorizontal, Wifi } from 'lucide-react';
+import { Bell, Code2, Globe, Mail, Save, Settings, Shield, SlidersHorizontal, Wifi } from 'lucide-react';
 import { toast } from 'sonner';
 import { getAppConfig, updateAppConfig, testSmtpConnection, type AppConfigState, type FeatureKey, type NotificationKey, type SecurityKey } from '../../services/appConfigApi';
 
@@ -21,6 +21,10 @@ export function AppConfig() {
       fromEmail: '',
       fromName: 'Abu Dhabi Cycling Club',
       replyTo: '',
+    },
+    gtm: {
+      headCode: '',
+      bodyCode: '',
     },
     features: {
       marketplace: true,
@@ -73,6 +77,7 @@ export function AppConfig() {
           notifications: { ...defaultConfig.notifications, ...(remote as any).notifications },
           security: { ...defaultConfig.security, ...(remote as any).security },
           emailSettings: { ...defaultConfig.emailSettings, ...(remote as any).emailSettings },
+          gtm: { ...defaultConfig.gtm, ...(remote as any).gtm },
         };
         const provider = deriveProvider((mergedRemote.emailSettings as any).smtpHost ?? '');
         setSmtpProvider(provider);
@@ -100,6 +105,7 @@ export function AppConfig() {
             notifications: { ...defaultConfig.notifications, ...(parsed as any).notifications },
             security: { ...defaultConfig.security, ...(parsed as any).security },
             emailSettings: { ...defaultConfig.emailSettings, ...(parsed as any).emailSettings },
+            gtm: { ...defaultConfig.gtm, ...(parsed as any).gtm },
           };
           setConfig(merged);
           setInitial(merged);
@@ -212,6 +218,7 @@ export function AppConfig() {
         notifications: { ...defaultConfig.notifications, ...(saved as any).notifications },
         security: { ...defaultConfig.security, ...(saved as any).security },
         emailSettings: { ...defaultConfig.emailSettings, ...(saved as any).emailSettings },
+        gtm: { ...defaultConfig.gtm, ...(saved as any).gtm },
       };
       setConfig(mergedSaved);
       setInitial(mergedSaved);
@@ -609,6 +616,56 @@ export function AppConfig() {
                   {smtpTestResult.ok ? '✓ ' : '✗ '}{smtpTestResult.message}
                 </div>
               ) : null}
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6 rounded-2xl shadow-sm bg-white border border-gray-100 lg:col-span-2">
+          <div className="flex items-center gap-3 mb-4">
+            <Code2 className="w-6 h-6" style={{ color: '#C12D32' }} />
+            <h2 className="text-xl" style={{ color: '#333' }}>
+              Google Tag Manager
+            </h2>
+          </div>
+
+          <p className="text-sm mb-4" style={{ color: '#666' }}>
+            Paste the two snippets from your GTM container (Admin → Install Google Tag Manager).
+            Leave both blank to disable. Changes take effect on the next full page load.
+          </p>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm mb-2" style={{ color: '#666' }}>
+                Head Code
+              </label>
+              <textarea
+                value={config.gtm.headCode}
+                onChange={(e) => setField('gtm', { ...config.gtm, headCode: e.target.value })}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white font-mono text-xs"
+                rows={6}
+                spellCheck={false}
+                placeholder={"<!-- Google Tag Manager -->\n<script>(function(w,d,s,l,i){ ... })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>\n<!-- End Google Tag Manager -->"}
+              />
+              <p className="text-xs mt-1" style={{ color: '#888' }}>
+                Injected into <code>&lt;head&gt;</code> as high as possible on every page.
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm mb-2" style={{ color: '#666' }}>
+                Body Code
+              </label>
+              <textarea
+                value={config.gtm.bodyCode}
+                onChange={(e) => setField('gtm', { ...config.gtm, bodyCode: e.target.value })}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white font-mono text-xs"
+                rows={4}
+                spellCheck={false}
+                placeholder={"<!-- Google Tag Manager (noscript) -->\n<noscript><iframe src=\"https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX\" height=\"0\" width=\"0\" style=\"display:none;visibility:hidden\"></iframe></noscript>\n<!-- End Google Tag Manager (noscript) -->"}
+              />
+              <p className="text-xs mt-1" style={{ color: '#888' }}>
+                Injected immediately after the opening <code>&lt;body&gt;</code> tag on every page.
+              </p>
             </div>
           </div>
         </div>

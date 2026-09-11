@@ -413,7 +413,17 @@ html[dir='rtl'] .communities-page .text-left {
   .home-page .home-app-section,
   .home-page .journey-section,
   html[dir='rtl'] .home-page .journey-section {
-    padding-inline: 18px !important;
+    padding-inline: 18px 0 !important;
+  }
+
+  /* Keep the zero padding on the physical right edge in Arabic too. */
+  html[dir='rtl'] .home-page .home-community-section,
+  html[dir='rtl'] .home-page .home-platform-section,
+  html[dir='rtl'] .home-page .home-store-section,
+  html[dir='rtl'] .home-page .home-about-section,
+  html[dir='rtl'] .home-page .home-app-section,
+  html[dir='rtl'] .home-page .journey-section {
+    padding-inline: 0 18px !important;
   }
 
   .home-page .home-about-content,

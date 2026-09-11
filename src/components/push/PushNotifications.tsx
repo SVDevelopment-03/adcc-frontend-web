@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Send, Users, Clock, Trash2 } from 'lucide-react';
+import { Send, Users, Clock, Trash2, Plus, UploadCloud, Image as ImageIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { sendStaffWebPush, sendTestBroadcastPush } from '../../services/authApi';
+import { uploadToMediaLibrary } from '../../services/mediaApi';
 import { getAllUsers, type User } from '../../services/usersApi';
 import { getAllEvents } from '../../services/eventsApi';
 //import { getAllCommunities } from '../../services/communitiesApi';
@@ -30,6 +31,15 @@ export function PushNotifications() {
   const { t } = useTranslation();
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
+  const [imageUrlInput, setImageUrlInput] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [actionsList, setActionsList] = useState<Array<{ title: string; action: string; icon?: string }>>([]);
+  const [newActionTitle, setNewActionTitle] = useState('');
+  const [newActionRoute, setNewActionRoute] = useState('');
+  const [uploadedMediaName, setUploadedMediaName] = useState<string | null>(null);
+  const [uploadedMediaSize, setUploadedMediaSize] = useState<number | null>(null);
+  const [uploadedFromUpload, setUploadedFromUpload] = useState(false);
   const [scheduleDate, setScheduleDate] = useState('');
   const [scheduleTime, setScheduleTime] = useState('');
   const [audience, setAudience] = useState('all');
@@ -107,9 +117,9 @@ export function PushNotifications() {
     if (!query) return users;
     return users.filter((user) => {
       return (
-        user.fullName.toLowerCase().includes(query) ||
-        user.email.toLowerCase().includes(query) ||
-        user.phone.toLowerCase().includes(query)
+        (user.fullName || '').toLowerCase().includes(query) ||
+        (user.email || '').toLowerCase().includes(query) ||
+        (user.phone || '').toLowerCase().includes(query)
       );
     });
   }, [users, userSearch]);
@@ -136,6 +146,8 @@ export function PushNotifications() {
     const nextPayload = {
       title: values.title.trim() || undefined,
       body: values.message.trim(),
+      image: imageUrlInput?.trim() || undefined,
+      actions: actionsList.length > 0 ? actionsList : undefined,
       audienceType: audience,
       deliveryType,
       selectedUserIds: selectedUserIds.length > 0 ? selectedUserIds : undefined,
@@ -326,15 +338,15 @@ export function PushNotifications() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 p-6 rounded-2xl shadow-sm bg-white">
-          <h2 className="text-xl mb-6" style={{ color: '#333' }}>{t('push.createCampaign')}</h2>
-          <div className="space-y-4">
+        <div className="lg:col-span-2 p-6 rounded-2xl shadow bg-white">
+          <h2 className="text-xl mb-6 font-semibold" style={{ color: '#222' }}>{t('push.createCampaign')}</h2>
+          <div className="space-y-6">
             <div>
               <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('push.campaignTitle')}</label>
               <input
                 type="text"
                 placeholder={t('push.titlePlaceholder')}
-                className={`w-full px-4 py-2 rounded-lg border ${touched.title && errors.title ? 'border-red-500' : 'border-gray-200'}`}
+                className={`w-full px-4 py-3 rounded-xl border ${touched.title && errors.title ? 'border-red-500' : 'border-gray-200'} shadow-sm focus:outline-none focus:ring-2 focus:ring-red-100`}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 onBlur={() => handleBlur('title')}
@@ -348,7 +360,7 @@ export function PushNotifications() {
               <textarea
                 placeholder={t('push.messagePlaceholder')}
                 rows={4}
-                className={`w-full px-4 py-2 rounded-lg border ${touched.message && errors.message ? 'border-red-500' : 'border-gray-200'}`}
+                className={`w-full px-4 py-3 rounded-xl border ${touched.message && errors.message ? 'border-red-500' : 'border-gray-200'} shadow-sm focus:outline-none focus:ring-2 focus:ring-red-50`}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onBlur={() => handleBlur('message')}
@@ -357,6 +369,150 @@ export function PushNotifications() {
                 <p className="mt-1 text-sm text-red-600">{errors.message}</p>
               ) : null}
             </div>
+            <div>
+              <label className="block text-sm mb-2" style={{ color: '#666' }}>Image (optional)</label>
+              <div className="border border-dashed border-gray-200 rounded-xl p-3 flex items-center gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded bg-gray-50">
+                    <ImageIcon className="w-6 h-6 text-gray-500" />
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-700">Upload an image or paste a URL</div>
+                    <div className="text-xs text-gray-500">Supports jpg, png, gif — max 10MB</div>
+                  </div>
+                </div>
+                <div className="ml-auto flex items-center gap-2">
+                  <input id="push-image-file" type="file" accept="image/*" className="sr-only" onChange={(e) => setSelectedFile(e.target.files?.[0] || null)} />
+                  <label htmlFor="push-image-file" className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 cursor-pointer">
+                    <UploadCloud className="w-4 h-4" />
+                    <span className="text-sm text-gray-700">Choose file</span>
+                  </label>
+                  {selectedFile ? <div className="text-sm text-gray-600 ml-2">{selectedFile.name}</div> : null}
+                  <button
+                    type="button"
+                    disabled={!selectedFile || isUploading}
+                    onClick={async () => {
+                      if (!selectedFile) return;
+                      try {
+                        setIsUploading(true);
+                        const media = await uploadToMediaLibrary(selectedFile, 'galleries');
+                        setImageUrlInput(media.url);
+                        toast.success('Image uploaded');
+                        setSelectedFile(null);
+                      } catch (err) {
+                        console.error('Upload failed', err);
+                        toast.error('Upload failed');
+                      } finally {
+                        setIsUploading(false);
+                      }
+                    }}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
+                  >
+                    {isUploading ? 'Uploading...' : 'Upload & Use'}
+                  </button>
+                </div>
+              </div>
+              <div className="mt-3">
+                <input
+                  type="text"
+                  placeholder="Or use an image URL: https://example.com/image.jpg"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200"
+                  value={imageUrlInput}
+                  onChange={(e) => setImageUrlInput(e.target.value)}
+                />
+              </div>
+              {imageUrlInput ? (
+                <div className="mt-3">
+                  <img src={imageUrlInput} alt="preview" className="max-h-48 rounded-lg shadow-sm object-cover w-full" />
+                </div>
+              ) : null}
+              {uploadedFromUpload && uploadedMediaName ? (
+                <div className="mt-3 p-3 rounded-lg border bg-white flex items-center gap-4">
+                  <div className="w-24 h-24 rounded overflow-hidden border bg-gray-50">
+                    <img src={imageUrlInput} alt={uploadedMediaName} className="object-cover w-full h-full" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-gray-800 truncate">{uploadedMediaName}</div>
+                    {uploadedMediaSize ? <div className="text-xs text-gray-500">{(uploadedMediaSize / 1024).toFixed(1)} KB</div> : null}
+                    <div className="text-xs text-gray-500 mt-1">Uploaded via media library</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImageUrlInput('');
+                        setUploadedMediaName(null);
+                        setUploadedMediaSize(null);
+                        setUploadedFromUpload(false);
+                        toast('Image removed');
+                      }}
+                      className="px-3 py-1 border rounded bg-white"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+            
+            <div>
+              <label className="block text-sm mb-2" style={{ color: '#666' }}>Actions (optional)</label>
+              <div className="space-y-3">
+                {actionsList.map((a, idx) => (
+                  <div key={idx} className="flex items-center justify-between gap-3 p-3 rounded-lg border border-gray-100 shadow-sm bg-white">
+                    <div className="min-w-0">
+                      <div className="text-sm font-medium text-gray-800 truncate">{a.title}</div>
+                      <div className="text-xs text-gray-500 truncate">{a.action}</div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setActionsList((prev) => prev.filter((_, i) => i !== idx))}
+                        className="text-sm px-2 py-1 border rounded hover:bg-gray-50"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="text"
+                    placeholder="Button title (e.g. View)"
+                    className="px-3 py-2 rounded border border-gray-200"
+                    value={newActionTitle}
+                    onChange={(e) => setNewActionTitle(e.target.value)}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Action (route or URL)"
+                    className="px-3 py-2 rounded border border-gray-200"
+                    value={newActionRoute}
+                    onChange={(e) => setNewActionRoute(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!newActionTitle.trim() || !newActionRoute.trim()) {
+                        toast.error('Provide title and action');
+                        return;
+                      }
+                      setActionsList((prev) => [...prev, { title: newActionTitle.trim(), action: newActionRoute.trim() }]);
+                      setNewActionTitle('');
+                      setNewActionRoute('');
+                    }}
+                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-gray-200 hover:shadow-sm"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span className="text-sm">Add Action</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
             <div>
               <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('push.audience')}</label>
               <select
@@ -475,22 +631,24 @@ export function PushNotifications() {
                 <p className="mt-1 text-sm text-red-600">{errors.schedule}</p>
               ) : null}
             </div>
-            <button
-              type="button"
-              onClick={() => {
-                void handleSend();
-              }}
-              disabled={isSending}
-              className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-white"
-              style={{ backgroundColor: '#C12D32', opacity: isSending ? 0.7 : 1 }}
-            >
-              <Send className="w-5 h-5" />
-              <span>{isSending ? t('push.sending') : t('push.sendNotification')}</span>
-            </button>
+            <div className="mt-4">
+              <button
+                type="button"
+                onClick={() => {
+                  void handleSend();
+                }}
+                disabled={isSending}
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-white shadow-md"
+                style={{ background: 'linear-gradient(90deg,#C12D32,#A81F25)', opacity: isSending ? 0.7 : 1 }}
+              >
+                <Send className="w-5 h-5" />
+                <span>{isSending ? t('push.sending') : t('push.sendNotification')}</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="p-6 rounded-2xl shadow-sm bg-white">
+        <div className="p-6 rounded-2xl shadow bg-white">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl" style={{ color: '#333' }}>{t('push.preview')}</h2>
             {history.length > 0 ? (
@@ -506,12 +664,24 @@ export function PushNotifications() {
             ) : null}
           </div>
           <div className="p-4 rounded-xl" style={{ backgroundColor: '#FFF9EF' }}>
-            <div className="text-sm mb-2" style={{ color: '#333' }}>
-              {title.trim() || t('push.previewTitle')}
+            <div className="flex items-start gap-3">
+              <div className="w-16 h-16 rounded-lg overflow-hidden bg-white flex items-center justify-center border">
+                {imageUrlInput ? (
+                  <img src={imageUrlInput} alt="preview" className="object-cover w-full h-full" />
+                ) : (
+                  <div className="text-gray-400"><ImageIcon className="w-6 h-6" /></div>
+                )}
+              </div>
+              <div>
+                <div className="text-sm mb-1 font-medium" style={{ color: '#333' }}>{title.trim() || t('push.previewTitle')}</div>
+                <p className="text-xs" style={{ color: '#666' }}>{message.trim() || t('push.previewBody')}</p>
+                <div className="mt-2 flex items-center gap-2">
+                  {actionsList.map((a, i) => (
+                    <button key={i} className="text-xs px-3 py-1 rounded-full border border-gray-200 bg-white hover:shadow-sm">{a.title}</button>
+                  ))}
+                </div>
+              </div>
             </div>
-            <p className="text-xs" style={{ color: '#666' }}>
-              {message.trim() || t('push.previewBody')}
-            </p>
           </div>
 
           <div className="mt-4 space-y-2 max-h-80 overflow-auto">

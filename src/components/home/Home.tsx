@@ -682,15 +682,16 @@ font-family: var(--font-satoshi) !important;}
   //   flex-shrink: 0;
   // }
   .home-community-section {
-    background: #EAF4FF;
+    background: #C3D5E7;
     padding: 80px 86px;
     text-align: center;
   }
 
   .home-partners-section {
-    background: #435974;
+    background: transparent;
     padding: 48px 86px 52px;
     text-align: center;
+    overflow: hidden;
   }
   .home-partners-title {
     font-family: 'Bebas Kai', sans-serif;
@@ -698,7 +699,7 @@ font-family: var(--font-satoshi) !important;}
     font-size: 64px;
     line-height: 100.7%;
     text-transform: uppercase;
-    color: #ffffff;
+    color: #000000;
     margin: 0 0 20px;
   }
   .home-partners-subtitle {
@@ -706,15 +707,16 @@ font-family: var(--font-satoshi) !important;}
     font-weight: 400;
     font-size: 18px;
     line-height: 26px;
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(0, 0, 0, 0.65);
     max-width: 620px;
     margin: 0 auto 56px;
   }
   .home-partners-marquee {
     position: relative;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
     overflow: hidden;
     direction: ltr;
   }
@@ -730,11 +732,11 @@ font-family: var(--font-satoshi) !important;}
   }
   .home-partners-marquee::before {
     left: 0;
-    background: linear-gradient(to right, #435974 0%, rgba(67, 89, 116, 0) 100%);
+    background: linear-gradient(to right, #EAF4FF 0%, rgba(234, 244, 255, 0) 100%);
   }
   .home-partners-marquee::after {
     right: 0;
-    background: linear-gradient(to left, #435974 0%, rgba(67, 89, 116, 0) 100%);
+    background: linear-gradient(to left, #EAF4FF 0%, rgba(234, 244, 255, 0) 100%);
   }
   .home-partners-track {
     display: flex;
@@ -748,10 +750,10 @@ font-family: var(--font-satoshi) !important;}
     animation-play-state: paused;
   }
   .home-partner-card {
-    flex: 0 0 200px;
-    width: 200px;
-    height: 100px;
-    background: #ffffff;
+    flex: 0 0 250px;
+    width: 250px;
+    height: 120px;
+    background: transparent;
     border-radius: 6px;
     display: flex;
     align-items: center;
@@ -804,13 +806,17 @@ font-family: var(--font-satoshi) !important;}
 section.home-hero{
         height: 70vh !important;}
 .home-page .home-community-section{
-    padding-block: 50px !important;}
+    padding-block: 60px 90px !important;}
 
   }
   @media (max-width: 640px) {
     .home-partners-section {
       padding: 40px 18px 40px;
     }
+.home-page #platform.home-platform-section{
+        padding-block: 30px 50px !important;}
+
+
 
 .home-page #about.home-about-section{
     padding-bottom: 180px !important;}
@@ -840,6 +846,10 @@ section.home-hero{
     .home-partners-marquee::after {
       width: 44px;
     }
+
+    div.home-about-rider{
+    bottom: 0px !important;
+            width: 85% !important;}
   }
 
   .home-venue-section {
@@ -913,6 +923,7 @@ section.home-hero{
     min-width: 0;
     display: flex;
     flex-direction: column;
+    justify-content: center;
   }
   .home-venue-cards {
     display: flex;
@@ -2568,9 +2579,13 @@ margin-block-end: 20px !important;}
       scroll-snap-type: x proximity !important;
       -webkit-overflow-scrolling: touch !important;
       scrollbar-width: none !important;
-      margin-inline: -18px !important;
-      padding-inline: 18px !important;
-      scroll-padding-inline: 18px !important;
+      /* The section now has 0 right padding (see public-spacing.css), so the
+         old symmetric -18px / 18px would leave an 18px dead strip on the right
+         and overflow past the viewport. Zero out the trailing side: 18px
+         gutter on the left only, cards run flush to the right edge. */
+      margin-inline: -18px 0 !important;
+      padding-inline: 18px 0 !important;
+      scroll-padding-inline: 18px 0 !important;
     }
     .home-platform-cards::-webkit-scrollbar {
       display: none !important;
@@ -2731,6 +2746,11 @@ margin-block-end: 20px !important;}
   }
 
   @media (max-width: 650px) {
+
+ html[dir='rtl'] .home-page .home-store-section{
+         padding-inline: 18px 0px !important;}
+
+
     .home-hero-title,
     .home-community-title,
     .home-section-title,
@@ -2738,6 +2758,13 @@ margin-block-end: 20px !important;}
     .home-cta-title {
       font-size: 30px !important;
     }
+
+.home-store-section{
+padding-right: 0px !important;}
+
+section.home-platform-section, section.home-store-section{
+padding-right: 0px !important;}
+    
 .home-ticker{    height: auto !important;}
 section.journey-section {
         padding-top: 40px !important;
@@ -2884,6 +2911,9 @@ html[dir='rtl']  .store-featured-product-media{
     div.home-about-stats{
             grid-template-columns: 1fr 1fr 1fr !important;}
   }
+
+  .home-page .home-platform-section{
+  padding-block: 50px 25px !important;}
 `;
 
 function useHomePageStyles() {
@@ -5153,11 +5183,11 @@ export function Home() {
       <StatsTicker />
       <AppSection />
       <CyclingJourneySection />
-      <PartnersSection />
       <CommunitySection />
       <ExplorePlatformSection />
       <StoreSection />
       <FeedSection />
+      <PartnersSection />
       <AboutSection />
       <BookVenueSection />
       {/* <CTABanner />

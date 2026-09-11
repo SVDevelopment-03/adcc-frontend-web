@@ -14,6 +14,13 @@ export type EmailSettings = {
   replyTo: string;
 };
 
+export type GtmSettings = {
+  /** Snippet to inject into <head> (the GTM script block). */
+  headCode: string;
+  /** Snippet to inject immediately after <body> opens (the GTM <noscript> block). */
+  bodyCode: string;
+};
+
 export type FeatureKey =
   | 'marketplace'
   | 'communities'
@@ -34,6 +41,7 @@ export type AppConfigState = {
   contactPhone: string;
   defaultLanguage: AppConfigLanguage;
   emailSettings: EmailSettings;
+  gtm: GtmSettings;
   features: Record<FeatureKey, boolean>;
   notifications: Record<NotificationKey, boolean>;
   security: Record<SecurityKey, boolean>;

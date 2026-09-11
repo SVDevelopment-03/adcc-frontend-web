@@ -61,7 +61,7 @@ function MerchandiseCard({ product }: { product: Product }) {
         <img
           src={image}
           alt={product.name}
-          className="mt-4 block h-30 w-full object-contain object-bottom mix-blend-multiply sm:mt-8 sm:h-60"
+          className="mt-4 block h-56 w-full object-contain object-bottom mix-blend-multiply sm:mt-8 sm:h-60"
         />
       )}
     </Link>

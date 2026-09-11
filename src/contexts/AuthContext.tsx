@@ -175,8 +175,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             hasSyncedFcmToken.current = true;
             // Refresh profile so UI sees the updated token list
             await refreshUserProfile();
-          } catch (error) {
+          } catch (error: any) {
             console.error('❌ Failed to sync FCM token to backend:', error);
+            // Show a user-friendly toast and surface backend details for debugging
+            const backendMsg = error?.response?.data?.message || error?.message || 'Unknown error';
+            toast.error(`FCM token registration failed: ${backendMsg}`);
+
+            // If server responded with 401/unauthorized, it likely means backend auth tokens
+            // are missing or expired. Suggest re-login so the client can re-register.
+            const status = error?.response?.status;
+            if (status === 401 || status === 403) {
+              console.warn('⚠️ Backend returned unauthorized when registering FCM token. Prompting re-login may be necessary.');
+            }
           }
         }
       }
