@@ -4455,7 +4455,7 @@ function StoreSection() {
   }, []);
 
   return (
-    <section id="store" className="home-store-section">
+    <section id="store" className="home-store-section" hidden>
       <h2 className="home-store-title">{t("public.home.store.title")}</h2>
       <div
         ref={storeRailRef}
