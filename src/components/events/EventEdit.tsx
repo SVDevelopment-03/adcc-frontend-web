@@ -28,6 +28,9 @@ export function EventEdit({ role }: EventEditProps) {
   const { options: categoryOptions } = useEventCategories();
   const { options: amenityOptions } = useEventAmenities();
   const [customAmenityInput, setCustomAmenityInput] = useState('');
+  const [eligibilityCustom, setEligibilityCustom] = useState<{ id: string; value: string }[]>([
+    { id: 'eligibility-0', value: '' },
+  ]);
   const [showDisableModal, setShowDisableModal] = useState(false);
   const [showArchiveModal, setShowArchiveModal] = useState(false);
   const { locale } = useLocale();
@@ -284,6 +287,13 @@ export function EventEdit({ role }: EventEditProps) {
         'Archived': 'Archived', 'archived': 'Archived',
       };
       const status = statusMap[ev.status] ?? 'Archived';
+      const customEligibility = Array.isArray(ev.eligibility)
+        ? ev.eligibility
+            .map((entry: any) => (typeof entry === 'object' && entry ? entry.label || entry.text || entry.requirement || entry.value || '' : ''))
+            .filter((value: string) => value.trim())
+            .map((value: string) => ({ id: `eligibility-${Math.random()}-${Date.now()}`, value }))
+        : [];
+      setEligibilityCustom(customEligibility.length > 0 ? customEligibility : [{ id: `eligibility-${Math.random()}-${Date.now()}`, value: '' }]);
       setFormData({
         title: ev.title,
         titleAr: (ev as any).titleAr || '',
@@ -354,6 +364,18 @@ export function EventEdit({ role }: EventEditProps) {
       title: name,
       slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
     }));
+  };
+
+  const addEligibilityItem = () => {
+    setEligibilityCustom(prev => [...prev, { id: `eligibility-${Date.now()}-${Math.random()}`, value: '' }]);
+  };
+
+  const updateEligibilityItem = (id: string, value: string) => {
+    setEligibilityCustom(prev => prev.map(item => item.id === id ? { ...item, value } : item));
+  };
+
+  const removeEligibilityItem = (id: string) => {
+    setEligibilityCustom(prev => prev.length > 1 ? prev.filter(item => item.id !== id) : prev);
   };
 
   const toggleAmenity = (amenity: string) => {
