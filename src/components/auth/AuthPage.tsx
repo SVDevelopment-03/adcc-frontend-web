@@ -1,25 +1,33 @@
 import React, { useState } from 'react';
 import { Login } from './Login';
 import { Register } from './Register';
+import ForgotPassword from './ForgotPassword';
 
 interface AuthPageProps {
   onAuthSuccess: () => void;
 }
 
 export function AuthPage({ onAuthSuccess }: AuthPageProps) {
-  const [isLogin, setIsLogin] = useState(true);
+  const [mode, setMode] = useState<'login' | 'register' | 'forgot'>('login');
 
   return (
     <>
-      {isLogin ? (
+      {mode === 'login' && (
         <Login
-          onSwitchToRegister={() => setIsLogin(false)}
+          onSwitchToRegister={() => setMode('register')}
+          onSwitchToForgot={() => setMode('forgot')}
           onLoginSuccess={onAuthSuccess}
         />
-      ) : (
+      )}
+      {mode === 'register' && (
         <Register
-          onSwitchToLogin={() => setIsLogin(true)}
+          onSwitchToLogin={() => setMode('login')}
           onRegisterSuccess={onAuthSuccess}
+        />
+      )}
+      {mode === 'forgot' && (
+        <ForgotPassword
+          onDone={() => setMode('login')}
         />
       )}
     </>

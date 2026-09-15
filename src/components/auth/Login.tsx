@@ -31,6 +31,7 @@ function GoogleIcon({ className }: { className?: string }) {
 interface LoginProps {
   onSwitchToRegister: () => void;
   onLoginSuccess: () => void;
+  onSwitchToForgot?: () => void;
 }
 
 export function Login({ onSwitchToRegister, onLoginSuccess }: LoginProps) {
@@ -265,7 +266,17 @@ export function Login({ onSwitchToRegister, onLoginSuccess }: LoginProps) {
                   required
                 />
               </div>
-            </div>
+                <div className="mt-2 text-right">
+                  <button
+                    type="button"
+                    onClick={() => onSwitchToForgot ? onSwitchToForgot() : null}
+                    className="text-sm font-medium hover:underline"
+                    style={{ color: '#C12D32' }}
+                  >
+                    {t('auth.forgotPasswordShort')}
+                  </button>
+                </div>
+              </div>
 
             <button
               type="submit"
