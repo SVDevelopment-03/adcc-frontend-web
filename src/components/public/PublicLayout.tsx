@@ -65,6 +65,9 @@ const navItems: NavItem[] = [
   {
     labelKey: "public.nav.store",
     match: ["/user-adcc-store", "/user-marketplace"],
+    // Hidden per request — keep the item (and its children/routes) intact,
+    // just don't render it in the header nav.
+    hidden: true,
     children: [
       {
         labelKey: "public.nav.clubStore",
@@ -652,7 +655,7 @@ function PublicFooter() {
                 </li>
               </ul>
               <ul className="space-y-1.5! sm:space-y-2!">
-                <li>
+                <li hidden>
                   <NavLink to="/user-adcc-store" className="pub-footer-link">
                     {t("public.nav.clubStore")}
                   </NavLink>
