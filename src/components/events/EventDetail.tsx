@@ -1139,7 +1139,7 @@ const formatTimeInput = (raw: string): string => {
                   </div>
                 ) : null}
               </div>
-              <div className="flex gap-3">
+              <div className="flex gap-3 mt-4">
                 {(['app', 'email', 'both'] as const).map(type => (
                   <button
                     key={type}
