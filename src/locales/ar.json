@@ -924,7 +924,9 @@
         "requiredFields": "العنوان وتاريخ الحدث مطلوبان",
         "updateSuccess": "تم تحديث الحدث بنجاح",
         "updateError": "فشل في تحديث الحدث",
-        "eventAlreadyPassed": "لا يمكن إعادة فتح التسجيل لحدث قد انتهى بالفعل"
+        "eventAlreadyPassed": "لا يمكن إعادة فتح التسجيل لحدث قد انتهى بالفعل",
+        "galleryImageRemoved": "تمت إزالة صورة المعرض",
+        "galleryImageRemoveError": "فشل في إزالة صورة المعرض"
       }
     },
     "detail": {

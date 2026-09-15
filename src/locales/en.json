@@ -962,7 +962,9 @@
         "requiredFields": "Title and Event Date are required",
         "updateSuccess": "Event updated successfully",
         "updateError": "Failed to update event",
-        "eventAlreadyPassed": "Cannot reopen registration for an event that has already passed"
+        "eventAlreadyPassed": "Cannot reopen registration for an event that has already passed",
+        "galleryImageRemoved": "Gallery image removed",
+        "galleryImageRemoveError": "Failed to remove gallery image"
       }
     },
     "detail": {
