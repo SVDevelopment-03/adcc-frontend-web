@@ -34,7 +34,7 @@ interface LoginProps {
   onSwitchToForgot?: () => void;
 }
 
-export function Login({ onSwitchToRegister, onLoginSuccess }: LoginProps) {
+export function Login({ onSwitchToRegister, onLoginSuccess, onSwitchToForgot }: LoginProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
