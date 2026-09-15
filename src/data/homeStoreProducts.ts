@@ -21,7 +21,7 @@ export const HOME_STORE_PRODUCTS: HomeStoreProduct[] = [
     titleKey: 'public.home.store.products.jersey.title',
     subKey: 'public.home.store.products.jersey.sub',
     priceKey: 'public.home.store.products.jersey.price',
-    img: '/img/image 297012.png',
+    img: '/images/adc-jersey.png',
   },
   {
     id: 'marketplace-bike',

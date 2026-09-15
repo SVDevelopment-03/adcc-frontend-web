@@ -3945,7 +3945,7 @@ const PARTNERS = [
   { name: "Partner 3", logo: "/images/logos/logo3.png" },
   { name: "Partner 4", logo: "/images/logos/logo4.png" },
   { name: "Partner 5", logo: "/images/logos/logo5.png" },
-  { name: "Partner 6", logo: "/images/logos/logo6.png" },
+  { name: "Partner 6", logo: "/images/logos/logo6-v1.png" },
   { name: "Partner 7", logo: "/images/logos/logo7.png" },
   { name: "Partner 8", logo: "/images/logos/logo8.png" },
 ];
@@ -4455,7 +4455,7 @@ function StoreSection() {
   }, []);
 
   return (
-    <section id="store" className="home-store-section" hidden>
+    <section id="store" className="home-store-section">
       <h2 className="home-store-title">{t("public.home.store.title")}</h2>
       <div
         ref={storeRailRef}

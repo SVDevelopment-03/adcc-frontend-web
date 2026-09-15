@@ -3,7 +3,7 @@ import { ArrowLeft, FileText, Calendar, Clock, MapPin, Users, Settings, Award, I
 import { toast } from 'sonner';
 import { UserRole } from '../../App';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getEventByIdEn, updateEvent as updateEventApi, deleteEvent as deleteEventApi, disableEvent as disableEventApi, closeEventRegistration, reopenEventRegistration, completeEvent as completeEventApi, EventApiResponse } from '../../services/eventsApi';
+import { getEventByIdEn, updateEvent as updateEventApi, deleteEvent as deleteEventApi, disableEvent as disableEventApi, closeEventRegistration, reopenEventRegistration, completeEvent as completeEventApi, deleteEventGalleryImage, EventApiResponse } from '../../services/eventsApi';
 import { useEventCategories, useEventAmenities } from '../../hooks/useLookups';
 import { getAllTracksEn, deleteTrack } from '../../services/trackService';
 import { gccCountries, getCitiesByCountry, normalizeCountryValue, type GCCCountry } from '../../data/gccLocations';
@@ -45,6 +45,7 @@ export function EventEdit({ role }: EventEditProps) {
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
   const [mainImageFile, setMainImageFile] = useState<File | null>(null);
   const [showCoverPicker, setShowCoverPicker] = useState(false);
+  const [removingGalleryImage, setRemovingGalleryImage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -445,6 +446,26 @@ export function EventEdit({ role }: EventEditProps) {
 
     setGalleryImages(updatedImages);
     setGalleryPreviews(updatedPreviews);
+  };
+
+  const handleRemoveExistingGalleryImage = async (image: string) => {
+    if (!id || removingGalleryImage) return;
+    try {
+      setRemovingGalleryImage(image);
+      await deleteEventGalleryImage(id, image);
+      setExistingEvent((prev) =>
+        prev
+          ? { ...prev, galleryImages: (prev.galleryImages || []).filter((img) => img !== image) }
+          : prev
+      );
+      toast.success(t('events.edit.toasts.galleryImageRemoved'));
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.message || t('events.edit.toasts.galleryImageRemoveError')
+      );
+    } finally {
+      setRemovingGalleryImage(null);
+    }
   };
 
   const handleCloseRegistration = async () => {
@@ -1416,12 +1437,22 @@ export function EventEdit({ role }: EventEditProps) {
                         <p className="text-sm font-semibold" style={{ color: '#333' }}>{t('events.edit.existingImages')}</p>
                       </div>
                       {existingEvent.galleryImages.map((image, index) => (
-                        <div key={`existing-${index}`} className="relative">
+                        <div key={`existing-${index}`} className="relative group">
                           <img
                             src={image}
                             alt="Gallery"
                             className="w-full h-32 object-cover rounded-lg"
                           />
+
+                          {/* Remove Button */}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveExistingGalleryImage(image)}
+                            disabled={removingGalleryImage === image}
+                            className="absolute top-2 right-2 bg-black bg-opacity-60 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition disabled:opacity-100 disabled:cursor-wait"
+                          >
+                            {removingGalleryImage === image ? '…' : '✕'}
+                          </button>
                         </div>
                       ))}
                     </div>
