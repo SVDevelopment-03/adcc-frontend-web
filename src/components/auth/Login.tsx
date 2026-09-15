@@ -49,6 +49,7 @@ export function Login({ onSwitchToRegister, onLoginSuccess, onSwitchToForgot }: 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Login.handleSubmit called', { email });
 
     if (!email || !password) {
       toast.error(t('auth.fillAllFields'));
@@ -69,6 +70,7 @@ export function Login({ onSwitchToRegister, onLoginSuccess, onSwitchToForgot }: 
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     try {
+      console.log('Login.handleGoogleSignIn called');
       await loginWithGoogle();
       // If existing user, AuthContext sets userProfile and parent will redirect.
       // If new user, pendingGoogleProfile is set and we show complete-profile form.
@@ -269,7 +271,10 @@ export function Login({ onSwitchToRegister, onLoginSuccess, onSwitchToForgot }: 
                 <div className="mt-2 text-right">
                   <button
                     type="button"
-                    onClick={() => onSwitchToForgot?.()}
+                    onClick={() => {
+                      console.log('Forgot link clicked', { onSwitchToForgot });
+                      onSwitchToForgot?.();
+                    }}
                     className="text-base font-medium hover:underline cursor-pointer"
                     style={{ color: '#C12D32' }}
                   >
