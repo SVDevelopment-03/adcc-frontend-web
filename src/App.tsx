@@ -34,6 +34,7 @@ export type UserRole = 'Admin' | 'content-manager' | 'community-manager' | 'mode
 const publicRoutePrefixes = [
   '/home',
   '/login',
+  '/forgot',
   '/register',
   '/aboutus',
   '/user-event',
