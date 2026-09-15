@@ -36,6 +36,7 @@ interface NavItem {
   match: string[];
   to?: string;
   children?: NavChild[];
+  hidden?: boolean;
 }
 
 const navItems: NavItem[] = [
@@ -64,6 +65,9 @@ const navItems: NavItem[] = [
   {
     labelKey: "public.nav.store",
     match: ["/user-adcc-store", "/user-marketplace"],
+    // Hidden per request — keep the item (and its children/routes) intact,
+    // just don't render it in the header nav.
+    hidden: true,
     children: [
       {
         labelKey: "public.nav.clubStore",
@@ -290,7 +294,7 @@ function PublicHeader() {
         </div>
 
         <nav className="hidden items-center gap-0 text-[15px] font-medium lg:flex 2xl:gap-6 2xl:text-[17px]">
-          {navItems.map((item) => {
+          {navItems.filter((item) => !item.hidden).map((item) => {
             const isActive = isNavItemActive(item, location.pathname);
 
             if (item.children) {
@@ -375,7 +379,7 @@ function PublicHeader() {
         {menuOpen && (
           <div className="public-mobile-menu absolute left-0 right-0 top-full max-h-[calc(100vh-80px)] overflow-y-auto border-t border-black/10 bg-white px-5 py-5 shadow-lg sm:px-6 md:px-10 lg:hidden">
             <nav className="flex flex-col gap-2 text-[16px] font-semibold">
-              {navItems.map((item) => {
+              {navItems.filter((item) => !item.hidden).map((item) => {
                 const isActive = isNavItemActive(item, location.pathname);
 
                 if (item.children) {
@@ -520,8 +524,10 @@ function PublicFooter() {
 
   return (
     <>
+      {/* Hidden per request — keep markup intact, just not shown. */}
       <section
         id="start-your-ride"
+        hidden
         className="public-footer-cta relative flex min-h-[360px] items-center justify-center overflow-hidden bg-cover bg-center px-4 py-12 text-center text-white sm:min-h-[430px] sm:px-6 sm:py-16 lg:min-h-[502px]"
         style={{
           backgroundImage: " url('/images/footer-image.png')",
@@ -649,7 +655,7 @@ function PublicFooter() {
                 </li>
               </ul>
               <ul className="space-y-1.5! sm:space-y-2!">
-                <li>
+                <li hidden>
                   <NavLink to="/user-adcc-store" className="pub-footer-link">
                     {t("public.nav.clubStore")}
                   </NavLink>
