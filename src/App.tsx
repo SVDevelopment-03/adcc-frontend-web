@@ -4,6 +4,7 @@ import { Toaster } from 'sonner';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LocaleProvider } from './contexts/LocaleContext';
 import { Login } from './components/auth/Login';
+import ForgotPassword from './components/auth/ForgotPassword';
 import { Register } from './components/auth/Register';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Layout } from './components/Layout';
@@ -100,9 +101,18 @@ function AppContent() {
             <Login
               onSwitchToRegister={() => navigate('/register')}
               onLoginSuccess={() => navigate('/dashboard')}
+              onSwitchToForgot={() => navigate('/forgot')}
             />
           )
         } 
+      />
+      <Route
+        path="/forgot"
+        element={
+          publicPage(
+            <ForgotPassword onDone={() => navigate('/login')} />
+          )
+        }
       />
       <Route 
         path="/register" 
