@@ -269,11 +269,11 @@ export function Login({ onSwitchToRegister, onLoginSuccess, onSwitchToForgot }: 
                 <div className="mt-2 text-right">
                   <button
                     type="button"
-                    onClick={() => onSwitchToForgot ? onSwitchToForgot() : null}
-                    className="text-sm font-medium hover:underline"
+                    onClick={() => onSwitchToForgot?.()}
+                    className="text-base font-medium hover:underline cursor-pointer"
                     style={{ color: '#C12D32' }}
                   >
-                    {t('auth.forgotPasswordShort')}
+                    {t('auth.forgotPasswordLink')}
                   </button>
                 </div>
               </div>
