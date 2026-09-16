@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Image as ImageIcon, Save, Shield } from 'lucide-react';
+import { ArrowLeft, Image as ImageIcon, KeyRound, Save, Shield } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { compressImage } from '../../utils/imageUtils';
-import { getAllUsers, updateUser, User } from '../../services/usersApi';
+import { getAllUsers, updateUser, updateUserPassword, User } from '../../services/usersApi';
 import { assignUserRole, getRbacRoles, type RbacRole } from '../../services/rbacService';
 
 const ACCEPTED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
@@ -34,6 +34,10 @@ export function AdminEdit() {
 
   const [rbacRoles, setRbacRoles] = useState<RbacRole[]>([]);
   const [rbacRoleId, setRbacRoleId] = useState('');
+
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [savingPassword, setSavingPassword] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -116,7 +120,35 @@ export function AdminEdit() {
     }
   };
 
-  const inputClass = 'w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-gray-300 text-sm';
+  const canSubmitPassword = useMemo(
+    () => newPassword.trim().length >= 6 && newPassword === confirmPassword,
+    [newPassword, confirmPassword],
+  );
+
+  const handleUpdatePassword = async () => {
+    if (!id) return;
+    if (newPassword.trim().length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+    setSavingPassword(true);
+    try {
+      await updateUserPassword(id, newPassword.trim());
+      toast.success('Password updated successfully');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message || 'Failed to update password');
+    } finally {
+      setSavingPassword(false);
+    }
+  };
+
+  const inputClass ='w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-gray-300 text-sm';
   const selectClass = 'w-full px-3 py-2 rounded-lg border border-gray-200 bg-white focus:outline-none focus:border-gray-300 text-sm';
 
   if (loadingUser) {
@@ -258,6 +290,54 @@ export function AdminEdit() {
             </select>
           </Field>
         </div>
+      </div>
+
+      {/* Password */}
+      <div className="p-6 rounded-2xl shadow-sm bg-white">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: '#FFF3F4' }}>
+            <KeyRound className="w-5 h-5" style={{ color: '#C12D32' }} />
+          </div>
+          <div>
+            <p className="font-medium" style={{ color: '#333' }}>Password</p>
+            <p className="text-sm" style={{ color: '#666' }}>Set a new password directly — no reset code needed.</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Field label="New Password">
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="At least 6 characters"
+              className={inputClass}
+              autoComplete="new-password"
+            />
+          </Field>
+
+          <Field label="Confirm Password">
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Re-enter password"
+              className={inputClass}
+              autoComplete="new-password"
+            />
+          </Field>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => void handleUpdatePassword()}
+          disabled={savingPassword || !canSubmitPassword}
+          className="mt-4 px-4 py-2 rounded-lg text-white text-sm inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{ backgroundColor: '#C12D32' }}
+        >
+          <KeyRound className="w-4 h-4" />
+          {savingPassword ? 'Updating...' : 'Update Password'}
+        </button>
       </div>
 
       {/* Sticky Save */}
