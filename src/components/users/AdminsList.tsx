@@ -2,10 +2,12 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search, ChevronLeft, ChevronRight, Mail, Phone, Calendar,
-  MoreVertical, Plus, Pencil, Trash2, UserX, UserCheck,
+  MoreVertical, Plus, Pencil, Trash2, UserX, UserCheck, KeyRound,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { getAllUsers, updateUserVerified, deleteUser, User } from '../../services/usersApi';
 import { getRbacRoles, type RbacRole } from '../../services/rbacService';
+import { forgotPassword } from '../../services/authApi';
 
 const PAGE_SIZE = 15;
 const FETCH_LIMIT = 100;
@@ -94,18 +96,29 @@ interface ActionMenuProps {
   onEdit: (user: User) => void;
   onToggleStatus: (user: User) => void;
   onDelete: (user: User) => void;
+  onResetPassword: (user: User) => void;
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
+  /** Open the panel above the button instead of below — for rows near the
+   * bottom of the table, where a downward panel would overlap (and hide the
+   * action button of) the row underneath it. */
+  alignUp?: boolean;
 }
 
-function ActionMenu({ user, onEdit, onToggleStatus, onDelete, isOpen, onOpen, onClose }: ActionMenuProps) {
+function ActionMenu({ user, onEdit, onToggleStatus, onDelete, onResetPassword, isOpen, onOpen, onClose, alignUp = false }: ActionMenuProps) {
   const menuItems = [
     {
       label: 'Edit',
       icon: <Pencil className="w-3.5 h-3.5" />,
       color: '#333',
       action: () => { onEdit(user); onClose(); },
+    },
+    {
+      label: 'Send Password Reset',
+      icon: <KeyRound className="w-3.5 h-3.5" />,
+      color: '#333',
+      action: () => { onResetPassword(user); onClose(); },
     },
     {
       label: user.isVerified ? 'Deactivate & Logout' : 'Activate',
@@ -131,7 +144,11 @@ function ActionMenu({ user, onEdit, onToggleStatus, onDelete, isOpen, onOpen, on
         <MoreVertical className="w-4 h-4" style={{ color: '#666' }} />
       </button>
       {isOpen && (
-        <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-20 py-1">
+        <div
+          className={`absolute right-0 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-20 py-1 ${
+            alignUp ? 'bottom-full mb-1' : 'top-full mt-1'
+          }`}
+        >
           {menuItems.map((item) => (
             <button
               key={item.label}
@@ -226,6 +243,27 @@ export function AdminsList() {
         setAllAdmins((prev) => prev.map((u) => (u.id === user.id ? { ...u, isVerified: user.isVerified } : u)));
       });
     }
+  };
+
+  const handleResetPassword = (user: User) => {
+    if (!user.email) {
+      toast.error('This admin has no email on file');
+      return;
+    }
+    setConfirmAction({
+      message: `Send a password reset code to "${user.fullName}" at ${user.email}?`,
+      confirmLabel: 'Send Reset Email',
+      confirmColor: '#C12D32',
+      onConfirm: async () => {
+        setConfirmAction(null);
+        try {
+          await forgotPassword(user.email);
+          toast.success(`Password reset code sent to ${user.email}`);
+        } catch (err: any) {
+          toast.error(err?.response?.data?.message || 'Failed to send password reset email');
+        }
+      },
+    });
   };
 
   const handleDelete = (user: User) => {
@@ -335,7 +373,7 @@ export function AdminsList() {
               </tr>
             </thead>
             <tbody>
-              {pagedAdmins.map((admin) => (
+              {pagedAdmins.map((admin, index) => (
                 <tr key={admin.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-3">
@@ -383,9 +421,11 @@ export function AdminsList() {
                       onEdit={(u) => navigate(`/admins/${u.id}/edit`)}
                       onToggleStatus={handleToggleStatus}
                       onDelete={handleDelete}
+                      onResetPassword={handleResetPassword}
                       isOpen={openMenuId === admin.id}
                       onOpen={() => setOpenMenuId(admin.id)}
                       onClose={() => setOpenMenuId(null)}
+                      alignUp={index >= pagedAdmins.length - 2}
                     />
                   </td>
                 </tr>

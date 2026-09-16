@@ -45,6 +45,7 @@ import { ContactMessagesList } from './contact-messages/ContactMessagesList';
 import { NewsletterSubscribersList } from './newsletter/NewsletterSubscribersList';
 import { AppConfig } from './config/AppConfig';
 import { RolesPermissions } from './roles/RolesPermissions';
+import { RoleCreate } from './roles/RoleCreate';
 import { RoleEdit } from './roles/RoleEdit';
 import { RoleDetail } from './roles/RoleDetail';
 import { BadgesList } from './badges/BadgesList';
@@ -59,8 +60,7 @@ import { useLocale } from '../contexts/LocaleContext';
 import {
   createPermissionChecker,
   permissionKeysFromRole,
-  ROLE_DEFAULT_SIDEBAR_ITEMS,
-  SIDEBAR_PERMISSION_REQUIRED,
+  SIDEBAR_ITEM_PERMISSION,
   type SidebarItemId,
 } from '../rbac/rbacKeys';
 
@@ -154,10 +154,17 @@ export function Layout() {
     if (mapped) setCurrentRole(mapped);
   }, [myRole?.slug, myRole?.name, userProfile?.role]);
 
+  // A legacy `role: 'Admin'` only means "unrestricted" when the account has
+  // no assigned RBAC role — assignUserRole() stamps the legacy field to
+  // 'Admin' on every custom-role assignment too (kept for schema/back-compat
+  // reasons), so checking the legacy field alone would treat every
+  // custom-role user as a super admin on the client while the backend (which
+  // does check for an absent roleId) correctly restricts them — showing menu
+  // items and controls the account's real permissions can't actually use.
   const isSuperAdminRole =
     normalizeRoleSlug(myRole?.slug || '') === 'super-admin' ||
-    normalizeRoleSlug(userProfile?.role || '') === 'super-admin' ||
-    normalizeRoleSlug(userProfile?.role || '') === 'admin';
+    (!myRole && normalizeRoleSlug(userProfile?.role || '') === 'super-admin') ||
+    (!myRole && normalizeRoleSlug(userProfile?.role || '') === 'admin');
   const rbacReady = rbacLoaded && !!userProfile;
 
   const hasPermission = useMemo(
@@ -180,10 +187,8 @@ export function Layout() {
   const withPermission = (permissionKey: string, element: React.ReactElement) =>
     hasPermission(permissionKey) ? element : <Unauthorized />;
   const withRoleSidebarAccess = (sidebarItem: SidebarItemId, element: React.ReactElement) => {
-    const allowedItems = ROLE_DEFAULT_SIDEBAR_ITEMS[currentRole] || [];
-    if (!allowedItems.includes(sidebarItem)) return <Unauthorized />;
-    const strictPerm = SIDEBAR_PERMISSION_REQUIRED[sidebarItem];
-    if (strictPerm && !hasPermission(strictPerm)) return <Unauthorized />;
+    const requiredPerm = SIDEBAR_ITEM_PERMISSION[sidebarItem];
+    if (requiredPerm && !hasPermission(requiredPerm)) return <Unauthorized />;
     return element;
   };
 
@@ -203,7 +208,7 @@ export function Layout() {
     <div className="min-h-screen" style={{ backgroundColor: '#FFF9EF' }}>
       <TopBar roleTitle={roleTitle} />
       <div className="flex">
-        <Sidebar currentRole={currentRole} hasPermission={hasPermission} />
+        <Sidebar hasPermission={hasPermission} />
         <main className="flex-1 p-8 ml-64 mt-16">
           <Routes>
             <Route
@@ -269,9 +274,10 @@ export function Layout() {
             <Route path="/config" element={withPermission('app_configuration', <AppConfig />)} />
             <Route path="/static-data" element={withPermission('app_configuration', <StaticDataManager />)} />
             <Route path="/admin/product-banners-ar" element={withPermission('app_configuration', <ProductBannersArAdmin />)} />
-            <Route path="/roles" element={withPermission('manage_roles', <RolesPermissions />)} />
-            <Route path="/roles/:id" element={withPermission('manage_roles', <RoleDetail />)} />
-            <Route path="/roles/:id/edit" element={withPermission('manage_roles', <RoleEdit />)} />
+            <Route path="/roles" element={withPermission('admin.manage_roles', <RolesPermissions />)} />
+            <Route path="/roles/create" element={withPermission('admin.manage_roles', <RoleCreate />)} />
+            <Route path="/roles/:id" element={withPermission('admin.manage_roles', <RoleDetail />)} />
+            <Route path="/roles/:id/edit" element={withPermission('admin.manage_roles', <RoleEdit />)} />
             <Route path="/languages" element={withPermission('manage_languages', <LanguagesList />)} />
             <Route
               path="/notifications"

@@ -87,6 +87,13 @@ export const getRbacRoles = async (): Promise<RbacRole[]> => {
   return normalizeRolesResponse(res.data as RawRoleResponse);
 };
 
+export const getAllPermissions = async (): Promise<RbacPermission[]> => {
+  const res = await api.get<any>('/v1/rbac/permissions');
+  const payload = res.data as { data?: { permissions?: RbacPermission[] } } | { permissions?: RbacPermission[] };
+  const permissions = (payload as any)?.data?.permissions ?? (payload as any)?.permissions;
+  return Array.isArray(permissions) ? permissions : [];
+};
+
 export const getRoleById = async (roleId: string): Promise<RbacRole> => {
   const res = await api.get<any>(`/v1/rbac/roles/${roleId}`);
   const payload = res.data as { data?: RbacRole } | RbacRole;

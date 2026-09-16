@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, Edit, Search, Shield, Users } from 'lucide-react';
+import { CheckCircle, Edit, Plus, Search, Shield, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   getRbacRoles,
@@ -53,15 +53,26 @@ export function RolesPermissions() {
           <p style={{ color: '#666' }}>Create and manage user roles with custom permissions</p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => navigate('/users')}
-          className="px-4 py-2 rounded-lg border border-gray-200 text-sm inline-flex items-center gap-2 bg-white"
-          style={{ color: '#333' }}
-        >
-          <Users className="w-4 h-4" />
-          Manage Users
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => navigate('/users')}
+            className="px-4 py-2 rounded-lg border border-gray-200 text-sm inline-flex items-center gap-2 bg-white"
+            style={{ color: '#333' }}
+          >
+            <Users className="w-4 h-4" />
+            Manage Users
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/roles/create')}
+            className="px-4 py-2 rounded-lg text-sm inline-flex items-center gap-2"
+            style={{ backgroundColor: '#C12D32', color: 'white' }}
+          >
+            <Plus className="w-4 h-4" />
+            Create Role
+          </button>
+        </div>
       </div>
 
       <div className="p-4 rounded-2xl shadow-sm bg-white">
@@ -89,6 +100,17 @@ export function RolesPermissions() {
           <p style={{ color: '#666' }}>
             {searchQuery.trim() ? 'Try adjusting your search query' : 'No roles available'}
           </p>
+          {!searchQuery.trim() ? (
+            <button
+              type="button"
+              onClick={() => navigate('/roles/create')}
+              className="mt-4 px-4 py-2 rounded-lg text-sm inline-flex items-center gap-2"
+              style={{ backgroundColor: '#C12D32', color: 'white' }}
+            >
+              <Plus className="w-4 h-4" />
+              Create Role
+            </button>
+          ) : null}
         </div>
       ) : null}
 

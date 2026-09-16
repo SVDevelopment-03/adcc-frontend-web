@@ -25,13 +25,9 @@ import {
   Globe,
   Database,
 } from 'lucide-react';
-import {
-  ROLE_DEFAULT_SIDEBAR_ITEMS,
-  SIDEBAR_PERMISSION_REQUIRED,
-} from '../rbac/rbacKeys';
+import { SIDEBAR_ITEM_PERMISSION } from '../rbac/rbacKeys';
 
 interface SidebarProps {
-  currentRole: UserRole;
   hasPermission: (permissionKey: string) => boolean;
 }
 
@@ -68,18 +64,13 @@ const menuItems: MenuItemDef[] = [
   { id: 'roles', labelKey: 'sidebar.roles', icon: <Shield className="w-5 h-5" />, roles: ['Admin'], path: '/roles' },
 ];
 
-export function Sidebar({ currentRole, hasPermission }: SidebarProps) {
+export function Sidebar({ hasPermission }: SidebarProps) {
   const { t } = useTranslation();
 
   const visibleItems = menuItems.filter((item) => {
-    const defaultItems = ROLE_DEFAULT_SIDEBAR_ITEMS[currentRole] || [];
-    const allowedByRole = defaultItems.includes(item.id as any);
-    if (!allowedByRole) return false;
-
-    const strictPerm = SIDEBAR_PERMISSION_REQUIRED[item.id as keyof typeof SIDEBAR_PERMISSION_REQUIRED];
-    if (strictPerm) return hasPermission(strictPerm);
-
-    return true;
+    const requiredPerm = SIDEBAR_ITEM_PERMISSION[item.id as keyof typeof SIDEBAR_ITEM_PERMISSION];
+    if (!requiredPerm) return true;
+    return hasPermission(requiredPerm);
   });
 
   return (
