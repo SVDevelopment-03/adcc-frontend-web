@@ -359,8 +359,12 @@ export function RolesPermissions() {
                 style={{ backgroundColor: '#F3F4F6', color: '#333' }}
               >
                 <Plus className="w-4 h-4" />
-                New
+                New Permission
               </button>
+            </div>
+
+            <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs" style={{ color: '#8A4B00' }}>
+              Use lowercase snake_case keys such as <span className="font-semibold">manage_events</span>, <span className="font-semibold">manage_users</span>, and <span className="font-semibold">app_configuration</span>. Click <span className="font-semibold">Create Permission</span> to save after filling the form.
             </div>
 
             <div className="space-y-3">
