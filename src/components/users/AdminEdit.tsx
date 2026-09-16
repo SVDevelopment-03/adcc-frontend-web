@@ -3,6 +3,7 @@ import { ArrowLeft, Image as ImageIcon, KeyRound, Save, Shield } from 'lucide-re
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { compressImage } from '../../utils/imageUtils';
+import { useAuth } from '../../contexts/AuthContext';
 import { getAllUsers, updateUser, updateUserPassword, User } from '../../services/usersApi';
 import { assignUserRole, getRbacRoles, type RbacRole } from '../../services/rbacService';
 
@@ -72,6 +73,8 @@ export function AdminEdit() {
     void loadRoles();
   }, [id, navigate]);
 
+  const { userProfile, refreshUserProfile } = useAuth();
+
   const canSubmit = useMemo(() => !!fullName.trim() && !!gender, [fullName, gender]);
 
   const handleImageChange = async (file: File | null) => {
@@ -100,6 +103,12 @@ export function AdminEdit() {
 
       if (rbacRoleId) {
         try { await assignUserRole(id, rbacRoleId); } catch { /* non-fatal */ }
+      }
+
+      // If the admin being edited is the currently logged-in user, refresh
+      // the cached profile so the UI shows the updated role immediately.
+      if (userProfile?.id === id) {
+        try { await refreshUserProfile(); } catch { /* ignore */ }
       }
 
       toast.success('Admin user updated successfully');
