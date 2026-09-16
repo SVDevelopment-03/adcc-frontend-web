@@ -320,6 +320,19 @@ export function Layout() {
               element={withPermission('view_dashboard', <AdminNotificationsPage />)}
             />
 
+            <Route
+              path="*"
+              element={
+                !rbacReady ? (
+                  <Loading />
+                ) : defaultRoute ? (
+                  <Navigate to={defaultRoute} replace />
+                ) : (
+                  <NoAccessAssigned />
+                )
+              }
+            />
+
             <Route path="/" element={<Navigate to={defaultRoute || '/dashboard'} replace />} />
           </Routes>
         </main>

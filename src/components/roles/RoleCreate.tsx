@@ -45,6 +45,7 @@ export function RoleCreate() {
   const [slug, setSlug] = useState('');
   const [slugTouched, setSlugTouched] = useState(false);
   const [description, setDescription] = useState('');
+  const [status, setStatus] = useState<'ACTIVE' | 'INACTIVE' | 'ARCHIVED'>('ACTIVE');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -119,6 +120,7 @@ export function RoleCreate() {
         name: nextName,
         slug: nextSlug,
         description: description.trim() || undefined,
+        status,
         permissionIds: Array.from(selectedIds),
       });
       toast.success('Role created');
@@ -200,6 +202,18 @@ export function RoleCreate() {
             <div className="text-xs mt-1" style={{ color: '#999' }}>
               Lowercase letters, numbers, underscores and hyphens only
             </div>
+          </div>
+          <div>
+            <div className="text-sm mb-2" style={{ color: '#333' }}>Status</div>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value as 'ACTIVE' | 'INACTIVE' | 'ARCHIVED')}
+              className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-red-600"
+            >
+              <option value="ACTIVE">Active</option>
+              <option value="INACTIVE">Inactive</option>
+              <option value="ARCHIVED">Archived</option>
+            </select>
           </div>
           <div>
             <div className="text-sm mb-2" style={{ color: '#333' }}>Description</div>
