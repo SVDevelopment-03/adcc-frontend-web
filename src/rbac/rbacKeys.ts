@@ -65,6 +65,57 @@ export const SIDEBAR_ITEM_PERMISSION: Record<SidebarItemId, string | null> = {
   roles: 'admin.manage_roles',
 };
 
+/**
+ * Route each sidebar item lands on, in the same priority order the sidebar
+ * itself lists them — used to find the best landing page for a role instead
+ * of hardcoding "/dashboard" for everyone (a role without view_dashboard
+ * would just hit an Unauthorized wall on login otherwise).
+ */
+export const SIDEBAR_ITEM_PATH: Record<SidebarItemId, string> = {
+  dashboard: '/dashboard',
+  events: '/events',
+  communities: '/communities',
+  tracks: '/tracks',
+  challenges: '/challenges',
+  badges: '/badges',
+  feed: '/feed',
+  marketplace: '/marketplace',
+  merchandise: '/merchandise',
+  cms: '/cms',
+  media: '/media',
+  push: '/push',
+  news: '/news',
+  users: '/users',
+  admins: '/admins',
+  reports: '/reports',
+  contactMessages: '/contact-messages',
+  newsletter: '/newsletter',
+  config: '/config',
+  staticData: '/static-data',
+  languages: '/languages',
+  roles: '/roles',
+};
+
+const SIDEBAR_ITEM_ORDER = Object.keys(SIDEBAR_ITEM_PATH) as SidebarItemId[];
+
+/**
+ * The first sidebar item (in priority order) a role can actually use, or
+ * `null` if its permissions don't unlock any admin section at all. Used to
+ * land a freshly-logged-in user somewhere real instead of always trying
+ * "/dashboard" and showing Unauthorized when they lack view_dashboard.
+ */
+export function getDefaultRouteForPermissions(
+  hasPermission: (permissionKey: string) => boolean,
+): string | null {
+  for (const item of SIDEBAR_ITEM_ORDER) {
+    const requiredPerm = SIDEBAR_ITEM_PERMISSION[item];
+    if (!requiredPerm || hasPermission(requiredPerm)) {
+      return SIDEBAR_ITEM_PATH[item];
+    }
+  }
+  return null;
+}
+
 const normalizePermissionKey = (key: string) =>
   key.toLowerCase().replace(/[\s-]+/g, '_');
 

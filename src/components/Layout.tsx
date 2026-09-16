@@ -59,6 +59,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLocale } from '../contexts/LocaleContext';
 import {
   createPermissionChecker,
+  getDefaultRouteForPermissions,
   permissionKeysFromRole,
   SIDEBAR_ITEM_PERMISSION,
   type SidebarItemId,
@@ -184,12 +185,47 @@ export function Layout() {
     </div>
   );
 
+  const NoAccessAssigned = () => (
+    <div className="rounded-2xl p-8 bg-white shadow-sm">
+      <h2 className="text-2xl mb-2" style={{ color: '#333' }}>No access assigned</h2>
+      <p style={{ color: '#666' }}>
+        Your role doesn't have any permissions yet. Ask a Super Admin to assign one under Admin Users.
+      </p>
+    </div>
+  );
+
+  const Loading = () => (
+    <div className="flex items-center justify-center py-16">
+      <div className="animate-spin rounded-full h-10 w-10 border-b-2" style={{ borderColor: '#C12D32' }} />
+    </div>
+  );
+
+  // The first admin section this role's permissions actually unlock — used
+  // to land freshly-logged-in users somewhere real (see withRoleSidebarAccess
+  // below and the root "/" redirect) instead of always trying "/dashboard"
+  // and hitting Unauthorized when a role lacks view_dashboard.
+  const defaultRoute = useMemo(
+    () => (rbacReady ? getDefaultRouteForPermissions(hasPermission) : null),
+    [rbacReady, hasPermission],
+  );
+
   const withPermission = (permissionKey: string, element: React.ReactElement) =>
     hasPermission(permissionKey) ? element : <Unauthorized />;
   const withRoleSidebarAccess = (sidebarItem: SidebarItemId, element: React.ReactElement) => {
+    if (!rbacReady) return <Loading />;
     const requiredPerm = SIDEBAR_ITEM_PERMISSION[sidebarItem];
-    if (requiredPerm && !hasPermission(requiredPerm)) return <Unauthorized />;
-    return element;
+    if (!requiredPerm || hasPermission(requiredPerm)) return element;
+    // "/dashboard" is the universal landing page — instead of a dead-end
+    // Unauthorized wall the moment someone without view_dashboard logs in,
+    // send them to the first section their permissions do unlock.
+    if (sidebarItem === 'dashboard') {
+      return defaultRoute && defaultRoute !== '/dashboard' ? (
+        <Navigate to={defaultRoute} replace />
+      ) : (
+        <NoAccessAssigned />
+      );
+    }
+    return <Unauthorized />;
   };
 
   const roleTitle = useMemo(() => {
@@ -213,8 +249,8 @@ export function Layout() {
           <Routes>
             <Route
               path="/dashboard"
-              element={withPermission(
-                'view_dashboard',
+              element={withRoleSidebarAccess(
+                'dashboard',
                 currentRole === 'Admin' ? (
                   <SuperAdminDashboard />
                 ) : currentRole === 'content-manager' ? (
@@ -227,12 +263,12 @@ export function Layout() {
               )}
             />
 
-            <Route path="/events" element={withPermission('manage_events', <EventsList navigate={() => {}} role={currentRole} />)} />
-            <Route path="/events/create" element={withPermission('manage_events', <EventCreate navigate={() => {}} role={currentRole} />)} />
-            <Route path="/events/:id/edit" element={withPermission('manage_events', <EventEdit navigate={() => {}} role={currentRole} />)} />
-            <Route path="/events/:id" element={withPermission('manage_events', <EventDetail />)} />
-            <Route path="/events/:id/event-participants" element={withPermission('manage_events', <EventParticipants role={currentRole} />)} />
-            <Route path="/events/:id/results" element={withPermission('manage_events', <EventResults />)} />
+            <Route path="/events" element={withRoleSidebarAccess('events', <EventsList navigate={() => {}} role={currentRole} />)} />
+            <Route path="/events/create" element={withRoleSidebarAccess('events', <EventCreate navigate={() => {}} role={currentRole} />)} />
+            <Route path="/events/:id/edit" element={withRoleSidebarAccess('events', <EventEdit navigate={() => {}} role={currentRole} />)} />
+            <Route path="/events/:id" element={withRoleSidebarAccess('events', <EventDetail />)} />
+            <Route path="/events/:id/event-participants" element={withRoleSidebarAccess('events', <EventParticipants role={currentRole} />)} />
+            <Route path="/events/:id/results" element={withRoleSidebarAccess('events', <EventResults />)} />
 
             <Route path="/communities" element={withRoleSidebarAccess('communities', <CommunitiesList role={currentRole} />)} />
             <Route path="/communities/create" element={withRoleSidebarAccess('communities', <CommunityCreate />)} />
@@ -248,7 +284,7 @@ export function Layout() {
             <Route path="/tracks/create" element={withRoleSidebarAccess('tracks', <TrackCreate navigate={() => {}} role={currentRole} />)} />
             <Route path="/tracks/:id" element={withRoleSidebarAccess('tracks', <TrackDetail navigate={() => {}} role={currentRole} />)} />
             <Route path="/tracks/:id/edit" element={withRoleSidebarAccess('tracks', <TrackEdit navigate={() => {}} role={currentRole} />)} />
-            
+
             <Route path="/badges" element={withRoleSidebarAccess('badges', <BadgesList navigate={() => {}} role={currentRole} />)} />
             <Route path="/badges/create" element={withRoleSidebarAccess('badges', <BadgesCreate navigate={() => {}} />)} />
             <Route path="/badges/:id/edit" element={withRoleSidebarAccess('badges', <BadgesEditWrapper />)} />
@@ -256,35 +292,35 @@ export function Layout() {
             <Route path="/marketplace" element={withRoleSidebarAccess('marketplace', <MarketplaceModeration navigate={() => {}} role={currentRole} />)} />
             <Route path="/merchandise" element={withRoleSidebarAccess('merchandise', <Merchandise navigate={() => {}} />)} />
             <Route path="/marketplace/:id/edit" element={withRoleSidebarAccess('marketplace', <MarketplaceItemEdit />)} />
-            <Route path="/cms" element={withPermission('manage_cms', <CMS />)} />
-            <Route path="/media" element={withPermission('manage_media', <MediaLibrary />)} />
+            <Route path="/cms" element={withRoleSidebarAccess('cms', <CMS />)} />
+            <Route path="/media" element={withRoleSidebarAccess('media', <MediaLibrary />)} />
             <Route path="/push" element={withRoleSidebarAccess('push', <PushNotifications />)} />
 
-            <Route path="/news" element={withPermission('manage_cms', <NewsList />)} />
-            <Route path="/news/create" element={withPermission('manage_cms', <NewsCreate />)} />
-            <Route path="/news/:id/edit" element={withPermission('manage_cms', <NewsEdit />)} />
-            <Route path="/users" element={withPermission('manage_users', <UsersList />)} />
-            <Route path="/users/create" element={withPermission('manage_users', <UserCreate />)} />
-            <Route path="/admins" element={withPermission('manage_users', <AdminsList />)} />
-            <Route path="/admins/create" element={withPermission('manage_users', <AdminCreate />)} />
-            <Route path="/admins/:id/edit" element={withPermission('manage_users', <AdminEdit />)} />
+            <Route path="/news" element={withRoleSidebarAccess('news', <NewsList />)} />
+            <Route path="/news/create" element={withRoleSidebarAccess('news', <NewsCreate />)} />
+            <Route path="/news/:id/edit" element={withRoleSidebarAccess('news', <NewsEdit />)} />
+            <Route path="/users" element={withRoleSidebarAccess('users', <UsersList />)} />
+            <Route path="/users/create" element={withRoleSidebarAccess('users', <UserCreate />)} />
+            <Route path="/admins" element={withRoleSidebarAccess('admins', <AdminsList />)} />
+            <Route path="/admins/create" element={withRoleSidebarAccess('admins', <AdminCreate />)} />
+            <Route path="/admins/:id/edit" element={withRoleSidebarAccess('admins', <AdminEdit />)} />
             <Route path="/reports" element={withRoleSidebarAccess('reports', <Reports role={currentRole} />)} />
-            <Route path="/contact-messages" element={withPermission('manage_cms', <ContactMessagesList />)} />
-            <Route path="/newsletter" element={withPermission('manage_cms', <NewsletterSubscribersList />)} />
-            <Route path="/config" element={withPermission('app_configuration', <AppConfig />)} />
-            <Route path="/static-data" element={withPermission('app_configuration', <StaticDataManager />)} />
+            <Route path="/contact-messages" element={withRoleSidebarAccess('contactMessages', <ContactMessagesList />)} />
+            <Route path="/newsletter" element={withRoleSidebarAccess('newsletter', <NewsletterSubscribersList />)} />
+            <Route path="/config" element={withRoleSidebarAccess('config', <AppConfig />)} />
+            <Route path="/static-data" element={withRoleSidebarAccess('staticData', <StaticDataManager />)} />
             <Route path="/admin/product-banners-ar" element={withPermission('app_configuration', <ProductBannersArAdmin />)} />
-            <Route path="/roles" element={withPermission('admin.manage_roles', <RolesPermissions />)} />
-            <Route path="/roles/create" element={withPermission('admin.manage_roles', <RoleCreate />)} />
-            <Route path="/roles/:id" element={withPermission('admin.manage_roles', <RoleDetail />)} />
-            <Route path="/roles/:id/edit" element={withPermission('admin.manage_roles', <RoleEdit />)} />
-            <Route path="/languages" element={withPermission('manage_languages', <LanguagesList />)} />
+            <Route path="/roles" element={withRoleSidebarAccess('roles', <RolesPermissions />)} />
+            <Route path="/roles/create" element={withRoleSidebarAccess('roles', <RoleCreate />)} />
+            <Route path="/roles/:id" element={withRoleSidebarAccess('roles', <RoleDetail />)} />
+            <Route path="/roles/:id/edit" element={withRoleSidebarAccess('roles', <RoleEdit />)} />
+            <Route path="/languages" element={withRoleSidebarAccess('languages', <LanguagesList />)} />
             <Route
               path="/notifications"
               element={withPermission('view_dashboard', <AdminNotificationsPage />)}
             />
 
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<Navigate to={defaultRoute || '/dashboard'} replace />} />
           </Routes>
         </main>
       </div>
