@@ -147,6 +147,43 @@ export function Layout() {
     void loadMyAccess();
   }, [userProfile?.roleId]);
 
+  // Listen for profile refresh events (dispatched from AuthContext) so
+  // we reload RBAC information immediately after login/profile update.
+  useEffect(() => {
+    const handler = async () => {
+      try {
+        const myRbac = await getMyRbac();
+        if (myRbac.role || (myRbac.permissions && myRbac.permissions.length > 0)) {
+          setMyRole(myRbac.role);
+          const fakeRole = { permissions: myRbac.permissions } as RbacRole;
+          setPermissionSet(permissionKeysFromRole(fakeRole));
+          setRbacLoaded(true);
+          return;
+        }
+
+        const roleId = userProfile?.roleId;
+        if (roleId) {
+          const role = await getRoleById(roleId);
+          setMyRole(role);
+          setPermissionSet(permissionKeysFromRole(role));
+          setRbacLoaded(true);
+          return;
+        }
+
+        const result = await getMyPermissions();
+        setMyRole(result.role);
+        const fakeRole = { permissions: result.permissions } as RbacRole;
+        setPermissionSet(permissionKeysFromRole(fakeRole));
+        setRbacLoaded(true);
+      } catch (error: any) {
+        console.error('Error reloading RBAC permissions after profile refresh', error);
+      }
+    };
+
+    window.addEventListener('userProfileRefreshed', handler as EventListener);
+    return () => window.removeEventListener('userProfileRefreshed', handler as EventListener);
+  }, [userProfile?.roleId]);
+
   useEffect(() => {
     const mapped =
       slugToUserRole(myRole?.slug) ||
