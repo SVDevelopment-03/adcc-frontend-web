@@ -52,7 +52,7 @@ select {
   div.home-store-buttons {
     flex-direction: row !important;
   }
-  .home-page section.home-app-section {
+  .home-page section.home-app-section .home-app-inner {
     gap: 30px !important;
   }
   div.home-phone-stage img {
@@ -84,7 +84,7 @@ select {
   .home-page .home-store-section {
     padding-bottom: 0px !important;
   }
-  .home-page .home-about-section {
+  .home-page .home-about-section .home-about-inner {
     gap: 30px !important;
   }
   .home-page #about.home-about-section {

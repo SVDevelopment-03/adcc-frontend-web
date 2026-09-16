@@ -548,6 +548,7 @@ function PublicFooter() {
       </section>
 
       <footer className="public-footer relative bg-[#EAF4FF] px-4! pt-6! pb-[26px]! sm:px-6! sm:pt-8! md:px-10! lg:px-16! lg:pt-10! xl:px-20! xl:pt-12!">
+        <div className="public-footer-inner">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(280px,1fr)_minmax(300px,1.1fr)_minmax(260px,1fr)] lg:gap-12">
           <div className="sm:col-span-2 lg:col-span-1">
             <Logo compact />
@@ -717,6 +718,7 @@ function PublicFooter() {
           <span className="home-footer-copyright inline-block h-[23px] w-fit max-w-full whitespace-nowrap text-[clamp(14px,4.6vw,18px)] font-normal leading-none text-black">
             {t("public.footer.copyright")}
           </span>
+        </div>
         </div>
       </footer>
     </>

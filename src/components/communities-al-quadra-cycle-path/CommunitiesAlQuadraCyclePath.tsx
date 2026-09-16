@@ -446,7 +446,7 @@ function FacilitiesSection({ facilities }: { facilities: FacilityCard[] }) {
         backgroundImage: `url('${FACILITIES_BG}')`,
       }}
     >
-      <div className="mx-auto max-w-[1268px] px-4 sm:px-6 md:px-10">
+      <div className="mx-auto max-w-300 px-4 sm:px-6 md:px-10 min-[1920px]:px-0">
         <div className="flex items-start justify-between gap-8 max-lg:flex-col">
           <h2 className="max-w-[580px] text-[26px] font-normal uppercase leading-tight sm:text-[34px] lg:text-[44px]">
             {t("public.tracks.detail.facilitiesHeading")}
@@ -610,7 +610,7 @@ function EventCard({ event }: { event: EventApiResponse }) {
 function UpcomingEventsSection({ events }: { events: EventApiResponse[] }) {
   const { t } = useTranslation();
   return (
-    <section className="mx-auto max-w-[1269px] px-10 py-15 max-md:px-5 max-md:py-16 max-sm:px-4 max-sm:py-12">
+    <section className="mx-auto max-w-300 px-10 py-15 max-md:px-5 max-md:py-16 max-sm:px-4 max-sm:py-12 min-[1920px]:px-0">
       <h2 className="mb-8 text-center text-[26px] font-normal uppercase sm:text-[34px] md:text-[42px] lg:text-[50px] lg:mb-8">
         {t("public.tracks.detail.upcomingEvents")}
       </h2>

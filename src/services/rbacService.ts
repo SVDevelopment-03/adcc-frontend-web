@@ -153,6 +153,17 @@ export const updateRolePermissions = async (
   return data as RbacRole;
 };
 
+export const createRole = async (payload: {
+  name: string;
+  slug: string;
+  description?: string;
+  permissionIds?: string[];
+}): Promise<RbacRole> => {
+  const res = await api.post<any>('/v1/rbac/roles', payload);
+  const data = (res.data as any)?.data ?? res.data;
+  return data as RbacRole;
+};
+
 export const updateRole = async (
   roleId: string,
   payload: { name?: string; description?: string | null },

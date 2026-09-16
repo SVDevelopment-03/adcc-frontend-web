@@ -232,16 +232,22 @@
 .home-page .home-about-section {
   padding-block: 60px 80px !important;
   padding-inline: 86px !important;
+}
+
+.home-page .home-about-inner {
   gap: 60px !important;
 }
 
 .home-page .home-about-content {
-  padding-inline-end: min(280px, 24vw) !important;
+  padding-inline-end: min(280px, 3vw) !important;
 }
 
 .home-page .home-app-section {
   padding-block: 40px 80px !important;
   padding-inline: 86px !important;
+}
+
+.home-page .home-app-inner {
   gap: 60px !important;
 }
 
@@ -264,7 +270,7 @@
   padding-inline: 24px !important;
 }
 
-.public-footer > div:first-of-type {
+.public-footer-inner > div:first-of-type {
   gap: 60px !important;
 }
 
@@ -298,7 +304,7 @@ html[dir='rtl'] .tracks-page .tracks-grid-wrap {
 
 html[dir='rtl'] .home-page .home-about-content {
   padding-inline-start: 0 !important;
-  padding-inline-end: min(280px, 24vw) !important;
+  padding-inline-end: min(280px, 3vw) !important;
 }
 
 html[dir='rtl'] .home-page .journey-section {
@@ -498,5 +504,51 @@ html[dir='rtl'] .communities-page .text-left {
   .challenges-page > section,
   .communities-page > section {
     padding-inline: 96px !important;
+  }
+}
+
+/* ─── Large / ultra-wide screens (≥1920px) ───────────────────────────────
+   The footer's link columns only had a min-width per column, so on very
+   wide screens they just kept stretching instead of settling into a
+   normal, centered content width. */
+@media (min-width: 1920px) {
+  .public-footer-inner {
+    max-width: 1200px !important;
+    margin-inline: auto !important;
+  }
+
+  /* Every inner page's hero (About, Events, Tracks, Challenges,
+     Communities, Contact, Store/Marketplace/News) shares this component
+     and was pinned to a flat 96px from the edge at every desktop width.
+     Once a page's own sections start capping their content to 1200px and
+     centering above this width, align the hero text to that same left
+     edge instead of leaving it stuck closer to the raw viewport edge. */
+  .about-hero-content,
+  .event-hero-content,
+  .track-hero-content,
+  .about-page-hero-content,
+  .event-page-hero-content,
+  .track-page-hero-content,
+  .challenges-page-hero-content,
+  .communities-page-hero-content,
+  .contact-page-hero-content,
+  .store-page-hero-content,
+  .store-page-hero-content.public-hero-content-pos,
+  [class*='-page-hero-content'] {
+    inset-inline-start: calc(86px + max(0px, (100vw - 1372px) / 2)) !important;
+  }
+
+  /* Challenges and Communities: every section (except its own full-bleed
+     hero) is its own direct flex/grid container with no shared background
+     of its own — each page paints one solid color on the page wrapper —
+     so capping every non-hero section directly is safe and covers all of
+     them (intro/stats, video, listing/pagination) in one rule. */
+  .challenges-page > section:not([class*="-hero"]),
+  .communities-page > section:not([class*="-hero"]) {
+    max-width: 1200px !important;
+    margin-inline: auto !important;
+    /* The cap above already centers these, so each section's own
+       Tailwind side padding is now redundant. */
+    padding-inline: 0 !important;
   }
 }

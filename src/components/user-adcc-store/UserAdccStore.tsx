@@ -174,7 +174,7 @@ export default function AdccStorePage() {
         classPrefix="store-page"
       />
 
-      <section className="w-full px-4 py-10 sm:px-6 sm:py-20 md:px-10 lg:px-12 lg:py-24 xl:px-20">
+      <section className="w-full px-4 py-10 sm:px-6 sm:py-20 md:px-10 lg:px-12 lg:py-24 xl:px-20 min-[1920px]:max-w-300 min-[1920px]:mx-auto">
         <h2 className="flex justify-center overflow-hidden text-center text-[28px] font-normal uppercase sm:text-[38px] lg:text-[50px]">
           <AnimatedWords words={browseTitleWords} gap={16} />
         </h2>
@@ -346,7 +346,7 @@ export default function AdccStorePage() {
         )}
       </section>
 
-      <section className="pt-8 relative grid w-full grid-cols-1 items-end gap-8 overflow-hidden px-4 pb-12 sm:gap-16 sm:px-6 sm:pb-28 md:px-10 lg:grid-cols-2 lg:px-12 xl:px-20 bg-b-0">
+      <section className="pt-8 relative grid w-full grid-cols-1 items-end gap-8 overflow-hidden px-4 pb-12 sm:gap-16 sm:px-6 sm:pb-28 md:px-10 lg:grid-cols-2 lg:px-12 xl:px-20 bg-b-0 min-[1920px]:max-w-300 min-[1920px]:mx-auto">
         <div>
           <h2 className="max-w-[516px] overflow-hidden text-[28px] font-normal uppercase leading-tight sm:text-[38px] sm:leading-[46px] lg:text-[50px] lg:leading-[60px]">
             <AnimatedWords words={gearUpTitleWords} gap={16} />

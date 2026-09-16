@@ -346,12 +346,12 @@ const FontLoader = () => (
     }
 
     .grand-prix-shell {
-      width: min(1268px, calc(100vw - 24px));
+      width: min(1200px, calc(100vw - 24px));
       margin: 0 auto;
     }
     @media (min-width: 768px) {
       .grand-prix-shell {
-        width: min(1268px, calc(100vw - 48px));
+        width: min(1200px, calc(100vw - 48px));
       }
     }
 

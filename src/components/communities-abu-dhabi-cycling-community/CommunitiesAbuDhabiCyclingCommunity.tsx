@@ -467,7 +467,7 @@ function EventCard({ event }: { event: EventApiResponse }) {
 function UpcomingEventsSection({ events }: { events: EventApiResponse[] }) {
   const { t } = useTranslation();
   return (
-    <section className="mx-auto max-w-[1269px] px-4 pb-12 pt-14 sm:px-6 sm:pb-16 sm:pt-16 md:px-10 lg:pb-28 lg:pt-20">
+    <section className="mx-auto max-w-300 px-4 pb-12 pt-14 sm:px-6 sm:pb-16 sm:pt-16 md:px-10 lg:pb-28 lg:pt-20 min-[1920px]:px-0">
       <h2 className="mb-8 text-center text-[26px] font-normal uppercase sm:text-[34px] md:text-[42px] lg:text-[50px] lg:mb-8">
         {t("public.communities.detail.stats.upcomingEvents")}
       </h2>
