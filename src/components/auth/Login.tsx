@@ -31,9 +31,10 @@ function GoogleIcon({ className }: { className?: string }) {
 interface LoginProps {
   onSwitchToRegister: () => void;
   onLoginSuccess: () => void;
+  onSwitchToForgot?: () => void;
 }
 
-export function Login({ onSwitchToRegister, onLoginSuccess }: LoginProps) {
+export function Login({ onSwitchToRegister, onLoginSuccess, onSwitchToForgot }: LoginProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -48,6 +49,7 @@ export function Login({ onSwitchToRegister, onLoginSuccess }: LoginProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Login.handleSubmit called', { email });
 
     if (!email || !password) {
       toast.error(t('auth.fillAllFields'));
@@ -68,6 +70,7 @@ export function Login({ onSwitchToRegister, onLoginSuccess }: LoginProps) {
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     try {
+      console.log('Login.handleGoogleSignIn called');
       await loginWithGoogle();
       // If existing user, AuthContext sets userProfile and parent will redirect.
       // If new user, pendingGoogleProfile is set and we show complete-profile form.
@@ -265,7 +268,20 @@ export function Login({ onSwitchToRegister, onLoginSuccess }: LoginProps) {
                   required
                 />
               </div>
-            </div>
+                <div className="mt-2 text-right">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      console.log('Forgot link clicked', { onSwitchToForgot });
+                      onSwitchToForgot?.();
+                    }}
+                    className="text-base font-medium hover:underline cursor-pointer"
+                    style={{ color: '#C12D32' }}
+                  >
+                    {t('auth.forgotPasswordLink')}
+                  </button>
+                </div>
+              </div>
 
             <button
               type="submit"

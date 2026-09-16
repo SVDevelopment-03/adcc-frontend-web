@@ -161,6 +161,43 @@ export const getCurrentUser = async (): Promise<CurrentUserResponse> => {
   }
 };
 
+export interface ForgotPasswordResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    expiresInMinutes?: number;
+  };
+}
+
+export const forgotPassword = async (email: string): Promise<ForgotPasswordResponse> => {
+  try {
+    console.log('📋 forgotPassword called for', email);
+    const response = await api.post<ForgotPasswordResponse>('/v1/auth/email/forgot-password', { email });
+    console.log('📥 forgotPassword response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error sending forgot password request:', error);
+    throw error;
+  }
+};
+
+export interface ResetPasswordResponse {
+  success: boolean;
+  message: string;
+}
+
+export const resetPassword = async (email: string, code: string, password: string): Promise<ResetPasswordResponse> => {
+  try {
+    console.log('📋 resetPassword called for', email);
+    const response = await api.post<ResetPasswordResponse>('/v1/auth/email/reset-password', { email, code, password });
+    console.log('📥 resetPassword response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error resetting password:', error);
+    throw error;
+  }
+};
+
 export interface SendStaffWebPushResponse {
   success: boolean;
   message: string;

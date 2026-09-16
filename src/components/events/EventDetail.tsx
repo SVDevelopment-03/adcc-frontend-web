@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { addEventGalleryImages, deleteEventGalleryImage, getEventById, updateEvent as updateEventApi, EventApiResponse, getEventResults, adminUpdateParticipantResult } from '../../services/eventsApi';
 import { getAllCommunities } from '../../services/communitiesApi';
 import { sendTestBroadcastPush } from '../../services/authApi';
+import { uploadToMediaLibrary } from '../../services/mediaApi';
 import { DetailPageSkeleton } from '../ui/skeleton';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 
@@ -31,6 +32,11 @@ export function EventDetail() {
   const [notifAudience, setNotifAudience] = useState<'all' | 'registered' | 'checked-in'>('all');
   const [isSendingNotif, setIsSendingNotif] = useState(false);
   const [notifResult, setNotifResult] = useState<{ ok: boolean; message: string; count: number } | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [uploadedMediaName, setUploadedMediaName] = useState<string | null>(null);
+  const [uploadedMediaSize, setUploadedMediaSize] = useState<number | null>(null);
+  const [uploadedFromUpload, setUploadedFromUpload] = useState(false);
 
   // Results tab state
   const [communities, setCommunities] = useState<any[]>([]);
@@ -1051,17 +1057,89 @@ const formatTimeInput = (raw: string): string => {
             {/* Delivery type */}
             <div>
               <label className="block text-sm font-medium mb-2" style={{ color: '#555' }}>Delivery Method</label>
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: '#555' }}>Image URL (optional)</label>
-              <input
-                type="text"
-                value={notifImageUrl}
-                onChange={e => setNotifImageUrl(e.target.value)}
-                placeholder="https://example.com/image.jpg"
-                className="w-full px-4 py-2 rounded-lg border border-gray-200"
-              />
-            </div>
-              <div className="flex gap-3">
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{ color: '#555' }}>Upload image or paste URL (optional)</label>
+                <div className="flex items-center gap-2">
+                  <input id="event-notif-image-file" type="file" accept="image/*" className="sr-only" onChange={(e) => setSelectedFile(e.target.files?.[0] || null)} />
+                  <label htmlFor="event-notif-image-file" className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 cursor-pointer">
+                    <Upload className="w-4 h-4" />
+                    <span className="text-sm text-gray-700">Choose file</span>
+                  </label>
+                  {selectedFile ? <div className="text-sm text-gray-600 ml-2 truncate">{selectedFile.name}</div> : null}
+                  <button
+                    type="button"
+                    disabled={!selectedFile || isUploadingImage}
+                    onClick={async () => {
+                      if (!selectedFile) return;
+                      try {
+                        setIsUploadingImage(true);
+                        const media = await uploadToMediaLibrary(selectedFile, 'galleries');
+                        setNotifImageUrl(media.url);
+                        setUploadedMediaName(media.name || selectedFile.name);
+                        setUploadedMediaSize(media.size || selectedFile.size || null);
+                        setUploadedFromUpload(true);
+                        toast.success('Image uploaded');
+                        setSelectedFile(null);
+                      } catch (err) {
+                        console.error('Upload failed', err);
+                        toast.error('Upload failed');
+                      } finally {
+                        setIsUploadingImage(false);
+                      }
+                    }}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
+                  >
+                    {isUploadingImage ? 'Uploading...' : 'Upload & Use'}
+                  </button>
+                </div>
+                <div className="mt-3">
+                  <input
+                    type="text"
+                    placeholder="Or use an image URL: https://example.com/image.jpg"
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200"
+                    value={notifImageUrl}
+                    onChange={(e) => {
+                      setNotifImageUrl(e.target.value);
+                      setUploadedFromUpload(false);
+                      setUploadedMediaName(null);
+                      setUploadedMediaSize(null);
+                    }}
+                  />
+                </div>
+                {notifImageUrl ? (
+                  <div className="mt-3">
+                    <img src={notifImageUrl} alt="preview" className="max-h-48 rounded-lg shadow-sm object-cover w-full" />
+                  </div>
+                ) : null}
+                {uploadedFromUpload && uploadedMediaName ? (
+                  <div className="mt-3 p-3 rounded-lg border bg-white flex items-center gap-4">
+                    <div className="w-24 h-24 rounded overflow-hidden border bg-gray-50">
+                      <img src={notifImageUrl} alt={uploadedMediaName} className="object-cover w-full h-full" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-gray-800 truncate">{uploadedMediaName}</div>
+                      {uploadedMediaSize ? <div className="text-xs text-gray-500">{(uploadedMediaSize / 1024).toFixed(1)} KB</div> : null}
+                      <div className="text-xs text-gray-500 mt-1">Uploaded via media library</div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setNotifImageUrl('');
+                          setUploadedMediaName(null);
+                          setUploadedMediaSize(null);
+                          setUploadedFromUpload(false);
+                          toast('Image removed');
+                        }}
+                        className="px-3 py-1 border rounded bg-white"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+              <div className="flex gap-3 mt-4">
                 {(['app', 'email', 'both'] as const).map(type => (
                   <button
                     key={type}
