@@ -344,27 +344,13 @@ export function RolesPermissions() {
       {!loading && activeTab === 'permissions' ? (
         <div className="grid grid-cols-1 xl:grid-cols-[1.1fr_0.9fr] gap-6">
           <div className="p-6 rounded-2xl shadow-sm bg-white">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-xl font-medium" style={{ color: '#333' }}>Permission catalog</h2>
-                <p className="text-sm" style={{ color: '#666' }}>Core access keys used by the app</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setEditingPermissionId(null);
-                  setPermissionForm(emptyPermissionForm());
-                }}
-                className="px-4 py-2 rounded-lg text-sm inline-flex items-center gap-2"
-                style={{ backgroundColor: '#F3F4F6', color: '#333' }}
-              >
-                <Plus className="w-4 h-4" />
-                New Permission
-              </button>
+            <div className="mb-4">
+              <h2 className="text-xl font-medium" style={{ color: '#333' }}>Permission catalog</h2>
+              <p className="text-sm" style={{ color: '#666' }}>Core access keys used by the app</p>
             </div>
 
             <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs" style={{ color: '#8A4B00' }}>
-              Use lowercase snake_case keys such as <span className="font-semibold">manage_events</span>, <span className="font-semibold">manage_users</span>, and <span className="font-semibold">app_configuration</span>. Click <span className="font-semibold">Create Permission</span> to save after filling the form.
+              Use lowercase snake_case keys such as <span className="font-semibold">manage_events</span>, <span className="font-semibold">manage_users</span>, and <span className="font-semibold">app_configuration</span>. Fill the form and click <span className="font-semibold">Create Permission</span> to save.
             </div>
 
             <div className="space-y-3">
