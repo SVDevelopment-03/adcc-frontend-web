@@ -21,6 +21,7 @@ export interface EventApiResponse {
   minAge?: number;
   maxAge?: number;
   youtubeLink?: string;
+  registrationLink?: string;
   status: 'Draft' | 'Open' | 'Full' | 'Completed' | 'Archived' | 'draft' | 'open' | 'full' | 'completed' | 'archived' | 'cancelled' | 'reoprn' | 'disable';
   createdAt?: string;
   updatedAt?: string;
@@ -325,6 +326,7 @@ export const updateEvent = async (
     append('allowCancellation', d.allowCancellation);
     append('isPurposeBased', d.isPurposeBased);
     append('youtubeLink', d.youtubeLink);
+    append('registrationLink', d.registrationLink);
     append('minAge', d.minAge);
     append('maxAge', d.maxAge);
     if (d.eligibility != null) append('eligibility', d.eligibility);

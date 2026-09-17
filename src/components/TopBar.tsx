@@ -117,7 +117,7 @@ export function TopBar({ roleTitle }: TopBarProps) {
                     {userProfile.email || userProfile.phone}
                   </div>
                   <div className={`text-xs mt-1 capitalize ${isRtl ? 'text-right' : 'text-left'}`} style={{ color: '#999' }}>
-                    {t('topbar.role')} {userProfile.role}
+                    {t('topbar.role')} {roleTitle}
                   </div>
                 </div>
               )}

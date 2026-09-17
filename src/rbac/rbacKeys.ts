@@ -22,7 +22,8 @@ export type SidebarItemId =
   | 'config'
   | 'languages'
   | 'roles'
-  | 'staticData';
+  | 'staticData'
+  | 'auditLog';
 
 /**
  * Sidebar menu id -> permission key actually enforced by the matching backend
@@ -63,6 +64,7 @@ export const SIDEBAR_ITEM_PERMISSION: Record<SidebarItemId, string | null> = {
   staticData: 'app_configuration',
   languages: 'app_configuration',
   roles: 'admin.manage_roles',
+  auditLog: 'view_audit_log',
 };
 
 /**
@@ -94,6 +96,7 @@ export const SIDEBAR_ITEM_PATH: Record<SidebarItemId, string> = {
   staticData: '/static-data',
   languages: '/languages',
   roles: '/roles',
+  auditLog: '/audit-log',
 };
 
 const SIDEBAR_ITEM_ORDER = Object.keys(SIDEBAR_ITEM_PATH) as SidebarItemId[];

@@ -22,7 +22,8 @@
     "config": "إعدادات التطبيق",
     "languages": "اللغات",
     "roles": "الأدوار والصلاحيات",
-    "staticData": "البيانات والفئات"
+    "staticData": "البيانات والفئات",
+    "auditLog": "سجل التدقيق"
   },
   "topbar": {
     "search": "بحث...",
@@ -851,6 +852,7 @@
       "category": "الفئة *",
       "community": "المجتمع *",
       "youtubeLink": "رابط يوتيوب",
+      "registrationLink": "رابط تسجيل الفعالية",
       "country": "الدولة",
       "city": "المدينة *",
       "track": "المسار *",
@@ -876,6 +878,7 @@
         "community": "اختر المجتمع...",
         "track": "اختر المسار...",
         "youtubeLink": "https://www.youtube.com/watch?v=example",
+        "registrationLink": "https://example.com/register",
         "distance": "25",
         "maxParticipants": "100",
         "ageRequirement": "+18",

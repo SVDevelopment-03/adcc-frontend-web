@@ -53,6 +53,7 @@ import { BadgesCreate } from './badges/BadgesCreate';
 import { LanguagesList } from './languages/LanguagesList';
 import { AdminNotificationsPage } from './notifications/AdminNotificationsPage';
 import { ProductBannersArAdmin } from './admin/ProductBannersArAdmin';
+import { AuditLog } from './audit-log/AuditLog';
 import { getMyPermissions, getMyRbac, getRoleById, type RbacRole } from '../services/rbacService';
 import { toast } from 'sonner';
 import { useAuth } from '../contexts/AuthContext';
@@ -315,6 +316,7 @@ export function Layout() {
             <Route path="/roles/:id" element={withRoleSidebarAccess('roles', <RoleDetail />)} />
             <Route path="/roles/:id/edit" element={withRoleSidebarAccess('roles', <RoleEdit />)} />
             <Route path="/languages" element={withRoleSidebarAccess('languages', <LanguagesList />)} />
+            <Route path="/audit-log" element={withRoleSidebarAccess('auditLog', <AuditLog />)} />
             <Route
               path="/notifications"
               element={withPermission('view_dashboard', <AdminNotificationsPage />)}

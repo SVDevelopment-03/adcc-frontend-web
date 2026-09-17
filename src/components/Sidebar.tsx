@@ -24,6 +24,7 @@ import {
   Shield,
   Globe,
   Database,
+  History,
 } from 'lucide-react';
 import { SIDEBAR_ITEM_PERMISSION } from '../rbac/rbacKeys';
 
@@ -62,6 +63,7 @@ const menuItems: MenuItemDef[] = [
   { id: 'staticData', labelKey: 'sidebar.staticData', icon: <Database className="w-5 h-5" />, roles: ['Admin'], path: '/static-data' },
   { id: 'languages', labelKey: 'sidebar.languages', icon: <Globe className="w-5 h-5" />, roles: ['Admin'], path: '/languages' },
   { id: 'roles', labelKey: 'sidebar.roles', icon: <Shield className="w-5 h-5" />, roles: ['Admin'], path: '/roles' },
+  { id: 'auditLog', labelKey: 'sidebar.auditLog', icon: <History className="w-5 h-5" />, roles: ['Admin'], path: '/audit-log' },
 ];
 
 export function Sidebar({ hasPermission }: SidebarProps) {

@@ -22,7 +22,8 @@
     "config": "App Configuration",
     "languages": "Languages",
     "roles": "Roles & Permissions",
-    "staticData": "Data & Categories"
+    "staticData": "Data & Categories",
+    "auditLog": "Audit Log"
   },
   "topbar": {
     "search": "Search...",
@@ -889,6 +890,7 @@
       "category": "Category *",
       "community": "Community *",
       "youtubeLink": "YouTube Link",
+      "registrationLink": "Event Registration Link",
       "country": "Country",
       "city": "City *",
       "track": "Track *",
@@ -914,6 +916,7 @@
         "community": "Select community...",
         "track": "Select track...",
         "youtubeLink": "https://www.youtube.com/watch?v=example",
+        "registrationLink": "https://example.com/register",
         "distance": "25",
         "maxParticipants": "100",
         "ageRequirement": "18+",

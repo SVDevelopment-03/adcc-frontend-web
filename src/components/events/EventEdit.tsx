@@ -218,6 +218,7 @@ export function EventEdit({ role }: EventEditProps) {
     galleryImages: string[];
     address: string;
     youtubeLink: string;
+    registrationLink: string;
     maxAge: number;
   }>({
     title: '',
@@ -256,6 +257,7 @@ export function EventEdit({ role }: EventEditProps) {
     isPurposeBased: false,
     address: '',
     youtubeLink: '',
+    registrationLink: '',
     maxAge: 70,
   });
 
@@ -332,6 +334,7 @@ export function EventEdit({ role }: EventEditProps) {
         galleryImages: ev.galleryImages ?? [],
         address: ev.address ?? '',
         youtubeLink: ev.youtubeLink ?? '',
+        registrationLink: ev.registrationLink ?? '',
         maxAge: ev.maxAge ?? 70,
       });
     }
@@ -591,6 +594,7 @@ export function EventEdit({ role }: EventEditProps) {
         country: formData.country,
         maxAge: formData.maxAge,
         youtubeLink: formData.youtubeLink || undefined,
+        registrationLink: formData.registrationLink || undefined,
       };
 
       // When not uploading a new file, send existing mainImage (URL/base64) so backend keeps it
@@ -782,6 +786,17 @@ export function EventEdit({ role }: EventEditProps) {
                   value={formData.youtubeLink}
                   onChange={(e) => setFormData({ ...formData, youtubeLink: e.target.value })}
                   placeholder="https://www.youtube.com/watch?v=example"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#C12D32]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.edit.registrationLink')}</label>
+                <input
+                  type="url"
+                  value={formData.registrationLink}
+                  onChange={(e) => setFormData({ ...formData, registrationLink: e.target.value })}
+                  placeholder={t('events.edit.placeholders.registrationLink')}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#C12D32]"
                 />
               </div>
