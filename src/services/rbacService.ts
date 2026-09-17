@@ -15,6 +15,7 @@ export interface RbacRole {
   name: string;
   slug: string;
   description?: string;
+  status?: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
   isSystem?: boolean;
   permissions: Array<string | RbacPermission>;
 }
@@ -82,15 +83,22 @@ const normalizeRolesResponse = (payload: RawRoleResponse): RbacRole[] => {
   return [];
 };
 
+const extractDataEnvelope = <T>(payload: any): T | undefined => {
+  if (!payload) return undefined;
+  if (payload.data !== undefined) return payload.data as T;
+  return payload as T;
+};
+
 export const getRbacRoles = async (): Promise<RbacRole[]> => {
   const res = await api.get<any>('/v1/rbac/roles');
-  return normalizeRolesResponse(res.data as RawRoleResponse);
+  const payload = extractDataEnvelope<any>(res.data);
+  return normalizeRolesResponse(payload as RawRoleResponse);
 };
 
 export const getAllPermissions = async (): Promise<RbacPermission[]> => {
   const res = await api.get<any>('/v1/rbac/permissions');
-  const payload = res.data as { data?: { permissions?: RbacPermission[] } } | { permissions?: RbacPermission[] };
-  const permissions = (payload as any)?.data?.permissions ?? (payload as any)?.permissions;
+  const payload = extractDataEnvelope<any>(res.data);
+  const permissions = payload?.permissions ?? payload?.data?.permissions ?? [];
   return Array.isArray(permissions) ? permissions : [];
 };
 
@@ -153,11 +161,42 @@ export const getMyPermissions = async (): Promise<{
 
 export const updateRolePermissions = async (
   roleId: string,
-  permissions: string[],
+  permissionIds: string[],
 ): Promise<RbacRole> => {
-  const res = await api.patch<any>(`/v1/rbac/roles/${roleId}`, { permissions });
+  const res = await api.put<any>(`/v1/rbac/roles/${roleId}/permissions`, { permissionIds });
   const data = (res.data as any)?.data ?? res.data;
   return data as RbacRole;
+};
+
+export const createPermission = async (payload: {
+  key: string;
+  name: string;
+  description?: string;
+  group?: string;
+  sortOrder?: number;
+}): Promise<RbacPermission> => {
+  const res = await api.post<any>('/v1/rbac/permissions', payload);
+  const data = (res.data as any)?.data ?? res.data;
+  return data as RbacPermission;
+};
+
+export const updatePermission = async (
+  permissionId: string,
+  payload: {
+    key?: string;
+    name?: string;
+    description?: string | null;
+    group?: string | null;
+    sortOrder?: number;
+  },
+): Promise<RbacPermission> => {
+  const res = await api.patch<any>(`/v1/rbac/permissions/${permissionId}`, payload);
+  const data = (res.data as any)?.data ?? res.data;
+  return data as RbacPermission;
+};
+
+export const deletePermission = async (permissionId: string): Promise<void> => {
+  await api.delete<any>(`/v1/rbac/permissions/${permissionId}`);
 };
 
 export const createRole = async (payload: {
@@ -171,9 +210,13 @@ export const createRole = async (payload: {
   return data as RbacRole;
 };
 
+export const deleteRole = async (roleId: string): Promise<void> => {
+  await api.delete<any>(`/v1/rbac/roles/${roleId}`);
+};
+
 export const updateRole = async (
   roleId: string,
-  payload: { name?: string; description?: string | null },
+  payload: { name?: string; slug?: string; description?: string | null; status?: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED'; permissionIds?: string[] },
 ): Promise<RbacRole> => {
   const res = await api.patch<any>(`/v1/rbac/roles/${roleId}`, payload);
   const data = (res.data as any)?.data ?? res.data;
