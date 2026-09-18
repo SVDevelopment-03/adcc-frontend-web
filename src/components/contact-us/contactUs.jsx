@@ -130,7 +130,7 @@ export default function ContactUsPage() {
           classPrefix="contact-page"
         />
 
-        <section className="mx-auto max-w-[1268px] px-10 pt-6 pb-14 max-md:px-5 max-md:pt-4 max-md:pb-8 max-sm:px-4 max-sm:pt-3 max-sm:pb-6">
+        <section className="mx-auto max-w-[1200px] px-10 pt-6 pb-14 max-md:px-5 max-md:pt-4 max-md:pb-8 max-sm:px-4 max-sm:pt-3 max-sm:pb-6">
           <div className="text-center">
             <h2 className="contact-intro-title text-[60px] uppercase max-md:text-[44px] max-sm:text-[36px]">
               {t("public.contact.intro.title")}

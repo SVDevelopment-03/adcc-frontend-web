@@ -60,6 +60,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (import.meta.env.DEV) console.log('👤 Fetching current user profile...');
       const response = await getCurrentUser();
       setUserProfile(response.data);
+      // Notify other parts of the app that the user profile was refreshed
+      try {
+        window.dispatchEvent(new Event('userProfileRefreshed'));
+      } catch (e) {
+        // ignore (defensive for non-browser envs)
+      }
       if (import.meta.env.DEV) console.log('✅ User profile refreshed');
     } catch (error: any) {
       console.error('❌ Error refreshing user profile:', error);

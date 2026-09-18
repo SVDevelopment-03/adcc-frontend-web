@@ -50,6 +50,25 @@ font-family: 'Satoshi', sans-serif !important;
 .event-grid-wrap{
 margin-bottom:40px !important;}
 
+/* ─── Large / ultra-wide screens (≥1920px) ───────────────────────────────
+   The filter bar and cards grid only had a fixed inline padding, so on
+   very wide screens they just stretched full width instead of settling
+   into a normal, centered content column. */
+@media (min-width: 1920px) {
+  .event-filter-bar,
+  .event-grid-wrap {
+    max-width: 1200px !important;
+    margin-inline: auto !important;
+  }
+  /* The 1200px cap above already centers these, so the fixed 82px side
+     padding is now redundant — drop it (specificity-matched to beat
+     public-spacing.css's .event-page-prefixed padding-inline rules). */
+  .event-page .event-filter-bar,
+  .event-page .event-grid-wrap {
+    padding-inline: 0 !important;
+  }
+}
+
 
     @media (max-width: 768px) {
       .event-local-nav {

@@ -596,6 +596,22 @@ margin-bottom: 3rem !important;}
 justify-content: center !important;}
     .public-layout .adcc-btn, button{
     font-weight: 500 !important;}
+
+    /* ─── Large / ultra-wide screens (≥1920px) ───────────────────────────
+       Each section's content row only had min-widths / percentage-based
+       flex-basis, so on very wide screens they just kept stretching full
+       width instead of settling into a normal, centered content column. */
+    @media (min-width: 1920px) {
+      .about-stats-wrap,
+      .about-mission-head,
+      .mission-content,
+      .about-values-head,
+      .about-values-grid,
+      .about-coaches-grid {
+        max-width: 1200px !important;
+        margin-inline: auto !important;
+      }
+    }
   `}</style>
 );
 

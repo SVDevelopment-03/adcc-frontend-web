@@ -4,7 +4,6 @@ import {
   ChevronDown,
   Facebook,
   Instagram,
-  LogIn,
   LogOut,
   Mail,
   MapPin,
@@ -65,6 +64,9 @@ const navItems: NavItem[] = [
   {
     labelKey: "public.nav.store",
     match: ["/user-adcc-store", "/user-marketplace"],
+    // Hidden per request — keep the item (and its children/routes) intact,
+    // just don't render it in the header nav.
+    hidden: true,
     children: [
       {
         labelKey: "public.nav.clubStore",
@@ -445,25 +447,19 @@ function PublicHeader() {
                   </NavLink>
                 );
               })}
-              <button
-                type="button"
-                onClick={() => {
-                  setMenuOpen(false);
-                  void handleAuthAction();
-                }}
-                className={`public-auth-button mt-3 flex items-center gap-3 rounded-md bg-[#019839] py-3.5 ps-7 pe-5 text-[16px] font-bold text-white transition-colors hover:bg-black ${isRtl ? "flex-row-reverse" : ""}`}
-              >
-                {isAuthenticated ? (
+              {isAuthenticated && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    void handleAuthAction();
+                  }}
+                  className={`public-auth-button mt-3 flex items-center gap-3 rounded-md bg-[#019839] py-3.5 ps-7 pe-5 text-[16px] font-bold text-white transition-colors hover:bg-black ${isRtl ? "flex-row-reverse" : ""}`}
+                >
                   <LogOut className="h-5 w-5 shrink-0" />
-                ) : (
-                  <LogIn className="h-5 w-5 shrink-0" />
-                )}
-                <span>
-                  {isAuthenticated
-                    ? t("public.auth.logout")
-                    : t("public.auth.login")}
-                </span>
-              </button>
+                  <span>{t("public.auth.logout")}</span>
+                </button>
+              )}
             </nav>
           </div>
         )}
@@ -544,7 +540,8 @@ function PublicFooter() {
         </div>
       </section>
 
-      <footer className="public-footer relative bg-[#EAF4FF] px-4! pt-6! pb-[26px]! sm:px-6! sm:pt-8! md:px-10! lg:px-16! lg:pt-10! xl:px-20! xl:pt-12!">
+      <footer className="public-footer relative bg-[#EAF4FF] px-4! pt-10! pb-10! sm:px-6! sm:pt-8! sm:pb-6.5! md:px-10! lg:px-16! lg:pt-10! xl:px-20! xl:pt-12!">
+        <div className="public-footer-inner">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(280px,1fr)_minmax(300px,1.1fr)_minmax(260px,1fr)] lg:gap-12">
           <div className="sm:col-span-2 lg:col-span-1">
             <Logo compact />
@@ -640,6 +637,18 @@ function PublicFooter() {
                     {t("public.footer.rides")}
                   </NavLink>
                 </li>
+              </ul>
+              <ul className="space-y-1.5! sm:space-y-2!">
+                <li hidden>
+                  <NavLink to="/user-adcc-store" className="pub-footer-link">
+                    {t("public.nav.clubStore")}
+                  </NavLink>
+                </li>
+                <li hidden>
+                  <NavLink to="/user-marketplace" className="pub-footer-link">
+                    {t("public.nav.marketplace")}
+                  </NavLink>
+                </li>
                 <li>
                   <a
                     href="https://erp.adcyclingclub.ae/contracts/venue/public/book/"
@@ -649,18 +658,6 @@ function PublicFooter() {
                   >
                     {t("public.footer.venueBooking")}
                   </a>
-                </li>
-              </ul>
-              <ul className="space-y-1.5! sm:space-y-2!">
-                <li>
-                  <NavLink to="/user-adcc-store" className="pub-footer-link">
-                    {t("public.nav.clubStore")}
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/user-marketplace" className="pub-footer-link">
-                    {t("public.nav.marketplace")}
-                  </NavLink>
                 </li>
                 <li>
                   <NavLink to="/contact-us" className="pub-footer-link">
@@ -714,6 +711,7 @@ function PublicFooter() {
           <span className="home-footer-copyright inline-block h-[23px] w-fit max-w-full whitespace-nowrap text-[clamp(14px,4.6vw,18px)] font-normal leading-none text-black">
             {t("public.footer.copyright")}
           </span>
+        </div>
         </div>
       </footer>
     </>

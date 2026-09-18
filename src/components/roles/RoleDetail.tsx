@@ -3,7 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Calendar, CheckCircle, Edit, Shield, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import {
-  getRbacRoles,
+  deleteRole,
+  getAllPermissions,
   getRoleById,
   type RbacPermission,
   type RbacRole,
@@ -60,6 +61,7 @@ export function RoleDetail() {
 
   const roleId = useMemo(() => (role?._id || role?.id || id || '').toString() || null, [role?._id, role?.id, id]);
   const isSystemRole = role?.isSystem === true || (role as any)?.isSystemRole === true;
+  const roleStatus = (role?.status as 'ACTIVE' | 'INACTIVE' | 'ARCHIVED') || 'ACTIVE';
 
   const rolePermissionIds = useMemo(() => {
     if (!role) return new Set<string>();
@@ -71,18 +73,16 @@ export function RoleDetail() {
       if (!id) return;
       setLoading(true);
       try {
-        const [r, roles] = await Promise.all([getRoleById(id), getRbacRoles()]);
+        const [r, permissions] = await Promise.all([getRoleById(id), getAllPermissions()]);
 
         const permissionMap = new Map<string, PermissionRow>();
-        roles.forEach((rr) => {
-          (rr.permissions || []).forEach((perm) => {
-            const meta = extractPermissionMeta(perm);
-            if (!meta) return;
-            const existing = permissionMap.get(meta.id);
-            if (!existing || (existing.name === existing.id && meta.name !== meta.id)) {
-              permissionMap.set(meta.id, meta);
-            }
-          });
+        permissions.forEach((perm) => {
+          const meta = extractPermissionMeta(perm);
+          if (!meta) return;
+          const existing = permissionMap.get(meta.id);
+          if (!existing || (existing.name === existing.id && meta.name !== meta.id)) {
+            permissionMap.set(meta.id, meta);
+          }
         });
 
         const rows = Array.from(permissionMap.values()).sort((a, b) => {
@@ -130,6 +130,21 @@ export function RoleDetail() {
     (role as any)?.modifiedAt ||
     null;
 
+  const handleDelete = async () => {
+    if (!roleId || !role) return;
+    const confirmed = window.confirm(`Delete the role "${role.name}"? This action cannot be undone.`);
+    if (!confirmed) return;
+
+    try {
+      await deleteRole(roleId);
+      toast.success('Role deleted');
+      navigate('/roles');
+    } catch (error: any) {
+      console.error('Error deleting role', error);
+      toast.error(error?.response?.data?.message || 'Failed to delete role');
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -163,6 +178,15 @@ export function RoleDetail() {
                       System Role
                     </span>
                   ) : null}
+                  <span
+                    className="text-xs px-3 py-1 rounded-full"
+                    style={{
+                      backgroundColor: roleStatus === 'ACTIVE' ? '#ECFDF5' : roleStatus === 'INACTIVE' ? '#FFF7ED' : '#F3F4F6',
+                      color: roleStatus === 'ACTIVE' ? '#166534' : roleStatus === 'INACTIVE' ? '#9A5B00' : '#374151',
+                    }}
+                  >
+                    {roleStatus}
+                  </span>
                 </div>
                 <p className="mt-1" style={{ color: '#666' }}>{role.description || '—'}</p>
               </div>
@@ -175,16 +199,29 @@ export function RoleDetail() {
           )}
         </div>
 
-        <button
-          type="button"
-          onClick={() => roleId && navigate(`/roles/${encodeURIComponent(roleId)}/edit`)}
-          disabled={!roleId}
-          className="px-4 py-2 rounded-lg text-sm inline-flex items-center gap-2"
-          style={{ backgroundColor: '#C12D32', color: 'white', opacity: roleId ? 1 : 0.6 }}
-        >
-          <Edit className="w-4 h-4" />
-          Edit Role
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => roleId && navigate(`/roles/${encodeURIComponent(roleId)}/edit`)}
+            disabled={!roleId}
+            className="px-4 py-2 rounded-lg text-sm inline-flex items-center gap-2"
+            style={{ backgroundColor: '#C12D32', color: 'white', opacity: roleId ? 1 : 0.6 }}
+          >
+            <Edit className="w-4 h-4" />
+            Edit Role
+          </button>
+          {!isSystemRole ? (
+            <button
+              type="button"
+              onClick={() => void handleDelete()}
+              disabled={!roleId}
+              className="px-4 py-2 rounded-lg text-sm border border-red-200 bg-white"
+              style={{ color: '#C12D32' }}
+            >
+              Delete
+            </button>
+          ) : null}
+        </div>
       </div>
 
       {loading ? (
@@ -239,6 +276,29 @@ export function RoleDetail() {
                 <span className="text-sm" style={{ color: '#666' }}>Last Modified</span>
               </div>
               <p className="text-sm" style={{ color: '#333' }}>{formatDate(lastModified)}</p>
+            </div>
+          </div>
+
+          <div className="p-6 rounded-2xl shadow-sm bg-white">
+            <div className="pb-4 border-b border-gray-100 mb-4">
+              <h2 className="text-lg font-medium" style={{ color: '#333' }}>Effective access summary</h2>
+              <p className="text-sm mt-1" style={{ color: '#666' }}>
+                {permissionCount} active permission{permissionCount === 1 ? '' : 's'} currently assigned to this role.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm" style={{ color: '#666' }}>
+              <div className="rounded-xl border border-gray-200 p-4">
+                <div className="text-xs uppercase tracking-wide mb-2">Status</div>
+                <div className="font-medium" style={{ color: '#333' }}>{roleStatus}</div>
+              </div>
+              <div className="rounded-xl border border-gray-200 p-4">
+                <div className="text-xs uppercase tracking-wide mb-2">Type</div>
+                <div className="font-medium" style={{ color: '#333' }}>{isSystemRole ? 'System role' : 'Custom role'}</div>
+              </div>
+              <div className="rounded-xl border border-gray-200 p-4">
+                <div className="text-xs uppercase tracking-wide mb-2">Updated</div>
+                <div className="font-medium" style={{ color: '#333' }}>{formatDate(lastModified)}</div>
+              </div>
             </div>
           </div>
 

@@ -213,7 +213,7 @@ html[dir='rtl'] .home-ticker-track {
 }
 
 /* Journey */
-html[dir='rtl'] .journey-section {
+html[dir='rtl'] .journey-inner {
   direction: rtl;
 }
 
@@ -229,7 +229,7 @@ html[dir='rtl'] .journey-cards {
 }
 
 /* App section */
-html[dir='rtl'] .home-app-section {
+html[dir='rtl'] .home-app-inner {
   direction: rtl;
 }
 
@@ -338,7 +338,7 @@ html[dir='rtl'] .store-carousel-button svg {
 }
 
 /* About */
-html[dir='rtl'] .home-about-section {
+html[dir='rtl'] .home-about-inner {
   direction: rtl;
 }
 

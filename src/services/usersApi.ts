@@ -136,3 +136,7 @@ export async function updateUser(userId: string, input: UpdateUserInput): Promis
 export async function deleteUser(userId: string): Promise<void> {
   await api.delete(`/v1/user/${userId}`);
 }
+
+export async function updateUserPassword(userId: string, password: string): Promise<void> {
+  await api.patch(`/v1/user/${userId}/password`, { password });
+}

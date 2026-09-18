@@ -597,6 +597,28 @@ html[dir='rtl'] .tracks-journey-card__title, html[dir='rtl'] .tracks-journey-car
         height: 200px !important;
       }
     }
+
+    /* ─── Large / ultra-wide screens (≥1920px) ─────────────────────────
+       Each section's content row only had a fixed inline padding, so on
+       very wide screens they just stretched full width instead of
+       settling into a normal, centered content column. */
+    @media (min-width: 1920px) {
+      .track-intro-wrap,
+      .track-why-head,
+      .track-why-content,
+      .track-grid-section {
+        max-width: 1200px !important;
+        margin-inline: auto !important;
+      }
+      /* The 1200px cap above already centers these, so the fixed 82px
+         side padding on their containing sections is now redundant —
+         drop it (padding only shrinks the content box, not the section's
+         own full-bleed width/background, so this is safe). */
+      .tracks-page .track-section,
+      .track-grid-section {
+        padding-inline: 0 !important;
+      }
+    }
   `}</style>
 );
 

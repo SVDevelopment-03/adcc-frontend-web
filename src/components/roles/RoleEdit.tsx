@@ -5,7 +5,7 @@ import { ChevronLeft, AlertTriangle, Shield, CheckSquare, Square } from 'lucide-
 import { toast } from 'sonner';
 import {
   addPermissionToRole,
-  getRbacRoles,
+  getAllPermissions,
   getRoleById,
   removePermissionFromRole,
   updateRole,
@@ -56,6 +56,8 @@ export function RoleEdit() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [name, setName] = useState('');
+  const [slug, setSlug] = useState('');
+  const [status, setStatus] = useState<'ACTIVE' | 'INACTIVE' | 'ARCHIVED'>('ACTIVE');
   const [description, setDescription] = useState('');
 
   const roleId = useMemo(() => {
@@ -74,18 +76,16 @@ export function RoleEdit() {
     if (!id) return;
     setLoading(true);
     try {
-      const [r, roles] = await Promise.all([getRoleById(id), getRbacRoles()]);
+      const [r, permissions] = await Promise.all([getRoleById(id), getAllPermissions()]);
 
       const permissionMap = new Map<string, PermissionRow>();
-      roles.forEach((rr) => {
-        (rr.permissions || []).forEach((perm) => {
-          const meta = extractPermissionMeta(perm);
-          if (!meta) return;
-          const existing = permissionMap.get(meta.id);
-          if (!existing || (existing.name === existing.id && meta.name !== meta.id)) {
-            permissionMap.set(meta.id, meta);
-          }
-        });
+      permissions.forEach((perm) => {
+        const meta = extractPermissionMeta(perm);
+        if (!meta) return;
+        const existing = permissionMap.get(meta.id);
+        if (!existing || (existing.name === existing.id && meta.name !== meta.id)) {
+          permissionMap.set(meta.id, meta);
+        }
       });
 
       const rows = Array.from(permissionMap.values()).sort((a, b) => {
@@ -97,6 +97,8 @@ export function RoleEdit() {
       setRole(r);
       setPermissionRows(rows);
       setName(r?.name ?? '');
+      setSlug(r?.slug ?? '');
+      setStatus((r?.status as 'ACTIVE' | 'INACTIVE' | 'ARCHIVED') || 'ACTIVE');
       setDescription(r?.description ?? '');
     } catch (error: any) {
       console.error('Error loading role', error);
@@ -104,6 +106,8 @@ export function RoleEdit() {
       setRole(null);
       setPermissionRows([]);
       setName('');
+      setSlug('');
+      setStatus('ACTIVE');
       setDescription('');
     } finally {
       setLoading(false);
@@ -116,8 +120,10 @@ export function RoleEdit() {
 
   useEffect(() => {
     setName(role?.name ?? '');
+    setSlug(role?.slug ?? '');
+    setStatus((role?.status as 'ACTIVE' | 'INACTIVE' | 'ARCHIVED') || 'ACTIVE');
     setDescription(role?.description ?? '');
-  }, [role?.name, role?.description]);
+  }, [role?.name, role?.slug, role?.status, role?.description]);
 
   const grouped = useMemo<GroupedPermissions[]>(() => {
     const map = new Map<string, PermissionRow[]>();
@@ -155,24 +161,32 @@ export function RoleEdit() {
     if (!roleId || !role) return false;
     if (saving || loading) return false;
     const nextName = name.trim();
+    const nextSlugValue = slug.trim();
     const nextDesc = description.trim();
     const baseName = String(role.name ?? '').trim();
+    const baseSlug = String(role.slug ?? '').trim();
+    const baseStatus = String(role.status ?? 'ACTIVE');
     const baseDesc = String(role.description ?? '').trim();
-    if (!nextName) return false;
-    return nextName !== baseName || nextDesc !== baseDesc;
-  }, [description, loading, name, role, roleId, saving]);
+    if (!nextName || !nextSlugValue) return false;
+    return nextName !== baseName || nextSlugValue !== baseSlug || nextDesc !== baseDesc || status !== baseStatus;
+  }, [description, loading, name, role, roleId, saving, slug, status]);
 
   const handleSave = async () => {
     if (!roleId || !role) return;
     const nextName = name.trim();
+    const nextSlugValue = slug.trim().toLowerCase();
     if (!nextName) {
       toast.error('Role name is required');
+      return;
+    }
+    if (!nextSlugValue || !/^[a-z0-9][a-z0-9_-]*$/.test(nextSlugValue)) {
+      toast.error('Role slug must use lowercase letters, numbers, underscores or hyphens');
       return;
     }
 
     try {
       setSaving(true);
-      await updateRole(roleId, { name: nextName, description: description.trim() || null });
+      await updateRole(roleId, { name: nextName, slug: nextSlugValue, description: description.trim() || null, status });
       await load();
       toast.success('Role updated');
     } catch (error: any) {
@@ -265,6 +279,26 @@ export function RoleEdit() {
                   onChange={(e) => setName(e.target.value)}
                   className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+              </div>
+              <div>
+                <div className="text-sm mb-2" style={{ color: '#333' }}>Slug *</div>
+                <input
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-red-600"
+                />
+              </div>
+              <div>
+                <div className="text-sm mb-2" style={{ color: '#333' }}>Status</div>
+                <select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value as 'ACTIVE' | 'INACTIVE' | 'ARCHIVED')}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-red-600"
+                >
+                  <option value="ACTIVE">Active</option>
+                  <option value="INACTIVE">Inactive</option>
+                  <option value="ARCHIVED">Archived</option>
+                </select>
               </div>
               <div>
                 <div className="text-sm mb-2" style={{ color: '#333' }}>Description</div>

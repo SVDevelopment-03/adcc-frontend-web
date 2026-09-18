@@ -325,8 +325,8 @@ export default function ChallengeDetailPage() {
       </section>
 
       {/* Guide section */}
-      <section className="challenge-guide-section px-4 py-14 sm:px-6 sm:py-16 md:px-10 lg:py-20">
-        <div className="mx-auto max-w-[1268px]">
+      <section className="challenge-guide-section px-4 py-14 sm:px-6 sm:py-16 md:px-10 lg:py-20 min-[1920px]:px-0">
+        <div className="mx-auto max-w-300">
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
             <h2 className="max-w-[487px] text-center text-[22px] font-normal uppercase leading-tight sm:text-[30px] md:text-start lg:text-[46px]">
               {t("public.challenges.detail.guideHeading")}

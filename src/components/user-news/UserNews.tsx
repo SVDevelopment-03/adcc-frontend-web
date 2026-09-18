@@ -153,7 +153,7 @@ export default function UserNews() {
         breadcrumbFontSize={17}
       />
 
-      <section className="w-full px-4 py-10 sm:px-6 sm:py-20 md:px-10 lg:px-12 lg:py-24 xl:px-20">
+      <section className="w-full px-4 py-10 sm:px-6 sm:py-20 md:px-10 lg:px-12 lg:py-24 xl:px-20 min-[1920px]:max-w-300 min-[1920px]:mx-auto">
         <h2 className="text-center text-[26px] uppercase leading-tight sm:text-[36px] lg:text-[44px]">
           {t("public.news.listing.heading")}
         </h2>

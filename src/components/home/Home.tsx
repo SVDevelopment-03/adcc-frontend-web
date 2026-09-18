@@ -588,11 +588,13 @@ font-family: var(--font-satoshi) !important;}
 
   .journey-section {
     background: #EAF4FF;
-    display: flex;
-    gap: 43px;
     overflow: hidden;
     padding-block-start: 90px;
     padding-inline: 86px 0;
+  }
+  .journey-inner {
+    display: flex;
+    gap: 43px;
   }
   .journey-copy {
     // min-height: 376px;
@@ -811,15 +813,17 @@ section.home-hero{
   }
   @media (max-width: 640px) {
     .home-partners-section {
-      padding: 40px 18px 40px;
+      padding: 20px 18px 20px;
     }
 .home-page #platform.home-platform-section{
-        padding-block: 30px 50px !important;}
+        padding-block: 30px 10px !important;}
 
 
 
 .home-page #about.home-about-section{
-    padding-bottom: 180px !important;}
+    padding-top: 0 !important;
+    padding-bottom: 180px !important;
+    padding-inline-end: 18px !important;}
 
 
 
@@ -1032,6 +1036,7 @@ section.home-hero{
     .home-venue-text {
       font-size: 16px;
       line-height: 25px;
+      margin: 20px 0;
     }
   }
 
@@ -1385,12 +1390,14 @@ font-size: 14px;
   .home-about-section {
     background: #EAF4FF;
     padding: 60px 86px 80px;
-    display: flex;
-    align-items: center;
-    gap: 60px;
     overflow: hidden;
     position: relative;
     min-height: 599px;
+  }
+  .home-about-inner {
+    display: flex;
+    align-items: center;
+    gap: 60px;
   }
   .home-about-left-image {
     flex-shrink: 0;
@@ -1651,6 +1658,7 @@ font-size: 14px;
     margin-top: 16px;
     margin-bottom: 16px;
         justify-content: flex-end;
+    padding-inline-end: 16px;
   }
   .journey-scroll-btn {
     width: 38px;
@@ -1849,9 +1857,10 @@ font-size: 14px;
 
   @media (max-width: 980px) {
     .journey-section {
-      grid-template-columns: 220px minmax(0, 1fr);
-      gap: 28px;
       padding: 52px 0 52px 52px;
+    }
+    .journey-inner {
+      gap: 28px;
     }
     .journey-copy {
       min-height: 340px;
@@ -1894,10 +1903,11 @@ font-size: 14px;
 
   @media (max-width: 700px) {
     .journey-section {
-      grid-template-columns: 1fr;
-      gap: 28px;
       padding-block: 44px;
       padding-inline: 24px 0;
+    }
+    .journey-inner {
+      gap: 28px;
     }
     .journey-copy {
       min-height: auto;
@@ -1935,6 +1945,14 @@ font-size: 14px;
       flex-basis: 168px;
       height: 270px;
     }
+    .journey-scroll-btn {
+      width: 30px;
+      height: 30px;
+    }
+    .journey-scroll-btn svg {
+      width: 11px;
+      height: 11px;
+    }
     .journey-button,
     .journey-button .adcc-btn__label {
       font-size: 18px !important;
@@ -1955,6 +1973,8 @@ font-size: 14px;
   @media (max-width: 1023px) {
     .home-app-section {
       padding: 64px 40px !important;
+    }
+    .home-app-inner {
       flex-direction: column !important;
       flex-wrap: nowrap !important;
       align-items: stretch !important;
@@ -2124,11 +2144,12 @@ font-size: 14px;
       height: 34px !important;
     }
     .journey-section {
-      display: flex !important;
-      flex-direction: column !important;
-      gap: 32px !important;
       overflow: hidden !important;
       padding: 58px 32px !important;
+    }
+    .journey-inner {
+      flex-direction: column !important;
+      gap: 32px !important;
     }
     .journey-copy {
       min-width: 0 !important;
@@ -2152,7 +2173,7 @@ font-size: 14px;
       width: 100% !important;
       max-width: 100% !important;
       overflow-x: auto !important;
-      padding: 0 0 12px !important;
+      padding: 0 0 0px !important;
       -webkit-overflow-scrolling: touch;
     }
     .journey-card {
@@ -2211,11 +2232,13 @@ font-size: 14px;
     }
     .home-about-section {
       padding: 56px 32px 70px !important;
+      min-height: 0 !important;
+    }
+    .home-about-inner {
       flex-direction: column !important;
       flex-wrap: nowrap !important;
       align-items: stretch !important;
       gap: 32px !important;
-      min-height: 0 !important;
     }
     .home-about-left-image {
       width: 100% !important;
@@ -2456,6 +2479,7 @@ margin-block-end: 20px !important;}
     }
     .journey-cards {
       padding-inline-end: 18px !important;
+      gap: 15px !important;
     }
     .journey-card {
       flex-basis: 220px !important;
@@ -2467,6 +2491,8 @@ margin-block-end: 20px !important;}
     }
     .home-app-section {
       padding: 44px 18px !important;
+    }
+    .home-app-inner {
       flex-direction: column !important;
       align-items: stretch !important;
     }
@@ -2662,6 +2688,8 @@ margin-block-end: 20px !important;}
     }
     .home-about-section {
       padding: 46px 18px 58px !important;
+    }
+    .home-about-inner {
       flex-direction: column !important;
     }
     .home-about-left-image {
@@ -2687,6 +2715,7 @@ margin-block-end: 20px !important;}
     .home-about-title {
       font-size: 42px !important;
       line-height: 100.7% !important;
+      margin: 0 0 20px !important;
     }
     .home-about-text {
       font-size: 16px !important;
@@ -2914,6 +2943,62 @@ html[dir='rtl']  .store-featured-product-media{
 
   .home-page .home-platform-section{
   padding-block: 50px 25px !important;}
+
+  /* ─── Large / ultra-wide screens (≥1920px) ───────────────────────────────
+     Everything above was tuned for the ~1024-1600px desktop range. Past
+     that, a few elements either grew unbounded (the app phone image scales
+     with its flex-grow container) or stayed pinned to their original edge
+     (the journey cards row, the about-section rider image), leaving
+     lopsided gaps instead of a balanced layout. These rules only kick in
+     above the range that was already fine, so nothing below 1920px changes. */
+  @media (min-width: 1920px) {
+    /* Cap the copy/phone/features row to a normal content width and
+       center it so the phone mockup stops ballooning with the viewport;
+       the section's own background stays full-bleed behind it. */
+    .home-app-inner {
+      max-width: 1200px !important;
+      margin-inline: auto !important;
+    }
+    /* Same treatment for the journey row. The section itself only had left
+       padding (to let the cards rail bleed to the edge); make it symmetric
+       here so the capped row centers cleanly instead of leaning left. */
+    .home-page .journey-section,
+    html[dir='rtl'] .home-page .journey-section {
+      padding-inline-end: 86px !important;
+    }
+    .journey-inner {
+      max-width: 1200px !important;
+      margin-inline: auto !important;
+    }
+    /* journey-rider bleeds off journey-copy's edge by a fixed -86px, which
+       only reaches the true viewport edge while journey-inner spans the
+       full section. Once journey-inner is capped/centered above, that fixed
+       offset falls short by however far centering pushed journey-copy
+       inward — half of (section content width [100vw - 172px of padding]
+       minus the 1200px cap) — so add that back to keep the rider flush
+       against the actual screen edge instead of drifting in with the text. */
+    .journey-rider {
+      inset-inline-start: calc(-86px - max(0px, (100vw - 1372px) / 2)) !important;
+    }
+    /* Cap the video/text column so it centers like the other sections. The
+       rider deliberately stays out of this box (its containing block is
+       still the full-width section, and the base rule's inset-inline-end:0
+       already applies) so it keeps bleeding off the true right edge of the
+       viewport, mirroring journey-rider's bleed off the left edge. */
+    .home-about-inner {
+      max-width: 1200px !important;
+      margin-inline: auto !important;
+    }
+    /* The hero's background image is already full-bleed via cover, so it
+       doesn't need capping — only the floating text box's left position.
+       It was pinned near the raw edge (clamp maxing out at 96px) while
+       every section below it now aligns its text to the left edge of a
+       centered 1200px column; match that same edge here so the page reads
+       with one consistent left margin as you scroll past the hero. */
+    .home-page .home-hero-content {
+      inset-inline-start: calc(86px + max(0px, (100vw - 1372px) / 2)) !important;
+    }
+  }
 `;
 
 function useHomePageStyles() {
@@ -3546,6 +3631,11 @@ function CyclingJourneySection() {
 
   return (
     <section className="journey-section">
+      {/* Wraps copy + content so the row can be width-capped and centered
+          on ultra-wide screens while the rider image stays anchored to the
+          left edge of that row (it's positioned relative to journey-copy,
+          not the viewport). */}
+      <div className="journey-inner">
       <div className="journey-copy">
         <motion.h2
           className="journey-title"
@@ -3701,6 +3791,7 @@ function CyclingJourneySection() {
           </AnimatedButton>
         </div>
       </div>
+      </div>
     </section>
   );
 }
@@ -3765,13 +3856,22 @@ function AppSection() {
         backgroundRepeat: "no-repeat",
         width: "100%",
         padding: "140px 86px 80px",
-        display: "flex",
-        alignItems: "center",
-        gap: 60,
         position: "relative",
         overflow: "hidden",
       }}
     >
+      {/* Wraps the copy/phone/features row so it can be width-capped and
+          centered on ultra-wide screens while the background above stays
+          full-bleed. */}
+      <div
+        className="home-app-inner"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 60,
+          width: "100%",
+        }}
+      >
       {/* Left: Title + Download label + QR + Store buttons */}
       <div
         className="home-app-copy"
@@ -3933,6 +4033,7 @@ function AppSection() {
           </div>
         ))}
       </div>
+      </div>
     </section>
   );
 }
@@ -3950,10 +4051,25 @@ const PARTNERS = [
   { name: "Partner 8", logo: "/images/logos/logo8.png" },
 ];
 
+// Minimum width (px) one half of the marquee track must reach so the
+// translateX(-50%) loop never runs out of content on very wide/ultra-wide
+// monitors (the loop was only duplicated once, which is narrower than the
+// viewport above ~1920px and made the animation visibly stall/gap).
+const MARQUEE_MIN_HALF_WIDTH = 6000;
+const PARTNER_CARD_WIDTH_ESTIMATE = 274; // 250px card + 24px gap
+const FEED_CARD_WIDTH_ESTIMATE = 430; // clamp(280px, 32vw, 409px) card + 20px gap
+
 function PartnersSection() {
   const { t } = useTranslation();
+  const repeatCount = Math.max(
+    1,
+    Math.ceil(
+      MARQUEE_MIN_HALF_WIDTH / (PARTNERS.length * PARTNER_CARD_WIDTH_ESTIMATE),
+    ),
+  );
+  const half = Array.from({ length: repeatCount }, () => PARTNERS).flat();
   // Duplicated so the marquee track can loop seamlessly (translateX -50%).
-  const marqueeLogos = [...PARTNERS, ...PARTNERS];
+  const marqueeLogos = [...half, ...half];
 
   return (
     <section id="partners" className="home-partners-section">
@@ -4172,15 +4288,32 @@ function FeedSection() {
             ? [null, null, null].map((_, i) =>
                 renderCard(null, `skeleton-${i}`),
               )
-            : [
-                // Real cards, then a duplicate set so the marquee loops
-                // seamlessly (translateX -50%). Duplicates are hidden when
-                // the animation is off (reduced-motion / manual scroll).
-                ...cards.map((card) => renderCard(card, card.key)),
-                ...cards.map((card) =>
-                  renderCard(card, `${card.key}-dup`, true),
-                ),
-              ]}
+            : (() => {
+                // Repeat the real cards enough times that one half of the
+                // track is always wider than even an ultra-wide viewport,
+                // then duplicate that half so the marquee loops seamlessly
+                // (translateX -50%). With only a handful of cards, a single
+                // copy is narrower than the screen above ~1920px, which made
+                // the loop visibly stall/gap before restarting.
+                const repeatCount = Math.max(
+                  1,
+                  Math.ceil(
+                    MARQUEE_MIN_HALF_WIDTH /
+                      (cards.length * FEED_CARD_WIDTH_ESTIMATE),
+                  ),
+                );
+                const half = Array.from({ length: repeatCount }, () => cards).flat();
+                // Only the first pass over the real cards stays announced to
+                // screen readers; every filler/duplicate repeat is hidden.
+                return [
+                  ...half.map((card, i) =>
+                    renderCard(card, `${card.key}-r${i}`, i >= cards.length),
+                  ),
+                  ...half.map((card, i) =>
+                    renderCard(card, `${card.key}-r${i}-dup`, true),
+                  ),
+                ];
+              })()}
         </div>
       </div>
     </section>
@@ -4455,7 +4588,7 @@ function StoreSection() {
   }, []);
 
   return (
-    <section id="store" className="home-store-section">
+    <section id="store" className="home-store-section" hidden>
       <h2 className="home-store-title">{t("public.home.store.title")}</h2>
       <div
         ref={storeRailRef}
@@ -4602,6 +4735,10 @@ function AboutSection() {
       id="about"
       className={`about-section home-about-section${aboutVisible ? " is-visible" : ""}`}
     >
+      {/* Wraps the video + text column so it can be width-capped and
+          centered on ultra-wide screens; the rider stays a direct child of
+          the section so its own absolute positioning is unaffected. */}
+      <div className="home-about-inner">
       <motion.div
         className="home-about-left-image about-left-image adcc-image-group"
         initial={{ opacity: 0, x: isRtl ? 300 : -300 }}
@@ -4695,6 +4832,7 @@ function AboutSection() {
         >
           {t("public.home.about.readMore")}
         </AnimatedButton>
+      </div>
       </div>
       <motion.div
         className="home-about-rider about-right-image adcc-image-group"
