@@ -14,6 +14,35 @@ function isSubheadingBlock(block: PrivacyBlock): block is { sub: string } {
   return typeof block === "object" && block !== null && "sub" in block;
 }
 
+const URL_PATTERN =
+  /(https?:\/\/[A-Za-z0-9\-._~/?#[\]@!$&'()*+,;=%]+|(?:support\.google\.com|goo\.gle)\/[A-Za-z0-9\-_/]+)/g;
+
+function linkifyText(text: string) {
+  const parts = text.split(URL_PATTERN);
+  if (parts.length === 1) return text;
+
+  return parts.map((part, i) => {
+    if (!part) return null;
+    if (URL_PATTERN.test(part)) {
+      URL_PATTERN.lastIndex = 0;
+      const href = part.startsWith("http") ? part : `https://${part}`;
+      return (
+        <a
+          key={i}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#019839] underline underline-offset-2 hover:text-black"
+        >
+          {part}
+        </a>
+      );
+    }
+    URL_PATTERN.lastIndex = 0;
+    return <span key={i}>{part}</span>;
+  });
+}
+
 function renderBlock(block: PrivacyBlock, key: string) {
   if (isListBlock(block)) {
     return (
@@ -23,7 +52,7 @@ function renderBlock(block: PrivacyBlock, key: string) {
       >
         {block.map((item, i) => (
           <li key={i} className="text-[15px] leading-7 sm:text-[16px]">
-            {item}
+            {linkifyText(item)}
           </li>
         ))}
       </ul>
@@ -38,7 +67,7 @@ function renderBlock(block: PrivacyBlock, key: string) {
   }
   return (
     <p key={key} className="mt-3 text-[15px] leading-7 sm:text-[16px]">
-      {block}
+      {linkifyText(block)}
     </p>
   );
 }
