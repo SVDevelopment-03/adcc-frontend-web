@@ -7,12 +7,10 @@ import {
   ChevronRight,
   Cross,
   Droplets,
-  Heart,
   Lightbulb,
   MapPin,
   ParkingCircle,
   Plus,
-  Share2,
   Trophy,
   Users,
   Wrench,
@@ -554,21 +552,6 @@ function RegisterCard({ event }: { event: GrandPrixEvent }) {
           </b>
         </div>
       </div>
-
-      <button
-        type="button"
-        aria-label={t("public.events.detail.register.saveEvent")}
-        className="absolute right-4 top-[14px] flex h-[32px] w-[32px] items-center justify-center rounded-full bg-white text-[#C12D32] lg:right-5 lg:top-4 lg:h-[38px] lg:w-[38px]"
-      >
-        <Heart className="h-3 w-3 lg:h-4 lg:w-4" />
-      </button>
-      <button
-        type="button"
-        aria-label={t("public.events.detail.register.shareEvent")}
-        className="absolute right-4 top-[54px] flex h-[32px] w-[32px] items-center justify-center rounded-full bg-white text-[#019839] lg:right-5 lg:top-[56px] lg:h-[38px] lg:w-[38px]"
-      >
-        <Share2 className="h-3 w-3 lg:h-4 lg:w-4" />
-      </button>
     </article>
   );
 }

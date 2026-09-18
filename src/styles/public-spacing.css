@@ -379,6 +379,10 @@ html[dir='rtl'] .communities-page .text-left {
     padding-inline: 15px !important;
   }
 
+  .public-footer-inner > div:first-of-type {
+    gap: 40px !important;
+  }
+
   [class*='-page-hero-content'],
   .about-hero-content,
   .event-hero-content,

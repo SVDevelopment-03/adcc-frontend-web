@@ -813,15 +813,17 @@ section.home-hero{
   }
   @media (max-width: 640px) {
     .home-partners-section {
-      padding: 40px 18px 40px;
+      padding: 20px 18px 20px;
     }
 .home-page #platform.home-platform-section{
-        padding-block: 30px 50px !important;}
+        padding-block: 30px 10px !important;}
 
 
 
 .home-page #about.home-about-section{
-    padding-bottom: 180px !important;}
+    padding-top: 0 !important;
+    padding-bottom: 180px !important;
+    padding-inline-end: 18px !important;}
 
 
 
@@ -1034,6 +1036,7 @@ section.home-hero{
     .home-venue-text {
       font-size: 16px;
       line-height: 25px;
+      margin: 20px 0;
     }
   }
 
@@ -1655,6 +1658,7 @@ font-size: 14px;
     margin-top: 16px;
     margin-bottom: 16px;
         justify-content: flex-end;
+    padding-inline-end: 16px;
   }
   .journey-scroll-btn {
     width: 38px;
@@ -1941,6 +1945,14 @@ font-size: 14px;
       flex-basis: 168px;
       height: 270px;
     }
+    .journey-scroll-btn {
+      width: 30px;
+      height: 30px;
+    }
+    .journey-scroll-btn svg {
+      width: 11px;
+      height: 11px;
+    }
     .journey-button,
     .journey-button .adcc-btn__label {
       font-size: 18px !important;
@@ -2161,7 +2173,7 @@ font-size: 14px;
       width: 100% !important;
       max-width: 100% !important;
       overflow-x: auto !important;
-      padding: 0 0 12px !important;
+      padding: 0 0 0px !important;
       -webkit-overflow-scrolling: touch;
     }
     .journey-card {
@@ -2467,6 +2479,7 @@ margin-block-end: 20px !important;}
     }
     .journey-cards {
       padding-inline-end: 18px !important;
+      gap: 15px !important;
     }
     .journey-card {
       flex-basis: 220px !important;
@@ -2702,6 +2715,7 @@ margin-block-end: 20px !important;}
     .home-about-title {
       font-size: 42px !important;
       line-height: 100.7% !important;
+      margin: 0 0 20px !important;
     }
     .home-about-text {
       font-size: 16px !important;
