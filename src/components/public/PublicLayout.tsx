@@ -664,6 +664,11 @@ function PublicFooter() {
                     {t("public.footer.contactUs")}
                   </NavLink>
                 </li>
+                <li>
+                  <NavLink to="/privacy-policy" className="pub-footer-link">
+                    {t("public.footer.privacyPolicy")}
+                  </NavLink>
+                </li>
               </ul>
             </div>
           </div>
@@ -689,7 +694,7 @@ function PublicFooter() {
                   href="https://maps.app.goo.gl/5dx641z5VDFrqrhH7"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="transition-colors hover:text-[#019839]"
+                  className="whitespace-pre-line transition-colors hover:text-[#019839]"
                 >
                   {t("public.footer.address")}
                 </a>

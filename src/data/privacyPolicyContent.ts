@@ -238,6 +238,31 @@ export const PRIVACY_POLICY_EN: PrivacyPolicyContent = {
         "The Policy may be published in Arabic and English. If any inconsistency arises between the two versions in relation to interpretation or application, the Arabic version shall prevail to the extent permitted by applicable law.",
       ],
     },
+    {
+      heading: "18. Google Play Policy Information – Addendum",
+      blocks: [
+        "This addendum reproduces Google Play policy information supplied separately by Google regarding the ADCC mobile application. It is appended for reference and does not modify the Privacy Policy set out above.",
+        { sub: "Policy Deadlines" },
+        "Google regularly updates its Developer Program Policies to help ensure a safe and trusted experience for users on Google Play. Set out below are the latest changes to those policies that are relevant to the ADCC app, including when each change takes effect and resources to help prepare for it. All dates are shown in year-month-day (YYYY-MM-DD) format. For policy deadlines older than three months, see Google's Policy Archive (support.google.com/googleplay/android-developer/answer/13386702).",
+        { sub: "2026-08-26 — Google Play Families Policies" },
+        "Google is expanding its Families Policy Requirements policy to prohibit developers of anonymous chat apps from targeting children. Announced 2026-07-15. Reference: support.google.com/googleplay/android-developer/answer/9893335.",
+        { sub: "2026-08-26 — Child Endangerment" },
+        "Google is expanding its Child Safety Standards policy to apply to anonymous chat and random chat apps. Announced 2026-07-15. Reference: support.google.com/googleplay/android-developer/answer/9878809.",
+        { sub: "2026-08-26 — Age-Restricted Content and Functionality" },
+        "Google is expanding its Age-Restricted Content and Functionality policy to apply to anonymous chat and random chat apps. Announced 2026-07-15. Reference: support.google.com/googleplay/android-developer/answer/16302250.",
+        { sub: "2026-09-30 — Play Console Requirements" },
+        "To meet Android developer verification and Play Console requirements, developers must register their Play apps in Play Console. Google states that most apps have been registered automatically, but developers should confirm registration of any remaining apps to avoid removal from Google Play and to ensure a seamless installation experience for users; Play Console can also be used to register apps distributed outside of Google Play. Announced 2026-07-15. Reference: support.google.com/googleplay/android-developer/answer/10788890.",
+        { sub: "2027-01-27 — Contacts Permissions" },
+        "Google is introducing a Contacts Permissions policy governing broad access to users' contacts. Apps that do not need broad access must use the Android Contact Picker, a more secure alternative that minimizes data collection. Announced 2026-04-15. Reference: support.google.com/googleplay/android-developer/answer/13986130.",
+        { sub: "2027-01-27 — Location Permissions" },
+        "Google is updating its Location Permissions policy to introduce a location button as the recommended minimum-scope alternative for requesting precise location. Announced 2026-04-15. Reference: support.google.com/googleplay/android-developer/answer/13986130.",
+        { sub: "2027-01-27 — Use of SMS or Call Log Permission Groups" },
+        "Google's SMS and Call Log Permissions policy will no longer permit account verification via phone call as a use case for the READ_CALL_LOG permission. Account verification should instead use the Digital Credentials API or the SMS Retriever API. Announced 2026-07-15. Reference: support.google.com/googleplay/android-developer/answer/17225965.",
+        { sub: "2027-01-27 — Foreground Service and Full-Screen Intent Requirements" },
+        "Google is removing geofencing as an approved foreground-services use case; the Geofence API should be used for this purpose instead. Announced 2026-04-15. Reference: support.google.com/googleplay/android-developer/answer/16965181.",
+        "This addendum is provided in English only, as it reproduces policy information published by Google. It does not affect the Arabic version of the Privacy Policy, which continues to prevail as described in Section 17 above.",
+      ],
+    },
   ],
 };
 
@@ -454,6 +479,13 @@ export const PRIVACY_POLICY_AR: PrivacyPolicyContent = {
       blocks: [
         "تُقرأ هذه السياسة وتُفسر في ضوء التشريعات النافذة في دولة الإمارات العربية المتحدة، والتشريعات واللوائح السارية في إمارة أبوظبي، والسياسات والمتطلبات الحكومية المطبقة على نادي أبوظبي للدراجات.",
         "ويجوز نشر هذه السياسة باللغتين العربية والإنجليزية. وفي حال وجود أي اختلاف بين النسختين في التفسير أو التطبيق، تكون النسخة العربية هي المعتمدة، بالقدر الذي تجيزه التشريعات النافذة.",
+      ],
+    },
+    {
+      heading: "18. معلومات سياسة جوجل بلاي – ملحق",
+      blocks: [
+        "يتضمن هذا الملحق معلومات سياسة \"جوجل بلاي\" (Google Play) المتعلقة بتطبيق النادي للهاتف المحمول، كما وردت من جوجل. وقد أُدرج هذا الملحق للاطلاع فقط، ولا يُعدّل سياسة الخصوصية المذكورة أعلاه.",
+        "يُعرض هذا الملحق باللغة الإنجليزية فقط في نسخته الكاملة، نظراً لأنه ينقل حرفياً معلومات سياسة صادرة عن جوجل. للاطلاع على التفاصيل الكاملة، يُرجى مراجعة البند 18 في النسخة الإنجليزية من هذه السياسة. ولا يؤثر ذلك في اعتماد النسخة العربية عند وجود أي تعارض في التفسير أو التطبيق، وفق ما هو موضح في البند 17 أعلاه.",
       ],
     },
   ],
