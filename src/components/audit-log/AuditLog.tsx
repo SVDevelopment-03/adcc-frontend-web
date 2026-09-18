@@ -21,6 +21,12 @@ const ACTION_LABELS: Record<string, string> = {
   'user.delete': 'Deleted user',
   'user.verified.update': 'Changed user status',
   'user.password.update': 'Updated user password',
+  'event.create': 'Created event',
+  'event.update': 'Updated event',
+  'event.delete': 'Deleted event',
+  'event.status.update': 'Changed event status',
+  'event.participant.no_show': 'Marked participant no-show',
+  'event.participant.remove': 'Removed event participant',
 };
 
 function actionLabel(action: string): string {
@@ -99,7 +105,7 @@ export function AuditLog() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl mb-1" style={{ color: '#333' }}>Audit Log</h1>
-        <p style={{ color: '#666' }}>History of admin actions — roles, permissions, and users</p>
+        <p style={{ color: '#666' }}>History of admin actions — roles, permissions, users, and events</p>
       </div>
 
       <div className="p-4 rounded-2xl shadow-sm bg-white flex items-center gap-4 flex-wrap">
