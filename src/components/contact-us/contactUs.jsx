@@ -8,7 +8,7 @@ import { COUNTRY_CODES, DEFAULT_COUNTRY_CODE } from "../../constants/countryCode
 
 const CONTACT_DETAILS = {
   email: "info@adcyclingclub.ae",
-  phone: "+971 2 621 6594",
+  phone: "+971 2 622 8894",
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
