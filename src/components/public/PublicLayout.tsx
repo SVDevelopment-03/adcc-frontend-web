@@ -681,10 +681,10 @@ function PublicFooter() {
               <li className="flex gap-3">
                 <Phone className="mt-0.5 h-5 w-5 shrink-0" />
                 <a
-                  href="tel:+97126216594"
+                  href="tel:+97126228894"
                   className="transition-colors hover:text-[#019839]"
                 >
-                  +971 2 621 6594
+                  +971 2 622 8894
                 </a>
               </li>
               {/* <li className="flex gap-3"><MessageCircle className="mt-0.5 h-5 w-5 shrink-0" /> <span>144226</span></li> */}
