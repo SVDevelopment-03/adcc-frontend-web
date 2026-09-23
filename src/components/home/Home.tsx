@@ -746,7 +746,7 @@ font-family: var(--font-satoshi) !important;}
     gap: 24px;
     width: max-content;
     direction: ltr;
-    animation: ticker-group-left 32s linear infinite;
+    animation: ticker-group-left 130s linear infinite;
   }
   .home-partners-marquee:hover .home-partners-track {
     animation-play-state: paused;
@@ -794,7 +794,7 @@ font-family: var(--font-satoshi) !important;}
     }
     .home-partners-track {
       gap: 16px;
-      animation-duration: 24s;
+      animation-duration: 100s;
     }
     .home-partner-card {
       flex-basis: 150px;
@@ -833,7 +833,7 @@ section.home-hero{
     }
     .home-partners-track {
       gap: 14px;
-      animation-duration: 18s;
+      animation-duration: 75s;
     }.home-partners-subtitle{
         font-size: 16px !important;
         line-height: 22px !important;
@@ -1085,7 +1085,7 @@ section.home-hero{
     gap: 20px;
     width: max-content;
     direction: ltr;
-    animation: ticker-group-left 40s linear infinite;
+    animation: ticker-group-left 130s linear infinite;
   }
   .home-feed-rail:hover .home-feed-track {
     animation-play-state: paused;
@@ -1224,7 +1224,7 @@ section.home-hero{
     }
     .home-feed-track {
       gap: 16px;
-      animation-duration: 28s;
+      animation-duration: 95s;
     }
   }
   @media (max-width: 640px) {
@@ -1240,7 +1240,7 @@ section.home-hero{
     }
     .home-feed-track {
       gap: 14px;
-      animation-duration: 22s;
+      animation-duration: 75s;
     }
     .home-feed-card {
       flex: 0 0 min(300px, calc(100vw - 60px));
@@ -3294,9 +3294,9 @@ function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const navLinks = [
     { label: t("public.nav.aboutUs"), href: "#about" },
-    { label: t("public.nav.events"), href: "/user-event" },
+    { label: t("public.nav.events"), href: "/events" },
     { label: t("public.nav.community"), href: "#community", active: true },
-    { label: t("public.nav.challenges"), href: "/user-challenges" },
+    { label: t("public.nav.challenges"), href: "/challenges" },
     { label: t("public.nav.tracks"), href: "#platform" },
   ];
   return (
@@ -3464,7 +3464,7 @@ function HeroSection() {
           </AnimatedButton>
           <button
             className="hero-explore-btn"
-            onClick={() => navigate("/user-tracks")}
+            onClick={() => navigate("/tracks")}
           >
             <span className="hero-explore-btn-inner">
               {t("public.home.hero.exploreTracks")}
@@ -3581,25 +3581,25 @@ function CyclingJourneySection() {
       label: t("public.home.journey.cards.tracks"),
       bg: "#777777",
       img: "/images/journey-1.png",
-      to: "/user-tracks",
+      to: "/tracks",
     },
     {
       label: t("public.home.journey.cards.events"),
       bg: "#777777",
       img: "/images/journey-2.png",
-      to: "/user-event",
+      to: "/events",
     },
     {
       label: t("public.home.journey.cards.challenges"),
       bg: "#777777",
       img: "/images/journey-3.png",
-      to: "/user-challenges",
+      to: "/challenges",
     },
     {
       label: t("public.home.journey.cards.community"),
       bg: "#777777",
       img: "https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=400&q=80",
-      to: "/user-communities",
+      to: "/communities",
     },
   ];
 
@@ -3784,7 +3784,7 @@ function CyclingJourneySection() {
             {journeyText}
           </p>
           <AnimatedButton
-            onClick={() => navigate("/user-tracks")}
+            onClick={() => navigate("/tracks")}
             className="journey-button"
           >
             {t("public.home.journey.exploreRoutes")}
@@ -4043,8 +4043,6 @@ function AppSection() {
 const PARTNERS = [
   { name: "Partner 1", logo: "/images/logos/logo1.png" },
   { name: "Partner 2", logo: "/images/logos/logo2.png" },
-  { name: "Partner 3", logo: "/images/logos/logo3.png" },
-  { name: "Partner 4", logo: "/images/logos/logo4.png" },
   { name: "Partner 5", logo: "/images/logos/logo5.png" },
   { name: "Partner 6", logo: "/images/logos/logo6-v1.png" },
   { name: "Partner 7", logo: "/images/logos/logo7.png" },
@@ -4419,7 +4417,7 @@ function CommunitySection() {
 
       <AnimatedButton
         className="home-community-start-btn"
-        onClick={() => navigate("/user-event")}
+        onClick={() => navigate("/events")}
       >
         {t("public.home.community.startRiding")}
       </AnimatedButton>
@@ -4439,21 +4437,21 @@ function ExplorePlatformSection() {
       img: "/images/explore-1.png",
       title: t("public.home.platform.cards.events.title"),
       action: t("public.home.platform.cards.events.action"),
-      to: "/user-events",
+      to: "/events",
     },
     {
       tag: t("public.home.platform.cards.tracks.tag"),
       img: "/images/explore-2.png",
       title: t("public.home.platform.cards.tracks.title"),
       action: t("public.home.platform.cards.tracks.action"),
-      to: "/user-tracks",
+      to: "/tracks",
     },
     {
       tag: t("public.home.platform.cards.challenges.tag"),
       img: "/images/explore-3.png",
       title: t("public.home.platform.cards.challenges.title"),
       action: t("public.home.platform.cards.challenges.action"),
-      to: "/user-challenges",
+      to: "/challenges",
     },
   ];
 

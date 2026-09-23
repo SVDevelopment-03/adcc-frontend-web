@@ -198,7 +198,17 @@ const normalizeFacilities = (track?: Track | null): FacilityCard[] => {
       })
     : [];
 
-  return names.map((name, index) => ({
+  // Show each facility once, even if the track data lists it several times
+  // (e.g. "Restrooms" and "restrooms").
+  const seen = new Set<string>();
+  const uniqueNames = names.filter((name) => {
+    const key = String(name).trim().toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  return uniqueNames.map((name, index) => ({
     title: titleCase(String(name)),
     icon: getFacilityIcon(String(name)),
     active: index === 0,
@@ -437,6 +447,38 @@ function FacilitiesSection({ facilities }: { facilities: FacilityCard[] }) {
     drag.current.active = false;
   };
 
+  // Which physical edges still have hidden cards — drives the edge fades and
+  // disables the arrows at the ends. Handles RTL, where scrollLeft is <= 0.
+  const [edges, setEdges] = useState({ left: false, right: false });
+
+  const updateEdges = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    const rtl = getComputedStyle(el).direction === "rtl";
+    const fromLeft = rtl ? max + el.scrollLeft : el.scrollLeft;
+    setEdges({ left: fromLeft > 1, right: fromLeft < max - 1 });
+  }, []);
+
+  useEffect(() => {
+    updateEdges();
+    window.addEventListener("resize", updateEdges);
+    return () => window.removeEventListener("resize", updateEdges);
+  }, [updateEdges, facilities.length]);
+
+  const scrollByPage = (direction: -1 | 1) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollBy({
+      left: direction * Math.max(240, el.clientWidth * 0.6),
+      behavior: "smooth",
+    });
+  };
+
+  const fadeMask = `linear-gradient(to right, ${
+    edges.left ? "transparent 0, black 8%" : "black 0"
+  }, ${edges.right ? "black 92%, transparent 100%" : "black 100%"})`;
+
   if (facilities.length === 0) return null;
 
   return (
@@ -472,16 +514,53 @@ function FacilitiesSection({ facilities }: { facilities: FacilityCard[] }) {
             </svg>
           </Link>
         </div>
+
+        {(edges.left || edges.right) && (
+          <div className="mt-10 flex justify-end gap-3" dir="ltr">
+            {([-1, 1] as const).map((direction) => {
+              const enabled = direction === -1 ? edges.left : edges.right;
+              return (
+                <button
+                  key={direction}
+                  type="button"
+                  onClick={() => scrollByPage(direction)}
+                  disabled={!enabled}
+                  aria-label={t(
+                    direction === -1
+                      ? "public.home.journey.scrollLeft"
+                      : "public.home.journey.scrollRight",
+                  )}
+                  className="group flex h-[42px] w-[42px] cursor-pointer items-center justify-center rounded-full border border-[#333] text-[#333] transition-colors duration-200 hover:border-[#019839] hover:bg-[#019839] hover:text-white disabled:cursor-default disabled:opacity-30 disabled:hover:border-[#333] disabled:hover:bg-transparent disabled:hover:text-[#333]"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 22 21"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    style={direction === -1 ? { transform: "scaleX(-1)" } : undefined}
+                  >
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <div
         ref={scrollRef}
-        className="mt-14 flex gap-5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pl-4 sm:pl-6 md:pl-10 lg:pl-[max(2.5rem,calc((100vw-1268px)/2))] cursor-grab select-none active:cursor-grabbing"
-        style={{
-          maskImage: "linear-gradient(to right, black 85%, transparent 100%)",
-          WebkitMaskImage:
-            "linear-gradient(to right, black 85%, transparent 100%)",
-        }}
+        className={`${
+          edges.left || edges.right ? "mt-6" : "mt-14"
+        } flex gap-5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ps-4 sm:ps-6 md:ps-10 lg:ps-[max(2.5rem,calc((100vw-1268px)/2))] cursor-grab select-none active:cursor-grabbing`}
+        style={{ maskImage: fadeMask, WebkitMaskImage: fadeMask }}
+        onScroll={updateEdges}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={endDrag}
@@ -501,7 +580,12 @@ function FacilitiesSection({ facilities }: { facilities: FacilityCard[] }) {
             <div className="absolute bottom-0 left-0 h-[4px] w-full rounded-b-xl bg-transparent transition-colors duration-200 group-hover:bg-[#019839]" />
           </div>
         ))}
-        <div className="shrink-0 w-4" aria-hidden />
+        {/* Trailing gutter mirrors the leading padding so the last card can
+            scroll fully into view instead of stopping flush at the edge. */}
+        <div
+          className="shrink-0 w-4 sm:w-6 md:w-10 lg:w-[max(2.5rem,calc((100vw-1268px)/2))]"
+          aria-hidden
+        />
       </div>
     </section>
   );
@@ -537,8 +621,8 @@ function EventCard({ event }: { event: EventApiResponse }) {
   const participants = event.currentParticipants ?? event.registrations ?? 0;
   const eventId = event.slug || event._id || event.id;
   const eventHref = eventId
-    ? `/user-event/${encodeURIComponent(eventId)}`
-    : "/user-event";
+    ? `/events/${encodeURIComponent(eventId)}`
+    : "/events";
 
   return (
     <div className="flex w-full flex-col">

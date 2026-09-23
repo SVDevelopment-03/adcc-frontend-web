@@ -823,7 +823,7 @@ function EventCard({
           onClick={() => {
             const eventSlug = event.slug || event._id || event.id;
             if (eventSlug) {
-              navigate(`/user-event/${encodeURIComponent(eventSlug)}`);
+              navigate(`/events/${encodeURIComponent(eventSlug)}`);
             }
           }}
         >

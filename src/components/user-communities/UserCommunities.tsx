@@ -439,7 +439,7 @@ export default function CommunitiesPage() {
                   key={item.id}
                 >
                   <Link
-                    to={`/user-communities/${encodeURIComponent(item.slug || item.id)}`}
+                    to={`/communities/${encodeURIComponent(item.slug || item.id)}`}
                     className="group relative block h-[300px] overflow-hidden rounded-[10px] bg-black text-left sm:h-[380px] lg:h-[467px]"
                   >
                     <motion.img

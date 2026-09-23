@@ -313,7 +313,12 @@ console.log('upcoming track',upcomingEvents);
             <div className="p-6 rounded-2xl bg-white shadow-sm">
               <h3 className="text-lg mb-4" style={{ color: '#333' }}>{t('tracks.detail.facilitiesHeading', 'Available Facilities')}</h3>
               <div className="flex flex-wrap gap-2">
-                {(track.facilities && track.facilities.length > 0) ? track.facilities.map((facility: string) => (
+                {(track.facilities && track.facilities.length > 0) ? Array.from(
+                  // Show each facility once, even if older saves stored it repeatedly.
+                  new Map<string, string>(
+                    track.facilities.map((f: string) => [String(f).trim().toLowerCase(), f] as [string, string]),
+                  ).values(),
+                ).map((facility: string) => (
                   <span
                     key={facility}
                     className="px-3 py-2 rounded-lg text-sm"

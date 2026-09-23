@@ -1127,7 +1127,7 @@ function TrackCard({
           }
           onClick={() =>
             navigate(
-              `/user-tracks/${encodeURIComponent(track.slug || track.id)}`,
+              `/tracks/${encodeURIComponent(track.slug || track.id)}`,
             )
           }
         >

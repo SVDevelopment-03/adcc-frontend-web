@@ -442,7 +442,7 @@ justify-content: center !important;}
                   </div>
 
                   <Link
-                    to={`/user-challenges/${encodeURIComponent(item.id)}`}
+                    to={`/challenges/${encodeURIComponent(item.id)}`}
                     className="self-center rounded-full border border-white px-5 py-3 text-[16px] font-semibold sm:self-auto sm:px-6"
                   >
                     {t("public.common.joinChallenge")}

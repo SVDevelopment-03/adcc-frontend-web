@@ -395,8 +395,8 @@ function EventCard({ event }: { event: EventApiResponse }) {
   );
   const eventId = event.slug || event._id || event.id;
   const eventHref = eventId
-    ? `/user-event/${encodeURIComponent(eventId)}`
-    : "/user-event";
+    ? `/events/${encodeURIComponent(eventId)}`
+    : "/events";
 
   return (
     <div className="flex w-full flex-col">

@@ -43,23 +43,23 @@ const navItems: NavItem[] = [
   { labelKey: "public.nav.aboutUs", to: "/aboutus", match: ["/aboutus"] },
   {
     labelKey: "public.nav.events",
-    to: "/user-event",
-    match: ["/user-event", "/user-events"],
+    to: "/events",
+    match: ["/events"],
   },
   {
     labelKey: "public.nav.community",
-    to: "/user-communities",
-    match: ["/user-communities"],
+    to: "/communities",
+    match: ["/communities"],
   },
   {
     labelKey: "public.nav.challenges",
-    to: "/user-challenges",
-    match: ["/user-challenges"],
+    to: "/challenges",
+    match: ["/challenges"],
   },
   {
     labelKey: "public.nav.tracks",
-    to: "/user-tracks",
-    match: ["/user-tracks"],
+    to: "/tracks",
+    match: ["/tracks"],
   },
   {
     labelKey: "public.nav.store",
@@ -618,22 +618,22 @@ function PublicFooter() {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/user-communities" className="pub-footer-link">
+                  <NavLink to="/communities" className="pub-footer-link">
                     {t("public.footer.communities")}
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/user-event" className="pub-footer-link">
+                  <NavLink to="/events" className="pub-footer-link">
                     {t("public.nav.events")}
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/user-challenges" className="pub-footer-link">
+                  <NavLink to="/challenges" className="pub-footer-link">
                     {t("public.footer.cyclistsCorner")}
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/user-tracks" className="pub-footer-link">
+                  <NavLink to="/tracks" className="pub-footer-link">
                     {t("public.footer.rides")}
                   </NavLink>
                 </li>

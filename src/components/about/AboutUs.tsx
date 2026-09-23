@@ -1102,7 +1102,7 @@ function ValuesSection() {
             <AnimatedWords words={titleWords} gap={12} />
           </h2>
         </div>
-        <AnimatedButton onClick={() => navigate("/user-communities")}>
+        <AnimatedButton onClick={() => navigate("/communities")}>
           {t("public.about.values.discoverCommunity")}
         </AnimatedButton>
       </div>

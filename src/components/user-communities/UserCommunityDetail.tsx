@@ -115,7 +115,7 @@ function ErrorState({ message }: { message: string }) {
       <p className="mt-4 text-[17px] font-medium text-black/70 sm:text-[20px]">{message}</p>
       <button
         type="button"
-        onClick={() => navigate("/user-communities")}
+        onClick={() => navigate("/communities")}
         className="mt-8 inline-flex items-center justify-center gap-3 rounded-full bg-[#019839] px-6 py-4 text-[16px] font-bold text-white sm:px-8 sm:text-[18px]"
       >
         <ArrowLeft size={20} /> {t("public.communities.detail.backToCommunities")}
@@ -649,7 +649,7 @@ function EventCard({ event }: { event: EventApiResponse }) {
         onClick={() => {
           const eventSlug = event.slug || event._id || event.id;
           if (eventSlug) {
-            navigate(`/user-event/${encodeURIComponent(eventSlug)}`);
+            navigate(`/events/${encodeURIComponent(eventSlug)}`);
           }
         }}
       >
@@ -855,7 +855,7 @@ export default function UserCommunityDetail() {
       <div className="mx-auto max-w-[1272px] px-4 pb-5 sm:px-6 md:px-10 md:pb-6">
         <button
           type="button"
-          onClick={() => navigate("/user-communities")}
+          onClick={() => navigate("/communities")}
           className="inline-flex items-center gap-2 text-[16px] font-bold text-[#019839] sm:text-[18px]"
         >
           <ArrowLeft size={20} /> {t("public.communities.detail.backToCommunities")}

@@ -240,7 +240,35 @@ const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
   const { options: countryOptions } = useCountries();
   const { options: cityOptionsForCountry } = useCities(formData.country);
-  const { options: facilityOptions } = useTrackFacilities();
+  const { options: facilityOptions, items: facilityItems } = useTrackFacilities();
+
+  // The API returns facilities as display labels ("Restrooms"), while the
+  // checkboxes use lookup values ("restrooms"). Map them back to values and
+  // drop duplicates/unknowns, so the checkboxes reflect what's saved and a
+  // save sends exactly the checked facilities.
+  useEffect(() => {
+    if (!facilityItems.length) return;
+    const byKey = new Map<string, string>();
+    facilityItems.forEach((item) => {
+      [item.value, item.label, item.labelAr].forEach((key) => {
+        if (key) byKey.set(key.trim().toLowerCase(), item.value);
+      });
+    });
+    setFormData(prev => {
+      const next = Array.from(
+        new Set(
+          prev.facilities
+            .map((f) => byKey.get(String(f).trim().toLowerCase()))
+            .filter((v): v is string => Boolean(v)),
+        ),
+      );
+      const unchanged =
+        next.length === prev.facilities.length &&
+        next.every((v, i) => v === prev.facilities[i]);
+      return unchanged ? prev : { ...prev, facilities: next };
+    });
+  }, [facilityItems, track]);
+
   const citiesForCountry = cityOptionsForCountry.map((c) => c.value);
 
   // Older tracks may have been saved with the country's display label
