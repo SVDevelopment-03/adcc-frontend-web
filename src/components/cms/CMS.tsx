@@ -1,4 +1,4 @@
-﻿import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import axios, { AxiosError } from 'axios';
 import { Edit, GripVertical, LayoutGrid, FileText, Globe, ImageIcon, Upload } from 'lucide-react';
 import { toast } from 'sonner';
@@ -29,7 +29,6 @@ type UpdateContentSettingPayload = Partial<
   Pick<ContentSetting, 'title' | 'description' | 'image' | 'active'>
 > & {
   imageFile?: File;
-  videoFile?: File;
 };
 
 interface ApiErrorResponse {
@@ -105,239 +104,325 @@ export const updateContentSetting = async (
 ): Promise<void> => {
   try {
     const formData = new FormData();
-    if (payload.title !== undefined) formData.append('title', String(payload.title));
-    if (payload.description !== undefined) formData.append('description', String(payload.description));
-    if (payload.active !== undefined) formData.append('active', String(payload.active));
-    if (payload.image !== undefined && typeof payload.image === 'string') formData.append('image', payload.image);
-    if (payload.imageFile) formData.append('image', payload.imageFile as Blob);
-    if (payload.videoFile) formData.append('video', payload.videoFile as Blob);
 
-    await api.patch(`/v1/settings/content/${encodeURIComponent(key)}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    if (payload.title !== undefined) formData.append('title', payload.title);
+    if (payload.description !== undefined) formData.append('description', payload.description);
+    if (payload.imageFile) {
+      formData.append('image', payload.imageFile);
+    } else if (payload.image !== undefined) {
+      formData.append('image', payload.image);
+    }
+    if (payload.active !== undefined) formData.append('active', String(payload.active));
+
+    await api.patch(`/v1/settings/content/${key}`, formData);
   } catch (error) {
     throw new Error(getApiErrorMessage(error, 'Failed to update content setting'));
   }
 };
 
-export const getAppBanners = async (): Promise<ContentSetting[]> => {
+export const deleteContentSetting = async (key: string): Promise<void> => {
   try {
-    const response = await api.get('/v1/app-banners');
-    return normalizeContentSettings(response.data);
+    if (!key) throw new Error('Content key is required');
+    await api.delete(`/v1/settings/content/${key}`);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to delete content setting'));
+  }
+};
+
+const createContentSettingWithImage = async (params: {
+  group: string;
+  key: string;
+  label: string;
+  title: string;
+  imageFile?: File;
+}): Promise<void> => {
+  const formData = new FormData();
+  formData.append('group', params.group);
+  formData.append('key', params.key);
+  formData.append('label', params.label);
+  formData.append('title', params.title);
+  if (params.imageFile) formData.append('image', params.imageFile);
+  await api.post('/v1/settings/content', formData);
+};
+
+const mapBannerItem = (item: Record<string, unknown>, fallbackGroup: string): ContentSetting => ({
+  _id: String(item._id ?? item.id ?? item.key ?? ''),
+  group: String(item.group ?? fallbackGroup),
+  key: String(item.key ?? ''),
+  label: String(item.label ?? ''),
+  title: typeof item.title === 'string' ? item.title : undefined,
+  description: typeof item.description === 'string' ? item.description : undefined,
+  image: typeof item.image === 'string' ? item.image : undefined,
+  targetScreen: typeof item.targetScreen === 'string' ? item.targetScreen : undefined,
+  active: typeof item.active === 'boolean' ? item.active : undefined,
+  createdAt: typeof item.createdAt === 'string' ? item.createdAt : undefined,
+  updatedAt: typeof item.updatedAt === 'string' ? item.updatedAt : undefined,
+});
+
+export const getAppBanners = async (active?: boolean): Promise<ContentSetting[]> => {
+  try {
+    const response = await api.get('/v1/app-banners', {
+      params: active === undefined ? {} : { active: String(active) },
+    });
+
+    const payload = (response.data as any)?.data ?? response.data;
+    const banners = Array.isArray(payload?.banners) ? payload.banners : [];
+
+    return banners
+      .filter((item: unknown): item is Record<string, unknown> => Boolean(item && typeof item === 'object'))
+      .map((item) => mapBannerItem(item, 'app_banner'))
+      .filter((item) => item.group && item.key && item.label);
   } catch (error) {
     throw new Error(getApiErrorMessage(error, 'Failed to load app banners'));
   }
 };
 
-export const getAppBannersAr = async (): Promise<ContentSetting[]> => {
-  try {
-    const response = await api.get('/v1/app-banners-ar');
-    return normalizeContentSettings(response.data);
-  } catch (error) {
-    throw new Error(getApiErrorMessage(error, 'Failed to load Arabic banners'));
-  }
-};
-
-export const createAppBanner = async (payload: {
-  key: string;
-  label: string;
+export const createAppBanner = async (params: {
+  key?: string;
+  label?: string;
   title?: string;
+  description?: string;
   targetScreen?: string;
-  imageFile?: File;
   active?: boolean;
+  imageFile?: File;
 }): Promise<void> => {
-  const formData = new FormData();
-  formData.append('key', payload.key);
-  formData.append('label', payload.label);
-  if (payload.title) formData.append('title', payload.title);
-  if (payload.targetScreen) formData.append('targetScreen', payload.targetScreen);
-  if (payload.active !== undefined) formData.append('active', String(payload.active));
-  if (payload.imageFile) formData.append('image', payload.imageFile as Blob);
-
-  await api.post('/v1/app-banners', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+  try {
+    const formData = new FormData();
+    if (params.key) formData.append('key', params.key);
+    if (params.label) formData.append('label', params.label);
+    if (params.title) formData.append('title', params.title);
+    if (params.description !== undefined) formData.append('description', params.description);
+    if (params.targetScreen !== undefined) formData.append('targetScreen', params.targetScreen);
+    if (params.active !== undefined) formData.append('active', String(params.active));
+    if (params.imageFile) formData.append('image', params.imageFile);
+    await api.post('/v1/app-banners', formData);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to create app banner'));
+  }
 };
 
 export const updateAppBanner = async (
   key: string,
-  payload: { targetScreen?: string; imageFile?: File; active?: boolean }
+  payload: Partial<Pick<ContentSetting, 'title' | 'description' | 'targetScreen' | 'active'>> & { imageFile?: File }
 ): Promise<void> => {
-  const formData = new FormData();
-  if (payload.targetScreen) formData.append('targetScreen', payload.targetScreen);
-  if (payload.active !== undefined) formData.append('active', String(payload.active));
-  if (payload.imageFile) formData.append('image', payload.imageFile as Blob);
-
-  await api.patch(`/v1/app-banners/${encodeURIComponent(key)}`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+  try {
+    const formData = new FormData();
+    if (payload.title !== undefined) formData.append('title', payload.title);
+    if (payload.description !== undefined) formData.append('description', payload.description);
+    if (payload.targetScreen !== undefined) formData.append('targetScreen', payload.targetScreen);
+    if (payload.active !== undefined) formData.append('active', String(payload.active));
+    if (payload.imageFile) {
+      formData.append('image', payload.imageFile);
+    }
+    await api.patch(`/v1/app-banners/${encodeURIComponent(key)}`, formData);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to update app banner'));
+  }
 };
 
 export const deleteAppBanner = async (key: string): Promise<void> => {
-  await api.delete(`/v1/app-banners/${encodeURIComponent(key)}`);
+  try {
+    if (!key) throw new Error('Banner key is required');
+    await api.delete(`/v1/app-banners/${encodeURIComponent(key)}`);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to delete app banner'));
+  }
 };
 
-export const createAppBannerAr = async (payload: {
-  key: string;
-  label: string;
+// ─── App Banner (Arabic) — same shape as the English app banner, separate group ───
+export const getAppBannersAr = async (active?: boolean): Promise<ContentSetting[]> => {
+  try {
+    const response = await api.get('/v1/app-banners-ar', {
+      params: active === undefined ? {} : { active: String(active) },
+    });
+
+    const payload = (response.data as any)?.data ?? response.data;
+    const banners = Array.isArray(payload?.banners) ? payload.banners : [];
+
+    return banners
+      .filter((item: unknown): item is Record<string, unknown> => Boolean(item && typeof item === 'object'))
+      .map((item) => mapBannerItem(item, 'app_banner_ar'))
+      .filter((item) => item.group && item.key && item.label);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to load Arabic app banners'));
+  }
+};
+
+export const createAppBannerAr = async (params: {
+  key?: string;
+  label?: string;
   title?: string;
   targetScreen?: string;
-  imageFile?: File;
   active?: boolean;
+  imageFile?: File;
 }): Promise<void> => {
-  const formData = new FormData();
-  formData.append('key', payload.key);
-  formData.append('label', payload.label);
-  if (payload.title) formData.append('title', payload.title);
-  if (payload.targetScreen) formData.append('targetScreen', payload.targetScreen);
-  if (payload.active !== undefined) formData.append('active', String(payload.active));
-  if (payload.imageFile) formData.append('image', payload.imageFile as Blob);
-
-  await api.post('/v1/app-banners-ar', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+  try {
+    const formData = new FormData();
+    if (params.key) formData.append('key', params.key);
+    if (params.label) formData.append('label', params.label);
+    if (params.title) formData.append('title', params.title);
+    if (params.targetScreen !== undefined) formData.append('targetScreen', params.targetScreen);
+    if (params.active !== undefined) formData.append('active', String(params.active));
+    if (params.imageFile) formData.append('image', params.imageFile);
+    await api.post('/v1/app-banners-ar', formData);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to create Arabic app banner'));
+  }
 };
 
 export const updateAppBannerAr = async (
   key: string,
-  payload: { targetScreen?: string; imageFile?: File; active?: boolean }
+  payload: Partial<Pick<ContentSetting, 'title' | 'targetScreen' | 'active'>> & { imageFile?: File }
 ): Promise<void> => {
-  const formData = new FormData();
-  if (payload.targetScreen) formData.append('targetScreen', payload.targetScreen);
-  if (payload.active !== undefined) formData.append('active', String(payload.active));
-  if (payload.imageFile) formData.append('image', payload.imageFile as Blob);
-
-  await api.patch(`/v1/app-banners-ar/${encodeURIComponent(key)}`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+  try {
+    const formData = new FormData();
+    if (payload.title !== undefined) formData.append('title', payload.title);
+    if (payload.targetScreen !== undefined) formData.append('targetScreen', payload.targetScreen);
+    if (payload.active !== undefined) formData.append('active', String(payload.active));
+    if (payload.imageFile) {
+      formData.append('image', payload.imageFile);
+    }
+    await api.patch(`/v1/app-banners-ar/${encodeURIComponent(key)}`, formData);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to update Arabic app banner'));
+  }
 };
 
 export const deleteAppBannerAr = async (key: string): Promise<void> => {
-  await api.delete(`/v1/app-banners-ar/${encodeURIComponent(key)}`);
+  try {
+    if (!key) throw new Error('Banner key is required');
+    await api.delete(`/v1/app-banners-ar/${encodeURIComponent(key)}`);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to delete Arabic app banner'));
+  }
 };
 
-export const deleteContentSetting = async (key: string): Promise<void> => {
-  await api.delete(`/v1/settings/content/${encodeURIComponent(key)}`);
-};
+interface ItemFormState {
+  title: string;
+  description: string;
+  image: string;
+  active: boolean;
+}
+
+const fileToDataUrl = async (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        resolve(reader.result);
+        return;
+      }
+      reject(new Error('Failed to read image file'));
+    };
+    reader.onerror = () => reject(new Error('Failed to read image file'));
+    reader.readAsDataURL(file);
+  });
 
 export function CMS() {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<'homepage' | 'static' | 'appBanner' | 'appBannerAr'>('homepage');
   const [allItems, setAllItems] = useState<ContentSetting[]>([]);
-  const [homepageItems, setHomepageItems] = useState<ContentSetting[]>([]);
-  const [staticItems, setStaticItems] = useState<ContentSetting[]>([]);
-  const [splashItems, setSplashItems] = useState<ContentSetting[]>([]);
   const [appBannerItems, setAppBannerItems] = useState<ContentSetting[]>([]);
   const [appBannerArItems, setAppBannerArItems] = useState<ContentSetting[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [selectedItem, setSelectedItem] = useState<ContentSetting | null>(null);
-  const [togglingKey, setTogglingKey] = useState<string | null>(null);
-  const [isSavingEdit, setIsSavingEdit] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [bannerTargets, setBannerTargets] = useState<Record<string, string>>({});
-  const [bannerArTargets, setBannerArTargets] = useState<Record<string, string>>({});
+  const [activeTab, setActiveTab] = useState<'homepage' | 'static' | 'appBanner' | 'appBannerAr'>('homepage');
   const [bannerFiles, setBannerFiles] = useState<Record<string, File | null>>({});
-  const [bannerArFiles, setBannerArFiles] = useState<Record<string, File | null>>({});
   const [bannerPreviews, setBannerPreviews] = useState<Record<string, string>>({});
-  const [bannerArPreviews, setBannerArPreviews] = useState<Record<string, string>>({});
-  const [newBannerFile, setNewBannerFile] = useState<File | null>(null);
-  const [newBannerTarget, setNewBannerTarget] = useState('home');
-  const [newBannerPreview, setNewBannerPreview] = useState('');
-  const [savingNewBanner, setSavingNewBanner] = useState(false);
   const [savingBanners, setSavingBanners] = useState<Record<string, boolean>>({});
+  const [newBannerFile, setNewBannerFile] = useState<File | null>(null);
+  const [newBannerPreview, setNewBannerPreview] = useState<string | null>(null);
+  const [newBannerTarget, setNewBannerTarget] = useState('home');
+  const [savingNewBanner, setSavingNewBanner] = useState(false);
+  const bannerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const [bannerTargets, setBannerTargets] = useState<Record<string, string>>({});
+
+  const [bannerArFiles, setBannerArFiles] = useState<Record<string, File | null>>({});
+  const [bannerArPreviews, setBannerArPreviews] = useState<Record<string, string>>({});
+  const [bannerArTargets, setBannerArTargets] = useState<Record<string, string>>({});
   const [savingBannersAr, setSavingBannersAr] = useState<Record<string, boolean>>({});
-  const [editForm, setEditForm] = useState({ title: '', description: '', image: '', active: true });
+  const bannerArInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+  const [selectedItem, setSelectedItem] = useState<ContentSetting | null>(null);
+  const [editForm, setEditForm] = useState<ItemFormState>({
+    title: '',
+    description: '',
+    image: '',
+    active: true,
+  });
   const [editMediaFile, setEditMediaFile] = useState<File | null>(null);
   const [editMediaPreviewUrl, setEditMediaPreviewUrl] = useState<string | null>(null);
   const [editDurationSeconds, setEditDurationSeconds] = useState<number | null>(null);
   const [editForceType, setEditForceType] = useState<'auto' | 'image' | 'video'>('auto');
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [togglingKey, setTogglingKey] = useState<string | null>(null);
 
-  const bannerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
-  const bannerArInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  useEffect(() => {
+    if (!editMediaFile) {
+      setEditMediaPreviewUrl(null);
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(editMediaFile);
+    setEditMediaPreviewUrl(objectUrl);
+
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+  }, [editMediaFile]);
+
+  const isHomepageGroup = useCallback((group: string) => {
+    const g = String(group || '').toLowerCase();
+    return g.includes('home') || g.includes('homepage');
+  }, []);
+
+  const isStaticGroup = useCallback((group: string) => {
+    const g = String(group || '').toLowerCase();
+    return g.includes('static') || g.includes('page') || g.includes('public');
+  }, []);
+
+  const homepageItems = useMemo(() => {
+    return allItems.filter((item) => isHomepageGroup(item.group));
+  }, [allItems, isHomepageGroup]);
+
+  const staticItems = useMemo(() => {
+    return allItems.filter((item) => !isHomepageGroup(item.group) && isStaticGroup(item.group));
+  }, [allItems, isHomepageGroup, isStaticGroup]);
 
   const appBannerItemsMemo = useMemo(() => appBannerItems, [appBannerItems]);
   const appBannerArItemsMemo = useMemo(() => appBannerArItems, [appBannerArItems]);
-  const arabicBannerSlots = useMemo(() => ['banner_ar_1', 'banner_ar_2', 'banner_ar_3'], []);
 
-  const bannerTargetOptions = [
-    { value: 'home', label: 'Home' },
-    { value: 'events', label: 'Events' },
-    { value: 'communities', label: 'Communities' },
-    { value: 'routes', label: 'Routes' },
-    { value: 'club_store', label: 'Club Store' },
-    { value: 'challenges', label: 'Challenges' },
-    { value: 'leaderboard', label: 'Leaderboard' },
-    { value: 'profile', label: 'Profile' },
-  ];
-
-  useEffect(() => {
-    setHomepageItems(allItems.filter((item) => item.group === 'homepage' || item.group === 'home'));
-    setStaticItems(
-      allItems.filter(
-        (item) =>
-          item.group === 'static' ||
-          item.group === 'static-page' ||
-          item.group === 'static_pages' ||
-          item.group === 'page'
-      )
-    );
-  }, [allItems]);
-
-  const cmsStats = useMemo(() => {
-    const homepageSections = homepageItems.length;
-    const activeSections = homepageItems.filter((item) => item.active === true).length;
-    const staticPages = staticItems.length;
-    const publicPages = staticItems.filter((item) => item.active === true).length;
-    return { homepageSections, activeSections, staticPages, publicPages };
-  }, [homepageItems, staticItems]);
-
-  const fetchAllGroupsSettings = useCallback(async () => {
-    setIsLoading(true);
-    setErrorMessage(null);
-    try {
-      const [data, bannerData, bannerArData, splashData] = await Promise.all([
-        getContentSettings({}),
-        getAppBanners(),
-        getAppBannersAr(),
-        getContentSettings({ group: 'splash-screen' }),
-      ]);
-      setAllItems(data);
-      setAppBannerItems(bannerData);
-      setAppBannerArItems(bannerArData);
-      setSplashItems(splashData);
-      setBannerTargets(Object.fromEntries(bannerData.map((item) => [item.key, item.targetScreen || 'home'])));
-      setBannerArTargets(Object.fromEntries(bannerArData.map((item) => [item.key, item.targetScreen || 'home'])));
-    } catch (error) {
-      const message = getApiErrorMessage(error, t('cms.toasts.loadError'));
-      setErrorMessage(message);
-      setAllItems([]);
-      setAppBannerItems([]);
-      setAppBannerArItems([]);
-      setSplashItems([]);
-      toast.error(message);
-    } finally {
-      setIsLoading(false);
+  const handleBannerFileChange = (bannerKey: string, file: File | null) => {
+    setBannerFiles((prev) => ({ ...prev, [bannerKey]: file }));
+    if (bannerPreviews[bannerKey]) {
+      URL.revokeObjectURL(bannerPreviews[bannerKey]);
     }
-  }, [t]);
-
-  useEffect(() => {
-    void fetchAllGroupsSettings();
-  }, [fetchAllGroupsSettings]);
+    if (file) {
+      setBannerPreviews((prev) => ({ ...prev, [bannerKey]: URL.createObjectURL(file) }));
+    } else {
+      setBannerPreviews((prev) => { const next = { ...prev }; delete next[bannerKey]; return next; });
+    }
+  };
 
   const handleNewBannerFileChange = (file: File | null) => {
-    setNewBannerFile(file);
-    if (!file) {
-      setNewBannerPreview('');
+    if (newBannerPreview) {
+      URL.revokeObjectURL(newBannerPreview);
+    }
+    if (file) {
+      setNewBannerFile(file);
+      setNewBannerPreview(URL.createObjectURL(file));
       return;
     }
-    setNewBannerPreview(URL.createObjectURL(file));
+    setNewBannerFile(null);
+    setNewBannerPreview(null);
   };
 
   const clearNewBannerUpload = () => {
+    if (newBannerPreview) {
+      URL.revokeObjectURL(newBannerPreview);
+    }
     setNewBannerFile(null);
-    setNewBannerTarget('home');
-    setNewBannerPreview('');
+    setNewBannerPreview(null);
   };
 
   const handleAddNewBanner = async () => {
@@ -345,16 +430,34 @@ export function CMS() {
 
     setSavingNewBanner(true);
     try {
+      // Replace existing app banners: attempt to delete all current entries
+      try {
+        const existing = await getAppBanners();
+        await Promise.all(
+          existing.map(async (b) => {
+            try {
+              await deleteAppBanner(b.key);
+            } catch (e) {
+              // ignore individual delete failures
+              // eslint-disable-next-line no-console
+              console.error('Failed to delete existing app banner', b.key, e);
+            }
+          })
+        );
+      } catch (e) {
+        // ignore fetch/delete errors and continue with upload
+        // eslint-disable-next-line no-console
+        console.error('Failed to clear existing app banners before upload', e);
+      }
+
       await createAppBanner({
-        key: `banner_${Date.now()}`,
-        label: 'New Banner',
-        title: 'New Banner',
+        title: `App Banner ${Date.now()}`,
         targetScreen: newBannerTarget,
         imageFile: newBannerFile,
-        active: true,
       });
       toast.success(t('cms.appBanner.uploadSuccess'));
       clearNewBannerUpload();
+      setNewBannerTarget('home');
       await fetchAllGroupsSettings();
     } catch (error) {
       toast.error(getApiErrorMessage(error, t('cms.appBanner.uploadError')));
@@ -363,33 +466,20 @@ export function CMS() {
     }
   };
 
-  const handleBannerFileChange = (key: string, file: File | null) => {
-    setBannerFiles((prev) => ({ ...prev, [key]: file }));
-
-    if (file) {
-      const previewUrl = URL.createObjectURL(file);
-      setBannerPreviews((prev) => ({ ...prev, [key]: previewUrl }));
-      return;
-    }
-
-    setBannerPreviews((prev) => {
-      const next = { ...prev };
-      delete next[key];
-      return next;
-    });
-  };
-
   const handleBannerSave = async (bannerKey: string, bannerLabel: string) => {
-    const existing = appBannerItemsMemo.find((it) => it.key === bannerKey) ?? null;
-    const file = bannerFiles[bannerKey] ?? null;
+    const file = bannerFiles[bannerKey];
+    const existing = appBannerItemsMemo.find((item) => item.key === bannerKey);
     const selectedTarget = bannerTargets[bannerKey] || existing?.targetScreen || 'home';
     const hasTargetChange = selectedTarget !== (existing?.targetScreen ?? 'home');
     const hasPendingUpload = Boolean(file);
 
-    if (!hasPendingUpload && !hasTargetChange) return;
+    if (!hasPendingUpload && !hasTargetChange) {
+      return;
+    }
 
     setSavingBanners((prev) => ({ ...prev, [bannerKey]: true }));
     try {
+      const existing = appBannerItemsMemo.find((item) => item.key === bannerKey);
       if (existing) {
         await updateAppBanner(bannerKey, {
           targetScreen: selectedTarget,
@@ -407,11 +497,8 @@ export function CMS() {
       }
       toast.success(t('cms.appBanner.uploadSuccess'));
       setBannerFiles((prev) => ({ ...prev, [bannerKey]: null }));
-      setBannerPreviews((prev) => {
-        const next = { ...prev };
-        delete next[bannerKey];
-        return next;
-      });
+      if (bannerPreviews[bannerKey]) URL.revokeObjectURL(bannerPreviews[bannerKey]);
+      setBannerPreviews((prev) => { const next = { ...prev }; delete next[bannerKey]; return next; });
       if (bannerInputRefs.current[bannerKey]) bannerInputRefs.current[bannerKey]!.value = '';
       await fetchAllGroupsSettings();
     } catch (error) {
@@ -421,29 +508,29 @@ export function CMS() {
     }
   };
 
-  const handleBannerArFileChange = (key: string, file: File | null) => {
-    setBannerArFiles((prev) => ({ ...prev, [key]: file }));
-
-    if (file) {
-      setBannerArPreviews((prev) => ({ ...prev, [key]: URL.createObjectURL(file) }));
-      return;
+  // ─── App Banner (Arabic) handlers — mirror of the English handlers above ───
+  const handleBannerArFileChange = (bannerKey: string, file: File | null) => {
+    setBannerArFiles((prev) => ({ ...prev, [bannerKey]: file }));
+    if (bannerArPreviews[bannerKey]) {
+      URL.revokeObjectURL(bannerArPreviews[bannerKey]);
     }
-
-    setBannerArPreviews((prev) => {
-      const next = { ...prev };
-      delete next[key];
-      return next;
-    });
+    if (file) {
+      setBannerArPreviews((prev) => ({ ...prev, [bannerKey]: URL.createObjectURL(file) }));
+    } else {
+      setBannerArPreviews((prev) => { const next = { ...prev }; delete next[bannerKey]; return next; });
+    }
   };
 
   const handleBannerArSave = async (bannerKey: string, bannerLabel: string) => {
-    const existing = appBannerArItemsMemo.find((it) => it.key === bannerKey) ?? null;
-    const file = bannerArFiles[bannerKey] ?? null;
+    const file = bannerArFiles[bannerKey];
+    const existing = appBannerArItemsMemo.find((item) => item.key === bannerKey);
     const selectedTarget = bannerArTargets[bannerKey] || existing?.targetScreen || 'home';
     const hasTargetChange = selectedTarget !== (existing?.targetScreen ?? 'home');
     const hasPendingUpload = Boolean(file);
 
-    if (!hasPendingUpload && !hasTargetChange) return;
+    if (!hasPendingUpload && !hasTargetChange) {
+      return;
+    }
 
     setSavingBannersAr((prev) => ({ ...prev, [bannerKey]: true }));
     try {
@@ -464,11 +551,8 @@ export function CMS() {
       }
       toast.success(t('cms.appBanner.uploadSuccess'));
       setBannerArFiles((prev) => ({ ...prev, [bannerKey]: null }));
-      setBannerArPreviews((prev) => {
-        const next = { ...prev };
-        delete next[bannerKey];
-        return next;
-      });
+      if (bannerArPreviews[bannerKey]) URL.revokeObjectURL(bannerArPreviews[bannerKey]);
+      setBannerArPreviews((prev) => { const next = { ...prev }; delete next[bannerKey]; return next; });
       if (bannerArInputRefs.current[bannerKey]) bannerArInputRefs.current[bannerKey]!.value = '';
       await fetchAllGroupsSettings();
     } catch (error) {
@@ -477,6 +561,57 @@ export function CMS() {
       setSavingBannersAr((prev) => ({ ...prev, [bannerKey]: false }));
     }
   };
+
+  const arabicBannerSlots = useMemo(() => ['banner_ar_1', 'banner_ar_2', 'banner_ar_3'], []);
+
+  const cmsStats = useMemo(() => {
+    const homepageSections = homepageItems.length;
+    const activeSections = homepageItems.filter((item) => item.active === true).length;
+    const staticPages = staticItems.length;
+    const publicPages = staticItems.filter((item) => item.active === true).length;
+    return { homepageSections, activeSections, staticPages, publicPages };
+  }, [homepageItems, staticItems]);
+
+  const bannerTargetOptions = [
+    { value: 'home', label: 'Home' },
+    { value: 'events', label: 'Events' },
+    { value: 'communities', label: 'Communities' },
+    { value: 'routes', label: 'Routes' },
+    { value: 'club_store', label: 'Club Store' },
+    { value: 'challenges', label: 'Challenges' },
+    { value: 'leaderboard', label: 'Leaderboard' },
+    { value: 'profile', label: 'Profile' },
+  ];
+
+  const fetchAllGroupsSettings = async () => {
+    setIsLoading(true);
+    setErrorMessage(null);
+    try {
+      const [data, bannerData, bannerArData] = await Promise.all([
+        getContentSettings({}),
+        getAppBanners(),
+        getAppBannersAr(),
+      ]);
+      setAllItems(data);
+      setAppBannerItems(bannerData);
+      setAppBannerArItems(bannerArData);
+      setBannerTargets(Object.fromEntries(bannerData.map((item) => [item.key, item.targetScreen || 'home'])));
+      setBannerArTargets(Object.fromEntries(bannerArData.map((item) => [item.key, item.targetScreen || 'home'])));
+    } catch (error) {
+      const message = getApiErrorMessage(error, t('cms.toasts.loadError'));
+      setErrorMessage(message);
+      setAllItems([]);
+      setAppBannerItems([]);
+      setAppBannerArItems([]);
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    void fetchAllGroupsSettings();
+  }, []);
 
   const openEditForm = (item: ContentSetting) => {
     setSelectedItem(item);
@@ -511,23 +646,19 @@ export function CMS() {
       patchPayload.description = editForm.description;
     }
     if (editMediaFile) {
-      patchPayload.imageFile = editMediaFile;
+      patchPayload.imageFile = editMediaFile; // backend accepts any file field and will attach to `image`
+      // embed metadata in description (duration/type) so backend can persist it alongside the image URL
       try {
-        const meta = {
-          duration: editDurationSeconds ?? undefined,
-          type: editForceType === 'auto' ? undefined : editForceType,
-        };
+        const meta = { duration: editDurationSeconds ?? undefined, type: editForceType === 'auto' ? undefined : editForceType };
+        const existingDesc = editForm.description || '';
+        const merged = Object.assign({}, typeof existingDesc === 'string' ? {} : {}, typeof existingDesc === 'string' ? {} : {});
+        // simply override description with JSON containing duration and type when provided
         patchPayload.description = JSON.stringify(meta);
-      } catch (_) {
-        // ignore metadata serialization issues, keep the field valid
-      }
+      } catch (_) {}
     } else if ((selectedItem.image ?? '') !== editForm.image) {
       patchPayload.image = editForm.image;
     }
-
-    if ((selectedItem.active ?? true) !== editForm.active) {
-      patchPayload.active = editForm.active;
-    }
+    if ((selectedItem.active ?? true) !== editForm.active) patchPayload.active = editForm.active;
 
     if (Object.keys(patchPayload).length === 0) {
       toast.info(t('cms.toasts.noEditableChanges'));
@@ -597,7 +728,10 @@ export function CMS() {
 
       {isLoading ? (
         <div className="flex items-center justify-center py-10">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2" style={{ borderColor: '#C12D32' }} />
+          <div
+            className="animate-spin rounded-full h-10 w-10 border-b-2"
+            style={{ borderColor: '#C12D32' }}
+          />
         </div>
       ) : errorMessage ? (
         <div className="py-8 text-sm" style={{ color: '#C12D32' }}>
@@ -605,6 +739,7 @@ export function CMS() {
         </div>
       ) : (
         <div className="space-y-6">
+          {/* Tiles */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="p-6 rounded-2xl shadow-sm" style={{ backgroundColor: '#ECC180' }}>
               <div className="flex items-center gap-3 mb-2">
@@ -639,6 +774,7 @@ export function CMS() {
             </div>
           </div>
 
+          {/* Tabs */}
           <div className="border-b border-gray-200">
             <div className="flex gap-6">
               {(['homepage', 'static', 'appBanner', 'appBannerAr'] as const).map((tab) => (
@@ -654,15 +790,16 @@ export function CMS() {
                   {tab === 'homepage'
                     ? t('cms.tabs.homepageSections')
                     : tab === 'static'
-                      ? t('cms.tabs.staticPages')
-                      : tab === 'appBanner'
-                        ? t('cms.tabs.appBanner')
-                        : t('cms.tabs.appBannerAr')}
+                    ? t('cms.tabs.staticPages')
+                    : tab === 'appBanner'
+                    ? t('cms.tabs.appBanner')
+                    : t('cms.tabs.appBannerAr')}
                 </button>
               ))}
             </div>
           </div>
 
+          {/* Tab Content */}
           {activeTab === 'appBanner' ? (
             <div className="p-6 rounded-2xl shadow-sm bg-white">
               <h2 className="text-xl mb-6" style={{ color: '#333' }}>{t('cms.tabs.appBanner')}</h2>
@@ -758,9 +895,17 @@ export function CMS() {
                           </div>
                         </div>
 
-                        <div className="w-full rounded-lg overflow-hidden flex items-center justify-center" style={{ backgroundColor: '#F3EEE7', minHeight: '160px' }}>
+                        <div
+                          className="w-full rounded-lg overflow-hidden flex items-center justify-center"
+                          style={{ backgroundColor: '#F3EEE7', minHeight: '160px' }}
+                        >
                           {previewUrl ? (
-                            <img src={previewUrl} alt={item.label || item.key} className="w-full object-cover" style={{ maxHeight: '200px' }} />
+                            <img
+                              src={previewUrl}
+                              alt={item.label || item.key}
+                              className="w-full object-cover"
+                              style={{ maxHeight: '200px' }}
+                            />
                           ) : (
                             <div className="flex flex-col items-center gap-2 py-8">
                               <ImageIcon className="w-10 h-10" style={{ color: '#CCC' }} />
@@ -778,9 +923,7 @@ export function CMS() {
                           <input
                             type="file"
                             accept="image/*"
-                            ref={(el) => {
-                              bannerInputRefs.current[item.key] = el;
-                            }}
+                            ref={(el) => { bannerInputRefs.current[item.key] = el; }}
                             onChange={(e) => handleBannerFileChange(item.key, e.target.files?.[0] ?? null)}
                             className="w-full border rounded-lg px-3 py-2 text-sm"
                             style={{ borderColor: '#E5DDD4' }}
@@ -855,9 +998,17 @@ export function CMS() {
                         </div>
                       </div>
 
-                      <div className="w-full rounded-lg overflow-hidden flex items-center justify-center" style={{ backgroundColor: '#F3EEE7', minHeight: '160px' }}>
+                      <div
+                        className="w-full rounded-lg overflow-hidden flex items-center justify-center"
+                        style={{ backgroundColor: '#F3EEE7', minHeight: '160px' }}
+                      >
                         {previewUrl ? (
-                          <img src={previewUrl} alt={slotLabel} className="w-full object-cover" style={{ maxHeight: '200px' }} />
+                          <img
+                            src={previewUrl}
+                            alt={slotLabel}
+                            className="w-full object-cover"
+                            style={{ maxHeight: '200px' }}
+                          />
                         ) : (
                           <div className="flex flex-col items-center gap-2 py-8">
                             <ImageIcon className="w-10 h-10" style={{ color: '#CCC' }} />
@@ -875,9 +1026,7 @@ export function CMS() {
                         <input
                           type="file"
                           accept="image/*"
-                          ref={(el) => {
-                            bannerArInputRefs.current[slotKey] = el;
-                          }}
+                          ref={(el) => { bannerArInputRefs.current[slotKey] = el; }}
                           onChange={(e) => handleBannerArFileChange(slotKey, e.target.files?.[0] ?? null)}
                           className="w-full border rounded-lg px-3 py-2 text-sm"
                           style={{ borderColor: '#E5DDD4' }}
@@ -933,7 +1082,11 @@ export function CMS() {
               ) : (
                 <div className="space-y-3">
                   {homepageItems.map((item, idx) => (
-                    <div key={item._id || item.key} className="p-4 rounded-xl flex items-center gap-4" style={{ backgroundColor: '#F3EEE7' }}>
+                    <div
+                      key={item._id || item.key}
+                      className="p-4 rounded-xl flex items-center gap-4"
+                      style={{ backgroundColor: '#F3EEE7' }}
+                    >
                       <div className="flex items-center gap-3 min-w-[56px]">
                         <GripVertical className="w-5 h-5" style={{ color: '#999' }} />
                         <div className="text-sm font-medium" style={{ color: '#C12D32' }}>
@@ -954,7 +1107,11 @@ export function CMS() {
                         className="px-3 py-1 rounded-full text-xs text-white disabled:opacity-60"
                         style={{ backgroundColor: item.active ? '#10B981' : '#8A8A8A' }}
                       >
-                        {togglingKey === item.key ? t('cms.saving') : item.active ? t('cms.active') : t('cms.inactive')}
+                        {togglingKey === item.key
+                          ? t('cms.saving')
+                          : item.active
+                            ? t('cms.active')
+                            : t('cms.inactive')}
                       </button>
                       <button
                         onClick={() => openEditForm(item)}
@@ -976,7 +1133,11 @@ export function CMS() {
               ) : (
                 <div className="space-y-3">
                   {staticItems.map((item) => (
-                    <div key={item._id || item.key} className="p-4 rounded-xl flex items-center gap-4" style={{ backgroundColor: '#F3EEE7' }}>
+                    <div
+                      key={item._id || item.key}
+                      className="p-4 rounded-xl flex items-center gap-4"
+                      style={{ backgroundColor: '#F3EEE7' }}
+                    >
                       <div className="flex items-center gap-3">
                         <FileText className="w-5 h-5" style={{ color: '#999' }} />
                       </div>
@@ -994,7 +1155,11 @@ export function CMS() {
                         className="px-3 py-1 rounded-full text-xs text-white disabled:opacity-60"
                         style={{ backgroundColor: item.active ? '#10B981' : '#8A8A8A' }}
                       >
-                        {togglingKey === item.key ? t('cms.saving') : item.active ? t('cms.active') : t('cms.inactive')}
+                        {togglingKey === item.key
+                          ? t('cms.saving')
+                          : item.active
+                            ? t('cms.active')
+                            : t('cms.inactive')}
                       </button>
                       <button
                         onClick={() => openEditForm(item)}
@@ -1013,8 +1178,8 @@ export function CMS() {
       )}
 
       {selectedItem && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="w-full max-w-xl h-screen overflow-auto rounded-2xl bg-white p-6 space-y-4">
+        <div className="fixed inset-0  z-50 bg-black/40 flex items-center justify-center p-4">
+          <div className="w-full max-w-xl h-screen overflow-auto rounded-2xl  bg-white p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg" style={{ color: '#333' }}>
                 {t('cms.editSection')}: {selectedItem.label || selectedItem.key || selectedItem.title}
@@ -1023,8 +1188,43 @@ export function CMS() {
                 {t('cms.cancel')}
               </button>
             </div>
+        
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* <div className="space-y-1">
+                <label className="block text-xs font-medium" style={{ color: '#666' }}>
+                  Group
+                </label>
+                <input
+                  value={selectedItem.group}
+                  readOnly
+                  className="w-full border rounded-lg px-3 py-2 text-sm bg-gray-100"
+                  aria-label="group-readonly"
+                />
+              </div> */}
+              {/* <div className="space-y-1">
+                <label className="block text-xs font-medium" style={{ color: '#666' }}>
+                  Key
+                </label>
+                <input
+                  value={selectedItem.key}
+                  readOnly
+                  className="w-full border rounded-lg px-3 py-2 text-sm bg-gray-100"
+                  aria-label="key-readonly"
+                />
+              </div> */}
+              {/* <div className="md:col-span-2 space-y-1">
+                <label className="block text-xs font-medium" style={{ color: '#666' }}>
+                  Label
+                </label>
+                <input
+                  value={selectedItem.label}
+                  readOnly
+                  className="w-full border rounded-lg px-3 py-2 text-sm bg-gray-100"
+                  aria-label="label-readonly"
+                />
+              </div> */}
+
               <div className="md:col-span-2 space-y-1">
                 <label className="block text-xs font-medium" style={{ color: '#666' }}>
                   {t('cms.fields.title')}
@@ -1036,7 +1236,6 @@ export function CMS() {
                   className="w-full border rounded-lg px-3 py-2 text-sm"
                 />
               </div>
-
               <div className="md:col-span-2 space-y-2">
                 <label className="block text-xs font-medium" style={{ color: '#666' }}>
                   {t('cms.imagePreview')}
@@ -1055,7 +1254,6 @@ export function CMS() {
                   ) : null}
                 </div>
               </div>
-
               <div className="md:col-span-2 space-y-2">
                 <label className="block text-xs font-medium" style={{ color: '#666' }}>
                   {t('cms.uploadImage')}
@@ -1077,38 +1275,28 @@ export function CMS() {
 
                 <div className="mt-2 flex items-center gap-3">
                   <label className="text-xs" style={{ color: '#666' }}>{t('cms.fields.durationSeconds')}</label>
-                  <input
-                    type="number"
-                    min={1}
-                    value={editDurationSeconds ?? ''}
-                    onChange={(e) => setEditDurationSeconds(e.target.value ? Number(e.target.value) : null)}
-                    className="w-24 border rounded px-2 py-1 text-sm"
-                  />
-                  <select
-                    value={editForceType}
-                    onChange={(e) => setEditForceType(e.target.value as 'auto' | 'image' | 'video')}
-                    className="border rounded px-2 py-1 text-sm"
-                  >
+                  <input type="number" min={1} value={editDurationSeconds ?? ''} onChange={(e) => setEditDurationSeconds(e.target.value ? Number(e.target.value) : null)} className="w-24 border rounded px-2 py-1 text-sm" />
+                  <select value={editForceType} onChange={(e) => setEditForceType(e.target.value as any)} className="border rounded px-2 py-1 text-sm">
                     <option value="auto">Auto</option>
                     <option value="image">Force Image</option>
                     <option value="video">Force Video</option>
                   </select>
                 </div>
               </div>
-
               <div className="md:col-span-2 space-y-1">
                 <label className="block text-xs font-medium" style={{ color: '#666' }}>
                   {t('cms.fields.description')}
                 </label>
                 <textarea
                   value={editForm.description}
-                  onChange={(event) => setEditForm((prev) => ({ ...prev, description: event.target.value }))}
+                  onChange={(event) =>
+                    setEditForm((prev) => ({ ...prev, description: event.target.value }))
+                  }
                   placeholder={t('cms.fields.descriptionPlaceholder')}
                   rows={4}
                   className="w-full border rounded-lg px-3 py-2 text-sm"
                 />
               </div>
-
               <div className="md:col-span-2">
                 <label className="flex items-center gap-2 text-sm">
                   <input
@@ -1122,7 +1310,11 @@ export function CMS() {
             </div>
 
             <div className="flex justify-end gap-3">
-              <button onClick={closeEditForm} className="px-4 py-2 rounded-lg border" style={{ color: '#666' }}>
+              <button
+                onClick={closeEditForm}
+                className="px-4 py-2 rounded-lg border"
+                style={{ color: '#666' }}
+              >
                 {t('cms.cancel')}
               </button>
               <button
@@ -1140,5 +1332,3 @@ export function CMS() {
     </div>
   );
 }
-
-export default CMS;
