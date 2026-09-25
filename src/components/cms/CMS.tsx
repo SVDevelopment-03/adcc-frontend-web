@@ -1586,7 +1586,8 @@ export function CMS() {
                               const mediaType = meta?.type || (item.image ? 'image' : 'video');
                               const mediaUrl = item.image || '';
                               const isVideo = mediaType === 'video' || /\.(mp4|webm|mov|m3u8)(\?|$)/i.test(mediaUrl);
-                              const statusText = item.active ? t('cms.splash.published') : t('cms.splash.draft');
+                              const isLiveSplash = Boolean(item.active || meta?.status === 'published' || meta?.status === 'scheduled');
+                              const statusText = isLiveSplash ? t('cms.splash.published') : t('cms.splash.draft');
                               return (
                                 <tr key={item._id || item.key} className="border-t" style={{ borderColor: '#F0E9E1' }}>
                                   <td className="py-3 pr-3 font-medium" style={{ color: '#333' }}>{item.label || item.title || item.key}</td>
