@@ -340,7 +340,6 @@ export function CMS() {
   const [newSplashForceType, setNewSplashForceType] = useState<'auto' | 'image' | 'video'>('image');
   const [savingNewSplash, setSavingNewSplash] = useState(false);
   const splashPreviewVideoRef = useRef<HTMLVideoElement | null>(null);
-  const splashPreviewIsVideo = splashForm.mediaType === 'video' || (newSplashFile ? newSplashFile.type.startsWith('video/') : false);
 
   const handleSplashPreviewPlay = () => {
     const video = splashPreviewVideoRef.current;
@@ -374,6 +373,7 @@ export function CMS() {
     priority: 1,
     status: 'draft' as 'draft' | 'published' | 'scheduled',
   });
+  const splashPreviewIsVideo = splashForm.mediaType === 'video' || (newSplashFile ? newSplashFile.type.startsWith('video/') : false);
   const bannerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const [bannerTargets, setBannerTargets] = useState<Record<string, string>>({});
 
