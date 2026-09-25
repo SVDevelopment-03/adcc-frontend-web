@@ -120,6 +120,10 @@ export const updateContentSetting = async (
     throw new Error(getApiErrorMessage(error, 'Failed to update content setting'));
   }
 };
+
+  const handleBannerArSave = async (bannerKey: string, bannerLabel: string) => {
+    const existing = appBannerArItemsMemo.find((it) => it.key === bannerKey) ?? null;
+    const file = bannerArFiles[bannerKey] ?? null;
     const selectedTarget = bannerArTargets[bannerKey] || existing?.targetScreen || 'home';
     const hasTargetChange = selectedTarget !== (existing?.targetScreen ?? 'home');
     const hasPendingUpload = Boolean(file);
