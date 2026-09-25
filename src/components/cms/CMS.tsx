@@ -369,7 +369,7 @@ export function CMS() {
     return () => {
       URL.revokeObjectURL(objectUrl);
     };
-  }, [editImageFile]);
+  }, [editMediaFile]);
 
   const isHomepageGroup = useCallback((group: string) => {
     const g = String(group || '').toLowerCase();
@@ -1242,12 +1242,12 @@ export function CMS() {
                 </label>
                 <div className="w-full border rounded-lg p-2" style={{ backgroundColor: '#FAF7F2' }}>
                   <img
-                    src={editImagePreviewUrl || selectedItem?.image || ''}
+                    src={editMediaPreviewUrl || selectedItem?.image || ''}
                     alt=""
                     className="w-full h-40 object-cover rounded-md"
-                    style={{ display: selectedItem?.image || editImagePreviewUrl ? 'block' : 'none' }}
+                    style={{ display: selectedItem?.image || editMediaPreviewUrl ? 'block' : 'none' }}
                   />
-                  {!selectedItem?.image && !editImagePreviewUrl ? (
+                  {!selectedItem?.image && !editMediaPreviewUrl ? (
                     <div className="text-xs" style={{ color: '#999' }}>
                       {t('cms.imageNotAvailable')}
                     </div>
