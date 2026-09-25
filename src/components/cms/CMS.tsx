@@ -1960,17 +1960,22 @@ export function CMS() {
                     {t('cms.splash.uploadMedia')}
                   </label>
                   <div className="w-full border rounded-lg p-2" style={{ backgroundColor: '#FAF7F2' }}>
-                    <img
-                      src={editMediaPreviewUrl || selectedItem?.image || ''}
-                      alt=""
-                      className="w-full h-40 object-cover rounded-md"
-                      style={{ display: selectedItem?.image || editMediaPreviewUrl ? 'block' : 'none' }}
-                    />
-                    {!selectedItem?.image && !editMediaPreviewUrl ? (
-                      <div className="text-xs" style={{ color: '#999' }}>
-                        {t('cms.splash.uploadMediaPreview')}
-                      </div>
-                    ) : null}
+                    {(() => {
+                      const sourceUrl = editMediaPreviewUrl || selectedItem?.image || '';
+                      const isVideo = splashEditForm.mediaType === 'video' || /\.(mp4|webm|mov|m3u8)(\?|$)/i.test(sourceUrl);
+                      if (!sourceUrl) {
+                        return (
+                          <div className="text-xs" style={{ color: '#999' }}>
+                            {t('cms.splash.uploadMediaPreview')}
+                          </div>
+                        );
+                      }
+                      return isVideo ? (
+                        <video src={sourceUrl} controls muted playsInline className="h-40 w-full rounded-md object-cover bg-black" />
+                      ) : (
+                        <img src={sourceUrl} alt="" className="h-40 w-full rounded-md object-cover" />
+                      );
+                    })()}
                   </div>
                   <input
                     type="file"
@@ -2020,17 +2025,22 @@ export function CMS() {
                     {t('cms.imagePreview')}
                   </label>
                   <div className="w-full border rounded-lg p-2" style={{ backgroundColor: '#FAF7F2' }}>
-                    <img
-                      src={editMediaPreviewUrl || selectedItem?.image || ''}
-                      alt=""
-                      className="w-full h-40 object-cover rounded-md"
-                      style={{ display: selectedItem?.image || editMediaPreviewUrl ? 'block' : 'none' }}
-                    />
-                    {!selectedItem?.image && !editMediaPreviewUrl ? (
-                      <div className="text-xs" style={{ color: '#999' }}>
-                        {t('cms.imageNotAvailable')}
-                      </div>
-                    ) : null}
+                    {(() => {
+                      const sourceUrl = editMediaPreviewUrl || selectedItem?.image || '';
+                      const isVideo = /\.(mp4|webm|mov|m3u8)(\?|$)/i.test(sourceUrl);
+                      if (!sourceUrl) {
+                        return (
+                          <div className="text-xs" style={{ color: '#999' }}>
+                            {t('cms.imageNotAvailable')}
+                          </div>
+                        );
+                      }
+                      return isVideo ? (
+                        <video src={sourceUrl} controls muted playsInline className="h-40 w-full rounded-md object-cover bg-black" />
+                      ) : (
+                        <img src={sourceUrl} alt="" className="w-full h-40 object-cover rounded-md" />
+                      );
+                    })()}
                   </div>
                 </div>
                 <div className="md:col-span-2 space-y-2">
