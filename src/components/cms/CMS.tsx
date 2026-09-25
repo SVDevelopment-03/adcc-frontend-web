@@ -339,6 +339,26 @@ export function CMS() {
   const [newSplashDuration, setNewSplashDuration] = useState<number | null>(3);
   const [newSplashForceType, setNewSplashForceType] = useState<'auto' | 'image' | 'video'>('image');
   const [savingNewSplash, setSavingNewSplash] = useState(false);
+  const splashPreviewVideoRef = useRef<HTMLVideoElement | null>(null);
+  const splashPreviewIsVideo = splashForm.mediaType === 'video' || (newSplashFile ? newSplashFile.type.startsWith('video/') : false);
+
+  const handleSplashPreviewPlay = () => {
+    const video = splashPreviewVideoRef.current;
+    if (!video) return;
+    video.play().catch(() => undefined);
+  };
+
+  const handleSplashPreviewPause = () => {
+    splashPreviewVideoRef.current?.pause();
+  };
+
+  const handleSplashPreviewRestart = () => {
+    const video = splashPreviewVideoRef.current;
+    if (!video) return;
+    video.currentTime = 0;
+    video.play().catch(() => undefined);
+  };
+
   const [splashForm, setSplashForm] = useState({
     name: 'Mobile Splash',
     mediaType: 'image' as 'image' | 'video',
@@ -1630,6 +1650,7 @@ export function CMS() {
                         {newSplashPreview ? (
                           splashForm.mediaType === 'video' ? (
                             <video
+                              ref={splashPreviewVideoRef}
                               src={newSplashPreview}
                               autoPlay
                               muted={splashForm.muted}
@@ -1649,7 +1670,14 @@ export function CMS() {
                           )
                         ) : splashItems[0]?.image ? (
                           splashItems[0].image && (splashItems[0].description ? JSON.parse(splashItems[0].description).type === 'video' : false) ? (
-                            <video src={splashItems[0].image} autoPlay muted className="h-full w-full object-cover" style={{ objectFit: 'cover' }} />
+                            <video
+                              ref={splashPreviewVideoRef}
+                              src={splashItems[0].image}
+                              autoPlay
+                              muted
+                              className="h-full w-full object-cover"
+                              style={{ objectFit: 'cover' }}
+                            />
                           ) : (
                             <img src={splashItems[0].image} alt="Saved splash preview" className="h-full w-full" style={{ objectFit: 'cover' }} />
                           )
@@ -1659,11 +1687,13 @@ export function CMS() {
                           </div>
                         )}
 
-                        <div className="absolute inset-x-0 bottom-4 flex justify-center gap-2">
-                          <button className="rounded-full bg-white/15 px-3 py-1.5 text-[10px] text-white backdrop-blur-sm">{t('cms.splash.play')}</button>
-                          <button className="rounded-full bg-white/15 px-3 py-1.5 text-[10px] text-white backdrop-blur-sm">{t('cms.splash.pause')}</button>
-                          <button className="rounded-full bg-white/15 px-3 py-1.5 text-[10px] text-white backdrop-blur-sm">{t('cms.splash.restart')}</button>
-                        </div>
+                        {splashPreviewIsVideo && (
+                          <div className="absolute inset-x-0 bottom-4 flex justify-center gap-2">
+                            <button type="button" onClick={handleSplashPreviewPlay} className="rounded-full bg-white/15 px-3 py-1.5 text-[10px] text-white backdrop-blur-sm">{t('cms.splash.play')}</button>
+                            <button type="button" onClick={handleSplashPreviewPause} className="rounded-full bg-white/15 px-3 py-1.5 text-[10px] text-white backdrop-blur-sm">{t('cms.splash.pause')}</button>
+                            <button type="button" onClick={handleSplashPreviewRestart} className="rounded-full bg-white/15 px-3 py-1.5 text-[10px] text-white backdrop-blur-sm">{t('cms.splash.restart')}</button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
