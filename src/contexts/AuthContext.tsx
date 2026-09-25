@@ -78,7 +78,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   useEffect(() => {
+    let authResolved = false;
+    const fallbackTimer = window.setTimeout(() => {
+      if (!authResolved) {
+        console.warn('Firebase auth did not resolve in time. Falling back to unauthenticated state.');
+        setUser(null);
+        setUserProfile(null);
+        setLoading(false);
+        isInitialMount.current = false;
+      }
+    }, 8000);
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      authResolved = true;
+      clearTimeout(fallbackTimer);
       setUser(firebaseUser);
       
       if (firebaseUser) {
@@ -161,7 +174,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       isInitialMount.current = false;
     });
 
-    return () => unsubscribe();
+    return () => {
+      clearTimeout(fallbackTimer);
+      unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
