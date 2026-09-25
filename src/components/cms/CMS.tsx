@@ -29,6 +29,8 @@ type UpdateContentSettingPayload = Partial<
   Pick<ContentSetting, 'title' | 'description' | 'image' | 'active'>
 > & {
   imageFile?: File;
+  // support video uploads stored in `image` field on the backend
+  videoFile?: File;
 };
 
 interface ApiErrorResponse {
@@ -323,9 +325,10 @@ export function CMS() {
   const [allItems, setAllItems] = useState<ContentSetting[]>([]);
   const [appBannerItems, setAppBannerItems] = useState<ContentSetting[]>([]);
   const [appBannerArItems, setAppBannerArItems] = useState<ContentSetting[]>([]);
+  const [splashItems, setSplashItems] = useState<ContentSetting[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'homepage' | 'static' | 'appBanner' | 'appBannerAr'>('homepage');
+  const [activeTab, setActiveTab] = useState<'homepage' | 'static' | 'appBanner' | 'appBannerAr' | 'splash'>('homepage');
   const [bannerFiles, setBannerFiles] = useState<Record<string, File | null>>({});
   const [bannerPreviews, setBannerPreviews] = useState<Record<string, string>>({});
   const [savingBanners, setSavingBanners] = useState<Record<string, boolean>>({});
@@ -587,14 +590,16 @@ export function CMS() {
     setIsLoading(true);
     setErrorMessage(null);
     try {
-      const [data, bannerData, bannerArData] = await Promise.all([
+      const [data, bannerData, bannerArData, splashData] = await Promise.all([
         getContentSettings({}),
         getAppBanners(),
         getAppBannersAr(),
+        getContentSettings({ group: 'splash-screen' }),
       ]);
       setAllItems(data);
       setAppBannerItems(bannerData);
       setAppBannerArItems(bannerArData);
+      setSplashItems(splashData);
       setBannerTargets(Object.fromEntries(bannerData.map((item) => [item.key, item.targetScreen || 'home'])));
       setBannerArTargets(Object.fromEntries(bannerArData.map((item) => [item.key, item.targetScreen || 'home'])));
     } catch (error) {
@@ -793,7 +798,9 @@ export function CMS() {
                     ? t('cms.tabs.staticPages')
                     : tab === 'appBanner'
                     ? t('cms.tabs.appBanner')
-                    : t('cms.tabs.appBannerAr')}
+                        : tab === 'appBannerAr'
+                        ? t('cms.tabs.appBannerAr')
+                        : t('cms.tabs.splash')}
                 </button>
               ))}
             </div>
@@ -1075,6 +1082,51 @@ export function CMS() {
               </div>
             </div>
           ) : activeTab === 'homepage' ? (
+          ) : activeTab === 'splash' ? (
+            <div className="p-6 rounded-2xl shadow-sm bg-white">
+              <h2 className="text-xl mb-6" style={{ color: '#333' }}>{t('cms.tabs.splash')}</h2>
+
+              {splashItems.length === 0 ? (
+                <div className="py-6 text-sm" style={{ color: '#666' }}>{t('cms.noSectionItems')}</div>
+              ) : (
+                <div className="space-y-3">
+                  {splashItems.map((item) => (
+                    <div key={item._id || item.key} className="p-4 rounded-xl flex items-center gap-4" style={{ backgroundColor: '#F3EEE7' }}>
+                      <div className="flex items-center gap-3">
+                        <ImageIcon className="w-5 h-5" style={{ color: '#999' }} />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-sm mb-1" style={{ color: '#333' }}>
+                          {item.label || item.title}
+                        </div>
+                        <div className="text-xs mb-1" style={{ color: '#666' }}>
+                          {item.description || item.key}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleToggleActive(item)}
+                        disabled={togglingKey === item.key}
+                        className="px-3 py-1 rounded-full text-xs text-white disabled:opacity-60"
+                        style={{ backgroundColor: item.active ? '#10B981' : '#8A8A8A' }}
+                      >
+                        {togglingKey === item.key
+                          ? t('cms.saving')
+                          : item.active
+                            ? t('cms.active')
+                            : t('cms.inactive')}
+                      </button>
+                      <button
+                        onClick={() => openEditForm(item)}
+                        className="p-2 hover:bg-white rounded-lg transition-colors"
+                        aria-label={`Edit ${item.key}`}
+                      >
+                        <Edit className="w-4 h-4" style={{ color: '#666' }} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
             <div className="p-6 rounded-2xl shadow-sm bg-white">
               <h2 className="text-xl mb-6" style={{ color: '#333' }}>{t('cms.tabs.homepageSections')}</h2>
               {homepageItems.length === 0 ? (
