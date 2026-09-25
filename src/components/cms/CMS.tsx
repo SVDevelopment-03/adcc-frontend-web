@@ -336,9 +336,24 @@ export function CMS() {
   const [savingNewBanner, setSavingNewBanner] = useState(false);
   const [newSplashFile, setNewSplashFile] = useState<File | null>(null);
   const [newSplashPreview, setNewSplashPreview] = useState<string | null>(null);
-  const [newSplashDuration, setNewSplashDuration] = useState<number | null>(null);
-  const [newSplashForceType, setNewSplashForceType] = useState<'auto' | 'image' | 'video'>('auto');
+  const [newSplashDuration, setNewSplashDuration] = useState<number | null>(3);
+  const [newSplashForceType, setNewSplashForceType] = useState<'auto' | 'image' | 'video'>('image');
   const [savingNewSplash, setSavingNewSplash] = useState(false);
+  const [splashForm, setSplashForm] = useState({
+    name: 'Mobile Splash',
+    mediaType: 'image' as 'image' | 'video',
+    duration: 3,
+    autoplay: true,
+    loop: false,
+    muted: true,
+    backgroundColor: '#0B1020',
+    objectFit: 'cover' as 'cover' | 'contain',
+    enabled: true,
+    startDate: '',
+    endDate: '',
+    priority: 1,
+    status: 'draft' as 'draft' | 'published' | 'scheduled',
+  });
   const bannerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const [bannerTargets, setBannerTargets] = useState<Record<string, string>>({});
 
@@ -454,31 +469,44 @@ export function CMS() {
     setNewSplashPreview(null);
   };
 
-  const handleAddNewSplash = async () => {
+  const handleAddNewSplash = async (saveMode: 'draft' | 'publish' = 'draft') => {
     if (!newSplashFile) return;
 
     setSavingNewSplash(true);
     try {
       const key = `splash_${Date.now()}`;
-      const payload = {
-        duration: newSplashDuration ?? undefined,
-        type: newSplashForceType === 'auto' ? undefined : newSplashForceType,
+      const description = {
+        name: splashForm.name || 'Mobile Splash',
+        mediaType: splashForm.mediaType,
+        duration: splashForm.mediaType === 'video' ? undefined : (newSplashDuration ?? splashForm.duration ?? 3),
+        type: splashForm.mediaType,
+        autoplay: splashForm.autoplay,
+        loop: splashForm.loop,
+        muted: splashForm.muted,
+        backgroundColor: splashForm.backgroundColor,
+        objectFit: splashForm.objectFit,
+        enabled: splashForm.enabled,
+        startDate: splashForm.startDate || undefined,
+        endDate: splashForm.endDate || undefined,
+        priority: splashForm.priority,
+        status: saveMode === 'publish' ? 'published' : splashForm.status,
       };
       const formData = new FormData();
       formData.append('group', 'splash-screen');
       formData.append('key', key);
-      formData.append('label', 'Splash Screen');
-      formData.append('title', 'Splash Screen');
-      formData.append('description', JSON.stringify(payload));
+      formData.append('label', splashForm.name || 'Splash Screen');
+      formData.append('title', splashForm.name || 'Splash Screen');
+      formData.append('description', JSON.stringify(description));
       formData.append('image', newSplashFile);
-      formData.append('active', 'true');
+      formData.append('active', String(Boolean(splashForm.enabled)));
 
       await api.post('/v1/settings/content', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      toast.success('Splash item created');
+      toast.success(saveMode === 'publish' ? 'Splash published' : 'Splash saved as draft');
       clearNewSplashUpload();
+      setSplashForm((prev) => ({ ...prev, name: 'Mobile Splash', enabled: true, status: saveMode === 'publish' ? 'published' : 'draft' }));
       await fetchAllGroupsSettings();
     } catch (error) {
       toast.error(getApiErrorMessage(error, 'Failed to create splash item'));
@@ -1141,179 +1169,408 @@ export function CMS() {
               </div>
             </div>
           ) : activeTab === 'splash' ? (
-            <div className="p-6 rounded-2xl shadow-sm bg-white">
-              <h2 className="text-xl mb-6" style={{ color: '#333' }}>{t('cms.tabs.splash')}</h2>
-
-              <div className="rounded-xl border p-5 space-y-4" style={{ borderColor: '#E5DDD4' }}>
-                <div className="flex items-center gap-2">
-                  <ImageIcon className="w-5 h-5" style={{ color: '#C12D32' }} />
-                  <h3 className="text-sm font-medium" style={{ color: '#333' }}>
-                    Upload Splash Media
-                  </h3>
+            <div className="rounded-2xl bg-white p-6 shadow-sm">
+              <div className="mb-6 flex items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-2xl font-semibold" style={{ color: '#333' }}>{t('cms.tabs.splash')}</h2>
+                  <p className="text-sm" style={{ color: '#666' }}>
+                    Manage mobile splash media, timing, and live preview.
+                  </p>
                 </div>
-
-                <div className="space-y-2">
-                  <label className="block text-xs font-medium" style={{ color: '#666' }}>
-                    Splash image or video
-                  </label>
-                  <input
-                    type="file"
-                    accept="image/*,video/*"
-                    onChange={(e) => handleNewSplashFileChange(e.target.files?.[0] ?? null)}
-                    className="w-full border rounded-lg px-3 py-2 text-sm"
-                    style={{ borderColor: '#E5DDD4' }}
-                  />
-                </div>
-
-                <div className="flex items-center gap-3 flex-wrap">
-                  <label className="text-xs" style={{ color: '#666' }}>
-                    Duration (seconds)
-                  </label>
-                  <input
-                    type="number"
-                    min={1}
-                    value={newSplashDuration ?? ''}
-                    onChange={(e) => setNewSplashDuration(e.target.value ? Number(e.target.value) : null)}
-                    className="w-24 border rounded px-2 py-1 text-sm"
-                  />
-
-                  <label className="text-xs" style={{ color: '#666' }}>
-                    Force type
-                  </label>
-                  <select
-                    value={newSplashForceType}
-                    onChange={(e) => setNewSplashForceType(e.target.value as 'auto' | 'image' | 'video')}
-                    className="border rounded px-2 py-1 text-sm"
-                  >
-                    <option value="auto">Auto</option>
-                    <option value="image">Force Image</option>
-                    <option value="video">Force Video</option>
-                  </select>
-                </div>
-
-                {newSplashPreview ? (
-                  <div className="rounded-lg overflow-hidden border" style={{ borderColor: '#E5DDD4' }}>
-                    {/\.(mp4|webm|mov|m3u8)(\?|$)/i.test(newSplashPreview) ? (
-                      <video src={newSplashPreview} controls className="w-full h-56 object-cover bg-black" />
-                    ) : (
-                      <img src={newSplashPreview} alt="Splash preview" className="w-full h-56 object-cover" />
-                    )}
-                  </div>
-                ) : null}
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleAddNewSplash}
-                    disabled={!newSplashFile || savingNewSplash}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-white text-sm disabled:opacity-50 transition-opacity"
-                    style={{ backgroundColor: '#C12D32' }}
-                  >
-                    <Upload className="w-4 h-4" />
-                    {savingNewSplash ? 'Saving...' : 'Save Splash'}
-                  </button>
-                  <button
-                    onClick={clearNewSplashUpload}
-                    type="button"
-                    className="flex-1 px-4 py-2 rounded-lg text-sm border"
-                    style={{ borderColor: '#E5DDD4', color: '#333' }}
-                  >
-                    Clear
-                  </button>
+                <div className="rounded-full border px-3 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#666' }}>
+                  {splashItems.length} items
                 </div>
               </div>
 
-              {splashItems.length === 0 ? (
-                <div className="py-6 text-sm" style={{ color: '#666' }}>
-                  No content entries found for this section.
-                </div>
-              ) : (
-                <div className="space-y-4 mt-6">
-                  {splashItems.map((item) => {
-                    const meta = (() => {
-                      try {
-                        return item.description ? JSON.parse(item.description) : {};
-                      } catch {
-                        return {};
-                      }
-                    })();
-                    const mediaUrl = item.image || '';
-                    const isVideo = /\.(mp4|webm|mov|m3u8)(\?|$)/i.test(mediaUrl) || (meta?.type === 'video');
-                    const isTimedMedia = !isVideo;
-                    const splashType = meta?.type || (isVideo ? 'video' : 'image');
+              <div className="grid grid-cols-1 xl:grid-cols-[1.45fr_0.95fr] gap-6">
+                <div className="space-y-6">
+                  <div className="rounded-2xl border p-5" style={{ borderColor: '#E5DDD4', backgroundColor: '#FFFDFB' }}>
+                    <div className="mb-4 flex items-center gap-2">
+                      <ImageIcon className="w-5 h-5" style={{ color: '#C12D32' }} />
+                      <h3 className="text-lg font-medium" style={{ color: '#333' }}>Splash configuration</h3>
+                    </div>
 
-                    return (
-                      <div key={item._id || item.key} className="rounded-xl border p-4" style={{ borderColor: '#E5DDD4', backgroundColor: '#F9F5F1' }}>
-                        <div className="flex flex-col md:flex-row gap-4">
-                          <div className="md:w-64 w-full rounded-lg overflow-hidden border" style={{ borderColor: '#E5DDD4', backgroundColor: '#F3EEE7' }}>
-                            {mediaUrl ? (
-                              isVideo ? (
-                                <video src={mediaUrl} controls className="w-full h-48 object-cover bg-black" />
-                              ) : (
-                                <img src={mediaUrl} alt={item.label || item.key} className="w-full h-48 object-cover" />
-                              )
-                            ) : (
-                              <div className="flex items-center justify-center h-48 text-xs" style={{ color: '#999' }}>
-                                No media
-                              </div>
-                            )}
-                          </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="md:col-span-2">
+                        <label className="mb-2 block text-xs font-medium uppercase" style={{ color: '#666' }}>
+                          Splash screen name
+                        </label>
+                        <input
+                          value={splashForm.name}
+                          onChange={(e) => setSplashForm((prev) => ({ ...prev, name: e.target.value }))}
+                          className="w-full rounded-xl border px-3 py-2.5 text-sm"
+                          style={{ borderColor: '#E5DDD4' }}
+                          placeholder="Winter Launch Splash"
+                        />
+                      </div>
 
-                          <div className="flex-1 space-y-2">
-                            <div className="flex items-center justify-between gap-3">
-                              <div>
-                                <div className="text-sm font-medium" style={{ color: '#333' }}>
-                                  {item.label || item.title || item.key}
-                                </div>
-                                <div className="text-xs" style={{ color: '#666' }}>
-                                  {item.key}
-                                </div>
-                              </div>
-                              <button
-                                onClick={() => handleToggleActive(item)}
-                                disabled={togglingKey === item.key}
-                                className="px-3 py-1 rounded-full text-xs text-white disabled:opacity-60"
-                                style={{ backgroundColor: item.active ? '#10B981' : '#8A8A8A' }}
-                              >
-                                {togglingKey === item.key
-                                  ? t('cms.saving')
-                                  : item.active
-                                    ? t('cms.active')
-                                    : t('cms.inactive')}
-                              </button>
-                            </div>
+                      <div>
+                        <label className="mb-2 block text-xs font-medium uppercase" style={{ color: '#666' }}>
+                          Media type
+                        </label>
+                        <select
+                          value={splashForm.mediaType}
+                          onChange={(e) => setSplashForm((prev) => ({ ...prev, mediaType: e.target.value as 'image' | 'video' }))}
+                          className="w-full rounded-xl border px-3 py-2.5 text-sm"
+                          style={{ borderColor: '#E5DDD4' }}
+                        >
+                          <option value="image">Image</option>
+                          <option value="video">Video</option>
+                        </select>
+                      </div>
 
+                      <div>
+                        <label className="mb-2 block text-xs font-medium uppercase" style={{ color: '#666' }}>
+                          Status
+                        </label>
+                        <select
+                          value={splashForm.status}
+                          onChange={(e) => setSplashForm((prev) => ({ ...prev, status: e.target.value as 'draft' | 'published' | 'scheduled' }))}
+                          className="w-full rounded-xl border px-3 py-2.5 text-sm"
+                          style={{ borderColor: '#E5DDD4' }}
+                        >
+                          <option value="draft">Draft</option>
+                          <option value="published">Published</option>
+                          <option value="scheduled">Scheduled</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="mb-2 block text-xs font-medium uppercase" style={{ color: '#666' }}>
+                          Duration (seconds)
+                        </label>
+                        <input
+                          type="number"
+                          min={1}
+                          value={splashForm.mediaType === 'video' ? '' : (newSplashDuration ?? splashForm.duration)}
+                          onChange={(e) => {
+                            const value = Number(e.target.value || 0);
+                            setNewSplashDuration(value > 0 ? value : null);
+                            setSplashForm((prev) => ({ ...prev, duration: value > 0 ? value : 3 }));
+                          }}
+                          disabled={splashForm.mediaType === 'video'}
+                          className="w-full rounded-xl border px-3 py-2.5 text-sm disabled:opacity-50"
+                          style={{ borderColor: '#E5DDD4' }}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="mb-2 block text-xs font-medium uppercase" style={{ color: '#666' }}>
+                          Priority
+                        </label>
+                        <input
+                          type="number"
+                          min={1}
+                          value={splashForm.priority}
+                          onChange={(e) => setSplashForm((prev) => ({ ...prev, priority: Number(e.target.value || 1) }))}
+                          className="w-full rounded-xl border px-3 py-2.5 text-sm"
+                          style={{ borderColor: '#E5DDD4' }}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="mb-2 block text-xs font-medium uppercase" style={{ color: '#666' }}>
+                          Start date
+                        </label>
+                        <input
+                          type="date"
+                          value={splashForm.startDate}
+                          onChange={(e) => setSplashForm((prev) => ({ ...prev, startDate: e.target.value }))}
+                          className="w-full rounded-xl border px-3 py-2.5 text-sm"
+                          style={{ borderColor: '#E5DDD4' }}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="mb-2 block text-xs font-medium uppercase" style={{ color: '#666' }}>
+                          End date
+                        </label>
+                        <input
+                          type="date"
+                          value={splashForm.endDate}
+                          onChange={(e) => setSplashForm((prev) => ({ ...prev, endDate: e.target.value }))}
+                          className="w-full rounded-xl border px-3 py-2.5 text-sm"
+                          style={{ borderColor: '#E5DDD4' }}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="mb-2 block text-xs font-medium uppercase" style={{ color: '#666' }}>
+                          Background color
+                        </label>
+                        <input
+                          type="color"
+                          value={splashForm.backgroundColor}
+                          onChange={(e) => setSplashForm((prev) => ({ ...prev, backgroundColor: e.target.value }))}
+                          className="h-11 w-full rounded-xl border px-1 py-1"
+                          style={{ borderColor: '#E5DDD4', background: '#fff' }}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="mb-2 block text-xs font-medium uppercase" style={{ color: '#666' }}>
+                          Object fit
+                        </label>
+                        <select
+                          value={splashForm.objectFit}
+                          onChange={(e) => setSplashForm((prev) => ({ ...prev, objectFit: e.target.value as 'cover' | 'contain' }))}
+                          className="w-full rounded-xl border px-3 py-2.5 text-sm"
+                          style={{ borderColor: '#E5DDD4' }}
+                        >
+                          <option value="cover">Cover</option>
+                          <option value="contain">Contain</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <label className="flex items-center justify-between rounded-xl border px-3 py-2 text-sm" style={{ borderColor: '#E5DDD4' }}>
+                        <span style={{ color: '#333' }}>Enable / Disable</span>
+                        <input
+                          type="checkbox"
+                          checked={splashForm.enabled}
+                          onChange={(e) => setSplashForm((prev) => ({ ...prev, enabled: e.target.checked }))}
+                        />
+                      </label>
+
+                      <label className="flex items-center justify-between rounded-xl border px-3 py-2 text-sm" style={{ borderColor: '#E5DDD4' }}>
+                        <span style={{ color: '#333' }}>Autoplay</span>
+                        <input
+                          type="checkbox"
+                          checked={splashForm.autoplay}
+                          onChange={(e) => setSplashForm((prev) => ({ ...prev, autoplay: e.target.checked }))}
+                          disabled={splashForm.mediaType !== 'video'}
+                        />
+                      </label>
+
+                      <label className="flex items-center justify-between rounded-xl border px-3 py-2 text-sm" style={{ borderColor: '#E5DDD4' }}>
+                        <span style={{ color: '#333' }}>Loop video</span>
+                        <input
+                          type="checkbox"
+                          checked={splashForm.loop}
+                          onChange={(e) => setSplashForm((prev) => ({ ...prev, loop: e.target.checked }))}
+                          disabled={splashForm.mediaType !== 'video'}
+                        />
+                      </label>
+
+                      <label className="flex items-center justify-between rounded-xl border px-3 py-2 text-sm" style={{ borderColor: '#E5DDD4' }}>
+                        <span style={{ color: '#333' }}>Muted</span>
+                        <input
+                          type="checkbox"
+                          checked={splashForm.muted}
+                          onChange={(e) => setSplashForm((prev) => ({ ...prev, muted: e.target.checked }))}
+                          disabled={splashForm.mediaType !== 'video'}
+                        />
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border p-5" style={{ borderColor: '#E5DDD4', backgroundColor: '#FFFDFB' }}>
+                    <div className="mb-4 flex items-center gap-2">
+                      <Upload className="w-5 h-5" style={{ color: '#C12D32' }} />
+                      <h3 className="text-lg font-medium" style={{ color: '#333' }}>Upload media</h3>
+                    </div>
+
+                    <div className="rounded-2xl border-2 border-dashed p-4 text-center" style={{ borderColor: '#E5DDD4', backgroundColor: '#F9F5F1' }}>
+                      <input
+                        type="file"
+                        accept={splashForm.mediaType === 'video' ? 'video/*' : 'image/*,.webp,.jpg,.jpeg,.png'}
+                        onChange={(e) => handleNewSplashFileChange(e.target.files?.[0] ?? null)}
+                        className="hidden"
+                        id="splash-upload-input"
+                      />
+                      <label htmlFor="splash-upload-input" className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-white" style={{ backgroundColor: '#C12D32' }}>
+                        <Upload className="w-4 h-4" />
+                        Browse media
+                      </label>
+                    </div>
+
+                    {newSplashFile ? (
+                      <div className="mt-4 rounded-xl border p-3" style={{ borderColor: '#E5DDD4', backgroundColor: '#fff' }}>
+                        <div className="flex items-center justify-between gap-3">
+                          <div>
+                            <div className="text-sm font-medium" style={{ color: '#333' }}>{newSplashFile.name}</div>
                             <div className="text-xs" style={{ color: '#666' }}>
-                              {isTimedMedia
-                                ? `${meta?.duration ? `Duration: ${meta.duration}s` : 'Duration: not set'}`
-                                : 'Video autoplay only'}
-                              {' • '}
-                              {`Type: ${splashType}`}
-                            </div>
-
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => openEditForm(item)}
-                                className="px-3 py-2 rounded-lg text-sm text-white"
-                                style={{ backgroundColor: '#C12D32' }}
-                              >
-                                Edit
-                              </button>
-                              <button
-                                onClick={() => handleDelete(item)}
-                                disabled={isDeleting}
-                                className="px-3 py-2 rounded-lg text-sm border border-red-200 text-red-600 disabled:opacity-50"
-                                style={{ backgroundColor: '#FFF5F5' }}
-                              >
-                                Delete
-                              </button>
+                              {(newSplashFile.size / 1024 / 1024).toFixed(2)} MB • {splashForm.mediaType.toUpperCase()}
                             </div>
                           </div>
+                          <button
+                            type="button"
+                            onClick={clearNewSplashUpload}
+                            className="rounded-lg border px-3 py-1.5 text-xs"
+                            style={{ borderColor: '#E5DDD4', color: '#666' }}
+                          >
+                            Remove
+                          </button>
                         </div>
                       </div>
-                    );
-                  })}
+                    ) : null}
+                  </div>
+
+                  <div className="rounded-2xl border p-5" style={{ borderColor: '#E5DDD4', backgroundColor: '#FFFDFB' }}>
+                    <div className="mb-4 flex items-center justify-between gap-3">
+                      <h3 className="text-lg font-medium" style={{ color: '#333' }}>Splash listing</h3>
+                      <div className="flex gap-2 text-xs">
+                        <span className="rounded-full bg-[#F3EEE7] px-2 py-1">Type</span>
+                        <span className="rounded-full bg-[#F3EEE7] px-2 py-1">Status</span>
+                      </div>
+                    </div>
+
+                    {splashItems.length === 0 ? (
+                      <div className="py-6 text-sm" style={{ color: '#666' }}>
+                        No content entries found for this section.
+                      </div>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="min-w-full text-left text-sm">
+                          <thead>
+                            <tr style={{ color: '#666' }}>
+                              <th className="pb-3 pr-3">Name</th>
+                              <th className="pb-3 pr-3">Type</th>
+                              <th className="pb-3 pr-3">Preview</th>
+                              <th className="pb-3 pr-3">Duration</th>
+                              <th className="pb-3 pr-3">Status</th>
+                              <th className="pb-3 pr-3">Updated</th>
+                              <th className="pb-3 pr-3">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {splashItems.map((item) => {
+                              const meta = (() => { try { return item.description ? JSON.parse(item.description) : {}; } catch { return {}; } })();
+                              const mediaType = meta?.type || (item.image ? 'image' : 'video');
+                              const mediaUrl = item.image || '';
+                              const isVideo = mediaType === 'video' || /\.(mp4|webm|mov|m3u8)(\?|$)/i.test(mediaUrl);
+                              const statusText = item.active ? 'Published' : 'Draft';
+                              return (
+                                <tr key={item._id || item.key} className="border-t" style={{ borderColor: '#F0E9E1' }}>
+                                  <td className="py-3 pr-3 font-medium" style={{ color: '#333' }}>{item.label || item.title || item.key}</td>
+                                  <td className="py-3 pr-3 capitalize" style={{ color: '#666' }}>{mediaType}</td>
+                                  <td className="py-3 pr-3">
+                                    {mediaUrl ? (
+                                      isVideo ? (
+                                        <video src={mediaUrl} className="h-12 w-20 rounded object-cover bg-black" muted playsInline />
+                                      ) : (
+                                        <img src={mediaUrl} alt={item.label || item.key} className="h-12 w-20 rounded object-cover" />
+                                      )
+                                    ) : (
+                                      <span className="text-xs" style={{ color: '#999' }}>No media</span>
+                                    )}
+                                  </td>
+                                  <td className="py-3 pr-3 text-xs" style={{ color: '#666' }}>{meta?.duration ? `${meta.duration}s` : isVideo ? 'Auto' : 'Not set'}</td>
+                                  <td className="py-3 pr-3">
+                                    <span className="rounded-full px-2 py-1 text-xs" style={{ backgroundColor: item.active ? '#EAFBF3' : '#F7F1E8', color: item.active ? '#0F9F6E' : '#8A8A8A' }}>
+                                      {statusText}
+                                    </span>
+                                  </td>
+                                  <td className="py-3 pr-3 text-xs" style={{ color: '#666' }}>{item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : '—'}</td>
+                                  <td className="py-3 pr-3">
+                                    <div className="flex flex-wrap gap-2">
+                                      <button className="rounded-lg border px-2 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#333' }}>View</button>
+                                      <button onClick={() => openEditForm(item)} className="rounded-lg border px-2 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#333' }}>Edit</button>
+                                      <button className="rounded-lg border px-2 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#333' }}>Duplicate</button>
+                                      <button onClick={() => handleToggleActive(item)} className="rounded-lg border px-2 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#333' }}>Enable</button>
+                                      <button onClick={() => handleDelete(item)} className="rounded-lg border border-red-200 px-2 py-1 text-xs text-red-600">Delete</button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              )}
+
+                <div className="rounded-2xl border p-5" style={{ borderColor: '#E5DDD4', backgroundColor: '#F8F5F0' }}>
+                  <div className="mb-4 flex items-center justify-between gap-3">
+                    <div>
+                      <h3 className="text-lg font-medium" style={{ color: '#333' }}>Mobile preview</h3>
+                      <p className="text-xs" style={{ color: '#666' }}>Preview mode</p>
+                    </div>
+                    <button
+                      type="button"
+                      className="rounded-lg border px-3 py-2 text-xs font-medium"
+                      style={{ borderColor: '#E5DDD4', color: '#333' }}
+                    >
+                      Refresh preview
+                    </button>
+                  </div>
+
+                  <div className="mx-auto flex max-w-[310px] justify-center pt-2">
+                    <div className="relative w-[280px] rounded-[38px] border-[10px] border-[#111827] bg-[#0b1020] p-2 shadow-2xl">
+                      <div className="absolute left-1/2 top-2 h-2 w-20 -translate-x-1/2 rounded-full bg-[#1f2937]" />
+                      <div className="relative overflow-hidden rounded-[28px] bg-black" style={{ width: '100%', height: '560px', backgroundColor: splashForm.backgroundColor }}>
+                        {newSplashPreview ? (
+                          splashForm.mediaType === 'video' ? (
+                            <video
+                              src={newSplashPreview}
+                              autoPlay
+                              muted={splashForm.muted}
+                              loop={splashForm.loop}
+                              playsInline
+                              controls={false}
+                              className="h-full w-full object-cover"
+                              style={{ objectFit: splashForm.objectFit }}
+                            />
+                          ) : (
+                            <img
+                              src={newSplashPreview}
+                              alt="Mobile splash preview"
+                              className="h-full w-full"
+                              style={{ objectFit: splashForm.objectFit }}
+                            />
+                          )
+                        ) : splashItems[0]?.image ? (
+                          splashItems[0].image && (splashItems[0].description ? JSON.parse(splashItems[0].description).type === 'video' : false) ? (
+                            <video src={splashItems[0].image} autoPlay muted className="h-full w-full object-cover" style={{ objectFit: 'cover' }} />
+                          ) : (
+                            <img src={splashItems[0].image} alt="Saved splash preview" className="h-full w-full" style={{ objectFit: 'cover' }} />
+                          )
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-center text-xs text-white/80">
+                            Upload media to preview
+                          </div>
+                        )}
+
+                        <div className="absolute inset-x-0 bottom-4 flex justify-center gap-2">
+                          <button className="rounded-full bg-white/15 px-3 py-1.5 text-[10px] text-white backdrop-blur-sm">Play</button>
+                          <button className="rounded-full bg-white/15 px-3 py-1.5 text-[10px] text-white backdrop-blur-sm">Pause</button>
+                          <button className="rounded-full bg-white/15 px-3 py-1.5 text-[10px] text-white backdrop-blur-sm">Restart</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-5 flex flex-wrap gap-3">
+                    <button
+                      type="button"
+                      onClick={() => handleAddNewSplash('draft')}
+                      disabled={!newSplashFile || savingNewSplash}
+                      className="flex-1 rounded-xl px-4 py-3 text-sm font-medium text-white disabled:opacity-50"
+                      style={{ backgroundColor: '#C12D32' }}
+                    >
+                      {savingNewSplash ? 'Saving...' : 'Save as Draft'}
+                    </button>
+                    <button
+                      type="button"
+                      className="flex-1 rounded-xl border px-4 py-3 text-sm font-medium"
+                      style={{ borderColor: '#E5DDD4', color: '#333' }}
+                    >
+                      Preview
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleAddNewSplash('publish')}
+                      disabled={!newSplashFile || savingNewSplash}
+                      className="flex-1 rounded-xl px-4 py-3 text-sm font-medium text-white disabled:opacity-50"
+                      style={{ backgroundColor: '#0F9F6E' }}
+                    >
+                      Publish
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           ) : activeTab === 'homepage' ? (
             <div className="p-6 rounded-2xl shadow-sm bg-white">
