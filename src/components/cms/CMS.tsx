@@ -334,6 +334,11 @@ export function CMS() {
   const [newBannerPreview, setNewBannerPreview] = useState<string | null>(null);
   const [newBannerTarget, setNewBannerTarget] = useState('home');
   const [savingNewBanner, setSavingNewBanner] = useState(false);
+  const [newSplashFile, setNewSplashFile] = useState<File | null>(null);
+  const [newSplashPreview, setNewSplashPreview] = useState<string | null>(null);
+  const [newSplashDuration, setNewSplashDuration] = useState<number | null>(null);
+  const [newSplashForceType, setNewSplashForceType] = useState<'auto' | 'image' | 'video'>('auto');
+  const [savingNewSplash, setSavingNewSplash] = useState(false);
   const bannerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const [bannerTargets, setBannerTargets] = useState<Record<string, string>>({});
 
@@ -424,6 +429,62 @@ export function CMS() {
     }
     setNewBannerFile(null);
     setNewBannerPreview(null);
+  };
+
+  const clearNewSplashUpload = () => {
+    if (newSplashPreview) {
+      URL.revokeObjectURL(newSplashPreview);
+    }
+    setNewSplashFile(null);
+    setNewSplashPreview(null);
+    setNewSplashDuration(null);
+    setNewSplashForceType('auto');
+  };
+
+  const handleNewSplashFileChange = (file: File | null) => {
+    if (newSplashPreview) {
+      URL.revokeObjectURL(newSplashPreview);
+    }
+    if (file) {
+      setNewSplashFile(file);
+      setNewSplashPreview(URL.createObjectURL(file));
+      return;
+    }
+    setNewSplashFile(null);
+    setNewSplashPreview(null);
+  };
+
+  const handleAddNewSplash = async () => {
+    if (!newSplashFile) return;
+
+    setSavingNewSplash(true);
+    try {
+      const key = `splash_${Date.now()}`;
+      const payload = {
+        duration: newSplashDuration ?? undefined,
+        type: newSplashForceType === 'auto' ? undefined : newSplashForceType,
+      };
+      const formData = new FormData();
+      formData.append('group', 'splash-screen');
+      formData.append('key', key);
+      formData.append('label', 'Splash Screen');
+      formData.append('title', 'Splash Screen');
+      formData.append('description', JSON.stringify(payload));
+      formData.append('image', newSplashFile);
+      formData.append('active', 'true');
+
+      await api.post('/v1/settings/content', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      toast.success('Splash item created');
+      clearNewSplashUpload();
+      await fetchAllGroupsSettings();
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, 'Failed to create splash item'));
+    } finally {
+      setSavingNewSplash(false);
+    }
   };
 
   const handleAddNewBanner = async () => {
@@ -1082,44 +1143,171 @@ export function CMS() {
           ) : activeTab === 'splash' ? (
             <div className="p-6 rounded-2xl shadow-sm bg-white">
               <h2 className="text-xl mb-6" style={{ color: '#333' }}>{t('cms.tabs.splash')}</h2>
+
+              <div className="rounded-xl border p-5 space-y-4" style={{ borderColor: '#E5DDD4' }}>
+                <div className="flex items-center gap-2">
+                  <ImageIcon className="w-5 h-5" style={{ color: '#C12D32' }} />
+                  <h3 className="text-sm font-medium" style={{ color: '#333' }}>
+                    Upload Splash Media
+                  </h3>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-xs font-medium" style={{ color: '#666' }}>
+                    Splash image or video
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*,video/*"
+                    onChange={(e) => handleNewSplashFileChange(e.target.files?.[0] ?? null)}
+                    className="w-full border rounded-lg px-3 py-2 text-sm"
+                    style={{ borderColor: '#E5DDD4' }}
+                  />
+                </div>
+
+                <div className="flex items-center gap-3 flex-wrap">
+                  <label className="text-xs" style={{ color: '#666' }}>
+                    Duration (seconds)
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={newSplashDuration ?? ''}
+                    onChange={(e) => setNewSplashDuration(e.target.value ? Number(e.target.value) : null)}
+                    className="w-24 border rounded px-2 py-1 text-sm"
+                  />
+
+                  <label className="text-xs" style={{ color: '#666' }}>
+                    Force type
+                  </label>
+                  <select
+                    value={newSplashForceType}
+                    onChange={(e) => setNewSplashForceType(e.target.value as 'auto' | 'image' | 'video')}
+                    className="border rounded px-2 py-1 text-sm"
+                  >
+                    <option value="auto">Auto</option>
+                    <option value="image">Force Image</option>
+                    <option value="video">Force Video</option>
+                  </select>
+                </div>
+
+                {newSplashPreview ? (
+                  <div className="rounded-lg overflow-hidden border" style={{ borderColor: '#E5DDD4' }}>
+                    {/\.(mp4|webm|mov|m3u8)(\?|$)/i.test(newSplashPreview) ? (
+                      <video src={newSplashPreview} controls className="w-full h-56 object-cover bg-black" />
+                    ) : (
+                      <img src={newSplashPreview} alt="Splash preview" className="w-full h-56 object-cover" />
+                    )}
+                  </div>
+                ) : null}
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleAddNewSplash}
+                    disabled={!newSplashFile || savingNewSplash}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-white text-sm disabled:opacity-50 transition-opacity"
+                    style={{ backgroundColor: '#C12D32' }}
+                  >
+                    <Upload className="w-4 h-4" />
+                    {savingNewSplash ? 'Saving...' : 'Save Splash'}
+                  </button>
+                  <button
+                    onClick={clearNewSplashUpload}
+                    type="button"
+                    className="flex-1 px-4 py-2 rounded-lg text-sm border"
+                    style={{ borderColor: '#E5DDD4', color: '#333' }}
+                  >
+                    Clear
+                  </button>
+                </div>
+              </div>
+
               {splashItems.length === 0 ? (
-                <div className="py-6 text-sm" style={{ color: '#666' }}>{t('cms.noSectionItems')}</div>
+                <div className="py-6 text-sm" style={{ color: '#666' }}>
+                  No content entries found for this section.
+                </div>
               ) : (
-                <div className="space-y-3">
-                  {splashItems.map((item) => (
-                    <div key={item._id || item.key} className="p-4 rounded-xl flex items-center gap-4" style={{ backgroundColor: '#F3EEE7' }}>
-                      <div className="flex items-center gap-3">
-                        <ImageIcon className="w-5 h-5" style={{ color: '#999' }} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-sm mb-1" style={{ color: '#333' }}>
-                          {item.label || item.title || item.key}
+                <div className="space-y-4 mt-6">
+                  {splashItems.map((item) => {
+                    const meta = (() => {
+                      try {
+                        return item.description ? JSON.parse(item.description) : {};
+                      } catch {
+                        return {};
+                      }
+                    })();
+                    const mediaUrl = item.image || '';
+                    const isVideo = /\.(mp4|webm|mov|m3u8)(\?|$)/i.test(mediaUrl);
+
+                    return (
+                      <div key={item._id || item.key} className="rounded-xl border p-4" style={{ borderColor: '#E5DDD4', backgroundColor: '#F9F5F1' }}>
+                        <div className="flex flex-col md:flex-row gap-4">
+                          <div className="md:w-64 w-full rounded-lg overflow-hidden border" style={{ borderColor: '#E5DDD4', backgroundColor: '#F3EEE7' }}>
+                            {mediaUrl ? (
+                              isVideo ? (
+                                <video src={mediaUrl} controls className="w-full h-48 object-cover bg-black" />
+                              ) : (
+                                <img src={mediaUrl} alt={item.label || item.key} className="w-full h-48 object-cover" />
+                              )
+                            ) : (
+                              <div className="flex items-center justify-center h-48 text-xs" style={{ color: '#999' }}>
+                                No media
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex-1 space-y-2">
+                            <div className="flex items-center justify-between gap-3">
+                              <div>
+                                <div className="text-sm font-medium" style={{ color: '#333' }}>
+                                  {item.label || item.title || item.key}
+                                </div>
+                                <div className="text-xs" style={{ color: '#666' }}>
+                                  {item.key}
+                                </div>
+                              </div>
+                              <button
+                                onClick={() => handleToggleActive(item)}
+                                disabled={togglingKey === item.key}
+                                className="px-3 py-1 rounded-full text-xs text-white disabled:opacity-60"
+                                style={{ backgroundColor: item.active ? '#10B981' : '#8A8A8A' }}
+                              >
+                                {togglingKey === item.key
+                                  ? t('cms.saving')
+                                  : item.active
+                                    ? t('cms.active')
+                                    : t('cms.inactive')}
+                              </button>
+                            </div>
+
+                            <div className="text-xs" style={{ color: '#666' }}>
+                              {meta?.duration ? `Duration: ${meta.duration}s` : 'Duration: not set'}
+                              {' • '}
+                              {meta?.type ? `Type: ${meta.type}` : 'Type: auto'}
+                            </div>
+
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => openEditForm(item)}
+                                className="px-3 py-2 rounded-lg text-sm text-white"
+                                style={{ backgroundColor: '#C12D32' }}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDelete(item)}
+                                disabled={isDeleting}
+                                className="px-3 py-2 rounded-lg text-sm border border-red-200 text-red-600 disabled:opacity-50"
+                                style={{ backgroundColor: '#FFF5F5' }}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-xs mb-1" style={{ color: '#666' }}>
-                          {item.description || item.key}
-                        </div>
                       </div>
-                      <button
-                        onClick={() => handleToggleActive(item)}
-                        disabled={togglingKey === item.key}
-                        className="px-3 py-1 rounded-full text-xs text-white disabled:opacity-60"
-                        style={{ backgroundColor: item.active ? '#10B981' : '#8A8A8A' }}
-                      >
-                        {togglingKey === item.key
-                          ? t('cms.saving')
-                          : item.active
-                            ? t('cms.active')
-                            : t('cms.inactive')}
-                      </button>
-                      <button
-                        onClick={() => openEditForm(item)}
-                        className="p-2 hover:bg-white rounded-lg transition-colors"
-                        aria-label={`Edit ${item.key}`}
-                      >
-                        <Edit className="w-4 h-4" style={{ color: '#666' }} />
-                      </button>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
