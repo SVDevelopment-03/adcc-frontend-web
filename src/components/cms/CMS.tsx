@@ -364,6 +364,7 @@ export function CMS() {
   const bannerArInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const [selectedItem, setSelectedItem] = useState<ContentSetting | null>(null);
+  const [previewItem, setPreviewItem] = useState<ContentSetting | null>(null);
   const [editForm, setEditForm] = useState<ItemFormState>({
     title: '',
     description: '',
@@ -802,6 +803,29 @@ export function CMS() {
     setEditMediaPreviewUrl(null);
     setEditDurationSeconds(null);
     setEditForceType('auto');
+  };
+
+  const handleDuplicateEntry = async (item: ContentSetting) => {
+    try {
+      const newKey = `${item.key || 'entry'}-copy-${Date.now()}`;
+      const formData = new FormData();
+      formData.append('group', item.group || 'content');
+      formData.append('key', newKey);
+      formData.append('label', item.label || item.title || newKey);
+      formData.append('title', item.title || item.label || newKey);
+      formData.append('description', item.description || '');
+      formData.append('image', item.image || '');
+      formData.append('active', String(Boolean(item.active)));
+
+      await api.post('/v1/settings/content', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      toast.success('Item duplicated successfully');
+      await fetchAllGroupsSettings();
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, 'Failed to duplicate item'));
+    }
   };
 
   const handleSaveEdit = async () => {
@@ -1561,11 +1585,11 @@ export function CMS() {
                                   <td className="py-3 pr-3 text-xs" style={{ color: '#666' }}>{item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : '—'}</td>
                                   <td className="py-3 pr-3">
                                     <div className="flex flex-wrap gap-2">
-                                      <button className="rounded-lg border px-2 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#333' }}>{t('cms.splash.view')}</button>
-                                      <button onClick={() => openEditForm(item)} className="rounded-lg border px-2 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#333' }}>{t('cms.splash.edit')}</button>
-                                      <button className="rounded-lg border px-2 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#333' }}>{t('cms.splash.duplicate')}</button>
-                                      <button onClick={() => handleToggleActive(item)} className="rounded-lg border px-2 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#333' }}>{t('cms.splash.enable')}</button>
-                                      <button onClick={() => handleDelete(item)} className="rounded-lg border border-red-200 px-2 py-1 text-xs text-red-600">{t('cms.deleteConfirm')}</button>
+                                      <button type="button" onClick={() => setPreviewItem(item)} className="rounded-lg border px-2 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#333' }}>{t('cms.splash.view')}</button>
+                                      <button type="button" onClick={() => openEditForm(item)} className="rounded-lg border px-2 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#333' }}>{t('cms.splash.edit')}</button>
+                                      <button type="button" onClick={() => handleDuplicateEntry(item)} className="rounded-lg border px-2 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#333' }}>{t('cms.splash.duplicate')}</button>
+                                      <button type="button" onClick={() => handleToggleActive(item)} className="rounded-lg border px-2 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#333' }}>{item.active ? 'Disable' : 'Enable'}</button>
+                                      <button type="button" onClick={() => handleDelete(item)} className="rounded-lg border border-red-200 px-2 py-1 text-xs text-red-600">{t('cms.deleteConfirm')}</button>
                                     </div>
                                   </td>
                                 </tr>
@@ -1768,6 +1792,34 @@ export function CMS() {
               )}
             </div>
           )}
+        </div>
+      )}
+
+      {previewItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-5 shadow-xl">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-semibold" style={{ color: '#333' }}>{previewItem.label || previewItem.title || previewItem.key}</h3>
+              <button type="button" onClick={() => setPreviewItem(null)} className="text-sm" style={{ color: '#666' }}>{t('cms.cancel')}</button>
+            </div>
+            <div className="overflow-hidden rounded-xl border" style={{ borderColor: '#E5DDD4', backgroundColor: '#0B1020' }}>
+              {(() => {
+                const meta = (() => { try { return previewItem.description ? JSON.parse(previewItem.description) : {}; } catch { return {}; } })();
+                const mediaType = meta?.type || (previewItem.image ? 'image' : 'video');
+                const mediaUrl = previewItem.image || '';
+                const isVideo = mediaType === 'video' || /\.(mp4|webm|mov|m3u8)(\?|$)/i.test(mediaUrl);
+                return isVideo ? (
+                  <video src={mediaUrl} autoPlay muted loop playsInline className="h-[420px] w-full object-cover" />
+                ) : (
+                  <img src={mediaUrl} alt={previewItem.label || previewItem.key} className="h-[420px] w-full object-cover" />
+                );
+              })()}
+            </div>
+            <div className="mt-4 flex items-center justify-between text-xs" style={{ color: '#666' }}>
+              <span>{previewItem.active ? 'Published' : 'Draft'}</span>
+              <span>{(() => { const meta = (() => { try { return previewItem.description ? JSON.parse(previewItem.description) : {}; } catch { return {}; } })(); return meta?.duration ? `${meta.duration}s` : 'Auto'; })()}</span>
+            </div>
+          </div>
         </div>
       )}
 
