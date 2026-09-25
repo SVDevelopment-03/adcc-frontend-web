@@ -122,7 +122,7 @@ export const updateContentSetting = async (
 
 export const getAppBanners = async (): Promise<ContentSetting[]> => {
   try {
-    const response = await api.get('/v1/banner');
+    const response = await api.get('/v1/app-banners');
     return normalizeContentSettings(response.data);
   } catch (error) {
     throw new Error(getApiErrorMessage(error, 'Failed to load app banners'));
@@ -131,7 +131,7 @@ export const getAppBanners = async (): Promise<ContentSetting[]> => {
 
 export const getAppBannersAr = async (): Promise<ContentSetting[]> => {
   try {
-    const response = await api.get('/v1/banner-ar');
+    const response = await api.get('/v1/app-banners-ar');
     return normalizeContentSettings(response.data);
   } catch (error) {
     throw new Error(getApiErrorMessage(error, 'Failed to load Arabic banners'));
@@ -154,7 +154,7 @@ export const createAppBanner = async (payload: {
   if (payload.active !== undefined) formData.append('active', String(payload.active));
   if (payload.imageFile) formData.append('image', payload.imageFile as Blob);
 
-  await api.post('/v1/banner', formData, {
+  await api.post('/v1/app-banners', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 };
@@ -168,13 +168,13 @@ export const updateAppBanner = async (
   if (payload.active !== undefined) formData.append('active', String(payload.active));
   if (payload.imageFile) formData.append('image', payload.imageFile as Blob);
 
-  await api.patch(`/v1/banner/${encodeURIComponent(key)}`, formData, {
+  await api.patch(`/v1/app-banners/${encodeURIComponent(key)}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 };
 
 export const deleteAppBanner = async (key: string): Promise<void> => {
-  await api.delete(`/v1/banner/${encodeURIComponent(key)}`);
+  await api.delete(`/v1/app-banners/${encodeURIComponent(key)}`);
 };
 
 export const createAppBannerAr = async (payload: {
@@ -193,7 +193,7 @@ export const createAppBannerAr = async (payload: {
   if (payload.active !== undefined) formData.append('active', String(payload.active));
   if (payload.imageFile) formData.append('image', payload.imageFile as Blob);
 
-  await api.post('/v1/banner-ar', formData, {
+  await api.post('/v1/app-banners-ar', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 };
@@ -207,13 +207,13 @@ export const updateAppBannerAr = async (
   if (payload.active !== undefined) formData.append('active', String(payload.active));
   if (payload.imageFile) formData.append('image', payload.imageFile as Blob);
 
-  await api.patch(`/v1/banner-ar/${encodeURIComponent(key)}`, formData, {
+  await api.patch(`/v1/app-banners-ar/${encodeURIComponent(key)}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 };
 
 export const deleteAppBannerAr = async (key: string): Promise<void> => {
-  await api.delete(`/v1/banner-ar/${encodeURIComponent(key)}`);
+  await api.delete(`/v1/app-banners-ar/${encodeURIComponent(key)}`);
 };
 
 export const deleteContentSetting = async (key: string): Promise<void> => {
