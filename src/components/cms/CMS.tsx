@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+﻿import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import axios, { AxiosError } from 'axios';
 import { Edit, GripVertical, LayoutGrid, FileText, Globe, ImageIcon, Upload } from 'lucide-react';
 import { toast } from 'sonner';
@@ -29,7 +29,6 @@ type UpdateContentSettingPayload = Partial<
   Pick<ContentSetting, 'title' | 'description' | 'image' | 'active'>
 > & {
   imageFile?: File;
-  // support video uploads stored in `image` field on the backend
   videoFile?: File;
 };
 
@@ -121,56 +120,145 @@ export const updateContentSetting = async (
   }
 };
 
-  const handleBannerArSave = async (bannerKey: string, bannerLabel: string) => {
-    const existing = appBannerArItemsMemo.find((it) => it.key === bannerKey) ?? null;
-    const file = bannerArFiles[bannerKey] ?? null;
-    const selectedTarget = bannerArTargets[bannerKey] || existing?.targetScreen || 'home';
-    const hasTargetChange = selectedTarget !== (existing?.targetScreen ?? 'home');
-    const hasPendingUpload = Boolean(file);
+export const getAppBanners = async (): Promise<ContentSetting[]> => {
+  try {
+    const response = await api.get('/v1/banner');
+    return normalizeContentSettings(response.data);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to load app banners'));
+  }
+};
 
-    if (!hasPendingUpload && !hasTargetChange) {
-      return;
-    }
+export const getAppBannersAr = async (): Promise<ContentSetting[]> => {
+  try {
+    const response = await api.get('/v1/banner-ar');
+    return normalizeContentSettings(response.data);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to load Arabic banners'));
+  }
+};
 
-    setSavingBannersAr((prev) => ({ ...prev, [bannerKey]: true }));
-    try {
-      if (existing) {
-        await updateAppBannerAr(bannerKey, {
-          targetScreen: selectedTarget,
-          ...(file ? { imageFile: file } : {}),
-        });
-      } else {
-        await createAppBannerAr({
-          key: bannerKey,
-          label: bannerLabel,
-          title: bannerLabel,
-          targetScreen: selectedTarget,
-          imageFile: file ?? undefined,
-          active: true,
-        });
-      }
-      toast.success(t('cms.appBanner.uploadSuccess'));
-      setBannerArFiles((prev) => ({ ...prev, [bannerKey]: null }));
-      if (bannerArPreviews[bannerKey]) URL.revokeObjectURL(bannerArPreviews[bannerKey]);
-      setBannerArPreviews((prev) => { const next = { ...prev }; delete next[bannerKey]; return next; });
-      if (bannerArInputRefs.current[bannerKey]) bannerArInputRefs.current[bannerKey]!.value = '';
-      await fetchAllGroupsSettings();
-    } catch (error) {
-      toast.error(getApiErrorMessage(error, t('cms.appBanner.uploadError')));
-    } finally {
-      setSavingBannersAr((prev) => ({ ...prev, [bannerKey]: false }));
-    }
-  };
+export const createAppBanner = async (payload: {
+  key: string;
+  label: string;
+  title?: string;
+  targetScreen?: string;
+  imageFile?: File;
+  active?: boolean;
+}): Promise<void> => {
+  const formData = new FormData();
+  formData.append('key', payload.key);
+  formData.append('label', payload.label);
+  if (payload.title) formData.append('title', payload.title);
+  if (payload.targetScreen) formData.append('targetScreen', payload.targetScreen);
+  if (payload.active !== undefined) formData.append('active', String(payload.active));
+  if (payload.imageFile) formData.append('image', payload.imageFile as Blob);
 
+  await api.post('/v1/banner', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};
+
+export const updateAppBanner = async (
+  key: string,
+  payload: { targetScreen?: string; imageFile?: File; active?: boolean }
+): Promise<void> => {
+  const formData = new FormData();
+  if (payload.targetScreen) formData.append('targetScreen', payload.targetScreen);
+  if (payload.active !== undefined) formData.append('active', String(payload.active));
+  if (payload.imageFile) formData.append('image', payload.imageFile as Blob);
+
+  await api.patch(`/v1/banner/${encodeURIComponent(key)}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};
+
+export const deleteAppBanner = async (key: string): Promise<void> => {
+  await api.delete(`/v1/banner/${encodeURIComponent(key)}`);
+};
+
+export const createAppBannerAr = async (payload: {
+  key: string;
+  label: string;
+  title?: string;
+  targetScreen?: string;
+  imageFile?: File;
+  active?: boolean;
+}): Promise<void> => {
+  const formData = new FormData();
+  formData.append('key', payload.key);
+  formData.append('label', payload.label);
+  if (payload.title) formData.append('title', payload.title);
+  if (payload.targetScreen) formData.append('targetScreen', payload.targetScreen);
+  if (payload.active !== undefined) formData.append('active', String(payload.active));
+  if (payload.imageFile) formData.append('image', payload.imageFile as Blob);
+
+  await api.post('/v1/banner-ar', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};
+
+export const updateAppBannerAr = async (
+  key: string,
+  payload: { targetScreen?: string; imageFile?: File; active?: boolean }
+): Promise<void> => {
+  const formData = new FormData();
+  if (payload.targetScreen) formData.append('targetScreen', payload.targetScreen);
+  if (payload.active !== undefined) formData.append('active', String(payload.active));
+  if (payload.imageFile) formData.append('image', payload.imageFile as Blob);
+
+  await api.patch(`/v1/banner-ar/${encodeURIComponent(key)}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};
+
+export const deleteAppBannerAr = async (key: string): Promise<void> => {
+  await api.delete(`/v1/banner-ar/${encodeURIComponent(key)}`);
+};
+
+export const deleteContentSetting = async (key: string): Promise<void> => {
+  await api.delete(`/v1/settings/content/${encodeURIComponent(key)}`);
+};
+
+export function CMS() {
+  const { t } = useTranslation();
+  const [activeTab, setActiveTab] = useState<'homepage' | 'static' | 'appBanner' | 'appBannerAr'>('homepage');
+  const [allItems, setAllItems] = useState<ContentSetting[]>([]);
+  const [homepageItems, setHomepageItems] = useState<ContentSetting[]>([]);
+  const [staticItems, setStaticItems] = useState<ContentSetting[]>([]);
+  const [splashItems, setSplashItems] = useState<ContentSetting[]>([]);
+  const [appBannerItems, setAppBannerItems] = useState<ContentSetting[]>([]);
+  const [appBannerArItems, setAppBannerArItems] = useState<ContentSetting[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<ContentSetting | null>(null);
+  const [togglingKey, setTogglingKey] = useState<string | null>(null);
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [bannerTargets, setBannerTargets] = useState<Record<string, string>>({});
+  const [bannerArTargets, setBannerArTargets] = useState<Record<string, string>>({});
+  const [bannerFiles, setBannerFiles] = useState<Record<string, File | null>>({});
+  const [bannerArFiles, setBannerArFiles] = useState<Record<string, File | null>>({});
+  const [bannerPreviews, setBannerPreviews] = useState<Record<string, string>>({});
+  const [bannerArPreviews, setBannerArPreviews] = useState<Record<string, string>>({});
+  const [newBannerFile, setNewBannerFile] = useState<File | null>(null);
+  const [newBannerTarget, setNewBannerTarget] = useState('home');
+  const [newBannerPreview, setNewBannerPreview] = useState('');
+  const [savingNewBanner, setSavingNewBanner] = useState(false);
+  const [savingBanners, setSavingBanners] = useState<Record<string, boolean>>({});
+  const [savingBannersAr, setSavingBannersAr] = useState<Record<string, boolean>>({});
+  const [editForm, setEditForm] = useState({ title: '', description: '', image: '', active: true });
+  const [editMediaFile, setEditMediaFile] = useState<File | null>(null);
+  const [editMediaPreviewUrl, setEditMediaPreviewUrl] = useState<string | null>(null);
+  const [editDurationSeconds, setEditDurationSeconds] = useState<number | null>(null);
+  const [editForceType, setEditForceType] = useState<'auto' | 'image' | 'video'>('auto');
+
+  const bannerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const bannerArInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+  const appBannerItemsMemo = useMemo(() => appBannerItems, [appBannerItems]);
+  const appBannerArItemsMemo = useMemo(() => appBannerArItems, [appBannerArItems]);
   const arabicBannerSlots = useMemo(() => ['banner_ar_1', 'banner_ar_2', 'banner_ar_3'], []);
-
-  const cmsStats = useMemo(() => {
-    const homepageSections = homepageItems.length;
-    const activeSections = homepageItems.filter((item) => item.active === true).length;
-    const staticPages = staticItems.length;
-    const publicPages = staticItems.filter((item) => item.active === true).length;
-    return { homepageSections, activeSections, staticPages, publicPages };
-  }, [homepageItems, staticItems]);
 
   const bannerTargetOptions = [
     { value: 'home', label: 'Home' },
@@ -183,7 +271,28 @@ export const updateContentSetting = async (
     { value: 'profile', label: 'Profile' },
   ];
 
-  const fetchAllGroupsSettings = async () => {
+  useEffect(() => {
+    setHomepageItems(allItems.filter((item) => item.group === 'homepage' || item.group === 'home'));
+    setStaticItems(
+      allItems.filter(
+        (item) =>
+          item.group === 'static' ||
+          item.group === 'static-page' ||
+          item.group === 'static_pages' ||
+          item.group === 'page'
+      )
+    );
+  }, [allItems]);
+
+  const cmsStats = useMemo(() => {
+    const homepageSections = homepageItems.length;
+    const activeSections = homepageItems.filter((item) => item.active === true).length;
+    const staticPages = staticItems.length;
+    const publicPages = staticItems.filter((item) => item.active === true).length;
+    return { homepageSections, activeSections, staticPages, publicPages };
+  }, [homepageItems, staticItems]);
+
+  const fetchAllGroupsSettings = useCallback(async () => {
     setIsLoading(true);
     setErrorMessage(null);
     try {
@@ -205,15 +314,169 @@ export const updateContentSetting = async (
       setAllItems([]);
       setAppBannerItems([]);
       setAppBannerArItems([]);
+      setSplashItems([]);
       toast.error(message);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [t]);
 
   useEffect(() => {
     void fetchAllGroupsSettings();
-  }, []);
+  }, [fetchAllGroupsSettings]);
+
+  const handleNewBannerFileChange = (file: File | null) => {
+    setNewBannerFile(file);
+    if (!file) {
+      setNewBannerPreview('');
+      return;
+    }
+    setNewBannerPreview(URL.createObjectURL(file));
+  };
+
+  const clearNewBannerUpload = () => {
+    setNewBannerFile(null);
+    setNewBannerTarget('home');
+    setNewBannerPreview('');
+  };
+
+  const handleAddNewBanner = async () => {
+    if (!newBannerFile) return;
+
+    setSavingNewBanner(true);
+    try {
+      await createAppBanner({
+        key: `banner_${Date.now()}`,
+        label: 'New Banner',
+        title: 'New Banner',
+        targetScreen: newBannerTarget,
+        imageFile: newBannerFile,
+        active: true,
+      });
+      toast.success(t('cms.appBanner.uploadSuccess'));
+      clearNewBannerUpload();
+      await fetchAllGroupsSettings();
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, t('cms.appBanner.uploadError')));
+    } finally {
+      setSavingNewBanner(false);
+    }
+  };
+
+  const handleBannerFileChange = (key: string, file: File | null) => {
+    setBannerFiles((prev) => ({ ...prev, [key]: file }));
+
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      setBannerPreviews((prev) => ({ ...prev, [key]: previewUrl }));
+      return;
+    }
+
+    setBannerPreviews((prev) => {
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+  };
+
+  const handleBannerSave = async (bannerKey: string, bannerLabel: string) => {
+    const existing = appBannerItemsMemo.find((it) => it.key === bannerKey) ?? null;
+    const file = bannerFiles[bannerKey] ?? null;
+    const selectedTarget = bannerTargets[bannerKey] || existing?.targetScreen || 'home';
+    const hasTargetChange = selectedTarget !== (existing?.targetScreen ?? 'home');
+    const hasPendingUpload = Boolean(file);
+
+    if (!hasPendingUpload && !hasTargetChange) return;
+
+    setSavingBanners((prev) => ({ ...prev, [bannerKey]: true }));
+    try {
+      if (existing) {
+        await updateAppBanner(bannerKey, {
+          targetScreen: selectedTarget,
+          ...(file ? { imageFile: file } : {}),
+        });
+      } else {
+        await createAppBanner({
+          key: bannerKey,
+          label: bannerLabel,
+          title: bannerLabel,
+          targetScreen: selectedTarget,
+          imageFile: file ?? undefined,
+          active: true,
+        });
+      }
+      toast.success(t('cms.appBanner.uploadSuccess'));
+      setBannerFiles((prev) => ({ ...prev, [bannerKey]: null }));
+      setBannerPreviews((prev) => {
+        const next = { ...prev };
+        delete next[bannerKey];
+        return next;
+      });
+      if (bannerInputRefs.current[bannerKey]) bannerInputRefs.current[bannerKey]!.value = '';
+      await fetchAllGroupsSettings();
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, t('cms.appBanner.uploadError')));
+    } finally {
+      setSavingBanners((prev) => ({ ...prev, [bannerKey]: false }));
+    }
+  };
+
+  const handleBannerArFileChange = (key: string, file: File | null) => {
+    setBannerArFiles((prev) => ({ ...prev, [key]: file }));
+
+    if (file) {
+      setBannerArPreviews((prev) => ({ ...prev, [key]: URL.createObjectURL(file) }));
+      return;
+    }
+
+    setBannerArPreviews((prev) => {
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+  };
+
+  const handleBannerArSave = async (bannerKey: string, bannerLabel: string) => {
+    const existing = appBannerArItemsMemo.find((it) => it.key === bannerKey) ?? null;
+    const file = bannerArFiles[bannerKey] ?? null;
+    const selectedTarget = bannerArTargets[bannerKey] || existing?.targetScreen || 'home';
+    const hasTargetChange = selectedTarget !== (existing?.targetScreen ?? 'home');
+    const hasPendingUpload = Boolean(file);
+
+    if (!hasPendingUpload && !hasTargetChange) return;
+
+    setSavingBannersAr((prev) => ({ ...prev, [bannerKey]: true }));
+    try {
+      if (existing) {
+        await updateAppBannerAr(bannerKey, {
+          targetScreen: selectedTarget,
+          ...(file ? { imageFile: file } : {}),
+        });
+      } else {
+        await createAppBannerAr({
+          key: bannerKey,
+          label: bannerLabel,
+          title: bannerLabel,
+          targetScreen: selectedTarget,
+          imageFile: file ?? undefined,
+          active: true,
+        });
+      }
+      toast.success(t('cms.appBanner.uploadSuccess'));
+      setBannerArFiles((prev) => ({ ...prev, [bannerKey]: null }));
+      setBannerArPreviews((prev) => {
+        const next = { ...prev };
+        delete next[bannerKey];
+        return next;
+      });
+      if (bannerArInputRefs.current[bannerKey]) bannerArInputRefs.current[bannerKey]!.value = '';
+      await fetchAllGroupsSettings();
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, t('cms.appBanner.uploadError')));
+    } finally {
+      setSavingBannersAr((prev) => ({ ...prev, [bannerKey]: false }));
+    }
+  };
 
   const openEditForm = (item: ContentSetting) => {
     setSelectedItem(item);
@@ -248,19 +511,23 @@ export const updateContentSetting = async (
       patchPayload.description = editForm.description;
     }
     if (editMediaFile) {
-      patchPayload.imageFile = editMediaFile; // backend accepts any file field and will attach to `image`
-      // embed metadata in description (duration/type) so backend can persist it alongside the image URL
+      patchPayload.imageFile = editMediaFile;
       try {
-        const meta = { duration: editDurationSeconds ?? undefined, type: editForceType === 'auto' ? undefined : editForceType };
-        const existingDesc = editForm.description || '';
-        const merged = Object.assign({}, typeof existingDesc === 'string' ? {} : {}, typeof existingDesc === 'string' ? {} : {});
-        // simply override description with JSON containing duration and type when provided
+        const meta = {
+          duration: editDurationSeconds ?? undefined,
+          type: editForceType === 'auto' ? undefined : editForceType,
+        };
         patchPayload.description = JSON.stringify(meta);
-      } catch (_) {}
+      } catch (_) {
+        // ignore metadata serialization issues, keep the field valid
+      }
     } else if ((selectedItem.image ?? '') !== editForm.image) {
       patchPayload.image = editForm.image;
     }
-    if ((selectedItem.active ?? true) !== editForm.active) patchPayload.active = editForm.active;
+
+    if ((selectedItem.active ?? true) !== editForm.active) {
+      patchPayload.active = editForm.active;
+    }
 
     if (Object.keys(patchPayload).length === 0) {
       toast.info(t('cms.toasts.noEditableChanges'));
@@ -330,10 +597,7 @@ export const updateContentSetting = async (
 
       {isLoading ? (
         <div className="flex items-center justify-center py-10">
-          <div
-            className="animate-spin rounded-full h-10 w-10 border-b-2"
-            style={{ borderColor: '#C12D32' }}
-          />
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2" style={{ borderColor: '#C12D32' }} />
         </div>
       ) : errorMessage ? (
         <div className="py-8 text-sm" style={{ color: '#C12D32' }}>
@@ -341,7 +605,6 @@ export const updateContentSetting = async (
         </div>
       ) : (
         <div className="space-y-6">
-          {/* Tiles */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="p-6 rounded-2xl shadow-sm" style={{ backgroundColor: '#ECC180' }}>
               <div className="flex items-center gap-3 mb-2">
@@ -376,7 +639,6 @@ export const updateContentSetting = async (
             </div>
           </div>
 
-          {/* Tabs */}
           <div className="border-b border-gray-200">
             <div className="flex gap-6">
               {(['homepage', 'static', 'appBanner', 'appBannerAr'] as const).map((tab) => (
@@ -392,18 +654,15 @@ export const updateContentSetting = async (
                   {tab === 'homepage'
                     ? t('cms.tabs.homepageSections')
                     : tab === 'static'
-                    ? t('cms.tabs.staticPages')
-                    : tab === 'appBanner'
-                    ? t('cms.tabs.appBanner')
-                        : tab === 'appBannerAr'
-                        ? t('cms.tabs.appBannerAr')
-                        : t('cms.tabs.splash')}
+                      ? t('cms.tabs.staticPages')
+                      : tab === 'appBanner'
+                        ? t('cms.tabs.appBanner')
+                        : t('cms.tabs.appBannerAr')}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Tab Content */}
           {activeTab === 'appBanner' ? (
             <div className="p-6 rounded-2xl shadow-sm bg-white">
               <h2 className="text-xl mb-6" style={{ color: '#333' }}>{t('cms.tabs.appBanner')}</h2>
@@ -499,17 +758,9 @@ export const updateContentSetting = async (
                           </div>
                         </div>
 
-                        <div
-                          className="w-full rounded-lg overflow-hidden flex items-center justify-center"
-                          style={{ backgroundColor: '#F3EEE7', minHeight: '160px' }}
-                        >
+                        <div className="w-full rounded-lg overflow-hidden flex items-center justify-center" style={{ backgroundColor: '#F3EEE7', minHeight: '160px' }}>
                           {previewUrl ? (
-                            <img
-                              src={previewUrl}
-                              alt={item.label || item.key}
-                              className="w-full object-cover"
-                              style={{ maxHeight: '200px' }}
-                            />
+                            <img src={previewUrl} alt={item.label || item.key} className="w-full object-cover" style={{ maxHeight: '200px' }} />
                           ) : (
                             <div className="flex flex-col items-center gap-2 py-8">
                               <ImageIcon className="w-10 h-10" style={{ color: '#CCC' }} />
@@ -527,7 +778,9 @@ export const updateContentSetting = async (
                           <input
                             type="file"
                             accept="image/*"
-                            ref={(el) => { bannerInputRefs.current[item.key] = el; }}
+                            ref={(el) => {
+                              bannerInputRefs.current[item.key] = el;
+                            }}
                             onChange={(e) => handleBannerFileChange(item.key, e.target.files?.[0] ?? null)}
                             className="w-full border rounded-lg px-3 py-2 text-sm"
                             style={{ borderColor: '#E5DDD4' }}
@@ -602,17 +855,9 @@ export const updateContentSetting = async (
                         </div>
                       </div>
 
-                      <div
-                        className="w-full rounded-lg overflow-hidden flex items-center justify-center"
-                        style={{ backgroundColor: '#F3EEE7', minHeight: '160px' }}
-                      >
+                      <div className="w-full rounded-lg overflow-hidden flex items-center justify-center" style={{ backgroundColor: '#F3EEE7', minHeight: '160px' }}>
                         {previewUrl ? (
-                          <img
-                            src={previewUrl}
-                            alt={slotLabel}
-                            className="w-full object-cover"
-                            style={{ maxHeight: '200px' }}
-                          />
+                          <img src={previewUrl} alt={slotLabel} className="w-full object-cover" style={{ maxHeight: '200px' }} />
                         ) : (
                           <div className="flex flex-col items-center gap-2 py-8">
                             <ImageIcon className="w-10 h-10" style={{ color: '#CCC' }} />
@@ -630,7 +875,9 @@ export const updateContentSetting = async (
                         <input
                           type="file"
                           accept="image/*"
-                          ref={(el) => { bannerArInputRefs.current[slotKey] = el; }}
+                          ref={(el) => {
+                            bannerArInputRefs.current[slotKey] = el;
+                          }}
                           onChange={(e) => handleBannerArFileChange(slotKey, e.target.files?.[0] ?? null)}
                           className="w-full border rounded-lg px-3 py-2 text-sm"
                           style={{ borderColor: '#E5DDD4' }}
@@ -678,7 +925,7 @@ export const updateContentSetting = async (
                 })}
               </div>
             </div>
-            ) : activeTab === 'homepage' ? (
+          ) : activeTab === 'homepage' ? (
             <div className="p-6 rounded-2xl shadow-sm bg-white">
               <h2 className="text-xl mb-6" style={{ color: '#333' }}>{t('cms.tabs.homepageSections')}</h2>
               {homepageItems.length === 0 ? (
@@ -686,11 +933,7 @@ export const updateContentSetting = async (
               ) : (
                 <div className="space-y-3">
                   {homepageItems.map((item, idx) => (
-                    <div
-                      key={item._id || item.key}
-                      className="p-4 rounded-xl flex items-center gap-4"
-                      style={{ backgroundColor: '#F3EEE7' }}
-                    >
+                    <div key={item._id || item.key} className="p-4 rounded-xl flex items-center gap-4" style={{ backgroundColor: '#F3EEE7' }}>
                       <div className="flex items-center gap-3 min-w-[56px]">
                         <GripVertical className="w-5 h-5" style={{ color: '#999' }} />
                         <div className="text-sm font-medium" style={{ color: '#C12D32' }}>
@@ -711,56 +954,7 @@ export const updateContentSetting = async (
                         className="px-3 py-1 rounded-full text-xs text-white disabled:opacity-60"
                         style={{ backgroundColor: item.active ? '#10B981' : '#8A8A8A' }}
                       >
-                        {togglingKey === item.key
-                          ? t('cms.saving')
-                          : item.active
-                            ? t('cms.active')
-                            : t('cms.inactive')}
-                      </button>
-                      <button
-                        onClick={() => openEditForm(item)}
-                        className="p-2 hover:bg-white rounded-lg transition-colors"
-                        aria-label={`Edit ${item.key}`}
-                      >
-                        <Edit className="w-4 h-4" style={{ color: '#666' }} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ) : activeTab === 'splash' ? (
-            <div className="p-6 rounded-2xl shadow-sm bg-white">
-              <h2 className="text-xl mb-6" style={{ color: '#333' }}>{t('cms.tabs.splash')}</h2>
-
-              {splashItems.length === 0 ? (
-                <div className="py-6 text-sm" style={{ color: '#666' }}>{t('cms.noSectionItems')}</div>
-              ) : (
-                <div className="space-y-3">
-                  {splashItems.map((item) => (
-                    <div key={item._id || item.key} className="p-4 rounded-xl flex items-center gap-4" style={{ backgroundColor: '#F3EEE7' }}>
-                      <div className="flex items-center gap-3">
-                        <ImageIcon className="w-5 h-5" style={{ color: '#999' }} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-sm mb-1" style={{ color: '#333' }}>
-                          {item.label || item.title}
-                        </div>
-                        <div className="text-xs mb-1" style={{ color: '#666' }}>
-                          {item.description || item.key}
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => handleToggleActive(item)}
-                        disabled={togglingKey === item.key}
-                        className="px-3 py-1 rounded-full text-xs text-white disabled:opacity-60"
-                        style={{ backgroundColor: item.active ? '#10B981' : '#8A8A8A' }}
-                      >
-                        {togglingKey === item.key
-                          ? t('cms.saving')
-                          : item.active
-                            ? t('cms.active')
-                            : t('cms.inactive')}
+                        {togglingKey === item.key ? t('cms.saving') : item.active ? t('cms.active') : t('cms.inactive')}
                       </button>
                       <button
                         onClick={() => openEditForm(item)}
@@ -782,11 +976,7 @@ export const updateContentSetting = async (
               ) : (
                 <div className="space-y-3">
                   {staticItems.map((item) => (
-                    <div
-                      key={item._id || item.key}
-                      className="p-4 rounded-xl flex items-center gap-4"
-                      style={{ backgroundColor: '#F3EEE7' }}
-                    >
+                    <div key={item._id || item.key} className="p-4 rounded-xl flex items-center gap-4" style={{ backgroundColor: '#F3EEE7' }}>
                       <div className="flex items-center gap-3">
                         <FileText className="w-5 h-5" style={{ color: '#999' }} />
                       </div>
@@ -804,11 +994,7 @@ export const updateContentSetting = async (
                         className="px-3 py-1 rounded-full text-xs text-white disabled:opacity-60"
                         style={{ backgroundColor: item.active ? '#10B981' : '#8A8A8A' }}
                       >
-                        {togglingKey === item.key
-                          ? t('cms.saving')
-                          : item.active
-                            ? t('cms.active')
-                            : t('cms.inactive')}
+                        {togglingKey === item.key ? t('cms.saving') : item.active ? t('cms.active') : t('cms.inactive')}
                       </button>
                       <button
                         onClick={() => openEditForm(item)}
@@ -827,8 +1013,8 @@ export const updateContentSetting = async (
       )}
 
       {selectedItem && (
-        <div className="fixed inset-0  z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="w-full max-w-xl h-screen overflow-auto rounded-2xl  bg-white p-6 space-y-4">
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+          <div className="w-full max-w-xl h-screen overflow-auto rounded-2xl bg-white p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg" style={{ color: '#333' }}>
                 {t('cms.editSection')}: {selectedItem.label || selectedItem.key || selectedItem.title}
@@ -837,43 +1023,8 @@ export const updateContentSetting = async (
                 {t('cms.cancel')}
               </button>
             </div>
-        
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* <div className="space-y-1">
-                <label className="block text-xs font-medium" style={{ color: '#666' }}>
-                  Group
-                </label>
-                <input
-                  value={selectedItem.group}
-                  readOnly
-                  className="w-full border rounded-lg px-3 py-2 text-sm bg-gray-100"
-                  aria-label="group-readonly"
-                />
-              </div> */}
-              {/* <div className="space-y-1">
-                <label className="block text-xs font-medium" style={{ color: '#666' }}>
-                  Key
-                </label>
-                <input
-                  value={selectedItem.key}
-                  readOnly
-                  className="w-full border rounded-lg px-3 py-2 text-sm bg-gray-100"
-                  aria-label="key-readonly"
-                />
-              </div> */}
-              {/* <div className="md:col-span-2 space-y-1">
-                <label className="block text-xs font-medium" style={{ color: '#666' }}>
-                  Label
-                </label>
-                <input
-                  value={selectedItem.label}
-                  readOnly
-                  className="w-full border rounded-lg px-3 py-2 text-sm bg-gray-100"
-                  aria-label="label-readonly"
-                />
-              </div> */}
-
               <div className="md:col-span-2 space-y-1">
                 <label className="block text-xs font-medium" style={{ color: '#666' }}>
                   {t('cms.fields.title')}
@@ -885,6 +1036,7 @@ export const updateContentSetting = async (
                   className="w-full border rounded-lg px-3 py-2 text-sm"
                 />
               </div>
+
               <div className="md:col-span-2 space-y-2">
                 <label className="block text-xs font-medium" style={{ color: '#666' }}>
                   {t('cms.imagePreview')}
@@ -903,6 +1055,7 @@ export const updateContentSetting = async (
                   ) : null}
                 </div>
               </div>
+
               <div className="md:col-span-2 space-y-2">
                 <label className="block text-xs font-medium" style={{ color: '#666' }}>
                   {t('cms.uploadImage')}
@@ -924,28 +1077,38 @@ export const updateContentSetting = async (
 
                 <div className="mt-2 flex items-center gap-3">
                   <label className="text-xs" style={{ color: '#666' }}>{t('cms.fields.durationSeconds')}</label>
-                  <input type="number" min={1} value={editDurationSeconds ?? ''} onChange={(e) => setEditDurationSeconds(e.target.value ? Number(e.target.value) : null)} className="w-24 border rounded px-2 py-1 text-sm" />
-                  <select value={editForceType} onChange={(e) => setEditForceType(e.target.value as any)} className="border rounded px-2 py-1 text-sm">
+                  <input
+                    type="number"
+                    min={1}
+                    value={editDurationSeconds ?? ''}
+                    onChange={(e) => setEditDurationSeconds(e.target.value ? Number(e.target.value) : null)}
+                    className="w-24 border rounded px-2 py-1 text-sm"
+                  />
+                  <select
+                    value={editForceType}
+                    onChange={(e) => setEditForceType(e.target.value as 'auto' | 'image' | 'video')}
+                    className="border rounded px-2 py-1 text-sm"
+                  >
                     <option value="auto">Auto</option>
                     <option value="image">Force Image</option>
                     <option value="video">Force Video</option>
                   </select>
                 </div>
               </div>
+
               <div className="md:col-span-2 space-y-1">
                 <label className="block text-xs font-medium" style={{ color: '#666' }}>
                   {t('cms.fields.description')}
                 </label>
                 <textarea
                   value={editForm.description}
-                  onChange={(event) =>
-                    setEditForm((prev) => ({ ...prev, description: event.target.value }))
-                  }
+                  onChange={(event) => setEditForm((prev) => ({ ...prev, description: event.target.value }))}
                   placeholder={t('cms.fields.descriptionPlaceholder')}
                   rows={4}
                   className="w-full border rounded-lg px-3 py-2 text-sm"
                 />
               </div>
+
               <div className="md:col-span-2">
                 <label className="flex items-center gap-2 text-sm">
                   <input
@@ -959,11 +1122,7 @@ export const updateContentSetting = async (
             </div>
 
             <div className="flex justify-end gap-3">
-              <button
-                onClick={closeEditForm}
-                className="px-4 py-2 rounded-lg border"
-                style={{ color: '#666' }}
-              >
+              <button onClick={closeEditForm} className="px-4 py-2 rounded-lg border" style={{ color: '#666' }}>
                 {t('cms.cancel')}
               </button>
               <button
@@ -981,3 +1140,5 @@ export const updateContentSetting = async (
     </div>
   );
 }
+
+export default CMS;
