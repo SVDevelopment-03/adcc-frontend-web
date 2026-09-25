@@ -370,6 +370,21 @@ export function CMS() {
     image: '',
     active: true,
   });
+  const [splashEditForm, setSplashEditForm] = useState({
+    name: '',
+    mediaType: 'image' as 'image' | 'video',
+    duration: 3,
+    autoplay: true,
+    loop: false,
+    muted: true,
+    backgroundColor: '#0B1020',
+    objectFit: 'cover' as 'cover' | 'contain',
+    enabled: true,
+    startDate: '',
+    endDate: '',
+    priority: 1,
+    status: 'draft' as 'draft' | 'published' | 'scheduled',
+  });
   const [editMediaFile, setEditMediaFile] = useState<File | null>(null);
   const [editMediaPreviewUrl, setEditMediaPreviewUrl] = useState<string | null>(null);
   const [editDurationSeconds, setEditDurationSeconds] = useState<number | null>(null);
@@ -705,14 +720,60 @@ export function CMS() {
     void fetchAllGroupsSettings();
   }, []);
 
+  const parseSplashMetadata = (description?: string) => {
+    const fallback = {
+      name: '',
+      mediaType: 'image' as 'image' | 'video',
+      duration: 3,
+      autoplay: true,
+      loop: false,
+      muted: true,
+      backgroundColor: '#0B1020',
+      objectFit: 'cover' as 'cover' | 'contain',
+      enabled: true,
+      startDate: '',
+      endDate: '',
+      priority: 1,
+      status: 'draft' as 'draft' | 'published' | 'scheduled',
+    };
+
+    if (!description) return fallback;
+
+    try {
+      const parsed = JSON.parse(description) as Record<string, unknown>;
+      const mediaType = parsed.type === 'video' || parsed.mediaType === 'video' ? 'video' : 'image';
+      const durationValue = Number(parsed.duration ?? 3);
+      return {
+        name: typeof parsed.name === 'string' ? parsed.name : '',
+        mediaType,
+        duration: Number.isFinite(durationValue) && durationValue > 0 ? durationValue : 3,
+        autoplay: parsed.autoplay === true,
+        loop: parsed.loop === true,
+        muted: parsed.muted === true,
+        backgroundColor: typeof parsed.backgroundColor === 'string' ? parsed.backgroundColor : '#0B1020',
+        objectFit: parsed.objectFit === 'contain' ? 'contain' : 'cover',
+        enabled: parsed.enabled !== false,
+        startDate: typeof parsed.startDate === 'string' ? parsed.startDate : '',
+        endDate: typeof parsed.endDate === 'string' ? parsed.endDate : '',
+        priority: Number(parsed.priority ?? 1),
+        status: parsed.status === 'published' || parsed.status === 'scheduled' ? parsed.status : 'draft',
+      } satisfies typeof fallback;
+    } catch {
+      return fallback;
+    }
+  };
+
   const openEditForm = (item: ContentSetting) => {
+    const parsedSplash = parseSplashMetadata(item.description);
+
     setSelectedItem(item);
     setEditForm({
-      title: item.title ?? '',
+      title: item.title ?? parsedSplash.name ?? '',
       description: item.description ?? '',
       image: item.image ?? '',
-      active: item.active ?? true,
+      active: item.active ?? parsedSplash.enabled ?? true,
     });
+    setSplashEditForm(parsedSplash.name || item.label ? { ...parsedSplash, name: parsedSplash.name || item.label || item.title || '' } : parsedSplash);
     setEditMediaFile(null);
     setEditMediaPreviewUrl(null);
     setEditDurationSeconds(null);
@@ -722,6 +783,21 @@ export function CMS() {
   const closeEditForm = () => {
     setSelectedItem(null);
     setEditForm({ title: '', description: '', image: '', active: true });
+    setSplashEditForm({
+      name: '',
+      mediaType: 'image',
+      duration: 3,
+      autoplay: true,
+      loop: false,
+      muted: true,
+      backgroundColor: '#0B1020',
+      objectFit: 'cover',
+      enabled: true,
+      startDate: '',
+      endDate: '',
+      priority: 1,
+      status: 'draft',
+    });
     setEditMediaFile(null);
     setEditMediaPreviewUrl(null);
     setEditDurationSeconds(null);
@@ -733,24 +809,44 @@ export function CMS() {
 
     const patchPayload: UpdateContentSettingPayload = {};
 
-    if ((selectedItem.title ?? '') !== editForm.title) patchPayload.title = editForm.title;
-    if ((selectedItem.description ?? '') !== editForm.description) {
-      patchPayload.description = editForm.description;
+    if (selectedItem.group === 'splash-screen') {
+      const nextTitle = splashEditForm.name || editForm.title || selectedItem.label || selectedItem.key;
+      const nextDescription = JSON.stringify({
+        name: splashEditForm.name || nextTitle,
+        type: splashEditForm.mediaType,
+        mediaType: splashEditForm.mediaType,
+        duration: splashEditForm.mediaType === 'video' ? undefined : splashEditForm.duration,
+        autoplay: splashEditForm.autoplay,
+        loop: splashEditForm.loop,
+        muted: splashEditForm.muted,
+        backgroundColor: splashEditForm.backgroundColor,
+        objectFit: splashEditForm.objectFit,
+        enabled: splashEditForm.enabled,
+        startDate: splashEditForm.startDate || undefined,
+        endDate: splashEditForm.endDate || undefined,
+        priority: splashEditForm.priority,
+        status: splashEditForm.status,
+      });
+
+      if ((selectedItem.title ?? '') !== nextTitle) patchPayload.title = nextTitle;
+      if ((selectedItem.description ?? '') !== nextDescription) patchPayload.description = nextDescription;
+      if (editMediaFile) patchPayload.imageFile = editMediaFile;
+      if ((selectedItem.active ?? true) !== splashEditForm.enabled) patchPayload.active = splashEditForm.enabled;
+      if (editMediaFile === null && selectedItem.image && editForm.image !== selectedItem.image) {
+        patchPayload.image = editForm.image;
+      }
+    } else {
+      if ((selectedItem.title ?? '') !== editForm.title) patchPayload.title = editForm.title;
+      if ((selectedItem.description ?? '') !== editForm.description) {
+        patchPayload.description = editForm.description;
+      }
+      if (editMediaFile) {
+        patchPayload.imageFile = editMediaFile;
+      } else if ((selectedItem.image ?? '') !== editForm.image) {
+        patchPayload.image = editForm.image;
+      }
+      if ((selectedItem.active ?? true) !== editForm.active) patchPayload.active = editForm.active;
     }
-    if (editMediaFile) {
-      patchPayload.imageFile = editMediaFile; // backend accepts any file field and will attach to `image`
-      // embed metadata in description (duration/type) so backend can persist it alongside the image URL
-      try {
-        const meta = { duration: editDurationSeconds ?? undefined, type: editForceType === 'auto' ? undefined : editForceType };
-        const existingDesc = editForm.description || '';
-        const merged = Object.assign({}, typeof existingDesc === 'string' ? {} : {}, typeof existingDesc === 'string' ? {} : {});
-        // simply override description with JSON containing duration and type when provided
-        patchPayload.description = JSON.stringify(meta);
-      } catch (_) {}
-    } else if ((selectedItem.image ?? '') !== editForm.image) {
-      patchPayload.image = editForm.image;
-    }
-    if ((selectedItem.active ?? true) !== editForm.active) patchPayload.active = editForm.active;
 
     if (Object.keys(patchPayload).length === 0) {
       toast.info(t('cms.toasts.noEditableChanges'));
@@ -1688,124 +1784,258 @@ export function CMS() {
             </div>
         
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* <div className="space-y-1">
-                <label className="block text-xs font-medium" style={{ color: '#666' }}>
-                  Group
-                </label>
-                <input
-                  value={selectedItem.group}
-                  readOnly
-                  className="w-full border rounded-lg px-3 py-2 text-sm bg-gray-100"
-                  aria-label="group-readonly"
-                />
-              </div> */}
-              {/* <div className="space-y-1">
-                <label className="block text-xs font-medium" style={{ color: '#666' }}>
-                  Key
-                </label>
-                <input
-                  value={selectedItem.key}
-                  readOnly
-                  className="w-full border rounded-lg px-3 py-2 text-sm bg-gray-100"
-                  aria-label="key-readonly"
-                />
-              </div> */}
-              {/* <div className="md:col-span-2 space-y-1">
-                <label className="block text-xs font-medium" style={{ color: '#666' }}>
-                  Label
-                </label>
-                <input
-                  value={selectedItem.label}
-                  readOnly
-                  className="w-full border rounded-lg px-3 py-2 text-sm bg-gray-100"
-                  aria-label="label-readonly"
-                />
-              </div> */}
-
-              <div className="md:col-span-2 space-y-1">
-                <label className="block text-xs font-medium" style={{ color: '#666' }}>
-                  {t('cms.fields.title')}
-                </label>
-                <input
-                  value={editForm.title}
-                  onChange={(event) => setEditForm((prev) => ({ ...prev, title: event.target.value }))}
-                  placeholder={t('cms.fields.titlePlaceholder')}
-                  className="w-full border rounded-lg px-3 py-2 text-sm"
-                />
-              </div>
-              <div className="md:col-span-2 space-y-2">
-                <label className="block text-xs font-medium" style={{ color: '#666' }}>
-                  {t('cms.imagePreview')}
-                </label>
-                <div className="w-full border rounded-lg p-2" style={{ backgroundColor: '#FAF7F2' }}>
-                  <img
-                    src={editMediaPreviewUrl || selectedItem?.image || ''}
-                    alt=""
-                    className="w-full h-40 object-cover rounded-md"
-                    style={{ display: selectedItem?.image || editMediaPreviewUrl ? 'block' : 'none' }}
+            {selectedItem.group === 'splash-screen' ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2 space-y-1">
+                  <label className="block text-xs font-medium uppercase" style={{ color: '#666' }}>
+                    {t('cms.splash.name')}
+                  </label>
+                  <input
+                    value={splashEditForm.name}
+                    onChange={(event) => setSplashEditForm((prev) => ({ ...prev, name: event.target.value }))}
+                    className="w-full border rounded-lg px-3 py-2 text-sm"
                   />
-                  {!selectedItem?.image && !editMediaPreviewUrl ? (
-                    <div className="text-xs" style={{ color: '#999' }}>
-                      {t('cms.imageNotAvailable')}
-                    </div>
-                  ) : null}
                 </div>
-              </div>
-              <div className="md:col-span-2 space-y-2">
-                <label className="block text-xs font-medium" style={{ color: '#666' }}>
-                  {t('cms.uploadImage')}
-                </label>
-                <input
-                  type="file"
-                  accept="image/*,video/*"
-                  onChange={(event) => {
-                    const file = event.target.files?.[0] ?? null;
-                    setEditMediaFile(file);
-                  }}
-                  className="border rounded-lg px-3 py-2 text-sm w-full"
-                />
-                {editMediaFile ? (
-                  <p className="text-xs" style={{ color: '#666' }}>
-                    {t('cms.selectedFile')}: {editMediaFile.name}
-                  </p>
-                ) : null}
 
-                <div className="mt-2 flex items-center gap-3">
-                  <label className="text-xs" style={{ color: '#666' }}>{t('cms.fields.durationSeconds')}</label>
-                  <input type="number" min={1} value={editDurationSeconds ?? ''} onChange={(e) => setEditDurationSeconds(e.target.value ? Number(e.target.value) : null)} className="w-24 border rounded px-2 py-1 text-sm" />
-                  <select value={editForceType} onChange={(e) => setEditForceType(e.target.value as any)} className="border rounded px-2 py-1 text-sm">
-                    <option value="auto">Auto</option>
-                    <option value="image">Force Image</option>
-                    <option value="video">Force Video</option>
+                <div>
+                  <label className="block text-xs font-medium uppercase" style={{ color: '#666' }}>
+                    {t('cms.splash.mediaType')}
+                  </label>
+                  <select
+                    value={splashEditForm.mediaType}
+                    onChange={(event) => setSplashEditForm((prev) => ({ ...prev, mediaType: event.target.value as 'image' | 'video' }))}
+                    className="w-full border rounded-lg px-3 py-2 text-sm"
+                  >
+                    <option value="image">{t('cms.splash.image')}</option>
+                    <option value="video">{t('cms.splash.video')}</option>
                   </select>
                 </div>
-              </div>
-              <div className="md:col-span-2 space-y-1">
-                <label className="block text-xs font-medium" style={{ color: '#666' }}>
-                  {t('cms.fields.description')}
-                </label>
-                <textarea
-                  value={editForm.description}
-                  onChange={(event) =>
-                    setEditForm((prev) => ({ ...prev, description: event.target.value }))
-                  }
-                  placeholder={t('cms.fields.descriptionPlaceholder')}
-                  rows={4}
-                  className="w-full border rounded-lg px-3 py-2 text-sm"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="flex items-center gap-2 text-sm">
+
+                <div>
+                  <label className="block text-xs font-medium uppercase" style={{ color: '#666' }}>
+                    {t('cms.splash.status')}
+                  </label>
+                  <select
+                    value={splashEditForm.status}
+                    onChange={(event) => setSplashEditForm((prev) => ({ ...prev, status: event.target.value as 'draft' | 'published' | 'scheduled' }))}
+                    className="w-full border rounded-lg px-3 py-2 text-sm"
+                  >
+                    <option value="draft">{t('cms.splash.draft')}</option>
+                    <option value="published">{t('cms.splash.published')}</option>
+                    <option value="scheduled">{t('cms.splash.scheduled')}</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium uppercase" style={{ color: '#666' }}>
+                    {t('cms.splash.durationSeconds')}
+                  </label>
                   <input
-                    type="checkbox"
-                    checked={editForm.active}
-                    onChange={(event) => setEditForm((prev) => ({ ...prev, active: event.target.checked }))}
+                    type="number"
+                    min={1}
+                    value={splashEditForm.mediaType === 'video' ? '' : splashEditForm.duration}
+                    onChange={(event) => setSplashEditForm((prev) => ({ ...prev, duration: Number(event.target.value || 3) }))}
+                    disabled={splashEditForm.mediaType === 'video'}
+                    className="w-full border rounded-lg px-3 py-2 text-sm disabled:opacity-50"
                   />
-                  {t('cms.active')}
-                </label>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium uppercase" style={{ color: '#666' }}>
+                    {t('cms.splash.priority')}
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={splashEditForm.priority}
+                    onChange={(event) => setSplashEditForm((prev) => ({ ...prev, priority: Number(event.target.value || 1) }))}
+                    className="w-full border rounded-lg px-3 py-2 text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium uppercase" style={{ color: '#666' }}>
+                    {t('cms.splash.startDate')}
+                  </label>
+                  <input
+                    type="date"
+                    value={splashEditForm.startDate}
+                    onChange={(event) => setSplashEditForm((prev) => ({ ...prev, startDate: event.target.value }))}
+                    className="w-full border rounded-lg px-3 py-2 text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium uppercase" style={{ color: '#666' }}>
+                    {t('cms.splash.endDate')}
+                  </label>
+                  <input
+                    type="date"
+                    value={splashEditForm.endDate}
+                    onChange={(event) => setSplashEditForm((prev) => ({ ...prev, endDate: event.target.value }))}
+                    className="w-full border rounded-lg px-3 py-2 text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium uppercase" style={{ color: '#666' }}>
+                    {t('cms.splash.backgroundColor')}
+                  </label>
+                  <input
+                    type="color"
+                    value={splashEditForm.backgroundColor}
+                    onChange={(event) => setSplashEditForm((prev) => ({ ...prev, backgroundColor: event.target.value }))}
+                    className="h-11 w-full border rounded-lg px-1 py-1"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium uppercase" style={{ color: '#666' }}>
+                    {t('cms.splash.objectFit')}
+                  </label>
+                  <select
+                    value={splashEditForm.objectFit}
+                    onChange={(event) => setSplashEditForm((prev) => ({ ...prev, objectFit: event.target.value as 'cover' | 'contain' }))}
+                    className="w-full border rounded-lg px-3 py-2 text-sm"
+                  >
+                    <option value="cover">{t('cms.splash.cover')}</option>
+                    <option value="contain">{t('cms.splash.contain')}</option>
+                  </select>
+                </div>
+
+                <div className="md:col-span-2 space-y-2">
+                  <label className="block text-xs font-medium uppercase" style={{ color: '#666' }}>
+                    {t('cms.splash.uploadMedia')}
+                  </label>
+                  <div className="w-full border rounded-lg p-2" style={{ backgroundColor: '#FAF7F2' }}>
+                    <img
+                      src={editMediaPreviewUrl || selectedItem?.image || ''}
+                      alt=""
+                      className="w-full h-40 object-cover rounded-md"
+                      style={{ display: selectedItem?.image || editMediaPreviewUrl ? 'block' : 'none' }}
+                    />
+                    {!selectedItem?.image && !editMediaPreviewUrl ? (
+                      <div className="text-xs" style={{ color: '#999' }}>
+                        {t('cms.splash.uploadMediaPreview')}
+                      </div>
+                    ) : null}
+                  </div>
+                  <input
+                    type="file"
+                    accept={splashEditForm.mediaType === 'video' ? 'video/*' : 'image/*,.webp,.jpg,.jpeg,.png'}
+                    onChange={(event) => setEditMediaFile(event.target.files?.[0] ?? null)}
+                    className="border rounded-lg px-3 py-2 text-sm w-full"
+                  />
+                </div>
+
+                <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <label className="flex items-center justify-between rounded-lg border px-3 py-2 text-sm" style={{ borderColor: '#E5DDD4' }}>
+                    <span>{t('cms.splash.enableDisable')}</span>
+                    <input type="checkbox" checked={splashEditForm.enabled} onChange={(event) => setSplashEditForm((prev) => ({ ...prev, enabled: event.target.checked }))} />
+                  </label>
+
+                  <label className="flex items-center justify-between rounded-lg border px-3 py-2 text-sm" style={{ borderColor: '#E5DDD4' }}>
+                    <span>{t('cms.splash.autoplay')}</span>
+                    <input type="checkbox" checked={splashEditForm.autoplay} onChange={(event) => setSplashEditForm((prev) => ({ ...prev, autoplay: event.target.checked }))} disabled={splashEditForm.mediaType !== 'video'} />
+                  </label>
+
+                  <label className="flex items-center justify-between rounded-lg border px-3 py-2 text-sm" style={{ borderColor: '#E5DDD4' }}>
+                    <span>{t('cms.splash.loopVideo')}</span>
+                    <input type="checkbox" checked={splashEditForm.loop} onChange={(event) => setSplashEditForm((prev) => ({ ...prev, loop: event.target.checked }))} disabled={splashEditForm.mediaType !== 'video'} />
+                  </label>
+
+                  <label className="flex items-center justify-between rounded-lg border px-3 py-2 text-sm" style={{ borderColor: '#E5DDD4' }}>
+                    <span>{t('cms.splash.muted')}</span>
+                    <input type="checkbox" checked={splashEditForm.muted} onChange={(event) => setSplashEditForm((prev) => ({ ...prev, muted: event.target.checked }))} disabled={splashEditForm.mediaType !== 'video'} />
+                  </label>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2 space-y-1">
+                  <label className="block text-xs font-medium" style={{ color: '#666' }}>
+                    {t('cms.fields.title')}
+                  </label>
+                  <input
+                    value={editForm.title}
+                    onChange={(event) => setEditForm((prev) => ({ ...prev, title: event.target.value }))}
+                    placeholder={t('cms.fields.titlePlaceholder')}
+                    className="w-full border rounded-lg px-3 py-2 text-sm"
+                  />
+                </div>
+                <div className="md:col-span-2 space-y-2">
+                  <label className="block text-xs font-medium" style={{ color: '#666' }}>
+                    {t('cms.imagePreview')}
+                  </label>
+                  <div className="w-full border rounded-lg p-2" style={{ backgroundColor: '#FAF7F2' }}>
+                    <img
+                      src={editMediaPreviewUrl || selectedItem?.image || ''}
+                      alt=""
+                      className="w-full h-40 object-cover rounded-md"
+                      style={{ display: selectedItem?.image || editMediaPreviewUrl ? 'block' : 'none' }}
+                    />
+                    {!selectedItem?.image && !editMediaPreviewUrl ? (
+                      <div className="text-xs" style={{ color: '#999' }}>
+                        {t('cms.imageNotAvailable')}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+                <div className="md:col-span-2 space-y-2">
+                  <label className="block text-xs font-medium" style={{ color: '#666' }}>
+                    {t('cms.uploadImage')}
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*,video/*"
+                    onChange={(event) => {
+                      const file = event.target.files?.[0] ?? null;
+                      setEditMediaFile(file);
+                    }}
+                    className="border rounded-lg px-3 py-2 text-sm w-full"
+                  />
+                  {editMediaFile ? (
+                    <p className="text-xs" style={{ color: '#666' }}>
+                      {t('cms.selectedFile')}: {editMediaFile.name}
+                    </p>
+                  ) : null}
+
+                  <div className="mt-2 flex items-center gap-3">
+                    <label className="text-xs" style={{ color: '#666' }}>{t('cms.fields.durationSeconds')}</label>
+                    <input type="number" min={1} value={editDurationSeconds ?? ''} onChange={(e) => setEditDurationSeconds(e.target.value ? Number(e.target.value) : null)} className="w-24 border rounded px-2 py-1 text-sm" />
+                    <select value={editForceType} onChange={(e) => setEditForceType(e.target.value as any)} className="border rounded px-2 py-1 text-sm">
+                      <option value="auto">Auto</option>
+                      <option value="image">Force Image</option>
+                      <option value="video">Force Video</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="md:col-span-2 space-y-1">
+                  <label className="block text-xs font-medium" style={{ color: '#666' }}>
+                    {t('cms.fields.description')}
+                  </label>
+                  <textarea
+                    value={editForm.description}
+                    onChange={(event) =>
+                      setEditForm((prev) => ({ ...prev, description: event.target.value }))
+                    }
+                    placeholder={t('cms.fields.descriptionPlaceholder')}
+                    rows={4}
+                    className="w-full border rounded-lg px-3 py-2 text-sm"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={editForm.active}
+                      onChange={(event) => setEditForm((prev) => ({ ...prev, active: event.target.checked }))}
+                    />
+                    {t('cms.active')}
+                  </label>
+                </div>
+              </div>
+            )}
 
             <div className="flex justify-end gap-3">
               <button
