@@ -1237,7 +1237,9 @@ export function CMS() {
                       }
                     })();
                     const mediaUrl = item.image || '';
-                    const isVideo = /\.(mp4|webm|mov|m3u8)(\?|$)/i.test(mediaUrl);
+                    const isVideo = /\.(mp4|webm|mov|m3u8)(\?|$)/i.test(mediaUrl) || (meta?.type === 'video');
+                    const isTimedMedia = !isVideo;
+                    const splashType = meta?.type || (isVideo ? 'video' : 'image');
 
                     return (
                       <div key={item._id || item.key} className="rounded-xl border p-4" style={{ borderColor: '#E5DDD4', backgroundColor: '#F9F5F1' }}>
@@ -1281,9 +1283,11 @@ export function CMS() {
                             </div>
 
                             <div className="text-xs" style={{ color: '#666' }}>
-                              {meta?.duration ? `Duration: ${meta.duration}s` : 'Duration: not set'}
+                              {isTimedMedia
+                                ? `${meta?.duration ? `Duration: ${meta.duration}s` : 'Duration: not set'}`
+                                : 'Video autoplay only'}
                               {' • '}
-                              {meta?.type ? `Type: ${meta.type}` : 'Type: auto'}
+                              {`Type: ${splashType}`}
                             </div>
 
                             <div className="flex gap-2">
