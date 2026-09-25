@@ -678,26 +678,31 @@ export const updateContentSetting = async (
                 })}
               </div>
             </div>
-          ) : activeTab === 'homepage' ? (
-          ) : activeTab === 'splash' ? (
+            ) : activeTab === 'homepage' ? (
             <div className="p-6 rounded-2xl shadow-sm bg-white">
-              <h2 className="text-xl mb-6" style={{ color: '#333' }}>{t('cms.tabs.splash')}</h2>
-
-              {splashItems.length === 0 ? (
+              <h2 className="text-xl mb-6" style={{ color: '#333' }}>{t('cms.tabs.homepageSections')}</h2>
+              {homepageItems.length === 0 ? (
                 <div className="py-6 text-sm" style={{ color: '#666' }}>{t('cms.noSectionItems')}</div>
               ) : (
                 <div className="space-y-3">
-                  {splashItems.map((item) => (
-                    <div key={item._id || item.key} className="p-4 rounded-xl flex items-center gap-4" style={{ backgroundColor: '#F3EEE7' }}>
-                      <div className="flex items-center gap-3">
-                        <ImageIcon className="w-5 h-5" style={{ color: '#999' }} />
+                  {homepageItems.map((item, idx) => (
+                    <div
+                      key={item._id || item.key}
+                      className="p-4 rounded-xl flex items-center gap-4"
+                      style={{ backgroundColor: '#F3EEE7' }}
+                    >
+                      <div className="flex items-center gap-3 min-w-[56px]">
+                        <GripVertical className="w-5 h-5" style={{ color: '#999' }} />
+                        <div className="text-sm font-medium" style={{ color: '#C12D32' }}>
+                          #{idx + 1}
+                        </div>
                       </div>
                       <div className="flex-1">
                         <div className="text-sm mb-1" style={{ color: '#333' }}>
                           {item.label || item.title}
                         </div>
                         <div className="text-xs mb-1" style={{ color: '#666' }}>
-                          {item.description || item.key}
+                          {item.updatedAt ? `${t('cms.lastModified', 'Last modified')}: ${new Date(item.updatedAt).toLocaleString()}` : (item.description || item.label)}
                         </div>
                       </div>
                       <button
@@ -724,30 +729,25 @@ export const updateContentSetting = async (
                 </div>
               )}
             </div>
+          ) : activeTab === 'splash' ? (
             <div className="p-6 rounded-2xl shadow-sm bg-white">
-              <h2 className="text-xl mb-6" style={{ color: '#333' }}>{t('cms.tabs.homepageSections')}</h2>
-              {homepageItems.length === 0 ? (
+              <h2 className="text-xl mb-6" style={{ color: '#333' }}>{t('cms.tabs.splash')}</h2>
+
+              {splashItems.length === 0 ? (
                 <div className="py-6 text-sm" style={{ color: '#666' }}>{t('cms.noSectionItems')}</div>
               ) : (
                 <div className="space-y-3">
-                  {homepageItems.map((item, idx) => (
-                    <div
-                      key={item._id || item.key}
-                      className="p-4 rounded-xl flex items-center gap-4"
-                      style={{ backgroundColor: '#F3EEE7' }}
-                    >
-                      <div className="flex items-center gap-3 min-w-[56px]">
-                        <GripVertical className="w-5 h-5" style={{ color: '#999' }} />
-                        <div className="text-sm font-medium" style={{ color: '#C12D32' }}>
-                          #{idx + 1}
-                        </div>
+                  {splashItems.map((item) => (
+                    <div key={item._id || item.key} className="p-4 rounded-xl flex items-center gap-4" style={{ backgroundColor: '#F3EEE7' }}>
+                      <div className="flex items-center gap-3">
+                        <ImageIcon className="w-5 h-5" style={{ color: '#999' }} />
                       </div>
                       <div className="flex-1">
                         <div className="text-sm mb-1" style={{ color: '#333' }}>
                           {item.label || item.title}
                         </div>
                         <div className="text-xs mb-1" style={{ color: '#666' }}>
-                          {item.updatedAt ? `${t('cms.lastModified', 'Last modified')}: ${new Date(item.updatedAt).toLocaleString()}` : (item.description || item.label)}
+                          {item.description || item.key}
                         </div>
                       </div>
                       <button
