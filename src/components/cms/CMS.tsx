@@ -764,6 +764,12 @@ export function CMS() {
     }
   };
 
+  const isVideoPreview = (url: string, fallbackType?: 'image' | 'video') => {
+    if (fallbackType === 'video') return true;
+    if (fallbackType === 'image') return false;
+    return /\.(mp4|webm|mov|m3u8)(\?|$)/i.test(url);
+  };
+
   const openEditForm = (item: ContentSetting) => {
     const parsedSplash = parseSplashMetadata(item.description);
 
@@ -1962,7 +1968,8 @@ export function CMS() {
                   <div className="w-full border rounded-lg p-2" style={{ backgroundColor: '#FAF7F2' }}>
                     {(() => {
                       const sourceUrl = editMediaPreviewUrl || selectedItem?.image || '';
-                      const isVideo = splashEditForm.mediaType === 'video' || /\.(mp4|webm|mov|m3u8)(\?|$)/i.test(sourceUrl);
+                      const metadataType = parseSplashMetadata(selectedItem?.description).mediaType;
+                      const isVideo = isVideoPreview(sourceUrl, splashEditForm.mediaType === 'video' ? 'video' : metadataType === 'video' ? 'video' : undefined);
                       if (!sourceUrl) {
                         return (
                           <div className="text-xs" style={{ color: '#999' }}>
