@@ -27,6 +27,7 @@ import UserNewsDetail from './components/user-news-detail/UserNewsDetail';
 import ContactUs from './components/contact-us/contactUs.jsx';
 import PrivacyPolicy from './components/privacy-policy/PrivacyPolicy';
 import { Home } from './components/home/Home';
+import Splash from './components/splash/Splash';
 
 
 export type UserRole = 'Admin' | 'content-manager' | 'community-manager' | 'moderator';
@@ -56,6 +57,11 @@ function normalizePathname(pathname: string) {
 }
 
 function AppContent() {
+  const [showSplash, setShowSplash] = useState(true);
+  useEffect(() => {
+    const t = setTimeout(() => setShowSplash(false), 5000);
+    return () => clearTimeout(t);
+  }, []);
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, loading } = useAuth();
@@ -91,7 +97,9 @@ function AppContent() {
   );
 
   return (
-    <Routes>
+    <>
+      {showSplash ? <Splash onDone={() => setShowSplash(false)} /> : null}
+      <Routes>
       {/* Public Routes */}
       <Route 
         path="/login" 
@@ -180,7 +188,8 @@ function AppContent() {
         path="/"
         element={isAuthenticated ? <Navigate to="/dashboard" replace /> : publicPage(<Home />)}
       />
-    </Routes>
+      </Routes>
+    </>
   );
 }
 

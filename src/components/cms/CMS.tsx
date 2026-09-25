@@ -349,20 +349,22 @@ export function CMS() {
     image: '',
     active: true,
   });
-  const [editImageFile, setEditImageFile] = useState<File | null>(null);
-  const [editImagePreviewUrl, setEditImagePreviewUrl] = useState<string | null>(null);
+  const [editMediaFile, setEditMediaFile] = useState<File | null>(null);
+  const [editMediaPreviewUrl, setEditMediaPreviewUrl] = useState<string | null>(null);
+  const [editDurationSeconds, setEditDurationSeconds] = useState<number | null>(null);
+  const [editForceType, setEditForceType] = useState<'auto' | 'image' | 'video'>('auto');
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [togglingKey, setTogglingKey] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!editImageFile) {
-      setEditImagePreviewUrl(null);
+    if (!editMediaFile) {
+      setEditMediaPreviewUrl(null);
       return;
     }
 
-    const objectUrl = URL.createObjectURL(editImageFile);
-    setEditImagePreviewUrl(objectUrl);
+    const objectUrl = URL.createObjectURL(editMediaFile);
+    setEditMediaPreviewUrl(objectUrl);
 
     return () => {
       URL.revokeObjectURL(objectUrl);
@@ -619,15 +621,19 @@ export function CMS() {
       image: item.image ?? '',
       active: item.active ?? true,
     });
-    setEditImageFile(null);
-    setEditImagePreviewUrl(null);
+    setEditMediaFile(null);
+    setEditMediaPreviewUrl(null);
+    setEditDurationSeconds(null);
+    setEditForceType('auto');
   };
 
   const closeEditForm = () => {
     setSelectedItem(null);
     setEditForm({ title: '', description: '', image: '', active: true });
-    setEditImageFile(null);
-    setEditImagePreviewUrl(null);
+    setEditMediaFile(null);
+    setEditMediaPreviewUrl(null);
+    setEditDurationSeconds(null);
+    setEditForceType('auto');
   };
 
   const handleSaveEdit = async () => {
@@ -639,8 +645,16 @@ export function CMS() {
     if ((selectedItem.description ?? '') !== editForm.description) {
       patchPayload.description = editForm.description;
     }
-    if (editImageFile) {
-      patchPayload.imageFile = editImageFile;
+    if (editMediaFile) {
+      patchPayload.imageFile = editMediaFile; // backend accepts any file field and will attach to `image`
+      // embed metadata in description (duration/type) so backend can persist it alongside the image URL
+      try {
+        const meta = { duration: editDurationSeconds ?? undefined, type: editForceType === 'auto' ? undefined : editForceType };
+        const existingDesc = editForm.description || '';
+        const merged = Object.assign({}, typeof existingDesc === 'string' ? {} : {}, typeof existingDesc === 'string' ? {} : {});
+        // simply override description with JSON containing duration and type when provided
+        patchPayload.description = JSON.stringify(meta);
+      } catch (_) {}
     } else if ((selectedItem.image ?? '') !== editForm.image) {
       patchPayload.image = editForm.image;
     }
@@ -1246,18 +1260,28 @@ export function CMS() {
                 </label>
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/*,video/*"
                   onChange={(event) => {
                     const file = event.target.files?.[0] ?? null;
-                    setEditImageFile(file);
+                    setEditMediaFile(file);
                   }}
                   className="border rounded-lg px-3 py-2 text-sm w-full"
                 />
-                {editImageFile ? (
+                {editMediaFile ? (
                   <p className="text-xs" style={{ color: '#666' }}>
-                    {t('cms.selectedFile')}: {editImageFile.name}
+                    {t('cms.selectedFile')}: {editMediaFile.name}
                   </p>
                 ) : null}
+
+                <div className="mt-2 flex items-center gap-3">
+                  <label className="text-xs" style={{ color: '#666' }}>{t('cms.fields.durationSeconds')}</label>
+                  <input type="number" min={1} value={editDurationSeconds ?? ''} onChange={(e) => setEditDurationSeconds(e.target.value ? Number(e.target.value) : null)} className="w-24 border rounded px-2 py-1 text-sm" />
+                  <select value={editForceType} onChange={(e) => setEditForceType(e.target.value as any)} className="border rounded px-2 py-1 text-sm">
+                    <option value="auto">Auto</option>
+                    <option value="image">Force Image</option>
+                    <option value="video">Force Video</option>
+                  </select>
+                </div>
               </div>
               <div className="md:col-span-2 space-y-1">
                 <label className="block text-xs font-medium" style={{ color: '#666' }}>
