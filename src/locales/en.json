@@ -1950,7 +1950,8 @@
       "homepageSections": "Homepage Sections",
       "staticPages": "Static Pages",
       "appBanner": "App Banner",
-      "appBannerAr": "App Banner Arabic"
+      "appBannerAr": "App Banner Arabic",
+      "splash": "Splash"
     },
     "appBanner": {
       "homeScreenBanner": "Home Screen Banner",

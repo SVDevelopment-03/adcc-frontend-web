@@ -1923,7 +1923,8 @@
       "homepageSections": "أقسام الصفحة الرئيسية",
       "staticPages": "الصفحات الثابتة",
       "appBanner": "بانر التطبيق",
-      "appBannerAr": "بانر التطبيق (عربي)"
+      "appBannerAr": "بانر التطبيق (عربي)",
+      "splash": "شاشة البداية"
     },
     "appBanner": {
       "homeScreenBanner": "بانر الشاشة الرئيسية",
