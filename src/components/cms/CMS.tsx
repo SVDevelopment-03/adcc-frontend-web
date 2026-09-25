@@ -1174,11 +1174,11 @@ export function CMS() {
                 <div>
                   <h2 className="text-2xl font-semibold" style={{ color: '#333' }}>{t('cms.tabs.splash')}</h2>
                   <p className="text-sm" style={{ color: '#666' }}>
-                    Manage mobile splash media, timing, and live preview.
+                    {t('cms.splash.subtitle')}
                   </p>
                 </div>
                 <div className="rounded-full border px-3 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#666' }}>
-                  {splashItems.length} items
+                  {splashItems.length} {t('cms.splash.items')}
                 </div>
               </div>
 
@@ -1187,13 +1187,13 @@ export function CMS() {
                   <div className="rounded-2xl border p-5" style={{ borderColor: '#E5DDD4', backgroundColor: '#FFFDFB' }}>
                     <div className="mb-4 flex items-center gap-2">
                       <ImageIcon className="w-5 h-5" style={{ color: '#C12D32' }} />
-                      <h3 className="text-lg font-medium" style={{ color: '#333' }}>Splash configuration</h3>
+                      <h3 className="text-lg font-medium" style={{ color: '#333' }}>{t('cms.splash.configuration')}</h3>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="md:col-span-2">
                         <label className="mb-2 block text-xs font-medium uppercase" style={{ color: '#666' }}>
-                          Splash screen name
+                          {t('cms.splash.name')}
                         </label>
                         <input
                           value={splashForm.name}
@@ -1206,7 +1206,7 @@ export function CMS() {
 
                       <div>
                         <label className="mb-2 block text-xs font-medium uppercase" style={{ color: '#666' }}>
-                          Media type
+                          {t('cms.splash.mediaType')}
                         </label>
                         <select
                           value={splashForm.mediaType}
@@ -1214,14 +1214,14 @@ export function CMS() {
                           className="w-full rounded-xl border px-3 py-2.5 text-sm"
                           style={{ borderColor: '#E5DDD4' }}
                         >
-                          <option value="image">Image</option>
-                          <option value="video">Video</option>
+                          <option value="image">{t('cms.splash.image')}</option>
+                          <option value="video">{t('cms.splash.video')}</option>
                         </select>
                       </div>
 
                       <div>
                         <label className="mb-2 block text-xs font-medium uppercase" style={{ color: '#666' }}>
-                          Status
+                          {t('cms.splash.status')}
                         </label>
                         <select
                           value={splashForm.status}
@@ -1229,15 +1229,15 @@ export function CMS() {
                           className="w-full rounded-xl border px-3 py-2.5 text-sm"
                           style={{ borderColor: '#E5DDD4' }}
                         >
-                          <option value="draft">Draft</option>
-                          <option value="published">Published</option>
-                          <option value="scheduled">Scheduled</option>
+                          <option value="draft">{t('cms.splash.draft')}</option>
+                          <option value="published">{t('cms.splash.published')}</option>
+                          <option value="scheduled">{t('cms.splash.scheduled')}</option>
                         </select>
                       </div>
 
                       <div>
                         <label className="mb-2 block text-xs font-medium uppercase" style={{ color: '#666' }}>
-                          Duration (seconds)
+                          {t('cms.splash.durationSeconds')}
                         </label>
                         <input
                           type="number"
@@ -1256,7 +1256,7 @@ export function CMS() {
 
                       <div>
                         <label className="mb-2 block text-xs font-medium uppercase" style={{ color: '#666' }}>
-                          Priority
+                          {t('cms.splash.priority')}
                         </label>
                         <input
                           type="number"
@@ -1270,7 +1270,7 @@ export function CMS() {
 
                       <div>
                         <label className="mb-2 block text-xs font-medium uppercase" style={{ color: '#666' }}>
-                          Start date
+                          {t('cms.splash.startDate')}
                         </label>
                         <input
                           type="date"
@@ -1283,7 +1283,7 @@ export function CMS() {
 
                       <div>
                         <label className="mb-2 block text-xs font-medium uppercase" style={{ color: '#666' }}>
-                          End date
+                          {t('cms.splash.endDate')}
                         </label>
                         <input
                           type="date"
@@ -1296,7 +1296,7 @@ export function CMS() {
 
                       <div>
                         <label className="mb-2 block text-xs font-medium uppercase" style={{ color: '#666' }}>
-                          Background color
+                          {t('cms.splash.backgroundColor')}
                         </label>
                         <input
                           type="color"
@@ -1309,7 +1309,7 @@ export function CMS() {
 
                       <div>
                         <label className="mb-2 block text-xs font-medium uppercase" style={{ color: '#666' }}>
-                          Object fit
+                          {t('cms.splash.objectFit')}
                         </label>
                         <select
                           value={splashForm.objectFit}
@@ -1317,15 +1317,15 @@ export function CMS() {
                           className="w-full rounded-xl border px-3 py-2.5 text-sm"
                           style={{ borderColor: '#E5DDD4' }}
                         >
-                          <option value="cover">Cover</option>
-                          <option value="contain">Contain</option>
+                          <option value="cover">{t('cms.splash.cover')}</option>
+                          <option value="contain">{t('cms.splash.contain')}</option>
                         </select>
                       </div>
                     </div>
 
                     <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3">
                       <label className="flex items-center justify-between rounded-xl border px-3 py-2 text-sm" style={{ borderColor: '#E5DDD4' }}>
-                        <span style={{ color: '#333' }}>Enable / Disable</span>
+                        <span style={{ color: '#333' }}>{t('cms.splash.enableDisable')}</span>
                         <input
                           type="checkbox"
                           checked={splashForm.enabled}
@@ -1334,7 +1334,7 @@ export function CMS() {
                       </label>
 
                       <label className="flex items-center justify-between rounded-xl border px-3 py-2 text-sm" style={{ borderColor: '#E5DDD4' }}>
-                        <span style={{ color: '#333' }}>Autoplay</span>
+                        <span style={{ color: '#333' }}>{t('cms.splash.autoplay')}</span>
                         <input
                           type="checkbox"
                           checked={splashForm.autoplay}
@@ -1344,7 +1344,7 @@ export function CMS() {
                       </label>
 
                       <label className="flex items-center justify-between rounded-xl border px-3 py-2 text-sm" style={{ borderColor: '#E5DDD4' }}>
-                        <span style={{ color: '#333' }}>Loop video</span>
+                        <span style={{ color: '#333' }}>{t('cms.splash.loopVideo')}</span>
                         <input
                           type="checkbox"
                           checked={splashForm.loop}
@@ -1354,7 +1354,7 @@ export function CMS() {
                       </label>
 
                       <label className="flex items-center justify-between rounded-xl border px-3 py-2 text-sm" style={{ borderColor: '#E5DDD4' }}>
-                        <span style={{ color: '#333' }}>Muted</span>
+                        <span style={{ color: '#333' }}>{t('cms.splash.muted')}</span>
                         <input
                           type="checkbox"
                           checked={splashForm.muted}
@@ -1368,7 +1368,7 @@ export function CMS() {
                   <div className="rounded-2xl border p-5" style={{ borderColor: '#E5DDD4', backgroundColor: '#FFFDFB' }}>
                     <div className="mb-4 flex items-center gap-2">
                       <Upload className="w-5 h-5" style={{ color: '#C12D32' }} />
-                      <h3 className="text-lg font-medium" style={{ color: '#333' }}>Upload media</h3>
+                      <h3 className="text-lg font-medium" style={{ color: '#333' }}>{t('cms.splash.uploadMedia')}</h3>
                     </div>
 
                     <div className="rounded-2xl border-2 border-dashed p-4 text-center" style={{ borderColor: '#E5DDD4', backgroundColor: '#F9F5F1' }}>
@@ -1381,7 +1381,7 @@ export function CMS() {
                       />
                       <label htmlFor="splash-upload-input" className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-white" style={{ backgroundColor: '#C12D32' }}>
                         <Upload className="w-4 h-4" />
-                        Browse media
+                        {t('cms.splash.browseMedia')}
                       </label>
                     </div>
 
@@ -1400,7 +1400,7 @@ export function CMS() {
                             className="rounded-lg border px-3 py-1.5 text-xs"
                             style={{ borderColor: '#E5DDD4', color: '#666' }}
                           >
-                            Remove
+                            {t('cms.splash.remove')}
                           </button>
                         </div>
                       </div>
@@ -1409,29 +1409,29 @@ export function CMS() {
 
                   <div className="rounded-2xl border p-5" style={{ borderColor: '#E5DDD4', backgroundColor: '#FFFDFB' }}>
                     <div className="mb-4 flex items-center justify-between gap-3">
-                      <h3 className="text-lg font-medium" style={{ color: '#333' }}>Splash listing</h3>
+                      <h3 className="text-lg font-medium" style={{ color: '#333' }}>{t('cms.splash.listing')}</h3>
                       <div className="flex gap-2 text-xs">
-                        <span className="rounded-full bg-[#F3EEE7] px-2 py-1">Type</span>
-                        <span className="rounded-full bg-[#F3EEE7] px-2 py-1">Status</span>
+                        <span className="rounded-full bg-[#F3EEE7] px-2 py-1">{t('cms.splash.type')}</span>
+                        <span className="rounded-full bg-[#F3EEE7] px-2 py-1">{t('cms.splash.status')}</span>
                       </div>
                     </div>
 
                     {splashItems.length === 0 ? (
                       <div className="py-6 text-sm" style={{ color: '#666' }}>
-                        No content entries found for this section.
+                        {t('cms.noSectionItems')}
                       </div>
                     ) : (
                       <div className="overflow-x-auto">
                         <table className="min-w-full text-left text-sm">
                           <thead>
                             <tr style={{ color: '#666' }}>
-                              <th className="pb-3 pr-3">Name</th>
-                              <th className="pb-3 pr-3">Type</th>
-                              <th className="pb-3 pr-3">Preview</th>
-                              <th className="pb-3 pr-3">Duration</th>
-                              <th className="pb-3 pr-3">Status</th>
-                              <th className="pb-3 pr-3">Updated</th>
-                              <th className="pb-3 pr-3">Actions</th>
+                              <th className="pb-3 pr-3">{t('cms.splash.name')}</th>
+                              <th className="pb-3 pr-3">{t('cms.splash.type')}</th>
+                              <th className="pb-3 pr-3">{t('cms.splash.preview')}</th>
+                              <th className="pb-3 pr-3">{t('cms.splash.duration')}</th>
+                              <th className="pb-3 pr-3">{t('cms.splash.status')}</th>
+                              <th className="pb-3 pr-3">{t('cms.splash.updated')}</th>
+                              <th className="pb-3 pr-3">{t('cms.splash.actions')}</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -1440,7 +1440,7 @@ export function CMS() {
                               const mediaType = meta?.type || (item.image ? 'image' : 'video');
                               const mediaUrl = item.image || '';
                               const isVideo = mediaType === 'video' || /\.(mp4|webm|mov|m3u8)(\?|$)/i.test(mediaUrl);
-                              const statusText = item.active ? 'Published' : 'Draft';
+                              const statusText = item.active ? t('cms.splash.published') : t('cms.splash.draft');
                               return (
                                 <tr key={item._id || item.key} className="border-t" style={{ borderColor: '#F0E9E1' }}>
                                   <td className="py-3 pr-3 font-medium" style={{ color: '#333' }}>{item.label || item.title || item.key}</td>
@@ -1453,10 +1453,10 @@ export function CMS() {
                                         <img src={mediaUrl} alt={item.label || item.key} className="h-12 w-20 rounded object-cover" />
                                       )
                                     ) : (
-                                      <span className="text-xs" style={{ color: '#999' }}>No media</span>
+                                      <span className="text-xs" style={{ color: '#999' }}>{t('cms.splash.noMedia')}</span>
                                     )}
                                   </td>
-                                  <td className="py-3 pr-3 text-xs" style={{ color: '#666' }}>{meta?.duration ? `${meta.duration}s` : isVideo ? 'Auto' : 'Not set'}</td>
+                                  <td className="py-3 pr-3 text-xs" style={{ color: '#666' }}>{meta?.duration ? `${meta.duration}s` : isVideo ? t('cms.splash.auto') : t('cms.splash.notSet')}</td>
                                   <td className="py-3 pr-3">
                                     <span className="rounded-full px-2 py-1 text-xs" style={{ backgroundColor: item.active ? '#EAFBF3' : '#F7F1E8', color: item.active ? '#0F9F6E' : '#8A8A8A' }}>
                                       {statusText}
@@ -1465,11 +1465,11 @@ export function CMS() {
                                   <td className="py-3 pr-3 text-xs" style={{ color: '#666' }}>{item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : '—'}</td>
                                   <td className="py-3 pr-3">
                                     <div className="flex flex-wrap gap-2">
-                                      <button className="rounded-lg border px-2 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#333' }}>View</button>
-                                      <button onClick={() => openEditForm(item)} className="rounded-lg border px-2 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#333' }}>Edit</button>
-                                      <button className="rounded-lg border px-2 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#333' }}>Duplicate</button>
-                                      <button onClick={() => handleToggleActive(item)} className="rounded-lg border px-2 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#333' }}>Enable</button>
-                                      <button onClick={() => handleDelete(item)} className="rounded-lg border border-red-200 px-2 py-1 text-xs text-red-600">Delete</button>
+                                      <button className="rounded-lg border px-2 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#333' }}>{t('cms.splash.view')}</button>
+                                      <button onClick={() => openEditForm(item)} className="rounded-lg border px-2 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#333' }}>{t('cms.splash.edit')}</button>
+                                      <button className="rounded-lg border px-2 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#333' }}>{t('cms.splash.duplicate')}</button>
+                                      <button onClick={() => handleToggleActive(item)} className="rounded-lg border px-2 py-1 text-xs" style={{ borderColor: '#E5DDD4', color: '#333' }}>{t('cms.splash.enable')}</button>
+                                      <button onClick={() => handleDelete(item)} className="rounded-lg border border-red-200 px-2 py-1 text-xs text-red-600">{t('cms.deleteConfirm')}</button>
                                     </div>
                                   </td>
                                 </tr>
@@ -1485,15 +1485,15 @@ export function CMS() {
                 <div className="rounded-2xl border p-5" style={{ borderColor: '#E5DDD4', backgroundColor: '#F8F5F0' }}>
                   <div className="mb-4 flex items-center justify-between gap-3">
                     <div>
-                      <h3 className="text-lg font-medium" style={{ color: '#333' }}>Mobile preview</h3>
-                      <p className="text-xs" style={{ color: '#666' }}>Preview mode</p>
+                      <h3 className="text-lg font-medium" style={{ color: '#333' }}>{t('cms.splash.mobilePreview')}</h3>
+                      <p className="text-xs" style={{ color: '#666' }}>{t('cms.splash.previewMode')}</p>
                     </div>
                     <button
                       type="button"
                       className="rounded-lg border px-3 py-2 text-xs font-medium"
                       style={{ borderColor: '#E5DDD4', color: '#333' }}
                     >
-                      Refresh preview
+                      {t('cms.splash.refreshPreview')}
                     </button>
                   </div>
 
@@ -1529,14 +1529,14 @@ export function CMS() {
                           )
                         ) : (
                           <div className="flex h-full w-full items-center justify-center text-center text-xs text-white/80">
-                            Upload media to preview
+                            {t('cms.splash.uploadMediaPreview')}
                           </div>
                         )}
 
                         <div className="absolute inset-x-0 bottom-4 flex justify-center gap-2">
-                          <button className="rounded-full bg-white/15 px-3 py-1.5 text-[10px] text-white backdrop-blur-sm">Play</button>
-                          <button className="rounded-full bg-white/15 px-3 py-1.5 text-[10px] text-white backdrop-blur-sm">Pause</button>
-                          <button className="rounded-full bg-white/15 px-3 py-1.5 text-[10px] text-white backdrop-blur-sm">Restart</button>
+                          <button className="rounded-full bg-white/15 px-3 py-1.5 text-[10px] text-white backdrop-blur-sm">{t('cms.splash.play')}</button>
+                          <button className="rounded-full bg-white/15 px-3 py-1.5 text-[10px] text-white backdrop-blur-sm">{t('cms.splash.pause')}</button>
+                          <button className="rounded-full bg-white/15 px-3 py-1.5 text-[10px] text-white backdrop-blur-sm">{t('cms.splash.restart')}</button>
                         </div>
                       </div>
                     </div>
@@ -1550,14 +1550,14 @@ export function CMS() {
                       className="flex-1 rounded-xl px-4 py-3 text-sm font-medium text-white disabled:opacity-50"
                       style={{ backgroundColor: '#C12D32' }}
                     >
-                      {savingNewSplash ? 'Saving...' : 'Save as Draft'}
+                      {savingNewSplash ? t('cms.saving') : t('cms.splash.saveDraft')}
                     </button>
                     <button
                       type="button"
                       className="flex-1 rounded-xl border px-4 py-3 text-sm font-medium"
                       style={{ borderColor: '#E5DDD4', color: '#333' }}
                     >
-                      Preview
+                      {t('cms.splash.preview')}
                     </button>
                     <button
                       type="button"
@@ -1566,7 +1566,7 @@ export function CMS() {
                       className="flex-1 rounded-xl px-4 py-3 text-sm font-medium text-white disabled:opacity-50"
                       style={{ backgroundColor: '#0F9F6E' }}
                     >
-                      Publish
+                      {t('cms.splash.publish')}
                     </button>
                   </div>
                 </div>
