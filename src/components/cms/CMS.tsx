@@ -790,6 +790,15 @@ export function CMS() {
     return /\.(mp4|webm|mov|m3u8)(\?|$)/i.test(url);
   };
 
+  const getSafeSplashMeta = (description?: string): Record<string, unknown> => {
+    if (!description) return {};
+    try {
+      return JSON.parse(description) as Record<string, unknown>;
+    } catch {
+      return {};
+    }
+  };
+
   const openEditForm = (item: ContentSetting) => {
     const parsedSplash = parseSplashMetadata(item.description);
 
@@ -1582,7 +1591,7 @@ export function CMS() {
                           </thead>
                           <tbody>
                             {splashItems.map((item) => {
-                              const meta = (() => { try { return item.description ? JSON.parse(item.description) : {}; } catch { return {}; } })();
+                              const meta = getSafeSplashMeta(item.description);
                               const mediaType = meta?.type || (item.image ? 'image' : 'video');
                               const mediaUrl = item.image || '';
                               const isVideo = mediaType === 'video' || /\.(mp4|webm|mov|m3u8)(\?|$)/i.test(mediaUrl);
@@ -1669,8 +1678,11 @@ export function CMS() {
                               style={{ objectFit: splashForm.objectFit }}
                             />
                           )
-                        ) : splashItems[0]?.image ? (
-                          splashItems[0].image && (splashItems[0].description ? JSON.parse(splashItems[0].description).type === 'video' : false) ? (
+                        ) : splashItems[0]?.image ? (() => {
+                          const previewMeta = getSafeSplashMeta(splashItems[0]?.description);
+                          const previewType = previewMeta?.type ?? previewMeta?.mediaType;
+                          const isSavedVideo = previewType === 'video' || /\.(mp4|webm|mov|m3u8)(\?|$)/i.test(splashItems[0].image ?? '');
+                          return isSavedVideo ? (
                             <video
                               ref={splashPreviewVideoRef}
                               src={splashItems[0].image}
@@ -1681,8 +1693,8 @@ export function CMS() {
                             />
                           ) : (
                             <img src={splashItems[0].image} alt="Saved splash preview" className="h-full w-full" style={{ objectFit: 'cover' }} />
-                          )
-                        ) : (
+                          );
+                        })() : (
                           <div className="flex h-full w-full items-center justify-center text-center text-xs text-white/80">
                             {t('cms.splash.uploadMediaPreview')}
                           </div>
@@ -1841,7 +1853,7 @@ export function CMS() {
             </div>
             <div className="overflow-hidden rounded-xl border" style={{ borderColor: '#E5DDD4', backgroundColor: '#0B1020' }}>
               {(() => {
-                const meta = (() => { try { return previewItem.description ? JSON.parse(previewItem.description) : {}; } catch { return {}; } })();
+                const meta = getSafeSplashMeta(previewItem.description);
                 const mediaType = meta?.type || (previewItem.image ? 'image' : 'video');
                 const mediaUrl = previewItem.image || '';
                 const isVideo = mediaType === 'video' || /\.(mp4|webm|mov|m3u8)(\?|$)/i.test(mediaUrl);
@@ -1854,7 +1866,7 @@ export function CMS() {
             </div>
             <div className="mt-4 flex items-center justify-between text-xs" style={{ color: '#666' }}>
               <span>{previewItem.active ? 'Published' : 'Draft'}</span>
-              <span>{(() => { const meta = (() => { try { return previewItem.description ? JSON.parse(previewItem.description) : {}; } catch { return {}; } })(); return meta?.duration ? `${meta.duration}s` : 'Auto'; })()}</span>
+              <span>{(() => { const meta = getSafeSplashMeta(previewItem.description); return meta?.duration ? `${meta.duration}s` : 'Auto'; })()}</span>
             </div>
           </div>
         </div>
