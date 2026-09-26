@@ -2012,6 +2012,7 @@
       "video": "Video",
       "draft": "Draft",
       "published": "Published",
+      "current": "Current",
       "scheduled": "Scheduled",
       "cover": "Cover",
       "contain": "Contain",

@@ -371,7 +371,7 @@ export function CMS() {
     startDate: '',
     endDate: '',
     priority: 1,
-    status: 'draft' as 'draft' | 'published' | 'scheduled',
+    status: 'draft' as 'draft' | 'published' | 'scheduled' | 'current',
   });
   const splashPreviewIsVideo = splashForm.mediaType === 'video' || (newSplashFile ? newSplashFile.type.startsWith('video/') : false);
   const bannerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
@@ -404,7 +404,7 @@ export function CMS() {
     startDate: '',
     endDate: '',
     priority: 1,
-    status: 'draft' as 'draft' | 'published' | 'scheduled',
+    status: 'draft' as 'draft' | 'published' | 'scheduled' | 'current',
   });
   const [editMediaFile, setEditMediaFile] = useState<File | null>(null);
   const [editMediaPreviewUrl, setEditMediaPreviewUrl] = useState<string | null>(null);
@@ -755,7 +755,7 @@ export function CMS() {
       startDate: '',
       endDate: '',
       priority: 1,
-      status: 'draft' as 'draft' | 'published' | 'scheduled',
+      status: 'draft' as 'draft' | 'published' | 'scheduled' | 'current',
     };
 
     if (!description) return fallback;
@@ -777,7 +777,7 @@ export function CMS() {
         startDate: typeof parsed.startDate === 'string' ? parsed.startDate : '',
         endDate: typeof parsed.endDate === 'string' ? parsed.endDate : '',
         priority: Number(parsed.priority ?? 1),
-        status: parsed.status === 'published' || parsed.status === 'scheduled' ? parsed.status : 'draft',
+        status: parsed.status === 'published' || parsed.status === 'scheduled' || parsed.status === 'current' ? parsed.status : 'draft',
       } satisfies typeof fallback;
     } catch {
       return fallback;
@@ -1380,12 +1380,13 @@ export function CMS() {
                         </label>
                         <select
                           value={splashForm.status}
-                          onChange={(e) => setSplashForm((prev) => ({ ...prev, status: e.target.value as 'draft' | 'published' | 'scheduled' }))}
+                          onChange={(e) => setSplashForm((prev) => ({ ...prev, status: e.target.value as 'draft' | 'published' | 'scheduled' | 'current' }))}
                           className="w-full rounded-xl border px-3 py-2.5 text-sm"
                           style={{ borderColor: '#E5DDD4' }}
                         >
                           <option value="draft">{t('cms.splash.draft')}</option>
                           <option value="published">{t('cms.splash.published')}</option>
+                          <option value="current">{t('cms.splash.current')}</option>
                           <option value="scheduled">{t('cms.splash.scheduled')}</option>
                         </select>
                       </div>
@@ -1595,8 +1596,8 @@ export function CMS() {
                               const mediaType = meta?.type || (item.image ? 'image' : 'video');
                               const mediaUrl = item.image || '';
                               const isVideo = mediaType === 'video' || /\.(mp4|webm|mov|m3u8)(\?|$)/i.test(mediaUrl);
-                              const isLiveSplash = Boolean(item.active || meta?.status === 'published' || meta?.status === 'scheduled');
-                              const statusText = isLiveSplash ? t('cms.splash.published') : t('cms.splash.draft');
+                              const isLiveSplash = Boolean(item.active || meta?.status === 'published' || meta?.status === 'scheduled' || meta?.status === 'current');
+                              const statusText = meta?.status === 'current' ? t('cms.splash.current') : isLiveSplash ? t('cms.splash.published') : t('cms.splash.draft');
                               return (
                                 <tr key={item._id || item.key} className="border-t" style={{ borderColor: '#F0E9E1' }}>
                                   <td className="py-3 pr-3 font-medium" style={{ color: '#333' }}>{item.label || item.title || item.key}</td>
@@ -1918,11 +1919,12 @@ export function CMS() {
                   </label>
                   <select
                     value={splashEditForm.status}
-                    onChange={(event) => setSplashEditForm((prev) => ({ ...prev, status: event.target.value as 'draft' | 'published' | 'scheduled' }))}
+                    onChange={(event) => setSplashEditForm((prev) => ({ ...prev, status: event.target.value as 'draft' | 'published' | 'scheduled' | 'current' }))}
                     className="w-full border rounded-lg px-3 py-2 text-sm"
                   >
                     <option value="draft">{t('cms.splash.draft')}</option>
                     <option value="published">{t('cms.splash.published')}</option>
+                    <option value="current">{t('cms.splash.current')}</option>
                     <option value="scheduled">{t('cms.splash.scheduled')}</option>
                   </select>
                 </div>
