@@ -223,6 +223,7 @@ const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     safetyNotes: track.safetyNotes || prev.safetyNotes,
     shortDescription: (track as any).shortDescription || prev.shortDescription,
     status: track.status || prev.status,
+    displayPriority: (track as any).displayPriority ?? prev.displayPriority,
     image: track.image || prev.image,
     mapPreview: track.mapPreview || prev.mapPreview,
     // Facilities are dashboard-managed lookup values (the API text itself,
