@@ -21,6 +21,18 @@ export type GtmSettings = {
   bodyCode: string;
 };
 
+export type AppUpdatePlatformConfig = {
+  minimumVersion: string;
+  forceUpdate: boolean;
+  storeUrl: string;
+  updateMessage: string;
+};
+
+export type AppUpdateConfig = {
+  android: AppUpdatePlatformConfig;
+  ios: AppUpdatePlatformConfig;
+};
+
 export type FeatureKey =
   | 'marketplace'
   | 'communities'
@@ -42,6 +54,7 @@ export type AppConfigState = {
   defaultLanguage: AppConfigLanguage;
   emailSettings: EmailSettings;
   gtm: GtmSettings;
+  appUpdate: AppUpdateConfig;
   features: Record<FeatureKey, boolean>;
   notifications: Record<NotificationKey, boolean>;
   security: Record<SecurityKey, boolean>;

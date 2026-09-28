@@ -26,6 +26,20 @@ export function AppConfig() {
       headCode: '',
       bodyCode: '',
     },
+    appUpdate: {
+      android: {
+        minimumVersion: '2.2.7',
+        forceUpdate: false,
+        storeUrl: 'https://play.google.com/store/apps/details?id=com.technation.adcc',
+        updateMessage: 'A new version is available. Please update the app for the best experience.',
+      },
+      ios: {
+        minimumVersion: '2.2.7',
+        forceUpdate: false,
+        storeUrl: 'https://apps.apple.com/ae/app/adcycling/id1481435670',
+        updateMessage: 'A new version is available. Please update the app for the best experience.',
+      },
+    },
     features: {
       marketplace: true,
       communities: true,
@@ -78,6 +92,16 @@ export function AppConfig() {
           security: { ...defaultConfig.security, ...(remote as any).security },
           emailSettings: { ...defaultConfig.emailSettings, ...(remote as any).emailSettings },
           gtm: { ...defaultConfig.gtm, ...(remote as any).gtm },
+          appUpdate: {
+            android: {
+              ...defaultConfig.appUpdate.android,
+              ...((remote as any).appUpdate?.android || {}),
+            },
+            ios: {
+              ...defaultConfig.appUpdate.ios,
+              ...((remote as any).appUpdate?.ios || {}),
+            },
+          },
         };
         const provider = deriveProvider((mergedRemote.emailSettings as any).smtpHost ?? '');
         setSmtpProvider(provider);
@@ -106,6 +130,16 @@ export function AppConfig() {
             security: { ...defaultConfig.security, ...(parsed as any).security },
             emailSettings: { ...defaultConfig.emailSettings, ...(parsed as any).emailSettings },
             gtm: { ...defaultConfig.gtm, ...(parsed as any).gtm },
+            appUpdate: {
+              android: {
+                ...defaultConfig.appUpdate.android,
+                ...((parsed as any).appUpdate?.android || {}),
+              },
+              ios: {
+                ...defaultConfig.appUpdate.ios,
+                ...((parsed as any).appUpdate?.ios || {}),
+              },
+            },
           };
           setConfig(merged);
           setInitial(merged);
@@ -219,6 +253,16 @@ export function AppConfig() {
         security: { ...defaultConfig.security, ...(saved as any).security },
         emailSettings: { ...defaultConfig.emailSettings, ...(saved as any).emailSettings },
         gtm: { ...defaultConfig.gtm, ...(saved as any).gtm },
+        appUpdate: {
+          android: {
+            ...defaultConfig.appUpdate.android,
+            ...((saved as any).appUpdate?.android || {}),
+          },
+          ios: {
+            ...defaultConfig.appUpdate.ios,
+            ...((saved as any).appUpdate?.ios || {}),
+          },
+        },
       };
       setConfig(mergedSaved);
       setInitial(mergedSaved);
@@ -617,6 +661,101 @@ export function AppConfig() {
                 </div>
               ) : null}
             </div>
+          </div>
+        </div>
+
+        <div className="p-6 rounded-2xl shadow-sm bg-white border border-gray-100 lg:col-span-2">
+          <div className="flex items-center gap-3 mb-4">
+            <Code2 className="w-6 h-6" style={{ color: '#C12D32' }} />
+            <h2 className="text-xl" style={{ color: '#333' }}>
+              Mobile App Update Rules
+            </h2>
+          </div>
+
+          <p className="text-sm mb-4" style={{ color: '#666' }}>
+            Set the minimum supported version separately for Android and iOS. If a user is below this version, the app shows a prompt to update from the respective store.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {(['android', 'ios'] as const).map((platform) => (
+              <div key={platform} className="rounded-xl border border-gray-200 p-4 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base font-semibold capitalize" style={{ color: '#333' }}>
+                    {platform === 'android' ? 'Android' : 'iOS'}
+                  </h3>
+                  <label className="flex items-center gap-2 text-sm" style={{ color: '#666' }}>
+                    <span>Force update</span>
+                    <input
+                      type="checkbox"
+                      checked={config.appUpdate[platform].forceUpdate}
+                      onChange={(e) => setField('appUpdate', {
+                        ...config.appUpdate,
+                        [platform]: {
+                          ...config.appUpdate[platform],
+                          forceUpdate: e.target.checked,
+                        },
+                      })}
+                    />
+                  </label>
+                </div>
+
+                <div>
+                  <label className="block text-sm mb-2" style={{ color: '#666' }}>
+                    Minimum version
+                  </label>
+                  <input
+                    type="text"
+                    value={config.appUpdate[platform].minimumVersion}
+                    onChange={(e) => setField('appUpdate', {
+                      ...config.appUpdate,
+                      [platform]: {
+                        ...config.appUpdate[platform],
+                        minimumVersion: e.target.value,
+                      },
+                    })}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-white"
+                    placeholder="2.2.7"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm mb-2" style={{ color: '#666' }}>
+                    Store URL
+                  </label>
+                  <input
+                    type="url"
+                    value={config.appUpdate[platform].storeUrl}
+                    onChange={(e) => setField('appUpdate', {
+                      ...config.appUpdate,
+                      [platform]: {
+                        ...config.appUpdate[platform],
+                        storeUrl: e.target.value,
+                      },
+                    })}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-white"
+                    placeholder="https://..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm mb-2" style={{ color: '#666' }}>
+                    Update message
+                  </label>
+                  <textarea
+                    value={config.appUpdate[platform].updateMessage}
+                    onChange={(e) => setField('appUpdate', {
+                      ...config.appUpdate,
+                      [platform]: {
+                        ...config.appUpdate[platform],
+                        updateMessage: e.target.value,
+                      },
+                    })}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white"
+                    rows={3}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
