@@ -3925,6 +3925,7 @@ function AppSection() {
           {t("public.home.darrajaApp.tagline")}
         </p>
 
+        {/* Download label and store buttons hidden for now
         <p
           className="font-satoshi home-app-download-label"
           style={{
@@ -3947,6 +3948,7 @@ function AppSection() {
           <AppStoreButton type="google" />
           <AppStoreButton type="apple" />
         </div>
+        */}
       </div>
 
       {/* Center: Phone mockup */}
