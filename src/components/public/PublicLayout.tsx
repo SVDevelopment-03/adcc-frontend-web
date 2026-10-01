@@ -598,7 +598,7 @@ function PublicFooter() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={t(labelKey)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-[#019839] text-white transition-colors hover:bg-black"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-[#019839] text-white! transition-colors hover:bg-black"
                 >
                   <Icon className="h-4.5 w-4.5" strokeWidth={1.75} />
                 </a>
