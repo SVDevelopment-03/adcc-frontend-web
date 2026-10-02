@@ -187,6 +187,8 @@ export const createEvent = async (
     formData.append("slug", eventData.slug || "");
     formData.append("category", eventData.category || "");
     formData.append("communityId", eventData.communityId || "");
+    if (eventData.youtubeLink) formData.append("youtubeLink", eventData.youtubeLink);
+    if (eventData.registrationLink) formData.append("registrationLink", eventData.registrationLink);
     formData.append("description", eventData.description || "");
     if (eventData.descriptionAr) formData.append("descriptionAr", eventData.descriptionAr);
     formData.append("address", eventData.address || "");

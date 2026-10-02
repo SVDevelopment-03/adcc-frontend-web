@@ -108,6 +108,8 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     slug: string;
     category: string;
     communityId: string;
+    youtubeLink: string;
+    registrationLink: string;
     description: string;
     descriptionAr: string;
     country: string;
@@ -140,6 +142,8 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     slug: '',
     category: 'Community Ride',
     communityId: '',
+    youtubeLink: '',
+    registrationLink: '',
     description: '',
     descriptionAr: '',
     country: 'UAE',
@@ -380,6 +384,21 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       errors.description = t('events.create.toasts.missingRequired');
     }
     if (!formData.eventDate) errors.eventDate = t('events.create.toasts.missingRequired');
+    // Backend rejects non-URL values for these optional links
+    const isValidUrl = (value: string) => {
+      try {
+        new URL(value);
+        return true;
+      } catch {
+        return false;
+      }
+    };
+    if (formData.youtubeLink.trim() && !isValidUrl(formData.youtubeLink.trim())) {
+      errors.youtubeLink = t('events.create.invalidUrl');
+    }
+    if (formData.registrationLink.trim() && !isValidUrl(formData.registrationLink.trim())) {
+      errors.registrationLink = t('events.create.invalidUrl');
+    }
     return errors;
   };
 
@@ -406,6 +425,8 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         slug: formData.slug,
         category: formData.category,
         communityId: formData.communityId,
+        youtubeLink: formData.youtubeLink.trim() || undefined,
+        registrationLink: formData.registrationLink.trim() || undefined,
         description: formData.description.trim() || formData.descriptionAr?.trim() || '',
         ...(formData.descriptionAr?.trim() ? { descriptionAr: formData.descriptionAr.trim() } : {}),
         address: `${formData.city}, ${formData.country}`,
@@ -595,6 +616,30 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                   ))}
                 </select>
                 {formErrors.communityId && <div className="text-xs text-red-600 mt-1">{formErrors.communityId}</div>}
+              </div>
+
+              <div>
+                <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.create.youtubeLink')}</label>
+                <input
+                  type="url"
+                  value={formData.youtubeLink}
+                  onChange={(e) => setFormData({ ...formData, youtubeLink: e.target.value })}
+                  placeholder={t('events.create.placeholders.youtubeLink')}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
+                />
+                {formErrors.youtubeLink && <div className="text-xs text-red-600 mt-1">{formErrors.youtubeLink}</div>}
+              </div>
+
+              <div>
+                <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.create.registrationLink')}</label>
+                <input
+                  type="url"
+                  value={formData.registrationLink}
+                  onChange={(e) => setFormData({ ...formData, registrationLink: e.target.value })}
+                  placeholder={t('events.create.placeholders.registrationLink')}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
+                />
+                {formErrors.registrationLink && <div className="text-xs text-red-600 mt-1">{formErrors.registrationLink}</div>}
               </div>
             </div>
           </div>
