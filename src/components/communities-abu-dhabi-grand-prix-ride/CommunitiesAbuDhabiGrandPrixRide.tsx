@@ -521,6 +521,11 @@ function RegisterCard({ event }: { event: GrandPrixEvent }) {
           count: Math.max(total - joined, 0),
         })
       : t("public.events.detail.register.openRegistration");
+  // Organiser picked in the admin (already in the page language); the club itself when none is set.
+  const organizerName =
+    event.organizedByName?.trim() ||
+    event.organizedBy?.trim() ||
+    t("public.events.detail.register.defaultOrganizer");
 
   return (
     <article className="relative h-[200px] w-full shrink-0 rounded-2xl bg-[#435974] text-white lg:h-[236px] lg:w-[426px]">
@@ -545,8 +550,15 @@ function RegisterCard({ event }: { event: GrandPrixEvent }) {
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#019839] lg:h-10 lg:w-10">
             <Bike className="h-[14px] w-[14px] lg:h-4 lg:w-4" />
           </span>
-          <b className="grand-prix-bebas text-[24px] leading-tight lg:text-[30px]">
-            ADCC
+          <b
+            title={organizerName}
+            className={`grand-prix-bebas max-w-[150px] truncate leading-tight sm:max-w-[190px] ${
+              organizerName.length > 12
+                ? "text-[16px] lg:text-[20px]"
+                : "text-[24px] lg:text-[30px]"
+            }`}
+          >
+            {organizerName}
           </b>
         </div>
       </div>

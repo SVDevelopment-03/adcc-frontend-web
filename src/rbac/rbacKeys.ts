@@ -23,7 +23,8 @@ export type SidebarItemId =
   | 'languages'
   | 'roles'
   | 'staticData'
-  | 'auditLog';
+  | 'auditLog'
+  | 'eventOrganizers';
 
 /**
  * Sidebar menu id -> permission key actually enforced by the matching backend
@@ -65,6 +66,8 @@ export const SIDEBAR_ITEM_PERMISSION: Record<SidebarItemId, string | null> = {
   languages: 'app_configuration',
   roles: 'admin.manage_roles',
   auditLog: 'view_audit_log',
+  // Organisers are a lookup list; lookup.route.ts gates edits on app_configuration.
+  eventOrganizers: 'app_configuration',
 };
 
 /**
@@ -97,6 +100,8 @@ export const SIDEBAR_ITEM_PATH: Record<SidebarItemId, string> = {
   languages: '/languages',
   roles: '/roles',
   auditLog: '/audit-log',
+  // Listed last so it never becomes a role's default landing page.
+  eventOrganizers: '/events/organizers',
 };
 
 const SIDEBAR_ITEM_ORDER = Object.keys(SIDEBAR_ITEM_PATH) as SidebarItemId[];

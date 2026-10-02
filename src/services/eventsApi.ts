@@ -22,6 +22,10 @@ export interface EventApiResponse {
   maxAge?: number;
   youtubeLink?: string;
   registrationLink?: string;
+  /** `value` of the selected "event_organizer" lookup entry. */
+  organizedBy?: string;
+  /** Organiser name in the requested language (resolved by the API). */
+  organizedByName?: string;
   status: 'Draft' | 'Open' | 'Full' | 'Completed' | 'Archived' | 'draft' | 'open' | 'full' | 'completed' | 'archived' | 'cancelled' | 'reoprn' | 'disable';
   createdAt?: string;
   updatedAt?: string;
@@ -207,6 +211,7 @@ export const createEvent = async (
     formData.append("communityId", eventData.communityId || "");
     if (eventData.youtubeLink) formData.append("youtubeLink", eventData.youtubeLink);
     if (eventData.registrationLink) formData.append("registrationLink", eventData.registrationLink);
+    if (eventData.organizedBy) formData.append("organizedBy", eventData.organizedBy);
     formData.append("description", eventData.description || "");
     if (eventData.descriptionAr) formData.append("descriptionAr", eventData.descriptionAr);
     formData.append("address", eventData.address || "");
@@ -347,6 +352,8 @@ export const updateEvent = async (
     append('isPurposeBased', d.isPurposeBased);
     append('youtubeLink', d.youtubeLink);
     append('registrationLink', d.registrationLink);
+    // Sent even when empty so the organiser can be cleared
+    append('organizedBy', d.organizedBy);
     append('minAge', d.minAge);
     append('maxAge', d.maxAge);
     if (d.eligibility != null) append('eligibility', d.eligibility);

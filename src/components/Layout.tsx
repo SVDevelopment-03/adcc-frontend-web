@@ -13,6 +13,7 @@ import { EventDetail } from './events/EventDetail';
 import { EventParticipants } from './events/EventParticipants';
 import { EventResults } from './events/EventResults';
 import { EventEdit } from './events/EventEdit';
+import { EventOrganizers } from './events/EventOrganizers';
 import { StaticDataManager } from './lookups/StaticDataManager';
 import { CommunitiesList } from './communities/CommunitiesList';
 import { CommunityCreate } from './communities/CommunityCreate';
@@ -303,6 +304,7 @@ export function Layout() {
 
             <Route path="/events" element={withRoleSidebarAccess('events', <EventsList navigate={() => {}} role={currentRole} />)} />
             <Route path="/events/create" element={withRoleSidebarAccess('events', <EventCreate navigate={() => {}} role={currentRole} />)} />
+            <Route path="/events/organizers" element={withRoleSidebarAccess('eventOrganizers', <EventOrganizers />)} />
             <Route path="/events/:id/edit" element={withRoleSidebarAccess('events', <EventEdit navigate={() => {}} role={currentRole} />)} />
             <Route path="/events/:id" element={withRoleSidebarAccess('events', <EventDetail />)} />
             <Route path="/events/:id/event-participants" element={withRoleSidebarAccess('events', <EventParticipants role={currentRole} />)} />

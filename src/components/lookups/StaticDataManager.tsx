@@ -23,6 +23,13 @@ const SECTIONS: SectionDef[] = [
     supportsIcon: true,
   },
   {
+    key: 'event_organizer',
+    type: 'event_organizer',
+    label: 'Event Organisers',
+    itemLabel: 'Organiser',
+    description: 'Organisers offered in the "Organised by" dropdown on events and shown on the public event page.',
+  },
+  {
     key: 'community_category',
     type: 'community_category',
     label: 'Community Categories',

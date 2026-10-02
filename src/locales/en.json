@@ -3,6 +3,7 @@
     "appTitle": "ADCC Admin",
     "dashboard": "Dashboard",
     "events": "Events",
+    "eventOrganizers": "Organised by",
     "communities": "Communities",
     "tracks": "Tracks",
     "challenges": "Challenges",
@@ -753,6 +754,11 @@
       "deleteSuccess": "Event deleted successfully",
       "deleteError": "Delete failed"
     },
+    "organizers": {
+      "title": "Organised by",
+      "subtitle": "Organisers you can pick on an event. Add each one with an English and an Arabic name.",
+      "empty": "No organisers yet. Add the first one to make it selectable on events."
+    },
     "create": {
       "title": "Create Event",
       "subtitle": "Create a new cycling event or race",
@@ -772,6 +778,8 @@
       "description": "Description *",
       "category": "Category *",
       "community": "Community * (mandatory)",
+      "organizedBy": "Organised by (optional)",
+      "organizedByNone": "Not specified",
       "youtubeLink": "YouTube Link",
       "registrationLink": "Event Registration Link",
       "invalidUrl": "Please enter a valid URL (including https://)",

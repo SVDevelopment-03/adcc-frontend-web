@@ -217,6 +217,7 @@
         "spotsAvailable": "{{count}} مقعد متاح",
         "openRegistration": "التسجيل مفتوح",
         "organizedBy": "تنظيم",
+        "defaultOrganizer": "ADCC",
         "saveEvent": "حفظ الفعالية",
         "shareEvent": "مشاركة الفعالية"
       },

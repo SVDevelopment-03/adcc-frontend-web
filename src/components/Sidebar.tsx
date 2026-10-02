@@ -25,6 +25,7 @@ import {
   Globe,
   Database,
   History,
+  Building2,
 } from 'lucide-react';
 import { SIDEBAR_ITEM_PERMISSION } from '../rbac/rbacKeys';
 
@@ -38,11 +39,14 @@ interface MenuItemDef {
   icon: React.ReactNode;
   roles: UserRole[];
   path: string;
+  /** Rendered indented beneath the item above it. */
+  isChild?: boolean;
 }
 
 const menuItems: MenuItemDef[] = [
   { id: 'dashboard', labelKey: 'sidebar.dashboard', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['Admin', 'content-manager', 'community-manager', 'moderator'], path: '/dashboard' },
   { id: 'events', labelKey: 'sidebar.events', icon: <Calendar className="w-5 h-5" />, roles: ['Admin', 'content-manager', 'community-manager'], path: '/events' },
+  { id: 'eventOrganizers', labelKey: 'sidebar.eventOrganizers', icon: <Building2 className="w-4 h-4" />, roles: ['Admin'], path: '/events/organizers', isChild: true },
   { id: 'communities', labelKey: 'sidebar.communities', icon: <Users className="w-5 h-5" />, roles: ['Admin', 'content-manager', 'community-manager'], path: '/communities' },
   { id: 'tracks', labelKey: 'sidebar.tracks', icon: <MapPin className="w-5 h-5" />, roles: ['Admin', 'community-manager'], path: '/tracks' },
   { id: 'challenges', labelKey: 'sidebar.challenges', icon: <Trophy className="w-5 h-5" />, roles: ['Admin', 'community-manager'], path: '/challenges' },
@@ -95,17 +99,17 @@ export function Sidebar({ hasPermission }: SidebarProps) {
               key={item.id}
               to={item.path}
               className={({ isActive }) =>
-                `w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                  isActive ? '' : ''
-                }`
+                `flex items-center gap-3 rounded-lg transition-all ${
+                  item.isChild ? 'ms-6 px-4 py-2' : 'w-full px-4 py-3'
+                } ${isActive ? '' : ''}`
               }
               style={({ isActive }) => ({
-                backgroundColor: isActive ? '#ECC180' : 'transparent',
-                color: '#333',
+                backgroundColor: isActive ? (item.isChild ? '#F6E3C5' : '#ECC180') : 'transparent',
+                color: item.isChild ? '#555' : '#333',
               })}
             >
               {item.icon}
-              <span className="text-sm">{t(item.labelKey)}</span>
+              <span className={item.isChild ? 'text-[13px]' : 'text-sm'}>{t(item.labelKey)}</span>
             </NavLink>
           ))}
         </nav>

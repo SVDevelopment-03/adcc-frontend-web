@@ -220,6 +220,7 @@
         "spotsAvailable": "{{count}} spots available",
         "openRegistration": "Open registration",
         "organizedBy": "Organized by",
+        "defaultOrganizer": "ADCC",
         "saveEvent": "Save event",
         "shareEvent": "Share event"
       },

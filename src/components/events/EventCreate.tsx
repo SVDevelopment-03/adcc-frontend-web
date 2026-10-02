@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Calendar, MapPin, Users, Settings, Award, Image as ImageIcon, Save, Plus, X, Globe, Send } from 'lucide-react';
-import { useEventCategories, useEventAmenities } from '../../hooks/useLookups';
+import { useEventCategories, useEventAmenities, useEventOrganizers } from '../../hooks/useLookups';
 import { toast } from 'sonner';
 import { getAllTracksEn } from '../../services/trackService';
 import { gccCountries, getCitiesByCountry, normalizeCountryValue, type GCCCountry } from '../../data/gccLocations';
@@ -23,6 +23,7 @@ export function EventCreate({ role }: EventCreateProps) {
   const { t } = useTranslation();
   const { options: categoryOptions } = useEventCategories();
   const { options: amenityOptions } = useEventAmenities();
+  const { options: organizerOptions } = useEventOrganizers();
 
   const [thumbnailImage, setThumbnailImage] = useState<File | null>(null);
   const [coverImage, setCoverImage] = useState<File | null>(null);
@@ -108,6 +109,7 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     slug: string;
     category: string;
     communityId: string;
+    organizedBy: string;
     youtubeLink: string;
     registrationLink: string;
     description: string;
@@ -142,6 +144,7 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     slug: '',
     category: 'Community Ride',
     communityId: '',
+    organizedBy: '',
     youtubeLink: '',
     registrationLink: '',
     description: '',
@@ -425,6 +428,7 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         slug: formData.slug,
         category: formData.category,
         communityId: formData.communityId,
+        organizedBy: formData.organizedBy || undefined,
         youtubeLink: formData.youtubeLink.trim() || undefined,
         registrationLink: formData.registrationLink.trim() || undefined,
         description: formData.description.trim() || formData.descriptionAr?.trim() || '',
@@ -616,6 +620,20 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                   ))}
                 </select>
                 {formErrors.communityId && <div className="text-xs text-red-600 mt-1">{formErrors.communityId}</div>}
+              </div>
+
+              <div>
+                <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.create.organizedBy')}</label>
+                <select
+                  value={formData.organizedBy}
+                  onChange={(e) => setFormData({ ...formData, organizedBy: e.target.value })}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
+                >
+                  <option value="">{t('events.create.organizedByNone')}</option>
+                  {organizerOptions.map(({ value, label }) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
+                </select>
               </div>
 
               <div>

@@ -58,6 +58,11 @@ export function useEventCategories() {
   return useLookupList('event_category');
 }
 
+/** Event organisers ("Organised by" on the event forms and public event page). */
+export function useEventOrganizers() {
+  return useLookupList('event_organizer');
+}
+
 /** Community category tags (multi-select "type"/"category" picklist). */
 export function useCommunityCategories() {
   return useLookupList('community_category');

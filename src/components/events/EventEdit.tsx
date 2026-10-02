@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { UserRole } from '../../App';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getEventByIdEn, updateEvent as updateEventApi, deleteEvent as deleteEventApi, disableEvent as disableEventApi, closeEventRegistration, reopenEventRegistration, completeEvent as completeEventApi, deleteEventGalleryImage, EventApiResponse } from '../../services/eventsApi';
-import { useEventCategories, useEventAmenities } from '../../hooks/useLookups';
+import { useEventCategories, useEventAmenities, useEventOrganizers } from '../../hooks/useLookups';
 import { getAllTracksEn, deleteTrack } from '../../services/trackService';
 import { gccCountries, getCitiesByCountry, normalizeCountryValue, type GCCCountry } from '../../data/gccLocations';
 import { getAllCommunities, deleteCommunity as deleteCommunityApi, CommunityApiResponse } from '../../services/communitiesApi';
@@ -27,6 +27,7 @@ export function EventEdit({ role }: EventEditProps) {
   // const eventId = id || '';
   const { options: categoryOptions } = useEventCategories();
   const { options: amenityOptions } = useEventAmenities();
+  const { options: organizerOptions } = useEventOrganizers();
   const [customAmenityInput, setCustomAmenityInput] = useState('');
   const [eligibilityCustom, setEligibilityCustom] = useState<{ id: string; value: string }[]>([
     { id: 'eligibility-0', value: '' },
@@ -219,6 +220,7 @@ export function EventEdit({ role }: EventEditProps) {
     address: string;
     youtubeLink: string;
     registrationLink: string;
+    organizedBy: string;
     maxAge: number;
   }>({
     title: '',
@@ -258,6 +260,7 @@ export function EventEdit({ role }: EventEditProps) {
     address: '',
     youtubeLink: '',
     registrationLink: '',
+    organizedBy: '',
     maxAge: 70,
   });
 
@@ -339,6 +342,7 @@ export function EventEdit({ role }: EventEditProps) {
         address: ev.address ?? '',
         youtubeLink: ev.youtubeLink ?? '',
         registrationLink: ev.registrationLink ?? '',
+        organizedBy: ev.organizedBy ?? '',
         maxAge: ev.maxAge ?? 70,
       });
     }
@@ -599,6 +603,8 @@ export function EventEdit({ role }: EventEditProps) {
         maxAge: formData.maxAge,
         youtubeLink: formData.youtubeLink || undefined,
         registrationLink: formData.registrationLink || undefined,
+        // Empty string is sent on purpose: it clears a previously selected organiser
+        organizedBy: formData.organizedBy,
       };
 
       // When not uploading a new file, send existing mainImage (URL/base64) so backend keeps it
@@ -780,6 +786,24 @@ export function EventEdit({ role }: EventEditProps) {
                     ))
                   }
 
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.create.organizedBy')}</label>
+                <select
+                  value={formData.organizedBy}
+                  onChange={(e) => setFormData({ ...formData, organizedBy: e.target.value })}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
+                >
+                  <option value="">{t('events.create.organizedByNone')}</option>
+                  {/* Keep showing an organiser that was deactivated or deleted after it was picked */}
+                  {formData.organizedBy && !organizerOptions.some((o) => o.value === formData.organizedBy) && (
+                    <option value={formData.organizedBy}>{formData.organizedBy}</option>
+                  )}
+                  {organizerOptions.map(({ value, label }) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
                 </select>
               </div>
 
