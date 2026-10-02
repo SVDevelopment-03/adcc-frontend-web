@@ -658,16 +658,22 @@ function EventCard({ event }: { event: EventApiResponse }) {
             icon="/img/icons/kms.svg"
             text={
               typeof event.distance === "number"
-                ? `${event.distance} ${t("public.common.km")}`
+                ? event.distance > 0
+                  ? `${event.distance} ${t("public.common.km")}`
+                  : t("public.common.km")
                 : t("public.common.distanceTBA")
             }
           />
           <EventMeta
             icon="/img/icons/people.svg"
-            text={t("public.common.participants", {
-              count: participants,
-              formattedCount: participants,
-            })}
+            text={
+              participants > 0
+                ? t("public.common.participants", {
+                    count: participants,
+                    formattedCount: participants,
+                  })
+                : t("public.common.participantsLabel")
+            }
           />
           <EventMeta
             icon="/img/icons/map.svg"

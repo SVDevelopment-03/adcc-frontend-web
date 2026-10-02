@@ -130,6 +130,7 @@ const formatDate = (date: string | undefined, t: TFunction) => {
   return new Intl.DateTimeFormat(i18n.language, {
     month: "short",
     day: "numeric",
+    year: "numeric",
   }).format(parsed);
 };
 
@@ -149,6 +150,21 @@ const getImage = (event?: GrandPrixEvent | null) =>
 
 const getParticipants = (event?: GrandPrixEvent | null) =>
   event?.currentParticipants ?? event?.registrations ?? 0;
+
+// The API populates trackId as { _id, title, titleAr }
+const getTrackName = (event?: GrandPrixEvent | null) => {
+  const track = event?.trackId as
+    | string
+    | { title?: string; titleAr?: string }
+    | null
+    | undefined;
+  if (!track || typeof track !== "object") return "";
+  return (
+    (i18n.language?.startsWith("ar") && track.titleAr
+      ? track.titleAr
+      : track.title) || ""
+  );
+};
 
 const getLevel = (event: GrandPrixEvent | null | undefined, t: TFunction) => {
   if (!event) return "Level TBA";
@@ -198,15 +214,20 @@ const getStats = (
     icon: MapPin,
     title:
       typeof event?.distance === "number"
-        ? `${event.distance} ${t("public.common.km")}`
+        ? event.distance > 0
+          ? `${event.distance} ${t("public.common.km")}`
+          : t("public.common.km")
         : t("public.common.distanceTBA"),
     label: t("public.tracks.detail.distance"),
   },
   {
     icon: Users,
-    title: t("public.events.detail.stats.ridersCount", {
-      count: getParticipants(event),
-    }),
+    title:
+      getParticipants(event) > 0
+        ? t("public.events.detail.stats.ridersCount", {
+            count: getParticipants(event),
+          })
+        : t("public.events.detail.stats.ridersLabel"),
     label: t("public.events.detail.stats.participantsLabel"),
   },
   {
@@ -249,42 +270,17 @@ const getSchedule = (
   event: GrandPrixEvent | null | undefined,
   t: TFunction,
 ): ScheduleItem[] => {
-  const eventSchedule = event?.schedule || [];
-  if (eventSchedule.length > 0) {
-    return [...eventSchedule]
-      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-      .map((item) => ({
-        time: item.time,
-        title: item.title,
-        description: item.description || "",
-      }));
-  }
-
-  if (!event) return [];
-
-  return [
-    {
-      time: event.eventTime || t("public.events.detail.schedule.timeTBA"),
-      title: t("public.events.detail.schedule.eventStart"),
-      description: getLocalizedLocation(
-        event,
-        t("public.events.detail.schedule.locationTBA"),
-      ),
-    },
-    ...(event.endTime
-      ? [
-          {
-            time: event.endTime,
-            title: t("public.events.detail.schedule.eventEnd"),
-            description: event.status
-              ? t("public.events.detail.schedule.currentStatus", {
-                  status: titleCase(event.status),
-                })
-              : "",
-          },
-        ]
-      : []),
-  ];
+  // Only rows the admin actually entered; with none, the schedule section is hidden.
+  const eventSchedule = (event?.schedule || []).filter(
+    (item) => item?.time || item?.title?.trim(),
+  );
+  return [...eventSchedule]
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+    .map((item) => ({
+      time: item.time,
+      title: item.title,
+      description: item.description || "",
+    }));
 };
 
 const getFaqs = (event: GrandPrixEvent | null | undefined, t: TFunction) => {
@@ -425,7 +421,9 @@ const FontLoader = () => (
 );
 
 function HeroSection({ event }: { event: GrandPrixEvent }) {
-  const tags = [event.category, event.city].filter(Boolean);
+  const tags = Array.from(
+    new Set([event.category, event.city, getTrackName(event)].filter(Boolean)),
+  );
 
   return (
     <section
@@ -578,7 +576,7 @@ function StatsStrip({
                 <span className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-white text-[#019839] sm:h-[50px] sm:w-[50px]">
                   <Icon className="h-[20px] w-[20px] sm:h-[25px] sm:w-[25px]" />
                 </span>
-                <h3 className="grand-prix-bebas mt-4 text-[22px] uppercase leading-tight sm:mt-8 sm:text-[30px]">
+                <h3 className="grand-prix-bebas mt-4 text-[20px] uppercase leading-tight sm:mt-8 sm:text-[26px]">
                   {title}
                 </h3>
                 <p className="mt-1 text-[13px] leading-5 text-white/60 sm:text-[16px]">
@@ -602,7 +600,7 @@ function StatsStrip({
               <span className="absolute left-4 top-4 flex h-[38px] w-[38px] items-center justify-center rounded-full bg-white text-[#019839] lg:h-[50px] lg:w-[50px] lg:left-5 lg:top-5">
                 <Icon className="h-[18px] w-[18px] lg:h-[25px] lg:w-[25px]" />
               </span>
-              <h3 className="grand-prix-bebas absolute left-4 top-[125px] whitespace-nowrap text-[22px] uppercase leading-tight lg:left-5 lg:top-[155px] lg:text-[30px]">
+              <h3 className="grand-prix-bebas absolute left-4 top-[125px] whitespace-nowrap text-[20px] uppercase leading-tight lg:left-5 lg:top-[158px] lg:text-[26px]">
                 {title}
               </h3>
               <p className="absolute left-4 top-[152px] text-[14px] leading-5 text-white/60 lg:left-5 lg:top-[191px] lg:text-[18px]">
@@ -1015,7 +1013,9 @@ export default function CommunitiesAbuDhabiGrandPrixRide() {
           <AboutSection event={event} />
           <StatsStrip event={event} stats={stats} />
           <FacilitiesSection facilities={facilities} />
-          <ScheduleSection event={event} schedule={schedule} />
+          {schedule.length > 0 && (
+            <ScheduleSection event={event} schedule={schedule} />
+          )}
           {/* <FaqSection faqs={faqs} /> */}
         </>
       )}

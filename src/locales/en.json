@@ -842,6 +842,8 @@
         "draft": "Draft",
         "open": "Open",
         "full": "Full",
+        "closed": "Closed",
+        "disabled": "Disabled",
         "completed": "Completed",
         "archived": "Archived"
       },
@@ -896,6 +898,7 @@
       "community": "Community *",
       "youtubeLink": "YouTube Link",
       "registrationLink": "Event Registration Link",
+      "statusHint": "Draft, Disabled and Archived events are hidden from the website and app. Set to Open to publish.",
       "country": "Country",
       "city": "City *",
       "track": "Track *",

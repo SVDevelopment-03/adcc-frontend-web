@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { scrollToAppListing } from "../../utils/appStoreLink";
 import { useTranslation } from "react-i18next";
-import { CalendarDays, Users } from "lucide-react";
+import { CalendarDays, Route, Users } from "lucide-react";
 import i18n from "../../i18n";
 import {
   CommunityApiResponse,
@@ -397,6 +397,18 @@ function EventCard({ event }: { event: EventApiResponse }) {
   const eventHref = eventId
     ? `/events/${encodeURIComponent(eventId)}`
     : "/events";
+  // The list API populates trackId as { _id, title, titleAr }
+  const track = event.trackId as
+    | string
+    | { title?: string; titleAr?: string }
+    | null
+    | undefined;
+  const trackName =
+    track && typeof track === "object"
+      ? (i18n.language?.startsWith("ar") && track.titleAr
+          ? track.titleAr
+          : track.title) || ""
+      : "";
 
   return (
     <div className="flex w-full flex-col">
@@ -431,16 +443,22 @@ function EventCard({ event }: { event: EventApiResponse }) {
             icon="/img/icons/kms.svg"
             text={
               typeof event.distance === "number"
-                ? `${event.distance} ${t("public.common.km")}`
+                ? event.distance > 0
+                  ? `${event.distance} ${t("public.common.km")}`
+                  : t("public.common.km")
                 : t("public.common.distanceTBA")
             }
           />
           <EventMeta
             icon="/img/icons/people.svg"
-            text={t("public.common.participants", {
-              count: participants,
-              formattedCount: formattedParticipants,
-            })}
+            text={
+              participants > 0
+                ? t("public.common.participants", {
+                    count: participants,
+                    formattedCount: formattedParticipants,
+                  })
+                : t("public.common.participantsLabel")
+            }
           />
           <EventMeta
             icon="/img/icons/map.svg"
@@ -450,6 +468,18 @@ function EventCard({ event }: { event: EventApiResponse }) {
               t("public.communities.detail.locationTBA")
             }
           />
+          {trackName && (
+            <div className="col-span-2 flex items-center gap-1.5">
+              <Route
+                size={14}
+                className="shrink-0 text-[#019839]"
+                aria-label={t("public.events.listing.card.trackAlt")}
+              />
+              <span className="text-[13px] font-medium text-black/70">
+                {trackName}
+              </span>
+            </div>
+          )}
         </div>
 
         <AnimatedButton

@@ -610,7 +610,7 @@ function PublicFooter() {
             <h3 className="text-[22px] uppercase sm:text-[24px]">
               {t("public.footer.quickLinks")}
             </h3>
-            <div className="mt-5! grid grid-cols-2 gap-x-6 text-[16px] sm:mt-7! sm:gap-x-10 sm:text-[18px]">
+            <div className="mt-5! grid grid-cols-2 gap-x-6 text-[15px] sm:mt-7! sm:gap-x-10 sm:text-[16px]">
               <ul className="space-y-1.5! sm:space-y-2!">
                 <li>
                   <NavLink to="/aboutus" className="pub-footer-link">
@@ -677,7 +677,7 @@ function PublicFooter() {
             <h3 className="text-[22px] uppercase sm:text-[24px]">
               {t("public.footer.contactUs")}
             </h3>
-            <ul className="mt-5! space-y-3! text-[16px] leading-6 sm:mt-7! sm:space-y-4! sm:text-[18px]">
+            <ul className="mt-5! space-y-3! text-[15px] leading-6 sm:mt-7! sm:space-y-4! sm:text-[16px]">
               <li className="flex gap-3">
                 <Phone className="mt-0.5 h-5 w-5 shrink-0" />
                 <a

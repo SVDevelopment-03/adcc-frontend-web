@@ -7,7 +7,6 @@ import {
   Calendar,
   Eye,
   Heart,
-  MessageSquare,
   UserRound,
   Users,
   MapPin,
@@ -389,7 +388,6 @@ export function FeedModeration() {
               : post.createdBy?.profileImage ?? null;
 
           const likeCount = (post as any).likesCount ?? (post as any).likes ?? null;
-          const commentCount = (post as any).commentsCount ?? (post as any).comments ?? null;
 
           const imageUrl = post.image ?? (post as any).imageUrl ?? null;
           const content = post.description || post.title || '';
@@ -474,10 +472,6 @@ export function FeedModeration() {
 
                   <div className="flex items-center gap-4 mb-4 text-sm" style={{ color: '#999' }}>
                     <span>❤️ {likeCount == null ? '—' : String(likeCount)} likes</span>
-                    <span className="flex items-center gap-1">
-                      <MessageSquare className="w-4 h-4" />
-                      {commentCount == null ? '—' : String(commentCount)} comments
-                    </span>
                   </div>
 
                   <div className="flex flex-wrap gap-2">

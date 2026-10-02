@@ -211,7 +211,7 @@ export function EventEdit({ role }: EventEditProps) {
     categories: string;
     rewardPoints: number;
     rewardBadge: string;
-    status: 'Draft' | 'Open' | 'Full' | 'Completed' | 'Archived';
+    status: 'Draft' | 'Open' | 'Full' | 'Closed' | 'Disabled' | 'Completed' | 'Archived';
     isFeatured: boolean;
     allowCancellation: boolean;
     isPurposeBased: boolean;
@@ -282,10 +282,12 @@ export function EventEdit({ role }: EventEditProps) {
       };
       const communityId = resolveId(ev.communityId ?? ev.community);
       const trackId = resolveId(ev.trackId ?? ev.track);
-      const statusMap: Record<string, 'Draft' | 'Open' | 'Full' | 'Completed' | 'Archived'> = {
+      const statusMap: Record<string, 'Draft' | 'Open' | 'Full' | 'Closed' | 'Disabled' | 'Completed' | 'Archived'> = {
         'Draft': 'Draft', 'draft': 'Draft',
         'Open': 'Open', 'open': 'Open',
         'Full': 'Full', 'full': 'Full',
+        'Closed': 'Closed', 'closed': 'Closed',
+        'Disabled': 'Disabled', 'disabled': 'Disabled', 'disable': 'Disabled',
         'Completed': 'Completed', 'completed': 'Completed',
         'Archived': 'Archived', 'archived': 'Archived',
       };
@@ -306,8 +308,10 @@ export function EventEdit({ role }: EventEditProps) {
         mainImage: ev.mainImage ?? '',
         description: ev.description,
         descriptionAr: (ev as any).descriptionAr || '',
-        country: ev.country ?? '',
-        city: ev.city ?? '',
+        // The API returns the country's display label ("United Arab Emirates"); the
+        // selects below are keyed by its code ("UAE"), so map it back or nothing matches.
+        country: ev.country ? normalizeCountryValue(ev.country) : '',
+        city: (ev.city ?? '').trim(),
         trackId,
         eventDate: formatToInputDate(ev.eventDate),
         eventTime: ev.eventTime ?? '',
@@ -476,7 +480,7 @@ export function EventEdit({ role }: EventEditProps) {
     try {
       await closeEventRegistration(id);
       setExistingEvent(prev => prev ? { ...prev, status: 'Closed' } : prev);
-      setFormData(prev => ({ ...prev, status: 'Draft' }));
+      setFormData(prev => ({ ...prev, status: 'Closed' }));
       toast.success(t('events.edit.toasts.registrationClosed'));
     } catch {
       toast.error(t('events.edit.toasts.updateError'));
@@ -517,7 +521,7 @@ export function EventEdit({ role }: EventEditProps) {
     try {
       await disableEventApi(id);
       setExistingEvent(prev => prev ? { ...prev, status: 'Disabled' } : prev);
-      setFormData(prev => ({ ...prev, status: 'Draft' }));
+      setFormData(prev => ({ ...prev, status: 'Disabled' }));
       toast.success(t('events.edit.toasts.disabled'));
       setShowDisableModal(false);
     } catch {
@@ -1587,7 +1591,25 @@ export function EventEdit({ role }: EventEditProps) {
             <h3 className="text-lg mb-4" style={{ color: '#333' }}>{t('events.create.visibilityRules')}</h3>
 
             <div className="space-y-4">
-              <div className="space-y-3">
+              <div>
+                <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('common.status')}</label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value as typeof formData.status })}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#C12D32]"
+                >
+                  <option value="Draft">{t('events.create.statusOptions.draft')}</option>
+                  <option value="Open">{t('events.create.statusOptions.open')}</option>
+                  <option value="Full">{t('events.create.statusOptions.full')}</option>
+                  <option value="Closed">{t('events.create.statusOptions.closed')}</option>
+                  <option value="Disabled">{t('events.create.statusOptions.disabled')}</option>
+                  <option value="Completed">{t('events.create.statusOptions.completed')}</option>
+                  <option value="Archived">{t('events.create.statusOptions.archived')}</option>
+                </select>
+                <p className="text-xs mt-2" style={{ color: '#999' }}>{t('events.edit.statusHint')}</p>
+              </div>
+
+              <div className="pt-4 border-t border-gray-200 space-y-3">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"

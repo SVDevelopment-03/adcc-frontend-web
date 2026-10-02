@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Trophy, Save, Send, RefreshCw, AlertCircle, CheckCircle, Clock, Users, BarChart3, Download, XCircle, ChevronUp, ChevronDown } from 'lucide-react';
-import { getEventResults, adminUpdateParticipantResult, exportEventResultsCsv, getEventById } from '../../services/eventsApi';
+import { getEventResults, adminUpdateParticipantResult, exportEventResultsCsv, getEventByIdAdmin as getEventById } from '../../services/eventsApi';
 import { toast } from 'sonner';
 
 type RiderStatus = 'finished' | 'dnf' | 'dns';

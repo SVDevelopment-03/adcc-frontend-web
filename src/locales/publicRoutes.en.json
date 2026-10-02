@@ -25,6 +25,7 @@
     "km": "km",
     "aed": "AED",
     "participants": "{{formattedCount}} participants",
+    "participantsLabel": "participants",
     "members": "{{formattedCount}} members",
     "eventsCount": "{{formattedCount}} events",
     "joinChallenge": "Join The Challenge",
@@ -202,7 +203,8 @@
         "calendarAlt": "Calendar",
         "distanceAlt": "Distance",
         "participantsAlt": "Participants",
-        "locationAlt": "Location"
+        "locationAlt": "Location",
+        "trackAlt": "Track"
       }
     },
     "detail": {
@@ -224,6 +226,7 @@
       "stats": {
         "date": "Date",
         "ridersCount": "{{count}} riders",
+        "ridersLabel": "riders",
         "participantsLabel": "Participants"
       },
       "schedule": {

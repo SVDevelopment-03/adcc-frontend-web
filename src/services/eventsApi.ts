@@ -60,6 +60,8 @@ export interface GetEventsParams {
   search?: string;
   page?: number;
   limit?: number;
+  /** Dashboard only: also return Draft/Disabled/Archived events (the API ignores it for non-staff). */
+  includeUnpublished?: boolean;
 }
 
 export interface GetEventsResponse {
@@ -92,6 +94,7 @@ export const getEventsPage = async (params?: GetEventsParams): Promise<GetEvents
       level: params?.level,
       communityId: params?.communityId,
       search: params?.search,
+      includeUnpublished: params?.includeUnpublished ? 'true' : undefined,
       page: params?.page || 1,
       limit: params?.limit || 10,
     };
@@ -113,13 +116,28 @@ export const getEventsPage = async (params?: GetEventsParams): Promise<GetEvents
   }
 };
 
-// Get all events with optional filtering and pagination
+// Get all events with optional filtering and pagination.
+// Used by the admin dashboard only, so it includes unpublished (Draft/Disabled/Archived) events.
 export const getAllEvents = async (params?: GetEventsParams): Promise<EventApiResponse[]> => {
-  const response = await getEventsPage(params);
+  const response = await getEventsPage({ includeUnpublished: true, ...params });
   return response.events;
 };
 
-// Get event by ID
+// Get event by ID for the admin dashboard — authenticated, so draft events can be opened
+export const getEventByIdAdmin = async (id: string): Promise<EventApiResponse> => {
+  try {
+    const response = await api.get<any>(`/v1/events/${id}`);
+    if ((response.data as any).data) {
+      return (response.data as any).data;
+    }
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching event:', error);
+    throw error;
+  }
+};
+
+// Get event by ID (public — draft events are not returned)
 export const getEventById = async (id: string): Promise<EventApiResponse> => {
   try {
     const response = await publicApi.get<any>(`/v1/events/${id}`);

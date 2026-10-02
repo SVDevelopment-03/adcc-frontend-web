@@ -6,6 +6,7 @@ import {
   getEventsPage,
 } from "../../services/eventsApi";
 import { motion } from "framer-motion";
+import { Route } from "lucide-react";
 import i18n from "../../i18n";
 import {
   AnimatedWords,
@@ -39,7 +40,8 @@ font-family: 'Satoshi', sans-serif !important;
     
     body { background: #EAF4FF; color: #000; }
     .bebas { font-family: 'Bebas Kai', sans-serif; font-weight: 400; letter-spacing: 0.02em; }
-    a { text-decoration: none; color: inherit; }
+    /* Scoped to the page: a bare "a" rule also overrode link colours in the shared header/footer */
+    .event-page a { text-decoration: none; color: inherit; }
     select { appearance: none; -webkit-appearance: none; background: transparent; border: none; outline: none; cursor: pointer; font-family: 'Bebas Kai', sans-serif; font-size: 18px; color: #000; width: 100%; padding-right: 28px; }
     .event-page .adcc-btn--arrow:hover .adcc-btn__arrow--enter,
     .event-page .adcc-btn--arrow:focus-visible .adcc-btn__arrow--enter {
@@ -680,6 +682,17 @@ function EventCard({
 
   const participants = event.currentParticipants ?? event.registrations ?? 0;
 
+  // The list API populates trackId as { _id, title, titleAr }
+  const track = event.trackId as
+    | string
+    | { title?: string; titleAr?: string }
+    | null
+    | undefined;
+  const trackName =
+    track && typeof track === "object"
+      ? (i18n.language === "ar" && track.titleAr ? track.titleAr : track.title) || ""
+      : "";
+
   return (
     <motion.div
       className="event-card"
@@ -785,7 +798,9 @@ function EventCard({
             }
             text={
               typeof event.distance === "number"
-                ? `${event.distance} ${t("public.common.km")}`
+                ? event.distance > 0
+                  ? `${event.distance} ${t("public.common.km")}`
+                  : t("public.common.km")
                 : t("public.common.distanceTBA")
             }
           />
@@ -798,10 +813,14 @@ function EventCard({
                 height={14}
               />
             }
-            text={t("public.common.participants", {
-              count: participants,
-              formattedCount: participants,
-            })}
+            text={
+              participants > 0
+                ? t("public.common.participants", {
+                    count: participants,
+                    formattedCount: participants,
+                  })
+                : t("public.common.participantsLabel")
+            }
           />
           <Meta
             icon={
@@ -814,6 +833,18 @@ function EventCard({
             }
             text={event.city || event.address || "—"}
           />
+          {trackName && (
+            <Meta
+              fullWidth
+              icon={
+                <Route
+                  size={14}
+                  aria-label={t("public.events.listing.card.trackAlt")}
+                />
+              }
+              text={trackName}
+            />
+          )}
         </div>
 
         <AnimatedButton
@@ -834,9 +865,24 @@ function EventCard({
   );
 }
 
-function Meta({ icon, text }: { icon: React.ReactNode; text: string }) {
+function Meta({
+  icon,
+  text,
+  fullWidth,
+}: {
+  icon: React.ReactNode;
+  text: string;
+  fullWidth?: boolean;
+}) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
+        ...(fullWidth ? { gridColumn: "1 / -1" } : {}),
+      }}
+    >
       <span
         style={{
           fontSize: 13,

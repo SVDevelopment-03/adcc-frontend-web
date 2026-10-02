@@ -30,6 +30,7 @@
     "participants_few": "{{formattedCount}} مشاركين",
     "participants_many": "{{formattedCount}} مشاركاً",
     "participants_other": "{{formattedCount}} مشارك",
+    "participantsLabel": "مشاركون",
     "members_zero": "لا يوجد أعضاء",
     "members_one": "عضو واحد",
     "members_two": "عضوان",
@@ -199,7 +200,8 @@
         "calendarAlt": "التاريخ",
         "distanceAlt": "المسافة",
         "participantsAlt": "المشاركون",
-        "locationAlt": "الموقع"
+        "locationAlt": "الموقع",
+        "trackAlt": "المسار"
       }
     },
     "detail": {
@@ -221,6 +223,7 @@
       "stats": {
         "date": "التاريخ",
         "ridersCount": "{{count}} دراج",
+        "ridersLabel": "دراجون",
         "participantsLabel": "المشاركون"
       },
       "schedule": {

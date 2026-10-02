@@ -147,7 +147,8 @@ text-transform: Capitalize !important;}
     * { box-sizing: border-box; }
     body { background: #EAF4FF; color: #000; }
     .bebas { font-family: 'Bebas Kai', sans-serif; font-weight: 400; letter-spacing: 0.02em; }
-    a { text-decoration: none; color: inherit; }
+    /* Scoped to the page: a bare "a" rule also overrode link colours in the shared header/footer */
+    .tracks-page a { text-decoration: none; color: inherit; }
     select { appearance: none; -webkit-appearance: none; background: transparent; border: none; outline: none; cursor: pointer; font-family: 'Bebas Kai', sans-serif; font-size: 20px; color: #000; width: 100%; }
     .tracks-page .adcc-btn--arrow:hover .adcc-btn__arrow--enter,
     .tracks-page .adcc-btn--arrow:focus-visible .adcc-btn__arrow--enter {
