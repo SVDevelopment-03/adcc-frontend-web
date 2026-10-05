@@ -254,12 +254,13 @@ export const updateCommunity = async (
     const isRemoteUrl = (val: unknown): val is string =>
       typeof val === 'string' && /^https?:\/\//.test(val);
 
+    // An explicit empty string means "remove this image".
     if (imageFiles?.image instanceof File) formData.append('image', imageFiles.image);
-    else if (isRemoteUrl(d.image)) formData.append('image', d.image);
+    else if (isRemoteUrl(d.image) || d.image === '') formData.append('image', d.image);
     if (imageFiles?.coverImage instanceof File) formData.append('coverImage', imageFiles.coverImage);
     else if (isRemoteUrl(d.coverImage)) formData.append('coverImage', d.coverImage);
     if (imageFiles?.logo instanceof File) formData.append('logo', imageFiles.logo);
-    else if (isRemoteUrl(d.logo)) formData.append('logo', d.logo);
+    else if (isRemoteUrl(d.logo) || d.logo === '') formData.append('logo', d.logo);
 
     const response = await api.patch<any>(`/v1/communities/${id}`, formData);
     if ((response.data as any).data) return (response.data as any).data;

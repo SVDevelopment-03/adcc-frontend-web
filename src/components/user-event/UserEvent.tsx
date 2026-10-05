@@ -17,6 +17,8 @@ import { useNavigate } from "react-router-dom";
 import { showAppComingSoon } from "../../utils/appStoreLink";
 import { AnimatedButton } from "../ui/AnimatedButton";
 import { useEventCategories } from "../../hooks/useLookups";
+import { EventClosedOverlay } from "../ui/EventClosedOverlay";
+import { isEventClosed } from "../../utils/eventStatus";
 
 const FontLoader = () => (
   <style>{`
@@ -740,9 +742,11 @@ function EventCard({
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
         </motion.div>
+        {isEventClosed(event) && <EventClosedOverlay />}
         <span
           style={{
             position: "absolute",
+            zIndex: 2,
             top: 16,
             right: 16,
             background: "rgba(0,0,0,0.4)",

@@ -230,8 +230,10 @@ export function AdminsList() {
           setAllAdmins((prev) => prev.map((u) => (u.id === user.id ? { ...u, isVerified: newStatus } : u)));
           try {
             await updateUserVerified(user.id, newStatus);
-          } catch {
+            toast.success(`"${user.fullName}" has been deactivated`);
+          } catch (err: any) {
             setAllAdmins((prev) => prev.map((u) => (u.id === user.id ? { ...u, isVerified: user.isVerified } : u)));
+            toast.error(err?.response?.data?.message || 'Failed to deactivate admin user');
           }
         },
       });
@@ -239,9 +241,12 @@ export function AdminsList() {
       // Activate: no confirmation needed
       const newStatus = true;
       setAllAdmins((prev) => prev.map((u) => (u.id === user.id ? { ...u, isVerified: newStatus } : u)));
-      updateUserVerified(user.id, newStatus).catch(() => {
-        setAllAdmins((prev) => prev.map((u) => (u.id === user.id ? { ...u, isVerified: user.isVerified } : u)));
-      });
+      updateUserVerified(user.id, newStatus)
+        .then(() => toast.success(`"${user.fullName}" has been activated`))
+        .catch((err: any) => {
+          setAllAdmins((prev) => prev.map((u) => (u.id === user.id ? { ...u, isVerified: user.isVerified } : u)));
+          toast.error(err?.response?.data?.message || 'Failed to activate admin user');
+        });
     }
   };
 
@@ -276,7 +281,9 @@ export function AdminsList() {
         setAllAdmins((prev) => prev.filter((u) => u.id !== user.id));
         try {
           await deleteUser(user.id);
-        } catch {
+          toast.success(`"${user.fullName}" has been deleted`);
+        } catch (err: any) {
+          toast.error(err?.response?.data?.message || 'Failed to delete admin user');
           void fetchAdmins(); // re-fetch if delete failed
         }
       },

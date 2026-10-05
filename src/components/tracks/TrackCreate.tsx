@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useCountries, useCities, useTrackFacilities } from '../../hooks/useLookups';
 import { ImagePickerModal } from '../media/ImagePickerModal';
 import { FieldError } from '../ui/FieldError';
+import { ALLOWED_IMAGE_ACCEPT, filterValidImageFiles, validateImageFile } from '../../utils/imageValidation';
 
 
 interface TrackCreateProps {
@@ -72,7 +73,6 @@ const getFormFields = (t: (key: string) => string, countryValues: string[]) => [
 ];
 
 const ACCEPTED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
-const MAX_IMAGE_SIZE_MB = 2;
 const MAX_GALLERY_IMAGES = 10;
 
 export function TrackCreate({ role }: TrackCreateProps) {
@@ -235,45 +235,31 @@ export function TrackCreate({ role }: TrackCreateProps) {
 
   const handleThumbnailUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
-      toast.error(t('tracks.create.toasts.imageTooLarge'));
-      return;
-    }
+    e.target.value = '';
+    if (!validateImageFile(file)) return;
     setThumbnailFile(file);
     setImage(URL.createObjectURL(file));
-    e.target.value = '';
   };
 
   const handleCoverUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
-      toast.error(t('tracks.create.toasts.imageTooLarge'));
-      return;
-    }
+    e.target.value = '';
+    if (!validateImageFile(file)) return;
     setCoverFile(file);
     setCoverImage(URL.createObjectURL(file));
-    e.target.value = '';
   };
 
   const handleGalleryUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files?.length) return;
-    const fileArray = Array.from(files);
-    if (galleryFiles.length + fileArray.length > MAX_GALLERY_IMAGES) {
+    const toAdd = filterValidImageFiles(e.target.files);
+    e.target.value = '';
+    if (!toAdd.length) return;
+    if (galleryFiles.length + toAdd.length > MAX_GALLERY_IMAGES) {
       toast.error(t('tracks.create.toasts.maxGalleryImages'));
-      e.target.value = '';
       return;
     }
-    const toAdd = fileArray.filter((f) => f.size <= MAX_IMAGE_SIZE_MB * 1024 * 1024);
-    fileArray.filter((f) => f.size > MAX_IMAGE_SIZE_MB * 1024 * 1024).forEach((f) =>
-      toast.error(`${f.name}: ${t('tracks.create.toasts.imageTooLarge')}`)
-    );
     setGalleryFiles((prev) => [...prev, ...toAdd]);
     setGalleryPreviews((prev) => [...prev, ...toAdd.map((f) => URL.createObjectURL(f))]);
     setGalleryImages((prev) => [...prev, ...toAdd.map((f) => URL.createObjectURL(f))]);
-    e.target.value = '';
   };
 
   const removeGalleryImage = (index: number) => {
@@ -773,7 +759,17 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
               <div>
                 <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('tracks.create.thumbnailLabel')}</label>
                 {image && (
-                  <img src={image} alt="Thumbnail" className="w-full h-32 object-cover rounded-lg mb-2" />
+                  <div className="relative mb-2">
+                    <img src={image} alt="Thumbnail" className="w-full h-32 object-cover rounded-lg" />
+                    <button
+                      type="button"
+                      onClick={() => { setThumbnailFile(null); setImage(''); }}
+                      className="absolute top-2 right-2 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                      aria-label="Remove thumbnail image"
+                    >
+                      ✕
+                    </button>
+                  </div>
                 )}
                 <label
                   htmlFor="trackCreateThumbnail"
@@ -787,7 +783,7 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
                 <input
                   id="trackCreateThumbnail"
                   type="file"
-                  accept="image/*"
+                  accept={ALLOWED_IMAGE_ACCEPT}
                   className="hidden"
                   onChange={handleThumbnailUpload}
                 />
@@ -815,7 +811,17 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
               <div>
                 <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('tracks.create.coverLabel')}</label>
                 {coverImage && (
-                  <img src={coverImage} alt="Cover" className="w-full h-48 object-cover rounded-lg mb-2" />
+                  <div className="relative mb-2">
+                    <img src={coverImage} alt="Cover" className="w-full h-48 object-cover rounded-lg" />
+                    <button
+                      type="button"
+                      onClick={() => { setCoverFile(null); setCoverImage(''); }}
+                      className="absolute top-2 right-2 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                      aria-label="Remove cover image"
+                    >
+                      ✕
+                    </button>
+                  </div>
                 )}
                 <label
                   htmlFor="trackCreateCover"
@@ -829,7 +835,7 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
                 <input
                   id="trackCreateCover"
                   type="file"
-                  accept="image/*"
+                  accept={ALLOWED_IMAGE_ACCEPT}
                   className="hidden"
                   onChange={handleCoverUpload}
                 />
@@ -868,7 +874,7 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
                 <input
                   id="trackCreateGallery"
                   type="file"
-                  accept="image/*"
+                  accept={ALLOWED_IMAGE_ACCEPT}
                   multiple
                   className="hidden"
                   onChange={handleGalleryUpload}

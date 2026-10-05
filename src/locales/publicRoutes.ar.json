@@ -216,6 +216,7 @@
         "loading": "جارٍ التحميل",
         "spotsAvailable": "{{count}} مقعد متاح",
         "openRegistration": "التسجيل مفتوح",
+        "registrationClosed": "التسجيل مغلق",
         "organizedBy": "تنظيم",
         "defaultOrganizer": "ADCC",
         "saveEvent": "حفظ الفعالية",

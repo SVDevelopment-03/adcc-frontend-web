@@ -4,6 +4,7 @@ import { Edit, GripVertical, LayoutGrid, FileText, Globe, ImageIcon, Upload } fr
 import { toast } from 'sonner';
 import api from '../../services/api';
 import { useTranslation } from 'react-i18next';
+import { ALLOWED_IMAGE_ACCEPT, validateImageFile } from '../../utils/imageValidation';
 
 export interface ContentSetting {
   _id: string;
@@ -334,6 +335,8 @@ export function CMS() {
   const [newBannerTarget, setNewBannerTarget] = useState('home');
   const [savingNewBanner, setSavingNewBanner] = useState(false);
   const bannerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const newBannerInputRef = useRef<HTMLInputElement | null>(null);
+  const editImageInputRef = useRef<HTMLInputElement | null>(null);
   const [bannerTargets, setBannerTargets] = useState<Record<string, string>>({});
 
   const [bannerArFiles, setBannerArFiles] = useState<Record<string, File | null>>({});
@@ -390,6 +393,17 @@ export function CMS() {
   const appBannerItemsMemo = useMemo(() => appBannerItems, [appBannerItems]);
   const appBannerArItemsMemo = useMemo(() => appBannerArItems, [appBannerArItems]);
 
+  // Returns the chosen file when it passes validation; otherwise clears the
+  // native input (so the rejected file name is not left showing) and returns null.
+  const pickValidImage = (e: React.ChangeEvent<HTMLInputElement>): File | null => {
+    const file = e.target.files?.[0] ?? null;
+    if (file && !validateImageFile(file)) {
+      e.target.value = '';
+      return null;
+    }
+    return file;
+  };
+
   const handleBannerFileChange = (bannerKey: string, file: File | null) => {
     setBannerFiles((prev) => ({ ...prev, [bannerKey]: file }));
     if (bannerPreviews[bannerKey]) {
@@ -421,6 +435,7 @@ export function CMS() {
     }
     setNewBannerFile(null);
     setNewBannerPreview(null);
+    if (newBannerInputRef.current) newBannerInputRef.current.value = '';
   };
 
   const handleAddNewBanner = async () => {
@@ -804,8 +819,9 @@ export function CMS() {
                   </label>
                   <input
                     type="file"
-                    accept="image/*"
-                    onChange={(e) => handleNewBannerFileChange(e.target.files?.[0] ?? null)}
+                    accept={ALLOWED_IMAGE_ACCEPT}
+                    ref={newBannerInputRef}
+                    onChange={(e) => handleNewBannerFileChange(pickValidImage(e))}
                     className="w-full border rounded-lg px-3 py-2 text-sm"
                     style={{ borderColor: '#E5DDD4' }}
                   />
@@ -908,12 +924,24 @@ export function CMS() {
                           </label>
                           <input
                             type="file"
-                            accept="image/*"
+                            accept={ALLOWED_IMAGE_ACCEPT}
                             ref={(el) => { bannerInputRefs.current[item.key] = el; }}
-                            onChange={(e) => handleBannerFileChange(item.key, e.target.files?.[0] ?? null)}
+                            onChange={(e) => handleBannerFileChange(item.key, pickValidImage(e))}
                             className="w-full border rounded-lg px-3 py-2 text-sm"
                             style={{ borderColor: '#E5DDD4' }}
                           />
+                          {selectedFile ? (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                handleBannerFileChange(item.key, null);
+                                if (bannerInputRefs.current[item.key]) bannerInputRefs.current[item.key]!.value = '';
+                              }}
+                              className="text-xs text-red-600 hover:underline"
+                            >
+                              Remove selected image
+                            </button>
+                          ) : null}
                         </div>
 
                         <div className="space-y-2">
@@ -1011,12 +1039,24 @@ export function CMS() {
                         </label>
                         <input
                           type="file"
-                          accept="image/*"
+                          accept={ALLOWED_IMAGE_ACCEPT}
                           ref={(el) => { bannerArInputRefs.current[slotKey] = el; }}
-                          onChange={(e) => handleBannerArFileChange(slotKey, e.target.files?.[0] ?? null)}
+                          onChange={(e) => handleBannerArFileChange(slotKey, pickValidImage(e))}
                           className="w-full border rounded-lg px-3 py-2 text-sm"
                           style={{ borderColor: '#E5DDD4' }}
                         />
+                        {selectedFile ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleBannerArFileChange(slotKey, null);
+                              if (bannerArInputRefs.current[slotKey]) bannerArInputRefs.current[slotKey]!.value = '';
+                            }}
+                            className="text-xs text-red-600 hover:underline"
+                          >
+                            Remove selected image
+                          </button>
+                        ) : null}
                       </div>
 
                       <div className="space-y-2">
@@ -1246,17 +1286,27 @@ export function CMS() {
                 </label>
                 <input
                   type="file"
-                  accept="image/*"
-                  onChange={(event) => {
-                    const file = event.target.files?.[0] ?? null;
-                    setEditImageFile(file);
-                  }}
+                  accept={ALLOWED_IMAGE_ACCEPT}
+                  ref={editImageInputRef}
+                  onChange={(event) => setEditImageFile(pickValidImage(event))}
                   className="border rounded-lg px-3 py-2 text-sm w-full"
                 />
                 {editImageFile ? (
                   <p className="text-xs" style={{ color: '#666' }}>
                     {t('cms.selectedFile')}: {editImageFile.name}
                   </p>
+                ) : null}
+                {editImageFile ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditImageFile(null);
+                      if (editImageInputRef.current) editImageInputRef.current.value = '';
+                    }}
+                    className="text-xs text-red-600 hover:underline"
+                  >
+                    Remove selected image
+                  </button>
                 ) : null}
               </div>
               <div className="md:col-span-2 space-y-1">

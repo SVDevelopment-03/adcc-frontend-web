@@ -13,6 +13,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { api } from '../../services/api';
+import { ALLOWED_IMAGE_ACCEPT, IMAGE_UPLOAD_HINT, filterValidImageFiles } from '../../utils/imageValidation';
 
 /* ─── Types ─────────────────────────────────────────────────────────────────── */
 interface MediaItem {
@@ -169,11 +170,9 @@ export function MediaLibrary() {
 
   /* ── Upload ── */
   const uploadFiles = useCallback(async (files: FileList | File[]) => {
-    const fileArray = Array.from(files).filter((f) => f.type.startsWith('image/'));
-    if (!fileArray.length) {
-      setUploadError('Please select image files (JPEG, PNG, WebP, GIF, SVG).');
-      return;
-    }
+    const fileArray = filterValidImageFiles(files);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (!fileArray.length) return;
 
     setUploading(true);
     setUploadError('');
@@ -269,7 +268,7 @@ export function MediaLibrary() {
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept={ALLOWED_IMAGE_ACCEPT}
           multiple
           className="hidden"
           onChange={(e) => e.target.files && uploadFiles(e.target.files)}
@@ -299,7 +298,7 @@ export function MediaLibrary() {
                 </button>
               </p>
               <p className="text-xs text-gray-400 mt-1">
-                JPEG, PNG, WebP, GIF, SVG — multiple files supported
+                {IMAGE_UPLOAD_HINT} — multiple files supported
               </p>
             </div>
             {/* Folder selector */}

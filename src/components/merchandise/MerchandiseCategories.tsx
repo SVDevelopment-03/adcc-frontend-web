@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Plus, Edit2, Trash2, ToggleLeft, ToggleRight, X, ChevronRight, Layers } from 'lucide-react';
 import { toast } from 'sonner';
+import { ALLOWED_IMAGE_ACCEPT, IMAGE_UPLOAD_HINT, validateImageFile } from '../../utils/imageValidation';
 import { Category } from './merchandiseData';
 import {
   createMerchandiseCategory,
@@ -76,6 +77,9 @@ export function MerchandiseCategories({ categories, setCategories }: Merchandise
         payload.image = uploadResult.url;
       } else if (form.image) {
         payload.image = form.image;
+      } else if (editCat?.image) {
+        // The saved image was removed — tell the backend to clear it
+        payload.image = '';
       }
 
       if (!payload.image) {
@@ -274,26 +278,40 @@ export function MerchandiseCategories({ categories, setCategories }: Merchandise
                   <input
                     ref={imageInputRef}
                     type="file"
-                    accept="image/*"
+                    accept={ALLOWED_IMAGE_ACCEPT}
                     className="hidden"
                     onChange={(event) => {
                       const file = event.target.files?.[0] ?? null;
+                      // Reset so the same file can be picked again after removing it
+                      event.target.value = '';
+                      // Cancelled dialog or rejected file: keep the current image
+                      if (!validateImageFile(file)) return;
                       setSelectedImageFile(file);
-                      if (!file) {
-                        setForm(f => ({ ...f, image: '' }));
-                        setImagePreviewUrl('');
-                      }
                     }}
                   />
                   {imagePreviewUrl && (
-                    <img
-                      src={imagePreviewUrl}
-                      alt="Category preview"
-                      className="w-16 h-16 rounded-xl object-cover border border-gray-200"
-                    />
+                    <div className="relative">
+                      <img
+                        src={imagePreviewUrl}
+                        alt="Category preview"
+                        className="w-16 h-16 rounded-xl object-cover border border-gray-200"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedImageFile(null);
+                          setForm(f => ({ ...f, image: '' }));
+                          setImagePreviewUrl('');
+                        }}
+                        className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white flex items-center justify-center"
+                        aria-label="Remove category image"
+                      >
+                        <X className="w-2.5 h-2.5" />
+                      </button>
+                    </div>
                   )}
                 </div>
-                <p className="text-xs text-gray-500 mt-2">Upload a category image instead of using an icon.</p>
+                <p className="text-xs text-gray-500 mt-2">Upload a category image instead of using an icon. {IMAGE_UPLOAD_HINT}.</p>
               </div>
 
               <div>

@@ -4,6 +4,7 @@ import {
   Search, ChevronLeft, ChevronRight, Eye, UserX, MapPin, Calendar,
   X, Activity, Users, Trophy, Award, CircleX,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { getAllUsers, updateUserVerified, User } from '../../services/usersApi';
 
 const PAGE_SIZE = 10;
@@ -273,6 +274,7 @@ export function UsersList() {
         setSelectedUser((s) => s ? { ...s, isVerified: user.isVerified } : s);
       }
       console.error('Failed to update user status:', err);
+      toast.error((err as any)?.response?.data?.message || 'Failed to update user status');
     }
   };
 

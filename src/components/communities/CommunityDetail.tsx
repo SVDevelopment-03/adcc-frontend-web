@@ -27,6 +27,9 @@ import { getAllEvents, EventApiResponse } from '../../services/eventsApi';
 import { getCommunityPosts, createCommunityPost, updateCommunityPost, deleteCommunityPost as deleteCommunityPostApi, CommunityPost } from '../../services/communityPostsApi';
 import { DetailPageSkeleton } from '../ui/skeleton';
 import { PostFormModal, PostFormData } from './PostFormModal';
+import { EventClosedOverlay } from '../ui/EventClosedOverlay';
+import { isEventClosed, sortClosedEventsLast } from '../../utils/eventStatus';
+import { ALLOWED_IMAGE_ACCEPT, filterValidImageFiles } from '../../utils/imageValidation';
 
 
 
@@ -153,7 +156,8 @@ export function CommunityDetail() {
           if (typeof cid === 'object') return String(cid._id) === communityId || String(cid.id) === communityId;
           return false;
         });
-        setCommunityEvents(filtered);
+        // Events whose date has passed (or that are completed) go to the end
+        setCommunityEvents(sortClosedEventsLast<EventApiResponse>(filtered));
       } catch (error: any) {
         console.error('Error fetching events:', error);
         toast.error(error?.response?.data?.message || t('communities.detail.toasts.loadEventsError'));
@@ -291,12 +295,12 @@ export function CommunityDetail() {
   };
 
   const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || !communityId || files.length === 0) return;
+    const fileList = filterValidImageFiles(e.target.files);
+    e.target.value = '';
+    if (!communityId || fileList.length === 0) return;
 
     setUploading(true);
     try {
-      const fileList = Array.from(files);
       const result = await addGalleryImages(communityId, fileList);
 
       if (result?.addedImages && result.addedImages.length > 0) {
@@ -322,7 +326,6 @@ export function CommunityDetail() {
     } finally {
       setUploading(false);
     }
-    e.target.value = '';
   };
 
   const handleGalleryDelete = async (id: string, imageUrl: string) => {
@@ -781,11 +784,14 @@ export function CommunityDetail() {
                   onClick={() => navigate(`/events/${event._id || event.id}`)}
                 >
                   {/* Event Image */}
-                  <img
-                    src={event.mainImage || event.eventImage || 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400'}
-                    alt={event.title}
-                    className="w-full h-40 object-cover rounded-lg mb-4"
-                  />
+                  <div className="relative overflow-hidden rounded-lg mb-4">
+                    <img
+                      src={event.mainImage || event.eventImage || 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400'}
+                      alt={event.title}
+                      className="w-full h-40 object-cover"
+                    />
+                    {isEventClosed(event) && <EventClosedOverlay />}
+                  </div>
 
                   <div className="p-6">
                     {/* Event Title */}
@@ -929,7 +935,7 @@ export function CommunityDetail() {
                 type="file"
                 multiple
                 hidden
-                accept="image/*,video/*"
+                accept={ALLOWED_IMAGE_ACCEPT}
                 onChange={handleGalleryUpload}
                 disabled={uploading}
                 className="hidden"
@@ -975,7 +981,7 @@ export function CommunityDetail() {
                   type="file"
                   multiple
                   hidden
-                  accept="image/*,video/*"
+                  accept={ALLOWED_IMAGE_ACCEPT}
                   onChange={handleGalleryUpload}
                   disabled={uploading}
                   className="hidden"

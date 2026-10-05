@@ -11,6 +11,7 @@ import { DetailPageSkeleton } from '../ui/skeleton';
 import { useCountries, useCities, useTrackFacilities } from '../../hooks/useLookups';
 import { ImagePickerModal } from '../media/ImagePickerModal';
 import { FieldError } from '../ui/FieldError';
+import { ALLOWED_IMAGE_ACCEPT, filterValidImageFiles, validateImageFile } from '../../utils/imageValidation';
 
 interface TrackEditProps {
   navigate: (page: string, params?: any) => void;
@@ -113,20 +114,21 @@ useEffect(() => {
 
 const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0];
-  if (!file) return;
+  // Reset so the same file can be picked again after removing it
+  e.target.value = '';
+  if (!validateImageFile(file)) return;
   setCoverImage(file);
   setCoverPreview(URL.createObjectURL(file));
   setFormData(prev => ({ ...prev, coverImage: URL.createObjectURL(file) }));
 };
 
 const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const fileList = e.target.files;
-    const files: File[] = fileList ? Array.from(fileList) : [];
+    const files: File[] = filterValidImageFiles(e.target.files);
+    e.target.value = '';
     if (!files.length) return;
 
     if (galleryImages.length + files.length > 10) {
       toast.error(t('tracks.edit.toasts.maxImages'));
-      e.target.value = '';
       return;
     }
 
@@ -134,7 +136,6 @@ const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setGalleryImages((prev) => [...prev, ...files]);
     setGalleryPreviews((prev) => [...prev, ...newPreviews]);
     setFormData(prev => ({ ...prev, galleryImages: [...prev.galleryImages, ...newPreviews] }));
-    e.target.value = '';
   };
 
 
@@ -362,12 +363,9 @@ const handleImageUpload = (
   field: 'thumbnailImage' | 'coverImage'
 ) => {
   const file = event.target.files?.[0];
-  if (!file) return;
-
-  if (file.size > 2 * 1024 * 1024) {
-    toast.error(t('tracks.edit.toasts.imageTooLarge'));
-    return;
-  }
+  // Reset so the same file can be picked again after removing it
+  event.target.value = '';
+  if (!validateImageFile(file)) return;
 
   if (field === 'thumbnailImage') {
     setThumbnailImage(file);
@@ -380,23 +378,17 @@ const handleImageUpload = (
 };
 
 const handleGalleryUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-  const files = event.target.files;
-  if (!files) return;
-  const fileArray = Array.from(files) as File[];
-  if (galleryImages.length + fileArray.length > 10) {
+  const valid = filterValidImageFiles(event.target.files);
+  event.target.value = '';
+  if (!valid.length) return;
+  if (galleryImages.length + valid.length > 10) {
     toast.error(t('tracks.edit.toasts.maxImages'));
-    event.target.value = '';
     return;
   }
-  const valid = fileArray.filter((f) => f.size <= 2 * 1024 * 1024);
-  fileArray.filter((f) => f.size > 2 * 1024 * 1024).forEach((f) =>
-    toast.error(`${f.name}: ${t('tracks.edit.toasts.imageTooLarge')}`)
-  );
   const newPreviews = valid.map((f) => URL.createObjectURL(f));
   setGalleryImages((prev) => [...prev, ...valid]);
   setGalleryPreviews((prev) => [...prev, ...newPreviews]);
   setFormData(prev => ({ ...prev, galleryImages: [...prev.galleryImages, ...newPreviews] }));
-  event.target.value = '';
 };
 
 // const removeGalleryImage = (index: number) => {
@@ -418,6 +410,9 @@ const handleGalleryUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!(Number(formData.distance) > 0)) errors.distance = t('tracks.edit.toasts.invalidDistance');
     if (!formData.difficulty) errors.difficulty = required;
     if (!formData.surfaceType) errors.surfaceType = required;
+    // A removed thumbnail/cover must be replaced before saving
+    if (!formData.thumbnailImage && track?.image) errors.thumbnailImage = required;
+    if (!formData.coverImage && track?.coverImage) errors.coverImage = required;
     return errors;
   };
 
@@ -913,11 +908,19 @@ const handleDisable = async (id: string, name: string) => {
                   {t('tracks.edit.currentThumbnail')}
                 </label>
 
-                <img
-                  src={formData.thumbnailImage || track.image}
-                  alt="Thumbnail"
-                  className="w-full h-32 object-cover rounded-lg mb-2"
-                />
+                {formData.thumbnailImage && (
+                  <div className="relative mb-2">
+                    <img src={formData.thumbnailImage} alt="Thumbnail" className="w-full h-32 object-cover rounded-lg" />
+                    <button
+                      type="button"
+                      onClick={() => { setThumbnailImage(null); setFormData((prev) => ({ ...prev, thumbnailImage: '' })); }}
+                      className="absolute top-2 right-2 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                      aria-label="Remove thumbnail image"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
 
                 <label
                   className="border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 transition-colors block"
@@ -929,7 +932,7 @@ const handleDisable = async (id: string, name: string) => {
 
                   <input
                     type="file"
-                    accept="image/*"
+                    accept={ALLOWED_IMAGE_ACCEPT}
                     hidden
                     onChange={(e) => handleImageUpload(e, 'thumbnailImage')}
                   />
@@ -941,6 +944,7 @@ const handleDisable = async (id: string, name: string) => {
                 >
                   Choose from Media Library
                 </button>
+                <FieldError message={errors.thumbnailImage} />
                 {showThumbnailPicker && (
                   <ImagePickerModal
                     uploadFolder="tracks"
@@ -958,11 +962,17 @@ const handleDisable = async (id: string, name: string) => {
               <div>
                 <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('tracks.edit.currentCover')}</label>
                 {coverPreview && (
-                  <img
-                    src={coverPreview}
-                    alt="Preview"
-                    className="mt-4 rounded-lg w-full h-48 object-cover"
-                  />
+                  <div className="relative mb-2">
+                    <img src={coverPreview} alt="Cover" className="w-full h-48 object-cover rounded-lg" />
+                    <button
+                      type="button"
+                      onClick={() => { setCoverImage(null); setCoverPreview(null); setFormData((prev) => ({ ...prev, coverImage: '' })); }}
+                      className="absolute top-2 right-2 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                      aria-label="Remove cover image"
+                    >
+                      ✕
+                    </button>
+                  </div>
                 )}
                 <label
                   htmlFor="coverUpload"
@@ -976,7 +986,7 @@ const handleDisable = async (id: string, name: string) => {
                   <input
                     id="coverUpload"
                     type="file"
-                    accept="image/*"
+                    accept={ALLOWED_IMAGE_ACCEPT}
                     hidden
                     onChange={handleCoverChange}
                   />
@@ -988,6 +998,7 @@ const handleDisable = async (id: string, name: string) => {
                 >
                   Choose from Media Library
                 </button>
+                <FieldError message={errors.coverImage} />
                 {showCoverPicker && (
                   <ImagePickerModal
                     uploadFolder="tracks"
@@ -1016,7 +1027,7 @@ const handleDisable = async (id: string, name: string) => {
                 <input
                   id="galleryUpload"
                   type="file"
-                  accept="image/*"
+                  accept={ALLOWED_IMAGE_ACCEPT}
                   multiple
                   hidden
                   onChange={handleGalleryChange}

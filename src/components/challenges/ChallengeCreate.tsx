@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { useChallengeTypes, useChallengeUnits } from '../../hooks/useLookups';
 import { FieldError } from '../ui/FieldError';
+import { ALLOWED_IMAGE_ACCEPT, validateImageFile } from '../../utils/imageValidation';
 
 interface CommunityItem {
   id: string;
@@ -113,7 +114,9 @@ export function ChallengeCreate() {
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    // Reset so the same file can be picked again after removing it
+    e.target.value = '';
+    if (!validateImageFile(file)) return;
     setImageFile(file);
     setImagePreview(URL.createObjectURL(file));
   };
@@ -492,7 +495,7 @@ export function ChallengeCreate() {
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/jpeg,image/png,image/webp,image/gif"
+              accept={ALLOWED_IMAGE_ACCEPT}
               onChange={handleImageUpload}
               className="hidden"
             />

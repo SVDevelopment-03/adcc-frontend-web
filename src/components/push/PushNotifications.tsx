@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { sendStaffWebPush, sendTestBroadcastPush } from '../../services/authApi';
 import { uploadToMediaLibrary } from '../../services/mediaApi';
+import { ALLOWED_IMAGE_ACCEPT, IMAGE_UPLOAD_HINT, validateImageFile } from '../../utils/imageValidation';
 import { getAllUsers, type User } from '../../services/usersApi';
 import { getAllEvents } from '../../services/eventsApi';
 //import { getAllCommunities } from '../../services/communitiesApi';
@@ -378,16 +379,31 @@ export function PushNotifications() {
                   </div>
                   <div>
                     <div className="text-sm text-gray-700">Upload an image or paste a URL</div>
-                    <div className="text-xs text-gray-500">Supports jpg, png, gif — max 10MB</div>
+                    <div className="text-xs text-gray-500">{IMAGE_UPLOAD_HINT}</div>
                   </div>
                 </div>
                 <div className="ml-auto flex items-center gap-2">
-                  <input id="push-image-file" type="file" accept="image/*" className="sr-only" onChange={(e) => setSelectedFile(e.target.files?.[0] || null)} />
+                  <input id="push-image-file" type="file" accept={ALLOWED_IMAGE_ACCEPT} className="sr-only" onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    // Reset so the same file can be picked again after removing it
+                    e.target.value = '';
+                    if (validateImageFile(file)) setSelectedFile(file);
+                  }} />
                   <label htmlFor="push-image-file" className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 cursor-pointer">
                     <UploadCloud className="w-4 h-4" />
                     <span className="text-sm text-gray-700">Choose file</span>
                   </label>
                   {selectedFile ? <div className="text-sm text-gray-600 ml-2">{selectedFile.name}</div> : null}
+                  {selectedFile ? (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedFile(null)}
+                      className="text-gray-400 hover:text-red-600 text-sm"
+                      aria-label="Remove selected file"
+                    >
+                      ✕
+                    </button>
+                  ) : null}
                   <button
                     type="button"
                     disabled={!selectedFile || isUploading}
@@ -397,6 +413,9 @@ export function PushNotifications() {
                         setIsUploading(true);
                         const media = await uploadToMediaLibrary(selectedFile, 'galleries');
                         setImageUrlInput(media.url);
+                        setUploadedMediaName(media.name || selectedFile.name);
+                        setUploadedMediaSize(media.size || selectedFile.size || null);
+                        setUploadedFromUpload(true);
                         toast.success('Image uploaded');
                         setSelectedFile(null);
                       } catch (err) {
@@ -418,7 +437,12 @@ export function PushNotifications() {
                   placeholder="Or use an image URL: https://example.com/image.jpg"
                   className="w-full px-4 py-2 rounded-lg border border-gray-200"
                   value={imageUrlInput}
-                  onChange={(e) => setImageUrlInput(e.target.value)}
+                  onChange={(e) => {
+                    setImageUrlInput(e.target.value);
+                    setUploadedFromUpload(false);
+                    setUploadedMediaName(null);
+                    setUploadedMediaSize(null);
+                  }}
                 />
               </div>
               {imageUrlInput ? (

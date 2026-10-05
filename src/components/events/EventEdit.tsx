@@ -13,6 +13,7 @@ import { useLocale } from '../../contexts/LocaleContext';
 import { useTranslation } from 'react-i18next';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { ImagePickerModal } from '../media/ImagePickerModal';
+import { ALLOWED_IMAGE_ACCEPT, filterValidImageFiles, validateImageFile } from '../../utils/imageValidation';
 import { FieldError } from '../ui/FieldError';
 
 interface EventEditProps {
@@ -427,11 +428,14 @@ export function EventEdit({ role }: EventEditProps) {
   const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
 
-    const files = Array.from(e.target.files);
+    const files = filterValidImageFiles(e.target.files);
+    // Reset input so same file can be selected again
+    e.target.value = '';
+    if (!files.length) return;
 
     // Optional: limit max images (10)
     if (galleryImages.length + files.length > 10) {
-      alert("Maximum 10 images allowed");
+      toast.error("Maximum 10 images allowed");
       return;
     }
 
@@ -1421,16 +1425,16 @@ export function EventEdit({ role }: EventEditProps) {
                 {/* Hidden File Input */}
                 <input
                   type="file"
-                  accept="image/png, image/jpeg, image/webp, image/gif"
+                  accept={ALLOWED_IMAGE_ACCEPT}
                   className="hidden"
                   id="coverUpload"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
-                    if (!file) return;
-                    setMainImageFile(file);
-                    setFormData((prev) => ({ ...prev, mainImage: URL.createObjectURL(file) }));
                     // Reset so the same file can be picked again after removing it
                     e.target.value = '';
+                    if (!validateImageFile(file)) return;
+                    setMainImageFile(file);
+                    setFormData((prev) => ({ ...prev, mainImage: URL.createObjectURL(file) }));
                   }}
                 />
 
@@ -1496,7 +1500,7 @@ export function EventEdit({ role }: EventEditProps) {
                     <input
                       id="galleryUpload"
                       type="file"
-                      accept="image/png, image/jpeg"
+                      accept={ALLOWED_IMAGE_ACCEPT}
                       multiple
                       hidden
                       onChange={handleGalleryChange}

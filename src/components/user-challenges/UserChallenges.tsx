@@ -12,6 +12,8 @@ import {
   useWordList,
 } from "../public/publicPageHelpers";
 import { Link } from "react-router-dom";
+import { EventClosedOverlay } from "../ui/EventClosedOverlay";
+import { isChallengeClosed } from "../../utils/eventStatus";
 
 const PAGE_SIZE = 4;
 const CHALLENGE_FALLBACK_IMAGE =
@@ -402,12 +404,15 @@ justify-content: center !important;}
               key={item.id}
               className="group challenge-card overflow-hidden rounded-xl border border-[#cad8e6] bg-[#eef7ff] transition-all duration-300 hover:bg-[#435974] hover:text-white"
             >
-              <div className="adcc-image overflow-hidden">
+              <div className="adcc-image relative overflow-hidden">
                 <img
                   className="adcc-image__img h-[220px] w-full object-cover sm:h-[280px] lg:h-[330px]"
                   src={item.image || CHALLENGE_FALLBACK_IMAGE}
                   alt={item.title}
                 />
+                {isChallengeClosed(item) && (
+                  <EventClosedOverlay label={t("common.challengeClosed", "Challenge Closed")} />
+                )}
               </div>
 
               <div className="p-5 sm:p-6 lg:p-8">
@@ -445,7 +450,10 @@ justify-content: center !important;}
                     to={`/challenges/${encodeURIComponent(item.id)}`}
                     className="self-center rounded-full border border-white px-5 py-3 text-[16px] font-semibold sm:self-auto sm:px-6"
                   >
-                    {t("public.common.joinChallenge")}
+                    {/* A closed challenge can still be viewed, not joined */}
+                    {isChallengeClosed(item)
+                      ? t("public.common.viewDetails")
+                      : t("public.common.joinChallenge")}
                   </Link>
                 </div>
               </div>

@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Award, CalendarDays, Plus, Star, Trophy, Users } from "lucide-react";
 import { Challenge, getChallengeById } from "../../services/challengesApi";
+import { isChallengeClosed } from "../../utils/eventStatus";
 import { scrollToAppListing } from "../../utils/appStoreLink";
 import i18n from "../../i18n";
 
@@ -225,6 +226,8 @@ export default function ChallengeDetailPage() {
         <p className="mx-auto mt-4 max-w-[851px] text-[14px] leading-relaxed sm:mt-6 sm:text-[17px] md:text-[20px] lg:text-[22px]">
           {challenge.description}
         </p>
+        {/* No joining once the challenge is over */}
+        {!isChallengeClosed(challenge) && (
         <button
           type="button"
           onClick={scrollToAppListing}
@@ -246,6 +249,7 @@ export default function ChallengeDetailPage() {
             />
           </svg>
         </button>
+        )}
       </section>
 
       {/* Stats strip */}
@@ -253,7 +257,10 @@ export default function ChallengeDetailPage() {
         <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1fr)_repeat(3,180px)]">
           <div className="rounded-2xl bg-[#435974] p-5 text-white sm:p-8">
             <p className="text-[13px] text-white/70 sm:text-[14px]">
-              • {t("public.common.joinChallenge")}
+              •{" "}
+              {isChallengeClosed(challenge)
+                ? t("common.challengeClosed", "Challenge Closed")
+                : t("public.common.joinChallenge")}
             </p>
             <div className="mt-4 sm:mt-8 sm:flex sm:gap-8">
               <h3 className="flex-1 text-[22px]  uppercase leading-tight sm:text-[26px] lg:text-[32px]">

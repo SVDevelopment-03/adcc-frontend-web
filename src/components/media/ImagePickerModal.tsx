@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ImageIcon, Loader2, Search, Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { backfillMediaLibrary, getMediaPage, uploadToMediaLibrary, MediaItem } from '../../services/mediaApi';
+import { ALLOWED_IMAGE_ACCEPT, IMAGE_UPLOAD_HINT, validateImageFile } from '../../utils/imageValidation';
 
 interface ImagePickerModalProps {
   /** Upload folder used when a brand-new file is uploaded from this picker (see backend FOLDER_MAP). */
@@ -60,11 +61,8 @@ export function ImagePickerModal({ uploadFolder, onClose, onSelect }: ImagePicke
 
   const handleUpload = async (files: FileList | null) => {
     const file = files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file.');
-      return;
-    }
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (!validateImageFile(file)) return;
 
     setUploading(true);
     try {
@@ -243,7 +241,7 @@ export function ImagePickerModal({ uploadFolder, onClose, onSelect }: ImagePicke
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*"
+                accept={ALLOWED_IMAGE_ACCEPT}
                 className="hidden"
                 onChange={(e) => handleUpload(e.target.files)}
               />
@@ -260,7 +258,7 @@ export function ImagePickerModal({ uploadFolder, onClose, onSelect }: ImagePicke
                   <p className="text-sm font-semibold text-gray-700">
                     Drop an image here or <span className="text-blue-600 underline underline-offset-2">browse files</span>
                   </p>
-                  <p className="text-xs text-gray-400">JPG, PNG, WebP, GIF</p>
+                  <p className="text-xs text-gray-400">{IMAGE_UPLOAD_HINT}</p>
                 </div>
               )}
             </div>

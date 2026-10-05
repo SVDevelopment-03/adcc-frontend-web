@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Image as ImageIcon, Save, Shield } from 'lucide-react';
+import { ArrowLeft, Image as ImageIcon, Save, Shield, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { compressImage } from '../../utils/imageUtils';
+import { ALLOWED_IMAGE_ACCEPT, validateImageFile } from '../../utils/imageValidation';
 import { createUser, type CreateUserInput } from '../../services/usersApi';
 import { assignUserRole, getRbacRoles, type RbacRole } from '../../services/rbacService';
 import { FieldError } from '../ui/FieldError';
 
-const ACCEPTED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function UserCreate() {
@@ -57,11 +57,7 @@ export function UserCreate() {
   }, [t]);
 
   const handleImageChange = async (file: File | null) => {
-    if (!file) return;
-    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-      toast.error(t('users.create.toasts.invalidImageType'));
-      return;
-    }
+    if (!validateImageFile(file)) return;
     try {
       const base64 = await compressImage(file, 600, 600, 0.75);
       setProfileImage(base64);
@@ -175,12 +171,26 @@ export function UserCreate() {
           <label className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
             <input
               type="file"
-              accept={ACCEPTED_IMAGE_TYPES.join(',')}
+              accept={ALLOWED_IMAGE_ACCEPT}
               className="hidden"
-              onChange={(e) => void handleImageChange(e.target.files?.[0] || null)}
+              onChange={(e) => {
+                void handleImageChange(e.target.files?.[0] || null);
+                // Reset so the same file can be picked again after removing it
+                e.target.value = '';
+              }}
             />
             {t('users.create.upload')}
           </label>
+          {profilePreview && (
+            <button
+              type="button"
+              onClick={() => { setProfileImage(''); setProfilePreview(''); }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 text-sm"
+            >
+              <Trash2 className="w-4 h-4" />
+              {t('common.remove', 'Remove')}
+            </button>
+          )}
 
           <div className="text-xs" style={{ color: '#666' }}>{t('users.create.uploadHint')}</div>
         </div>

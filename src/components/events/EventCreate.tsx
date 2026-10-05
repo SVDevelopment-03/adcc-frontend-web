@@ -8,6 +8,7 @@ import { createEvent } from '../../services/eventsApi';
 import { getAllCommunities, deleteCommunity as deleteCommunityApi, CommunityApiResponse } from '../../services/communitiesApi';
 import { ImagePickerModal } from '../media/ImagePickerModal';
 import { FieldError } from '../ui/FieldError';
+import { ALLOWED_IMAGE_ACCEPT, filterValidImageFiles, validateImageFile } from '../../utils/imageValidation';
 import { UserRole } from '../../App';
 import { useNavigate } from 'react-router-dom';
 import { useLocale } from '../../contexts/LocaleContext';
@@ -41,20 +42,20 @@ export function EventCreate({ role }: EventCreateProps) {
   const [badgePreview, setBadgePreview] = useState<string | null>(null);
   const [badgeImage, setBadgeImage] = useState<File | null>(null);
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  if (e.target.files?.[0]) {
-    setThumbnailImage(e.target.files[0]);
-  }
+  const file = e.target.files?.[0];
+  e.target.value = '';
+  if (!validateImageFile(file)) return;
+  setThumbnailImage(file);
 };
 
 const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  if (e.target.files?.[0]) {
-    const file = e.target.files[0];
-    setCoverImage(file);
-    setCoverImageUrl(null);
-    setCoverPreview(URL.createObjectURL(file));
-    // Reset so the same file can be picked again after removing it
-    e.target.value = '';
-  }
+  const file = e.target.files?.[0];
+  // Reset so the same file can be picked again after removing it
+  e.target.value = '';
+  if (!validateImageFile(file)) return;
+  setCoverImage(file);
+  setCoverImageUrl(null);
+  setCoverPreview(URL.createObjectURL(file));
 };
 
 const handleCoverPicked = (url: string) => {
@@ -65,20 +66,31 @@ const handleCoverPicked = (url: string) => {
 };
 
 const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  if (e.target.files?.[0]) {
-    setBadgeImage(e.target.files[0]);
-    setBadgePreview(URL.createObjectURL(e.target.files[0]));
-  }
+  const file = e.target.files?.[0];
+  // Reset so the same file can be picked again after removing it
+  e.target.value = '';
+  if (!validateImageFile(file)) return;
+  setBadgeImage(file);
+  setBadgePreview(URL.createObjectURL(file));
+};
+
+const removeBadgeImage = () => {
+  if (badgePreview) URL.revokeObjectURL(badgePreview);
+  setBadgeImage(null);
+  setBadgePreview(null);
 };
 
   const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
 
-    const files = Array.from(e.target.files as FileList);
+    const files = filterValidImageFiles(e.target.files);
+    // Reset input so same file can be selected again
+    e.target.value = '';
+    if (!files.length) return;
 
     // Optional: limit max images (10)
     if (galleryImages.length + files.length > 10) {
-      alert(t('events.create.maxImagesAlert'));
+      toast.error(t('events.create.maxImagesAlert'));
       return;
     }
 
@@ -86,9 +98,6 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
     setGalleryImages(prev => [...prev, ...files]);
     setGalleryPreviews(prev => [...prev, ...newPreviews]);
-
-    // Reset input so same file can be selected again
-    e.target.value = '';
   };
 
 
@@ -1189,18 +1198,28 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                 <input
                   id="badgeUpload"
                   type="file"
-                  accept="image/*"
+                  accept={ALLOWED_IMAGE_ACCEPT}
                   hidden
                   onChange={handleBadgeChange}
                 />
-                {badgePreview && (
-                  <img
-                    src={badgePreview}
-                    alt="Preview"
-                    className="mt-4 rounded-lg w-full h-48 object-cover"
-                  />
-                )}
                 </label>
+                {badgePreview && (
+                  <div className="relative mt-4">
+                    <img
+                      src={badgePreview}
+                      alt="Preview"
+                      className="rounded-lg w-full h-48 object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={removeBadgeImage}
+                      className="absolute top-2 right-2 bg-black bg-opacity-60 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                      aria-label="Remove badge image"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -1229,7 +1248,7 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                   <input
                   id="coverUpload"
                   type="file"
-                  accept="image/*"
+                  accept={ALLOWED_IMAGE_ACCEPT}
                   hidden
                   onChange={handleCoverChange}
                   />
@@ -1289,7 +1308,7 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                 <input
                   id="galleryUpload"
                   type="file"
-                  accept="image/*"
+                  accept={ALLOWED_IMAGE_ACCEPT}
                   multiple
                   hidden
                   onChange={handleGalleryChange}

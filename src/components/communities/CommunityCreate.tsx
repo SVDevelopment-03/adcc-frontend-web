@@ -11,6 +11,7 @@ import { TrackSelector } from './form/TrackSelector';
 import { useCommunityCategories, useCommunityPurposeTypes } from '../../hooks/useLookups';
 import { useLocale } from '../../contexts/LocaleContext';
 import { ImagePickerModal } from '../media/ImagePickerModal';
+import { ALLOWED_IMAGE_ACCEPT, IMAGE_UPLOAD_HINT, validateImageFile } from '../../utils/imageValidation';
 
 interface CommunityCreateProps {
   communityId?: string;
@@ -477,13 +478,13 @@ console.log('errorss',errors);
                 <input
                   id="community-logo-upload"
                   type="file"
-                  accept="image/png,image/jpeg,image/jpg,image/webp"
+                  accept={ALLOWED_IMAGE_ACCEPT}
                   className="hidden"
                   disabled={isCompressing}
                   onChange={async (e) => {
                     const file = e.target.files?.[0];
-                    if (file) await handleLogoUpload(file);
                     e.target.value = '';
+                    if (validateImageFile(file)) await handleLogoUpload(file);
                   }}
                 />
                 <label
@@ -509,7 +510,7 @@ console.log('errorss',errors);
                     <>
                       <ImageIcon className="w-8 h-8 mx-auto mb-2" style={{ color: '#999' }} />
                       <p className="text-sm" style={{ color: '#666' }}>Upload community logo</p>
-                      <p className="text-xs mt-1" style={{ color: '#999' }}>PNG, JPG - Square format recommended</p>
+                      <p className="text-xs mt-1" style={{ color: '#999' }}>{IMAGE_UPLOAD_HINT} - Square format recommended</p>
                     </>
                   )}
                 </label>
@@ -548,13 +549,13 @@ console.log('errorss',errors);
                 <input
                   id="community-cover-upload"
                   type="file"
-                  accept="image/png,image/jpeg,image/jpg,image/webp"
+                  accept={ALLOWED_IMAGE_ACCEPT}
                   className="hidden"
                   disabled={isCompressing}
                   onChange={async (e) => {
                     const file = e.target.files?.[0];
-                    if (file) await handleImageUpload(file);
                     e.target.value = '';
+                    if (validateImageFile(file)) await handleImageUpload(file);
                   }}
                 />
                 <label
@@ -580,7 +581,7 @@ console.log('errorss',errors);
                     <>
                       <ImageIcon className="w-8 h-8 mx-auto mb-2" style={{ color: '#999' }} />
                       <p className="text-sm" style={{ color: '#666' }}>Upload cover image</p>
-                      <p className="text-xs mt-1" style={{ color: '#999' }}>PNG, JPG - 16:9 format recommended</p>
+                      <p className="text-xs mt-1" style={{ color: '#999' }}>{IMAGE_UPLOAD_HINT} - 16:9 format recommended</p>
                     </>
                   )}
                 </label>

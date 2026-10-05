@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Plus, Edit2, Trash2, ToggleLeft, ToggleRight, X, ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import { ALLOWED_IMAGE_ACCEPT, validateImageFile } from '../../utils/imageValidation';
 import {
   createLookup,
   deleteLookup,
@@ -288,8 +289,16 @@ export function LookupTypeManager({ type, itemLabel, parentValue, emptyState, su
                     <input
                       ref={iconInputRef}
                       type="file"
-                      accept="image/*"
-                      onChange={(e) => handleIconChange(e.target.files?.[0] ?? null)}
+                      accept={ALLOWED_IMAGE_ACCEPT}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] ?? null;
+                        if (file && !validateImageFile(file)) {
+                          // Clear the native input so the rejected file name is not left showing
+                          e.target.value = '';
+                          return;
+                        }
+                        handleIconChange(file);
+                      }}
                       className="flex-1 text-sm"
                     />
                     {!removeIcon && (iconPreview || editItem?.icon) ? (

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Image as ImageIcon, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { ALLOWED_IMAGE_ACCEPT, validateImageFile } from '../../utils/imageValidation';
 import { RichTextEditor } from '../ui/RichTextEditor';
 import { useNewsCategories } from '../../hooks/useLookups';
 import { createNews, updateNews, type NewsItem, type NewsStatus } from '../../services/newsApi';
@@ -67,7 +68,8 @@ export function NewsForm({ mode, newsId, initialData }: NewsFormProps) {
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    event.target.value = '';
+    if (!validateImageFile(file)) return;
     setCoverImageFile(file);
     setCoverImagePreview(URL.createObjectURL(file));
   };
@@ -101,7 +103,8 @@ export function NewsForm({ mode, newsId, initialData }: NewsFormProps) {
         author: form.author.trim() || undefined,
         status,
         publishedAt: form.publishedAt || undefined,
-        coverImage: coverImageFile || undefined,
+        // '' clears a saved cover image the admin removed
+        coverImage: coverImageFile || (!coverImagePreview && initialData?.coverImage ? ('' as const) : undefined),
       };
 
       if (mode === 'create') {
@@ -263,7 +266,7 @@ export function NewsForm({ mode, newsId, initialData }: NewsFormProps) {
               <label className="flex h-40 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-200 text-gray-400 hover:border-gray-300">
                 <ImageIcon className="w-8 h-8" />
                 <span className="text-sm">{t('news.form.uploadImage', 'Upload featured image')}</span>
-                <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                <input type="file" accept={ALLOWED_IMAGE_ACCEPT} className="hidden" onChange={handleImageChange} />
               </label>
             )}
           </div>

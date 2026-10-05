@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { scrollToAppListing } from "../../utils/appStoreLink";
+import { isEventClosed } from "../../utils/eventStatus";
 import { useTranslation } from "react-i18next";
 import i18n from "../../i18n";
 import {
@@ -487,7 +488,8 @@ function AboutSection({ event }: { event: GrandPrixEvent }) {
       <p className="mx-auto mt-4 max-w-[851px] text-[14px] font-normal leading-relaxed text-black sm:text-[17px] md:text-[20px] lg:text-[24px]">
         {event.description}
       </p>
-      {registrationLink ? (
+      {/* No joining once the event is over */}
+      {isEventClosed(event) ? null : registrationLink ? (
         <a
           href={registrationLink}
           target="_blank"
@@ -515,8 +517,10 @@ function RegisterCard({ event }: { event: GrandPrixEvent }) {
   const { t } = useTranslation();
   const total = event.maxParticipants ?? 0;
   const joined = getParticipants(event);
-  const spotsText =
-    total > 0
+  const closed = isEventClosed(event);
+  const spotsText = closed
+    ? t("public.events.detail.register.registrationClosed", "Registration closed")
+    : total > 0
       ? t("public.events.detail.register.spotsAvailable", {
           count: Math.max(total - joined, 0),
         })
@@ -531,7 +535,9 @@ function RegisterCard({ event }: { event: GrandPrixEvent }) {
     <article className="relative h-[200px] w-full shrink-0 rounded-2xl bg-[#435974] text-white lg:h-[236px] lg:w-[426px]">
       <p className="absolute left-4 top-[14px] flex items-center gap-[6px] text-[12px] font-medium leading-[18px] lg:left-6 lg:top-[19px] lg:text-[14px]">
         <span className="h-[7px] w-[7px] rounded-full bg-white" />
-        {t("public.events.detail.register.registerNow")}
+        {closed
+          ? t("common.eventClosed", "Event Closed")
+          : t("public.events.detail.register.registerNow")}
       </p>
 
       <h3 className="grand-prix-bebas absolute left-4 top-[44px] text-[28px] uppercase leading-tight lg:left-6 lg:top-[56px] lg:text-[36px]">

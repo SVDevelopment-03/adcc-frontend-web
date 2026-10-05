@@ -219,6 +219,7 @@
         "loading": "Loading",
         "spotsAvailable": "{{count}} spots available",
         "openRegistration": "Open registration",
+        "registrationClosed": "Registration closed",
         "organizedBy": "Organized by",
         "defaultOrganizer": "ADCC",
         "saveEvent": "Save event",

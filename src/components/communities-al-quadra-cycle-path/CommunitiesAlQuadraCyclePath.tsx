@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { scrollToAppListing } from "../../utils/appStoreLink";
+import { isEventClosed } from "../../utils/eventStatus";
 import i18n from "../../i18n";
 import { AnimatedButton } from "../ui/AnimatedButton";
 import {
@@ -781,6 +782,10 @@ export default function TrackDetailPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // "Upcoming events" must never show an event whose date has passed
+  const upcomingOnly = (list?: EventApiResponse[]) =>
+    (list || []).filter((item) => !isEventClosed(item));
+
   useEffect(() => {
     let cancelled = false;
 
@@ -797,7 +802,7 @@ export default function TrackDetailPage() {
 
           if (!cancelled) {
             setTrack(selectedTrack);
-            setEvents(selectedTrackEvents.events || []);
+            setEvents(upcomingOnly(selectedTrackEvents.events));
           }
           return;
         }
@@ -851,7 +856,7 @@ export default function TrackDetailPage() {
 
         if (!cancelled) {
           setTrack(detailedTrack);
-          setEvents(trackEvents.events || []);
+          setEvents(upcomingOnly(trackEvents.events));
         }
       } catch (err) {
         if (!cancelled) {

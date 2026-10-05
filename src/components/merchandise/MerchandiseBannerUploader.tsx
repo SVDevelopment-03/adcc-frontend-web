@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { UploadCloud, ImageIcon, XCircle, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { ALLOWED_IMAGE_ACCEPT, IMAGE_UPLOAD_HINT, filterValidImageFiles } from '../../utils/imageValidation';
 import {
   deleteProductBanner,
   deleteProductBannerAr,
@@ -83,28 +84,12 @@ export function MerchandiseBannerUploader({ variant = 'en', title, description }
       return;
     }
 
-    const acceptedFiles: File[] = [];
-    const rejected = [];
-
-    Array.from(files).forEach((file) => {
-      if (!file.type.startsWith('image/')) {
-        rejected.push(file.name);
-        return;
-      }
-      acceptedFiles.push(file);
-    });
-
-    if (!acceptedFiles.length) {
-      setSelectedFiles([]);
-      setUploadError('Only image files are allowed.');
-      return;
-    }
-
-    if (rejected.length > 0) {
-      setUploadError(`Ignored non-image files: ${rejected.join(', ')}`);
-    } else {
-      setUploadError('');
-    }
+    // Rejected files are reported by toast; valid ones are still added.
+    const acceptedFiles = filterValidImageFiles(files);
+    // Reset so the same file can be picked again after removing it
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (!acceptedFiles.length) return;
+    setUploadError('');
 
     setSelectedFiles((prev) => [...prev, ...acceptedFiles.map((f) => ({ file: f }))]);
   };
@@ -219,13 +204,13 @@ export function MerchandiseBannerUploader({ variant = 'en', title, description }
           <ImageIcon className="w-6 h-6 text-gray-400" />
         </div>
         <p className="text-sm font-medium text-gray-700">Click to choose images</p>
-        <p className="text-xs text-gray-400">JPG, PNG, WebP, GIF. Max 10MB per file.</p>
+        <p className="text-xs text-gray-400">{IMAGE_UPLOAD_HINT} per file.</p>
       </div>
 
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*"
+        accept={ALLOWED_IMAGE_ACCEPT}
         multiple
         className="hidden"
         onChange={(event) => handleFileSelection(event.target.files)}

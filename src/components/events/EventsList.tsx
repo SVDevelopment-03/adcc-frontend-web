@@ -12,6 +12,8 @@ import { getAllTracks, deleteTrack } from '../../services/trackService';
 import { getAllCommunities, deleteCommunity as deleteCommunityApi, CommunityApiResponse } from '../../services/communitiesApi';
 import { FiChevronDown } from "react-icons/fi";
 import { ConfirmDialog } from '../ui/ConfirmDialog';
+import { EventClosedOverlay } from '../ui/EventClosedOverlay';
+import { isEventClosed, sortClosedEventsLast } from '../../utils/eventStatus';
 
 interface EventsListProps {
   navigate: (page: string, params?: any) => void;
@@ -23,7 +25,7 @@ export function EventsList({ role }: EventsListProps) {
   const { t, i18n } = useTranslation();
   const { options: categoryOptions, resolveLabel: resolveCategoryLabel } = useEventCategories();
 
-  const [events, setEvents] = useState<IEvent[]>([]);
+  const [events, setEvents] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -126,7 +128,8 @@ export function EventsList({ role }: EventsListProps) {
   }, [searchTerm, cityFilter, communityFilter, trackFilter, categoryFilter, featuredFilter]);
 
   const filteredEvents = useMemo(() => {
-    return events.filter((event) => {
+    // Events whose date has passed (or that are completed) go to the end
+    return sortClosedEventsLast<any>(events).filter((event) => {
       const matchesSearch =
         !searchTerm || event.title?.toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -475,11 +478,14 @@ export function EventsList({ role }: EventsListProps) {
               >
                 <div className="flex items-start gap-6">
                   {/* Cover Image */}
-                  <img
-                    src={event.mainImage || event.eventImage}
-                    alt={event.title}
-                    className="w-32 h-32 rounded-lg object-cover"
-                  />
+                  <div className="relative w-32 h-32 shrink-0 rounded-lg overflow-hidden">
+                    <img
+                      src={event.mainImage || event.eventImage}
+                      alt={event.title}
+                      className="w-32 h-32 object-cover"
+                    />
+                    {isEventClosed(event) && <EventClosedOverlay size="sm" />}
+                  </div>
 
                   {/* Event Info */}
                   <div className="flex-1">

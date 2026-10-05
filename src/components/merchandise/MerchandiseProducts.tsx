@@ -4,6 +4,7 @@ import {
   Upload, X, ChevronDown, Tag, CheckCircle, AlertTriangle, Archive
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { ALLOWED_IMAGE_ACCEPT, IMAGE_UPLOAD_HINT, filterValidImageFiles } from '../../utils/imageValidation';
 import { Product, ProductVariant, ProductStatus, Category } from './merchandiseData';
 import {
   createMerchandiseProduct,
@@ -205,10 +206,12 @@ export function MerchandiseProducts({ products, categories, setProducts, default
   };
 
   const handleImageFilesSelected = async (files: FileList | null) => {
-    if (!files || files.length === 0) return;
+    const validFiles = filterValidImageFiles(files);
+    if (imageFilesInputRef.current) imageFilesInputRef.current.value = '';
+    if (validFiles.length === 0) return;
     setUploadingImages(true);
     try {
-      const uploaded = await uploadMerchandiseProductImages(Array.from(files));
+      const uploaded = await uploadMerchandiseProductImages(validFiles);
       setForm(f => ({ ...f, images: [...f.images, ...uploaded.map(u => u.url)] }));
     } catch (error) {
       toast.error((error as Error)?.message || 'Failed to upload images');
@@ -552,11 +555,12 @@ export function MerchandiseProducts({ products, categories, setProducts, default
                     <input
                       ref={imageFilesInputRef}
                       type="file"
-                      accept="image/*"
+                      accept={ALLOWED_IMAGE_ACCEPT}
                       multiple
                       className="hidden"
                       onChange={e => handleImageFilesSelected(e.target.files)}
                     />
+                    <span className="text-xs text-gray-500">{IMAGE_UPLOAD_HINT}</span>
                   </div>
                   <div className="flex gap-2 mb-2">
                     <input

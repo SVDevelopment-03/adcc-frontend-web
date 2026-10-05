@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Image as ImageIcon, KeyRound, Save, Shield } from 'lucide-react';
+import { ArrowLeft, Image as ImageIcon, KeyRound, Save, Shield, Trash2 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { compressImage } from '../../utils/imageUtils';
+import { ALLOWED_IMAGE_ACCEPT, IMAGE_UPLOAD_HINT, validateImageFile } from '../../utils/imageValidation';
 import { useAuth } from '../../contexts/AuthContext';
 import { getAllUsers, updateUser, updateUserPassword, User } from '../../services/usersApi';
 import { assignUserRole, getRbacRoles, type RbacRole } from '../../services/rbacService';
 
-const ACCEPTED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
 
 function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
   return (
@@ -80,8 +80,7 @@ export function AdminEdit() {
   const canSubmit = useMemo(() => !!fullName.trim() && !!gender, [fullName, gender]);
 
   const handleImageChange = async (file: File | null) => {
-    if (!file) return;
-    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) { toast.error('Invalid image type'); return; }
+    if (!validateImageFile(file)) return;
     try {
       const base64 = await compressImage(file, 600, 600, 0.75);
       setProfileImage(base64);
@@ -108,11 +107,17 @@ export function AdminEdit() {
         phone: phone.trim() || undefined,
         gender: gender as 'Male' | 'Female',
         role,
-        profileImage: profileImage || undefined,
+        // An empty string clears the stored photo; undefined leaves it untouched
+        profileImage: profileImage || (admin?.profileImage ? '' : undefined),
       });
 
       if (rbacRoleId) {
-        try { await assignUserRole(id, rbacRoleId); } catch { /* non-fatal */ }
+        try {
+          await assignUserRole(id, rbacRoleId);
+        } catch (e: any) {
+          // Non-fatal: the profile is saved, but the admin must know the role was not applied
+          toast.error(e?.response?.data?.message || 'Profile saved, but role assignment failed');
+        }
       }
 
       // If the admin being edited is the currently logged-in user, refresh
@@ -202,7 +207,7 @@ export function AdminEdit() {
           </div>
           <div>
             <p className="font-medium" style={{ color: '#333' }}>Profile Picture</p>
-            <p className="text-sm" style={{ color: '#666' }}>PNG, JPG or WebP.</p>
+            <p className="text-sm" style={{ color: '#666' }}>{IMAGE_UPLOAD_HINT}.</p>
           </div>
         </div>
         <div className="flex items-center gap-4">
@@ -214,12 +219,26 @@ export function AdminEdit() {
           <label className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer text-sm">
             <input
               type="file"
-              accept={ACCEPTED_IMAGE_TYPES.join(',')}
+              accept={ALLOWED_IMAGE_ACCEPT}
               className="hidden"
-              onChange={(e) => void handleImageChange(e.target.files?.[0] || null)}
+              onChange={(e) => {
+                void handleImageChange(e.target.files?.[0] || null);
+                // Reset so the same file can be picked again after removing it
+                e.target.value = '';
+              }}
             />
             Change Photo
           </label>
+          {profilePreview && (
+            <button
+              type="button"
+              onClick={() => { setProfileImage(''); setProfilePreview(''); }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 text-sm"
+            >
+              <Trash2 className="w-4 h-4" />
+              Remove Photo
+            </button>
+          )}
         </div>
       </div>
 

@@ -11,6 +11,7 @@ import { DetailPageSkeleton } from '../ui/skeleton';
 import { useCommunityCategories, useCommunityPurposeTypes, useCountries, useCities } from '../../hooks/useLookups';
 import { ImagePickerModal } from '../media/ImagePickerModal';
 import { FieldError } from '../ui/FieldError';
+import { ALLOWED_IMAGE_ACCEPT, validateImageFile } from '../../utils/imageValidation';
 
 
 interface CommunityEditProps {
@@ -345,25 +346,39 @@ export function CommunityEdit({ role }: CommunityEditProps) {
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    e.target.value = '';
+    if (!validateImageFile(file)) return;
 
     setLogoFile(file);
     if (logoPreviewUrlRef.current) URL.revokeObjectURL(logoPreviewUrlRef.current);
     const nextUrl = URL.createObjectURL(file);
     logoPreviewUrlRef.current = nextUrl;
     setFormData((prev) => ({ ...prev, logo: nextUrl }));
-    e.target.value = '';
+  };
+
+  const handleRemoveLogo = () => {
+    setLogoFile(null);
+    if (logoPreviewUrlRef.current) URL.revokeObjectURL(logoPreviewUrlRef.current);
+    logoPreviewUrlRef.current = null;
+    setFormData((prev) => ({ ...prev, logo: '' }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    e.target.value = '';
+    if (!validateImageFile(file)) return;
     setImageFile(file);
     if (coverPreviewUrlRef.current) URL.revokeObjectURL(coverPreviewUrlRef.current);
     const nextUrl = URL.createObjectURL(file);
     coverPreviewUrlRef.current = nextUrl;
     setFormData((prev) => ({ ...prev, image: nextUrl }));
-    e.target.value = '';
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    if (coverPreviewUrlRef.current) URL.revokeObjectURL(coverPreviewUrlRef.current);
+    coverPreviewUrlRef.current = null;
+    setFormData((prev) => ({ ...prev, image: '' }));
   };
 
 
@@ -429,8 +444,9 @@ export function CommunityEdit({ role }: CommunityEditProps) {
       // Only takes effect when no fresh file is selected below (updateCommunity
       // filters out blob: preview URLs) — this is how an image picked from the
       // media library, or the unchanged existing image, gets (re-)sent.
-      image: formData.image || undefined,
-      logo: formData.logo || undefined,
+      // An empty string tells the backend to clear an image the admin removed.
+      image: formData.image || (existingCommunity?.image ? '' : undefined),
+      logo: formData.logo || (existingCommunity?.logo ? '' : undefined),
     };
 
     const imageFiles = (imageFile || logoFile)
@@ -899,13 +915,23 @@ export function CommunityEdit({ role }: CommunityEditProps) {
               <div>
                 <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('communities.edit.communityLogo')}</label>
                 <div className="mb-3">
-                  {(formData.logo || existingCommunity.logo) ? (
-                    <img src={formData.logo || existingCommunity.logo} alt="Current logo" className="w-20 h-20 rounded-lg object-cover" />
+                  {formData.logo ? (
+                    <div className="relative inline-block">
+                      <img src={formData.logo} alt="Current logo" className="w-20 h-20 rounded-lg object-cover" />
+                    <button
+                      type="button"
+                      onClick={handleRemoveLogo}
+                      className="absolute -top-2 -right-2 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                      aria-label="Remove logo"
+                    >
+                      ✕
+                    </button>
+                    </div>
                   ) : (
                     <div className="w-20 h-20 rounded-lg bg-gray-100 flex items-center justify-center text-xs" style={{ color: '#999' }}>No logo</div>
                   )}
                 </div>
-                <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogoChange} />
+                <input ref={logoInputRef} type="file" accept={ALLOWED_IMAGE_ACCEPT} className="hidden" onChange={handleLogoChange} />
                 <div
                   role="button"
                   tabIndex={0}
@@ -919,7 +945,7 @@ export function CommunityEdit({ role }: CommunityEditProps) {
                   <p className="text-xs mt-1" style={{ color: '#999' }}>{t('communities.edit.logoHint')}</p>
                   <input
                     type="file"
-                    accept="image/*"
+                    accept={ALLOWED_IMAGE_ACCEPT}
                     className="hidden"
                     onChange={handleLogoChange}
                   />
@@ -947,13 +973,23 @@ export function CommunityEdit({ role }: CommunityEditProps) {
               <div>
                 <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('communities.edit.coverImage')}</label>
                 <div className="mb-3">
-                  {(formData.image || existingCommunity.image) ? (
-                    <img src={formData.image || existingCommunity.image} alt="Current cover" className="w-full h-32 rounded-lg object-cover" />
+                  {formData.image ? (
+                    <div className="relative">
+                      <img src={formData.image} alt="Current cover" className="w-full h-32 rounded-lg object-cover" />
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute top-2 right-2 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                      aria-label="Remove cover image"
+                    >
+                      ✕
+                    </button>
+                    </div>
                   ) : (
                     <div className="w-full h-32 rounded-lg bg-gray-100 flex items-center justify-center text-sm" style={{ color: '#999' }}>No cover image</div>
                   )}
                 </div>
-                <input ref={coverInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                <input ref={coverInputRef} type="file" accept={ALLOWED_IMAGE_ACCEPT} className="hidden" onChange={handleImageChange} />
                 <div
                   role="button"
                   tabIndex={0}
@@ -967,7 +1003,7 @@ export function CommunityEdit({ role }: CommunityEditProps) {
                   <p className="text-xs mt-1" style={{ color: '#999' }}>{t('communities.edit.coverHint')}</p>
                   <input
                     type="file"
-                    accept="image/*"
+                    accept={ALLOWED_IMAGE_ACCEPT}
                     className="hidden"
                     onChange={handleImageChange}
                   />

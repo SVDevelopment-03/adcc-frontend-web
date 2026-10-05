@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { Upload } from 'lucide-react';
+import { ALLOWED_IMAGE_ACCEPT, validateImageFile } from '../../../utils/imageValidation';
 
 interface ImageUploaderProps {
   imagePreview: string | null;
@@ -20,7 +21,8 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    e.target.value = '';
+    if (validateImageFile(file)) {
       await onUpload(file);
     }
   };
@@ -53,7 +55,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept={ALLOWED_IMAGE_ACCEPT}
           onChange={handleFileChange}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           disabled={isUploading}

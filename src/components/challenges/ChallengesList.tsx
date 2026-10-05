@@ -12,6 +12,8 @@ import { toast } from 'sonner';
 import { UserRole } from '../../App';
 import { useTranslation } from 'react-i18next';
 import { useChallengeTypes } from '../../hooks/useLookups';
+import { EventClosedOverlay } from '../ui/EventClosedOverlay';
+import { isChallengeClosed, sortClosedChallengesLast } from '../../utils/eventStatus';
 
 interface ChallengesListProps {
   role: UserRole;
@@ -52,7 +54,8 @@ export function ChallengesList({ role }: ChallengesListProps) {
     fetchChallenges();
   }, [fetchChallenges]);
 
-  const filteredChallenges = challenges.filter(challenge => {
+  // Challenges whose end date has passed (or that are completed) go to the end
+  const filteredChallenges = sortClosedChallengesLast<Challenge>(challenges).filter(challenge => {
     const matchesSearch = challenge.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          challenge.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = typeFilter === 'all' || challenge.type === typeFilter;
@@ -261,12 +264,15 @@ export function ChallengesList({ role }: ChallengesListProps) {
             onClick={() => navigate(`/challenges/${challenge.id}`)}
           >
             {/* Challenge Image */}
-            <div className="relative mb-4">
+            <div className="relative mb-4 overflow-hidden rounded-lg">
               <img
                 src={challenge.image}
                 alt={challenge.title}
                 className="w-full h-40 object-cover rounded-lg"
               />
+              {isChallengeClosed(challenge) && (
+                <EventClosedOverlay label={t('common.challengeClosed', 'Challenge Closed')} />
+              )}
 
               {/* Featured Badge */}
               {challenge.featured && (

@@ -9,6 +9,7 @@ import { sendTestBroadcastPush } from '../../services/authApi';
 import { uploadToMediaLibrary } from '../../services/mediaApi';
 import { DetailPageSkeleton } from '../ui/skeleton';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
+import { ALLOWED_IMAGE_ACCEPT, filterValidImageFiles, validateImageFile } from '../../utils/imageValidation';
 
 export function EventDetail() {
   const { t, i18n } = useTranslation();
@@ -143,12 +144,13 @@ const formatTimeInput = (raw: string): string => {
   };
 
   const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || !eventId || eventId === 'undefined' || files.length === 0) return;
+    const files = filterValidImageFiles(e.target.files);
+    e.target.value = '';
+    if (!eventId || eventId === 'undefined' || files.length === 0) return;
 
     setIsUploadingGallery(true);
     try {
-      const result = await addEventGalleryImages(eventId, Array.from(files));
+      const result = await addEventGalleryImages(eventId, files);
 
       const nextGallery =
         (result?.galleryImages && Array.isArray(result.galleryImages) && result.galleryImages) ||
@@ -172,7 +174,6 @@ const formatTimeInput = (raw: string): string => {
       toast.error(error?.response?.data?.message || t('events.detail.toasts.galleryUploadError'));
     } finally {
       setIsUploadingGallery(false);
-      e.target.value = '';
     }
   };
 
@@ -988,7 +989,7 @@ const formatTimeInput = (raw: string): string => {
               <input
                 type="file"
                 multiple
-                accept="image/*"
+                accept={ALLOWED_IMAGE_ACCEPT}
                 className="hidden"
                 disabled={isUploadingGallery}
                 onChange={handleGalleryUpload}
@@ -1060,12 +1061,27 @@ const formatTimeInput = (raw: string): string => {
               <div>
                 <label className="block text-sm font-medium mb-2" style={{ color: '#555' }}>Upload image or paste URL (optional)</label>
                 <div className="flex items-center gap-2">
-                  <input id="event-notif-image-file" type="file" accept="image/*" className="sr-only" onChange={(e) => setSelectedFile(e.target.files?.[0] || null)} />
+                  <input id="event-notif-image-file" type="file" accept={ALLOWED_IMAGE_ACCEPT} className="sr-only" onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    // Reset so the same file can be picked again after removing it
+                    e.target.value = '';
+                    if (validateImageFile(file)) setSelectedFile(file);
+                  }} />
                   <label htmlFor="event-notif-image-file" className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 cursor-pointer">
                     <Upload className="w-4 h-4" />
                     <span className="text-sm text-gray-700">Choose file</span>
                   </label>
                   {selectedFile ? <div className="text-sm text-gray-600 ml-2 truncate">{selectedFile.name}</div> : null}
+                  {selectedFile ? (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedFile(null)}
+                      className="text-gray-400 hover:text-red-600 text-sm"
+                      aria-label="Remove selected file"
+                    >
+                      ✕
+                    </button>
+                  ) : null}
                   <button
                     type="button"
                     disabled={!selectedFile || isUploadingImage}

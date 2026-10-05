@@ -50,7 +50,8 @@ export interface SaveNewsPayload {
   author?: string;
   status: NewsStatus;
   publishedAt?: string;
-  coverImage?: File;
+  /** A File to upload, or '' to remove the saved cover image (update only). */
+  coverImage?: File | '';
 }
 
 function getApiErrorMessage(error: unknown, fallback: string): string {
@@ -184,6 +185,7 @@ export async function updateNews(id: string, payload: Partial<SaveNewsPayload>):
     if (payload.status !== undefined) formData.append('status', payload.status);
     if (payload.publishedAt !== undefined) formData.append('publishedAt', payload.publishedAt);
     if (payload.coverImage instanceof File) formData.append('image', payload.coverImage);
+    else if (payload.coverImage === '') formData.append('coverImage', '');
 
     const { data } = await api.patch<{ success: boolean; message?: string; data?: any }>(
       `/v1/news/${id}`,
