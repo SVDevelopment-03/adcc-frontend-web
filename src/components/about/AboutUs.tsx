@@ -5,6 +5,7 @@ import { getPublicStats } from "../../services/publicStatsApi";
 import { motion } from "framer-motion";
 import { AnimatedButton } from "../ui/AnimatedButton";
 import { AnimatedImage } from "../ui/AnimatedImage";
+import { showAppComingSoon } from "../../utils/appStoreLink";
 import {
   AnimatedWords,
   PublicPageHero,
@@ -1367,6 +1368,8 @@ function CTABanner() {
           {storeButtons.map((s) => (
             <button
               key={s.key}
+              type="button"
+              onClick={showAppComingSoon}
               style={{
                 background: "#fff",
                 border: "none",

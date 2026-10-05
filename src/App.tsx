@@ -9,6 +9,7 @@ import { Register } from './components/auth/Register';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Layout } from './components/Layout';
 import { PublicLayout } from './components/public/PublicLayout';
+import { ComingSoonPopup } from './components/public/ComingSoonPopup';
 import AboutUs from './components/about/AboutUs';
 import UserEvent from './components/user-event/UserEvent';
 import UserTracks from './components/user-tracks/UserTracks';
@@ -214,6 +215,7 @@ export default function App() {
         <LocaleProvider>
           <AppContent />
           <Toaster position="top-right" />
+          <ComingSoonPopup />
         </LocaleProvider>
       </BrowserRouter>
     </AuthProvider>

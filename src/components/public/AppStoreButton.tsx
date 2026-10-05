@@ -1,17 +1,14 @@
 import { useTranslation } from "react-i18next";
-import { APP_STORE_LINKS } from "../../config/appStoreLinks";
+import { showAppComingSoon } from "../../utils/appStoreLink";
 
 export function AppStoreButton({ type }: { type: "google" | "apple" }) {
   const { t } = useTranslation();
-  const href =
-    type === "google" ? APP_STORE_LINKS.googlePlay : APP_STORE_LINKS.appStore;
 
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-flex h-[53px] w-[150px] flex-none items-center justify-center gap-[10px] rounded-[100px] bg-white px-[26px] py-0 text-black no-underline shadow-lg transition-opacity hover:opacity-90 sm:h-[57px] sm:w-[180px] sm:px-[20px]"
+    <button
+      type="button"
+      onClick={showAppComingSoon}
+      className="inline-flex h-[53px] w-[150px] flex-none cursor-pointer items-center justify-center gap-[10px] rounded-[100px] border-0 bg-white px-[26px] py-0 text-black no-underline shadow-lg transition-opacity hover:opacity-90 sm:h-[57px] sm:w-[180px] sm:px-[20px]"
     >
       <img
         src={type === "google" ? "/img/google.png" : "/img/apple.png"}
@@ -35,6 +32,6 @@ export function AppStoreButton({ type }: { type: "google" | "apple" }) {
             : t("public.footer.appStore")}
         </span>
       </span>
-    </a>
+    </button>
   );
 }

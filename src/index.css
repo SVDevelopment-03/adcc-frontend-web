@@ -74,6 +74,7 @@ select {
   }
   .home-page #app.home-app-section {
     padding-block: 40px !important;
+    padding-inline: 18px !important;
   }
   div.home-about-stats {
     grid-template-columns: 1fr 1fr !important;

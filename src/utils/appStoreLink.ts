@@ -26,6 +26,16 @@ export function openAppStoreLink() {
   window.open(getAppStoreLink(), "_blank", "noopener,noreferrer");
 }
 
+export const APP_COMING_SOON_EVENT = "adcc:app-coming-soon";
+
+/**
+ * Opens the "Coming soon" popup (ComingSoonPopup, mounted once in App.tsx).
+ * Used by every Google Play / App Store button while the apps are unreleased.
+ */
+export function showAppComingSoon() {
+  window.dispatchEvent(new Event(APP_COMING_SOON_EVENT));
+}
+
 /**
  * Scrolls to the shared "Start Your Ride Today" app-download section that
  * PublicLayout renders at the bottom of every public page (see

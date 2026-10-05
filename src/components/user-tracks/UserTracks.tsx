@@ -5,7 +5,7 @@ import { getTracksPage, type Track } from "../../services/trackService";
 import { useLookupList } from "../../hooks/useLookups";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { APP_STORE_LINKS } from "../../config/appStoreLinks";
+import { showAppComingSoon } from "../../utils/appStoreLink";
 import {
   AnimatedWords,
   PublicPageHero,
@@ -1761,15 +1761,11 @@ function CTABanner() {
           {t("public.tracks.listing.cta.subtitle")}
         </p>
         <div className="track-cta-buttons" style={{ display: "flex", gap: 20 }}>
-          {[
-            { label: "Google Play", href: APP_STORE_LINKS.googlePlay },
-            { label: "App Store", href: APP_STORE_LINKS.appStore },
-          ].map(({ label, href }) => (
-            <a
+          {["Google Play", "App Store"].map((label) => (
+            <button
               key={label}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
+              type="button"
+              onClick={showAppComingSoon}
               style={{
                 background: "#fff",
                 border: "none",
@@ -1784,7 +1780,7 @@ function CTABanner() {
               }}
             >
               {label}
-            </a>
+            </button>
           ))}
         </div>
       </div>

@@ -11,6 +11,7 @@ import {
   HOME_STORE_PRODUCTS,
 } from "../../data/homeStoreProducts";
 import { AppStoreButton } from "../public/AppStoreButton";
+import { showAppComingSoon } from "../../utils/appStoreLink";
 import { Bike, CalendarDays, MapPin, Users, UserRound } from "lucide-react";
 import { getPublicFeedPosts, FeedPost } from "../../services/feedPostsApi";
 
@@ -2811,7 +2812,7 @@ section.journey-section {
     }
     .home-app-download-label {
       font-size: 15px !important;
-      margin-top: 28px !important;
+      margin-top: 0 !important;
     }
     html[dir='rtl'] .home-app-copy {
       text-align: right !important;
@@ -4939,6 +4940,15 @@ function CTABanner() {
           ].map((btn, i) => (
             <div
               key={i}
+              role="button"
+              tabIndex={0}
+              onClick={showAppComingSoon}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  showAppComingSoon();
+                }
+              }}
               style={{
                 background: btn.bg,
                 borderRadius: 100,

@@ -14,7 +14,7 @@ import {
   useWordList,
 } from "../public/publicPageHelpers";
 import { useNavigate } from "react-router-dom";
-import { APP_STORE_LINKS } from "../../config/appStoreLinks";
+import { showAppComingSoon } from "../../utils/appStoreLink";
 import { AnimatedButton } from "../ui/AnimatedButton";
 import { useEventCategories } from "../../hooks/useLookups";
 
@@ -1159,15 +1159,11 @@ function CTABanner() {
           Download the ADCC app and join the cycling community.
         </p>
         <div className="event-cta-buttons" style={{ display: "flex", gap: 20 }}>
-          {[
-            { label: "Google Play", href: APP_STORE_LINKS.googlePlay },
-            { label: "App Store", href: APP_STORE_LINKS.appStore },
-          ].map(({ label, href }) => (
-            <a
+          {["Google Play", "App Store"].map((label) => (
+            <button
               key={label}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
+              type="button"
+              onClick={showAppComingSoon}
               style={{
                 background: "#fff",
                 border: "none",
@@ -1185,7 +1181,7 @@ function CTABanner() {
               }}
             >
               {label}
-            </a>
+            </button>
           ))}
         </div>
       </div>
