@@ -23,6 +23,7 @@ export function AdminCreate() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
   const [profileImage, setProfileImage] = useState('');
   const [profilePreview, setProfilePreview] = useState('');
 
@@ -76,7 +77,11 @@ export function AdminCreate() {
     }
   };
 
+  // Shown only after a submit attempt, and only while the field is still empty
+  const requiredError = (isEmpty: boolean) => (submitAttempted && isEmpty ? 'This field is required' : undefined);
+
   const onSubmit = async () => {
+    setSubmitAttempted(true);
     if (!canSubmit) {
       if (email.trim() && !isEmailValid) {
         toast.error('Invalid email address');
@@ -194,7 +199,7 @@ export function AdminCreate() {
         <p className="text-sm mb-4" style={{ color: '#666' }}>Required fields are marked with *</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Field label="Full Name *">
+          <Field label="Full Name *" error={requiredError(!fullName.trim())}>
             <input
               type="text"
               value={fullName}
@@ -204,7 +209,7 @@ export function AdminCreate() {
             />
           </Field>
 
-          <Field label="Email Address *" error={email.trim() && !isEmailValid ? 'Invalid email format' : undefined}>
+          <Field label="Email Address *" error={email.trim() && !isEmailValid ? 'Invalid email format' : requiredError(!email.trim())}>
             <input
               type="email"
               value={email}
@@ -224,7 +229,7 @@ export function AdminCreate() {
             />
           </Field>
 
-          <Field label="Gender *">
+          <Field label="Gender *" error={requiredError(!gender)}>
             <select
               value={gender}
               onChange={(e) => setGender(e.target.value as CreateUserInput['gender'] | '')}
@@ -244,7 +249,7 @@ export function AdminCreate() {
         <p className="text-sm mb-4" style={{ color: '#666' }}>Set a strong password for this account.</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Field label="Password *">
+          <Field label="Password *" error={requiredError(!password)}>
             <input
               type="password"
               value={password}
@@ -256,7 +261,7 @@ export function AdminCreate() {
 
           <Field
             label="Confirm Password *"
-            error={confirmPassword && !isPasswordMatch ? 'Passwords do not match' : undefined}
+            error={confirmPassword && !isPasswordMatch ? 'Passwords do not match' : requiredError(!confirmPassword)}
           >
             <input
               type="password"
@@ -320,7 +325,7 @@ export function AdminCreate() {
         <button
           type="button"
           onClick={() => void onSubmit()}
-          disabled={loading || !canSubmit}
+          disabled={loading}
           className="px-5 py-2.5 rounded-lg text-white flex items-center gap-2 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ backgroundColor: '#C12D32' }}
         >

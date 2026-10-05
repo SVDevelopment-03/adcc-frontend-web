@@ -13,6 +13,7 @@ import { useLocale } from '../../contexts/LocaleContext';
 import { useTranslation } from 'react-i18next';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { ImagePickerModal } from '../media/ImagePickerModal';
+import { FieldError } from '../ui/FieldError';
 
 interface EventEditProps {
   navigate: (page: string, params?: any) => void;
@@ -37,6 +38,7 @@ export function EventEdit({ role }: EventEditProps) {
   const { locale } = useLocale();
   const { t } = useTranslation();
   const [isSaving, setIsSaving] = useState(false);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
   const [existingEvent, setExistingEvent] = useState<EventApiResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -552,12 +554,38 @@ export function EventEdit({ role }: EventEditProps) {
     setFormData((prev) => ({ ...prev, mainImage: URL.createObjectURL(file) }));
   };
 
+  const validateForm = () => {
+    const errors: { [key: string]: string } = {};
+    const required = t('common.fieldRequired', 'This field is required');
+    // Accept Arabic title/description when in Arabic mode
+    if (!formData.title?.trim() && !(locale === 'ar' && formData.titleAr?.trim())) {
+      errors.title = required;
+    }
+    if (!formData.description?.trim() && !(locale === 'ar' && formData.descriptionAr?.trim())) {
+      errors.description = required;
+    }
+    if (!formData.category) errors.category = required;
+    if (!formData.communityId) errors.communityId = required;
+    if (!formData.country) errors.country = required;
+    if (!formData.city) errors.city = required;
+    if (!formData.trackId) errors.trackId = required;
+    if (!formData.eventDate) errors.eventDate = required;
+    if (!formData.eventTime) errors.eventTime = required;
+    if (!formData.endTime) errors.endTime = required;
+    if (!(Number(formData.maxParticipants) > 0)) errors.maxParticipants = required;
+    return errors;
+  };
+
+  // Shown only after a save attempt; re-derived on every render so each
+  // message disappears as soon as its field is filled.
+  const formErrors: { [key: string]: string } = submitAttempted ? validateForm() : {};
+
   const handleSave = async () => {
     if (!id) return;
 
-    const hasTitle = formData.title?.trim() || (locale === 'ar' && formData.titleAr?.trim());
-    if (!hasTitle || !formData.eventDate) {
-      toast.error(t('events.edit.toasts.requiredFields'));
+    setSubmitAttempted(true);
+    if (Object.keys(validateForm()).length > 0) {
+      toast.error(t('common.fillRequiredFields', 'Please fill all required fields'));
       return;
     }
 
@@ -607,8 +635,9 @@ export function EventEdit({ role }: EventEditProps) {
         organizedBy: formData.organizedBy,
       };
 
-      // When not uploading a new file, send existing mainImage (URL/base64) so backend keeps it
-      if (!mainImageFile && formData.mainImage) {
+      // No new file: send the cover only when it changed — a media-library URL, or
+      // '' when the existing cover was removed. Unchanged covers are left alone.
+      if (!mainImageFile && formData.mainImage !== (existingEvent?.mainImage ?? '')) {
         (payload as Record<string, unknown>).mainImage = formData.mainImage;
       }
 
@@ -695,6 +724,7 @@ export function EventEdit({ role }: EventEditProps) {
                   placeholder="Abu Dhabi Night Race Series – Round 3"
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                <FieldError message={formErrors.title} />
               </div>
 
               <div>
@@ -735,6 +765,7 @@ export function EventEdit({ role }: EventEditProps) {
                   rows={5}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#C12D32]"
                 />
+                <FieldError message={formErrors.description} />
               </div>
 
               <div>
@@ -767,6 +798,7 @@ export function EventEdit({ role }: EventEditProps) {
                     <option key={value} value={value}>{label}</option>
                   ))}
                 </select>
+                <FieldError message={formErrors.category} />
               </div>
 
               <div>
@@ -787,6 +819,7 @@ export function EventEdit({ role }: EventEditProps) {
                   }
 
                 </select>
+                <FieldError message={formErrors.communityId} />
               </div>
 
               <div>
@@ -849,6 +882,7 @@ export function EventEdit({ role }: EventEditProps) {
                   onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#C12D32]"
                 />
+                <FieldError message={formErrors.eventDate} />
               </div>
 
               <div>
@@ -859,6 +893,7 @@ export function EventEdit({ role }: EventEditProps) {
                   onChange={(e) => setFormData({ ...formData, eventTime: e.target.value })}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#C12D32]"
                 />
+                <FieldError message={formErrors.eventTime} />
               </div>
             </div>
           </div>
@@ -897,6 +932,7 @@ export function EventEdit({ role }: EventEditProps) {
                     </option>
                   ))}
                 </select>
+                <FieldError message={formErrors.country} />
               </div>
 
               <div>
@@ -923,6 +959,7 @@ export function EventEdit({ role }: EventEditProps) {
                     </option>
                   ))}
                 </select>
+                <FieldError message={formErrors.city} />
               </div>
 
               <div>
@@ -940,6 +977,7 @@ export function EventEdit({ role }: EventEditProps) {
                     </option>
                   ))}
                 </select>
+                <FieldError message={formErrors.trackId} />
                 {formData.country && formData.city && (
                   <>
                     {filteredTracks.length > 0 ? (
@@ -978,6 +1016,7 @@ export function EventEdit({ role }: EventEditProps) {
                   onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                <FieldError message={formErrors.eventDate} />
               </div>
 
               <div>
@@ -988,6 +1027,7 @@ export function EventEdit({ role }: EventEditProps) {
                   onChange={(e) => setFormData({ ...formData, eventTime: e.target.value })}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                <FieldError message={formErrors.eventTime} />
               </div>
 
               <div>
@@ -998,6 +1038,7 @@ export function EventEdit({ role }: EventEditProps) {
                   onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                <FieldError message={formErrors.endTime} />
               </div>
             </div>
           </div>
@@ -1050,6 +1091,7 @@ export function EventEdit({ role }: EventEditProps) {
                     min="1"
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                   />
+                  <FieldError message={formErrors.maxParticipants} />
                 </div>
 
                 <div>
@@ -1355,13 +1397,26 @@ export function EventEdit({ role }: EventEditProps) {
                 </label>
 
                 {/* Preview */}
-                <div className="mb-3">
-                  <img
-                    src={formData.mainImage || existingEvent.mainImage}
-                    alt="Cover"
-                    className="w-full h-32 rounded-lg object-cover"
-                  />
-                </div>
+                {formData.mainImage && (
+                  <div className="mb-3 relative">
+                    <img
+                      src={formData.mainImage}
+                      alt="Cover"
+                      className="w-full h-32 rounded-lg object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMainImageFile(null);
+                        setFormData((prev) => ({ ...prev, mainImage: '' }));
+                      }}
+                      className="absolute top-2 right-2 bg-black bg-opacity-60 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                      aria-label="Remove cover image"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
 
                 {/* Hidden File Input */}
                 <input
@@ -1374,6 +1429,8 @@ export function EventEdit({ role }: EventEditProps) {
                     if (!file) return;
                     setMainImageFile(file);
                     setFormData((prev) => ({ ...prev, mainImage: URL.createObjectURL(file) }));
+                    // Reset so the same file can be picked again after removing it
+                    e.target.value = '';
                   }}
                 />
 
@@ -1586,6 +1643,7 @@ export function EventEdit({ role }: EventEditProps) {
                   onChange={(e) => setFormData({ ...formData, maxParticipants: parseInt(e.target.value) || 500 })}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#C12D32]"
                 />
+                <FieldError message={formErrors.maxParticipants} />
               </div>
 
               <div>

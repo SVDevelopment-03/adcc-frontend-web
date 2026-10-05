@@ -51,6 +51,8 @@
     }
   },
   "common": {
+    "fieldRequired": "هذا الحقل مطلوب",
+    "fillRequiredFields": "يرجى ملء جميع الحقول المطلوبة",
     "loading": "جاري التحميل...",
     "notFound": "غير موجود",
     "back": "رجوع",

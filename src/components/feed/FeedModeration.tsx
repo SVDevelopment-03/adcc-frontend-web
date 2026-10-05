@@ -20,6 +20,7 @@ import {
   moderateFeedPost,
   moderateFeedUserBan,
   deleteFeedPost,
+  deleteFeedPostComment,
   FeedPostStatus,
 } from '../../services/feedPostsApi';
 
@@ -67,6 +68,7 @@ export function FeedModeration() {
   const [rejectionReason, setRejectionReason] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
+  const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null);
 
   const refreshCounts = async () => {
     setIsCountsLoading(true);
@@ -204,6 +206,25 @@ export function FeedModeration() {
       await refreshCounts();
     } catch (error: any) {
       toast.error(error?.message || 'Failed to delete post');
+    }
+  };
+
+  const handleDeleteComment = async (postId: string, commentId: string) => {
+    if (!window.confirm('Delete this comment? This action cannot be undone.')) return;
+    setDeletingCommentId(commentId);
+    try {
+      await deleteFeedPostComment(postId, commentId);
+      toast.success('Comment deleted');
+      const withoutComment = (p: FeedPost): FeedPost => ({
+        ...p,
+        comments: (p.comments ?? []).filter((c) => (c._id ?? c.id) !== commentId),
+      });
+      setPosts((prev) => prev.map((p) => (getPostId(p) === postId ? withoutComment(p) : p)));
+      setSelectedPost((prev) => (prev && getPostId(prev) === postId ? withoutComment(prev) : prev));
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to delete comment');
+    } finally {
+      setDeletingCommentId(null);
     }
   };
 
@@ -472,6 +493,16 @@ export function FeedModeration() {
 
                   <div className="flex items-center gap-4 mb-4 text-sm" style={{ color: '#999' }}>
                     <span>❤️ {likeCount == null ? '—' : String(likeCount)} likes</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedPost(post);
+                        setShowDetailModal(true);
+                      }}
+                      className="hover:underline"
+                    >
+                      💬 {(post.comments ?? []).length} comments
+                    </button>
                   </div>
 
                   <div className="flex flex-wrap gap-2">
@@ -629,6 +660,58 @@ export function FeedModeration() {
                   />
                 </div>
               ) : null}
+
+              <div>
+                <p className="text-sm mb-2" style={{ color: '#666' }}>
+                  Comments ({(selectedPost.comments ?? []).length})
+                </p>
+                {(selectedPost.comments ?? []).length === 0 ? (
+                  <p className="text-sm" style={{ color: '#999' }}>No comments on this post.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {(selectedPost.comments ?? []).map((comment) => {
+                      const commentId = comment._id ?? comment.id ?? '';
+                      const selectedPostId = getPostId(selectedPost);
+                      const author = typeof comment.user === 'string' ? null : comment.user;
+                      return (
+                        <div
+                          key={commentId || `${comment.createdAt}-${comment.text}`}
+                          className="flex items-start gap-3 p-3 rounded-lg border border-gray-100"
+                        >
+                          <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0">
+                            {author?.profileImage ? (
+                              <img src={author.profileImage} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              <UserRound className="w-4 h-4 text-gray-400" />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-sm font-medium" style={{ color: '#333' }}>
+                                {author?.fullName ?? 'Unknown user'}
+                              </span>
+                              <span className="text-xs" style={{ color: '#999' }}>{timeAgo(comment.createdAt)}</span>
+                            </div>
+                            <p className="text-sm break-words" style={{ color: '#666' }}>{comment.text}</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              selectedPostId && commentId && void handleDeleteComment(selectedPostId, commentId)
+                            }
+                            disabled={!selectedPostId || !commentId || deletingCommentId === commentId}
+                            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-white text-xs flex-shrink-0 disabled:opacity-60 disabled:cursor-not-allowed"
+                            style={{ backgroundColor: '#C12D32' }}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>{deletingCommentId === commentId ? 'Deleting...' : 'Delete'}</span>
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
 
               <div className="flex gap-3 justify-end">
                 <button

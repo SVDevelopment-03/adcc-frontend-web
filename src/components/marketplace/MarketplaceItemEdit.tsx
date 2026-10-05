@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { getStoreItemById, updateStoreItem, StoreItem } from '../../services/storeApi';
+import { FieldError } from '../ui/FieldError';
 
 export function MarketplaceItemEdit() {
   const { t } = useTranslation();
@@ -13,6 +14,7 @@ export function MarketplaceItemEdit() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [item, setItem] = useState<StoreItem | null>(null);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -57,8 +59,31 @@ export function MarketplaceItemEdit() {
     loadItem();
   }, [id, t]);
 
+  const validateForm = () => {
+    const errors: { [key: string]: string } = {};
+    const required = t('common.fieldRequired', 'This field is required');
+    if (!formData.title.trim()) errors.title = required;
+    if (!formData.description.trim()) errors.description = required;
+    if (!formData.category.trim()) errors.category = required;
+    if (!formData.condition.trim()) errors.condition = required;
+    if (!formData.city.trim()) errors.city = required;
+    if (formData.price === '') errors.price = required;
+    else if (!Number.isFinite(Number(formData.price)) || Number(formData.price) < 0) {
+      errors.price = 'Please enter a valid price';
+    }
+    if (formData.contactMethod !== 'InApp' && formData.phoneNumber.trim().length < 5) {
+      errors.phoneNumber = formData.phoneNumber.trim() ? 'Please enter a valid phone number' : required;
+    }
+    return errors;
+  };
+
+  // Shown only after a save attempt; re-derived on every render so each
+  // message disappears as soon as its field is filled.
+  const formErrors: { [key: string]: string } = submitAttempted ? validateForm() : {};
+
   const handleSave = async () => {
     if (!id) return;
+    setSubmitAttempted(true);
 
     const title = formData.title.trim();
     const description = formData.description.trim();
@@ -70,7 +95,7 @@ export function MarketplaceItemEdit() {
     const phoneNumber = formData.phoneNumber.trim();
     const contactMethod = formData.contactMethod;
 
-    if (!title || !description || !category || !condition || !city) {
+    if (!title || !description || !category || !condition || !city || formData.price === '') {
       toast.error('Please fill all required fields');
       return;
     }
@@ -142,16 +167,17 @@ export function MarketplaceItemEdit() {
       <div className="p-6 rounded-2xl shadow-sm bg-white space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm mb-2" style={{ color: '#666' }}>Title</label>
+            <label className="block text-sm mb-2" style={{ color: '#666' }}>Title *</label>
             <input
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
             />
+            <FieldError message={formErrors.title} />
           </div>
           <div>
-            <label className="block text-sm mb-2" style={{ color: '#666' }}>Price</label>
+            <label className="block text-sm mb-2" style={{ color: '#666' }}>Price *</label>
             <input
               type="number"
               min="0"
@@ -160,33 +186,37 @@ export function MarketplaceItemEdit() {
               onChange={(e) => setFormData({ ...formData, price: e.target.value })}
               className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
             />
+            <FieldError message={formErrors.price} />
           </div>
           <div>
-            <label className="block text-sm mb-2" style={{ color: '#666' }}>Category</label>
+            <label className="block text-sm mb-2" style={{ color: '#666' }}>Category *</label>
             <input
               type="text"
               value={formData.category}
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
             />
+            <FieldError message={formErrors.category} />
           </div>
           <div>
-            <label className="block text-sm mb-2" style={{ color: '#666' }}>Condition</label>
+            <label className="block text-sm mb-2" style={{ color: '#666' }}>Condition *</label>
             <input
               type="text"
               value={formData.condition}
               onChange={(e) => setFormData({ ...formData, condition: e.target.value })}
               className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
             />
+            <FieldError message={formErrors.condition} />
           </div>
           <div>
-            <label className="block text-sm mb-2" style={{ color: '#666' }}>City</label>
+            <label className="block text-sm mb-2" style={{ color: '#666' }}>City *</label>
             <input
               type="text"
               value={formData.city}
               onChange={(e) => setFormData({ ...formData, city: e.target.value })}
               className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
             />
+            <FieldError message={formErrors.city} />
           </div>
           <div>
             <label className="block text-sm mb-2" style={{ color: '#666' }}>Contact Method</label>
@@ -203,24 +233,26 @@ export function MarketplaceItemEdit() {
         </div>
 
         <div>
-          <label className="block text-sm mb-2" style={{ color: '#666' }}>Description</label>
+          <label className="block text-sm mb-2" style={{ color: '#666' }}>Description *</label>
           <textarea
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             rows={4}
             className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
           />
+          <FieldError message={formErrors.description} />
         </div>
 
         {formData.contactMethod !== 'InApp' && (
           <div>
-            <label className="block text-sm mb-2" style={{ color: '#666' }}>Phone Number</label>
+            <label className="block text-sm mb-2" style={{ color: '#666' }}>Phone Number *</label>
             <input
               type="text"
               value={formData.phoneNumber}
               onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
               className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
             />
+            <FieldError message={formErrors.phoneNumber} />
           </div>
         )}
 

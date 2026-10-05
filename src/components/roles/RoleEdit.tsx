@@ -12,6 +12,7 @@ import {
   type RbacPermission,
   type RbacRole,
 } from '../../services/rbacService';
+import { FieldError } from '../ui/FieldError';
 
 type PermissionRow = {
   id: string;
@@ -279,6 +280,8 @@ export function RoleEdit() {
                   onChange={(e) => setName(e.target.value)}
                   className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                {/* Save stays disabled while empty, so the message shows as soon as the field is cleared */}
+                <FieldError message={!name.trim() ? 'This field is required' : undefined} />
               </div>
               <div>
                 <div className="text-sm mb-2" style={{ color: '#333' }}>Slug *</div>
@@ -287,6 +290,7 @@ export function RoleEdit() {
                   onChange={(e) => setSlug(e.target.value)}
                   className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                <FieldError message={!slug.trim() ? 'This field is required' : undefined} />
               </div>
               <div>
                 <div className="text-sm mb-2" style={{ color: '#333' }}>Status</div>

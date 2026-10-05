@@ -51,6 +51,8 @@
     }
   },
   "common": {
+    "fieldRequired": "This field is required",
+    "fillRequiredFields": "Please fill all required fields",
     "loading": "Loading...",
     "notFound": "Not found",
     "back": "Back",

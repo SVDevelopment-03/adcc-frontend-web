@@ -7,6 +7,7 @@ import { gccCountries, getCitiesByCountry, normalizeCountryValue, type GCCCountr
 import { createEvent } from '../../services/eventsApi';
 import { getAllCommunities, deleteCommunity as deleteCommunityApi, CommunityApiResponse } from '../../services/communitiesApi';
 import { ImagePickerModal } from '../media/ImagePickerModal';
+import { FieldError } from '../ui/FieldError';
 import { UserRole } from '../../App';
 import { useNavigate } from 'react-router-dom';
 import { useLocale } from '../../contexts/LocaleContext';
@@ -34,7 +35,7 @@ export function EventCreate({ role }: EventCreateProps) {
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
   const [tracks, setTracks] = useState<any[]>([]);
   const [communities, setCommunities] = useState<any[]>([]);
-  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+  const [submitAttempted, setSubmitAttempted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { locale } = useLocale();
   const [badgePreview, setBadgePreview] = useState<string | null>(null);
@@ -51,6 +52,8 @@ const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCoverImage(file);
     setCoverImageUrl(null);
     setCoverPreview(URL.createObjectURL(file));
+    // Reset so the same file can be picked again after removing it
+    e.target.value = '';
   }
 };
 
@@ -379,14 +382,23 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
   const validateForm = () => {
     const errors: { [key: string]: string } = {};
+    const required = t('common.fieldRequired', 'This field is required');
     // Accept Arabic title/description when in Arabic mode
     if (!formData.title.trim() && !(locale === 'ar' && formData.titleAr?.trim())) {
-      errors.title = t('events.create.toasts.missingRequired');
+      errors.title = required;
     }
     if (!formData.description.trim() && !(locale === 'ar' && formData.descriptionAr?.trim())) {
-      errors.description = t('events.create.toasts.missingRequired');
+      errors.description = required;
     }
-    if (!formData.eventDate) errors.eventDate = t('events.create.toasts.missingRequired');
+    if (!formData.category) errors.category = required;
+    if (!formData.communityId) errors.communityId = required;
+    if (!formData.country) errors.country = required;
+    if (!formData.city) errors.city = required;
+    if (!formData.trackId) errors.trackId = required;
+    if (!formData.eventDate) errors.eventDate = required;
+    if (!formData.eventTime) errors.eventTime = required;
+    if (!formData.endTime) errors.endTime = required;
+    if (!(Number(formData.maxParticipants) > 0)) errors.maxParticipants = required;
     // Backend rejects non-URL values for these optional links
     const isValidUrl = (value: string) => {
       try {
@@ -405,14 +417,15 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     return errors;
   };
 
+  // Shown only after a submit attempt; re-derived on every render so each
+  // message disappears as soon as its field is filled.
+  const formErrors: { [key: string]: string } = submitAttempted ? validateForm() : {};
+
   const handleSubmit = async (action: 'draft' | 'publish') => {
-    const errors = validateForm();
-    if (Object.keys(errors).length > 0) {
-      setFormErrors(errors);
+    setSubmitAttempted(true);
+    if (Object.keys(validateForm()).length > 0) {
       toast.error(t('events.create.toasts.missingRequired'));
       return;
-    } else {
-      setFormErrors({});
     }
     setIsSubmitting(true);
     try {
@@ -605,6 +618,7 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                     <option key={value} value={value}>{label}</option>
                   ))}
                 </select>
+                <FieldError message={formErrors.category} />
               </div>
 
               <div>
@@ -696,6 +710,7 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                     </option>
                   ))}
                 </select>
+                <FieldError message={formErrors.country} />
               </div>
 
               <div>
@@ -722,6 +737,7 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                     </option>
                   ))}
                 </select>
+                <FieldError message={formErrors.city} />
               </div>
 
               <div>
@@ -742,6 +758,7 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                     </option>
                   ))}
                 </select>
+                <FieldError message={formErrors.trackId} />
                 {formData.country && formData.city && (
                   <>
                     {filteredTracks.length > 0 ? (
@@ -781,7 +798,7 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                   onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
-                
+                <FieldError message={formErrors.eventDate} />
               </div>
 
               <div>
@@ -792,6 +809,7 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                   onChange={(e) => setFormData({ ...formData, eventTime: e.target.value })}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                <FieldError message={formErrors.eventTime} />
               </div>
 
               <div>
@@ -802,6 +820,7 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                   onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                <FieldError message={formErrors.endTime} />
               </div>
             </div>
           </div>
@@ -854,6 +873,7 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                     min="1"
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                   />
+                  <FieldError message={formErrors.maxParticipants} />
                 </div>
 
                 <div>
@@ -1224,11 +1244,25 @@ const handleBadgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                 </button>
 
                   {coverPreview && (
-                    <img
-                      src={coverPreview}
-                      alt="Preview"
-                      className="mt-4 rounded-lg w-full h-48 object-cover"
-                    />
+                    <div className="relative mt-4">
+                      <img
+                        src={coverPreview}
+                        alt="Preview"
+                        className="rounded-lg w-full h-48 object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCoverImage(null);
+                          setCoverImageUrl(null);
+                          setCoverPreview(null);
+                        }}
+                        className="absolute top-2 right-2 bg-black bg-opacity-60 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                        aria-label="Remove cover image"
+                      >
+                        ✕
+                      </button>
+                    </div>
                   )}
 
                   {showCoverPicker && (

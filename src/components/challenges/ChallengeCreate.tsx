@@ -13,6 +13,7 @@ import { getBadgeEmoji } from '../../data/badgesIcons';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { useChallengeTypes, useChallengeUnits } from '../../hooks/useLookups';
+import { FieldError } from '../ui/FieldError';
 
 interface CommunityItem {
   id: string;
@@ -50,6 +51,7 @@ export function ChallengeCreate() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(isEditMode);
   const [submitting, setSubmitting] = useState(false);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
   const [communities, setCommunities] = useState<CommunityItem[]>([]);
   const [communitySearch, setCommunitySearch] = useState('');
   const [communityPage, setCommunityPage] = useState(1);
@@ -122,8 +124,25 @@ export function ChallengeCreate() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  const validateForm = () => {
+    const errors: { [key: string]: string } = {};
+    const required = t('common.fieldRequired', 'This field is required');
+    if (!formData.title?.trim()) errors.title = required;
+    if (!formData.description?.trim()) errors.description = required;
+    if (!formData.type) errors.type = required;
+    if (!(formData.target > 0)) errors.target = required;
+    if (!formData.startDate) errors.startDate = required;
+    if (!formData.endDate) errors.endDate = required;
+    return errors;
+  };
+
+  // Shown only after a submit attempt; re-derived on every render so each
+  // message disappears as soon as its field is filled.
+  const formErrors: { [key: string]: string } = submitAttempted ? validateForm() : {};
+
   const handleSubmit = async (status: Challenge['status']) => {
-    if (!formData.title || !formData.description || !formData.startDate || !formData.endDate || formData.target <= 0) {
+    setSubmitAttempted(true);
+    if (Object.keys(validateForm()).length > 0) {
       toast.error(t('challenges.fillRequired'));
       return;
     }
@@ -226,6 +245,7 @@ export function ChallengeCreate() {
                   placeholder={t('challenges.titlePlaceholder')}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                <FieldError message={formErrors.title} />
               </div>
 
               <div>
@@ -249,6 +269,7 @@ export function ChallengeCreate() {
                   rows={4}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                <FieldError message={formErrors.description} />
               </div>
 
               <div>
@@ -298,6 +319,7 @@ export function ChallengeCreate() {
                   placeholder="500"
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                <FieldError message={formErrors.target} />
               </div>
 
               <div>
@@ -339,6 +361,7 @@ export function ChallengeCreate() {
                   onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                <FieldError message={formErrors.startDate} />
               </div>
 
               <div>
@@ -349,6 +372,7 @@ export function ChallengeCreate() {
                   onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                <FieldError message={formErrors.endDate} />
                 <p className="text-sm text-red-500">{formData.startDate > formData.endDate ? t('challenges.startDateMustBeBeforeEndDate') : ''}</p>
               </div>
             </div>

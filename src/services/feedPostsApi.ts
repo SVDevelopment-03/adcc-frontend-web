@@ -15,8 +15,17 @@ export interface FeedPost {
   rejectedReason?: string;
   image?: string;
   createdBy?: string | { _id?: string; fullName?: string; profileImage?: string; banFeedPost?: boolean };
+  comments?: FeedPostComment[];
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface FeedPostComment {
+  _id?: string;
+  id?: string;
+  text: string;
+  user?: string | { _id?: string; fullName?: string; profileImage?: string };
+  createdAt?: string;
 }
 
 interface ApiErrorResponse {
@@ -254,6 +263,17 @@ export const deleteFeedPost = async (postId: string): Promise<void> => {
     await api.delete(`/v1/feed-posts/${postId}`);
   } catch (error) {
     throw new Error(getApiErrorMessage(error, 'Failed to delete feed post'));
+  }
+};
+
+/** Admin delete of any comment on a feed post (requires feed moderation permission). */
+export const deleteFeedPostComment = async (postId: string, commentId: string): Promise<void> => {
+  if (!postId) throw new Error('Post id is required');
+  if (!commentId) throw new Error('Comment id is required');
+  try {
+    await api.delete(`/v1/feed-posts/${postId}/comments/${commentId}`);
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to delete comment'));
   }
 };
 

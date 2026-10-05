@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { Badge, createBadgeApi, updateBadgeApi, getBadgeById } from '../../services/badgesService';
 import { BADGE_ICON_OPTIONS, getBadgeEmoji } from '../../data/badgesIcons';
+import { FieldError } from '../ui/FieldError';
 
 interface BadgesCreateProps {
   navigate: (page: string, params?: any) => void;
@@ -17,6 +18,7 @@ export function BadgesCreate({ navigate, badgeId }: BadgesCreateProps) {
   const isEditMode = !!badgeId;
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(isEditMode);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -65,8 +67,25 @@ export function BadgesCreate({ navigate, badgeId }: BadgesCreateProps) {
     loadBadge();
   }, [badgeId, isEditMode, routerNavigate]);
 
+  const validateForm = () => {
+    const errors: { [key: string]: string } = {};
+    const required = t('common.fieldRequired', 'This field is required');
+    if (!formData.name?.trim()) errors.name = required;
+    if (!formData.description?.trim()) errors.description = required;
+    if (!formData.icon) errors.icon = required;
+    if (!formData.requirements?.trim()) errors.requirements = required;
+    if (!formData.category) errors.category = required;
+    if (!formData.rarity) errors.rarity = required;
+    return errors;
+  };
+
+  // Shown only after a submit attempt; re-derived on every render so each
+  // message disappears as soon as its field is filled.
+  const formErrors: { [key: string]: string } = submitAttempted ? validateForm() : {};
+
   const handleSubmit = async () => {
-    if (!formData.name?.trim() || !formData.description?.trim() || !formData.requirements?.trim()) {
+    setSubmitAttempted(true);
+    if (Object.keys(validateForm()).length > 0) {
       toast.error(
         t('badges.toasts.missingRequired', 'Please fill in all required fields'),
       );
@@ -172,6 +191,7 @@ export function BadgesCreate({ navigate, badgeId }: BadgesCreateProps) {
                   )}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                <FieldError message={formErrors.name} />
               </div>
 
               <div>
@@ -202,6 +222,7 @@ export function BadgesCreate({ navigate, badgeId }: BadgesCreateProps) {
                   rows={4}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                <FieldError message={formErrors.description} />
               </div>
 
               <div>
@@ -257,6 +278,7 @@ export function BadgesCreate({ navigate, badgeId }: BadgesCreateProps) {
                   rows={4}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                <FieldError message={formErrors.requirements} />
               </div>
 
             </div>

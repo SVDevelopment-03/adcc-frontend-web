@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { compressImage } from '../../utils/imageUtils';
 import { createUser, type CreateUserInput } from '../../services/usersApi';
 import { assignUserRole, getRbacRoles, type RbacRole } from '../../services/rbacService';
+import { FieldError } from '../ui/FieldError';
 
 const ACCEPTED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -15,6 +16,7 @@ export function UserCreate() {
   const { t } = useTranslation();
 
   const [loading, setLoading] = useState(false);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
   const [profileImage, setProfileImage] = useState<string>('');
   const [profilePreview, setProfilePreview] = useState<string>('');
 
@@ -69,7 +71,12 @@ export function UserCreate() {
     }
   };
 
+  const requiredMessage = t('common.fieldRequired', 'This field is required');
+  // Shown only after a submit attempt, and only while the field is still empty
+  const requiredError = (isEmpty: boolean) => (submitAttempted && isEmpty ? requiredMessage : undefined);
+
   const onSubmit = async () => {
+    setSubmitAttempted(true);
     if (!canSubmit) {
       if (email.trim() && !isEmailValid) {
         toast.error(t('users.create.errors.invalidEmail'));
@@ -195,6 +202,7 @@ export function UserCreate() {
               placeholder={t('users.create.placeholders.fullName')}
               className="w-full px-3 py-2 rounded-lg border border-gray-200"
             />
+            <FieldError message={requiredError(!fullName.trim())} />
           </div>
 
           <div className="space-y-1">
@@ -206,6 +214,7 @@ export function UserCreate() {
               placeholder={t('users.create.placeholders.email')}
               className="w-full px-3 py-2 rounded-lg border border-gray-200"
             />
+            <FieldError message={requiredError(!email.trim())} />
             {email.trim() && !isEmailValid && (
               <div className="text-xs mt-1" style={{ color: '#C12D32' }}>{t('users.create.errors.invalidEmail')}</div>
             )}
@@ -233,6 +242,7 @@ export function UserCreate() {
               <option value="Male">{t('users.create.genders.male')}</option>
               <option value="Female">{t('users.create.genders.female')}</option>
             </select>
+            <FieldError message={requiredError(!gender)} />
           </div>
         </div>
       </div>
@@ -253,6 +263,7 @@ export function UserCreate() {
               placeholder={t('users.create.placeholders.password')}
               className="w-full px-3 py-2 rounded-lg border border-gray-200"
             />
+            <FieldError message={requiredError(!password)} />
           </div>
 
           <div className="space-y-1">
@@ -264,6 +275,7 @@ export function UserCreate() {
               placeholder={t('users.create.placeholders.confirmPassword')}
               className="w-full px-3 py-2 rounded-lg border border-gray-200"
             />
+            <FieldError message={requiredError(!confirmPassword)} />
             {confirmPassword && password !== confirmPassword && (
               <div className="text-xs mt-1" style={{ color: '#C12D32' }}>{t('users.create.errors.passwordMismatch')}</div>
             )}
@@ -322,7 +334,7 @@ export function UserCreate() {
         <button
           type="button"
           onClick={onSubmit}
-          disabled={loading || !canSubmit}
+          disabled={loading}
           className="px-4 py-2 rounded-lg text-white flex items-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ backgroundColor: '#C12D32' }}
         >

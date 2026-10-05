@@ -9,11 +9,12 @@ import { assignUserRole, getRbacRoles, type RbacRole } from '../../services/rbac
 
 const ACCEPTED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1">
       <label className="text-sm" style={{ color: '#333' }}>{label}</label>
       {children}
+      {error && <p className="text-xs mt-1" style={{ color: '#C12D32' }}>{error}</p>}
     </div>
   );
 }
@@ -24,6 +25,7 @@ export function AdminEdit() {
 
   const [loadingUser, setLoadingUser] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
   const [admin, setAdmin] = useState<User | null>(null);
 
   const [fullName, setFullName] = useState('');
@@ -89,8 +91,16 @@ export function AdminEdit() {
     }
   };
 
+  // Shown only after a save attempt, and only while the field is still empty
+  const requiredError = (isEmpty: boolean) => (submitAttempted && isEmpty ? 'This field is required' : undefined);
+
   const onSubmit = async () => {
-    if (!id || !canSubmit) return;
+    if (!id) return;
+    setSubmitAttempted(true);
+    if (!canSubmit) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
     setSaving(true);
     try {
       await updateUser(id, {
@@ -219,7 +229,7 @@ export function AdminEdit() {
         <p className="text-sm mb-4" style={{ color: '#666' }}>Email address cannot be changed.</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Field label="Full Name *">
+          <Field label="Full Name *" error={requiredError(!fullName.trim())}>
             <input
               type="text"
               value={fullName}
@@ -249,7 +259,7 @@ export function AdminEdit() {
             />
           </Field>
 
-          <Field label="Gender *">
+          <Field label="Gender *" error={requiredError(!gender)}>
             <select
               value={gender}
               onChange={(e) => setGender(e.target.value as 'Male' | 'Female')}
@@ -354,7 +364,7 @@ export function AdminEdit() {
         <button
           type="button"
           onClick={() => void onSubmit()}
-          disabled={saving || !canSubmit}
+          disabled={saving}
           className="px-5 py-2.5 rounded-lg text-white flex items-center gap-2 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ backgroundColor: '#C12D32' }}
         >

@@ -10,6 +10,7 @@ import { CommunityFormData } from '../../types/community';
 import { DetailPageSkeleton } from '../ui/skeleton';
 import { useCommunityCategories, useCommunityPurposeTypes, useCountries, useCities } from '../../hooks/useLookups';
 import { ImagePickerModal } from '../media/ImagePickerModal';
+import { FieldError } from '../ui/FieldError';
 
 
 interface CommunityEditProps {
@@ -38,6 +39,7 @@ export function CommunityEdit({ role }: CommunityEditProps) {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [showLogoPicker, setShowLogoPicker] = useState(false);
   const [showCoverPicker, setShowCoverPicker] = useState(false);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   // const [availableCategories, setAvailableCategories] = useState<string[]>([]);
 
@@ -366,16 +368,31 @@ export function CommunityEdit({ role }: CommunityEditProps) {
 
 
 
+  const TYPE_MARKERS = ['City Communities', 'Special Purpose', 'Group Communities'];
+
+  const validateForm = () => {
+    const errors: { [key: string]: string } = {};
+    const required = t('common.fieldRequired', 'This field is required');
+    if (!formData.title?.trim()) errors.title = required;
+    if (!formData.description?.trim()) errors.description = required;
+    if (!formData.country) errors.country = required;
+    if (!formData.city) errors.city = required;
+    if (!formData.communityType) errors.communityType = required;
+    if (!(formData.type || []).some((item) => !TYPE_MARKERS.includes(item))) errors.category = required;
+    if (formData.communityType === 'special' && !formData.purposeType) errors.purposeType = required;
+    return errors;
+  };
+
+  // Shown only after a save attempt; re-derived on every render so each
+  // message disappears as soon as its field is filled.
+  const formErrors: { [key: string]: string } = submitAttempted ? validateForm() : {};
+
   const handleUpdate = async () => {
-    if (!formData.title || !formData.description || !formData.city) {
+    setSubmitAttempted(true);
+    if (Object.keys(validateForm()).length > 0) {
       toast.error(t('communities.edit.toasts.missingRequired'));
       return;
     }
-
-    // if (formData.category.length === 0) {
-    //   toast.error('Please select at least one category');
-    //   return;
-    // }
 
 
     // `location` is dashboard-managed (lookups collection, type "city") — no
@@ -531,6 +548,7 @@ export function CommunityEdit({ role }: CommunityEditProps) {
                   placeholder={t('communities.edit.placeholders.communityName')}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                <FieldError message={formErrors.title} />
               </div>
 
               {/* Arabic Title */}
@@ -573,6 +591,7 @@ export function CommunityEdit({ role }: CommunityEditProps) {
                   rows={4}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                <FieldError message={formErrors.description} />
               </div>
 
               {/* Arabic Description */}
@@ -603,6 +622,7 @@ export function CommunityEdit({ role }: CommunityEditProps) {
                     <option key={value} value={value}>{label}</option>
                   ))}
                 </select>
+                <FieldError message={formErrors.country} />
               </div>
 
               <div>
@@ -617,6 +637,7 @@ export function CommunityEdit({ role }: CommunityEditProps) {
                     <option key={value} value={value}>{label}</option>
                   ))}
                 </select>
+                <FieldError message={formErrors.city} />
               </div>
 
               <div>
@@ -688,6 +709,7 @@ export function CommunityEdit({ role }: CommunityEditProps) {
 
 
                 </div>
+                <FieldError message={formErrors.category} />
               </div>
 
               {formData.communityType === 'special' && (
@@ -703,6 +725,7 @@ export function CommunityEdit({ role }: CommunityEditProps) {
                       <option key={value} value={value}>{label}</option>
                     ))}
                   </select>
+                  <FieldError message={formErrors.purposeType} />
                 </div>
               )}
             </div>

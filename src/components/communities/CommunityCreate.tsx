@@ -207,7 +207,11 @@ console.log('errorss',errors);
         </div>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <form
+        onSubmit={handleSubmit(onSubmit, () =>
+          toast.error(t('communities.create.toasts.requiredFields', 'Please fill all required fields')),
+        )}
+        className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Form - 2 columns */}
         <div className="lg:col-span-2 space-y-6">
           {/* Basic Information */}
@@ -308,6 +312,8 @@ console.log('errorss',errors);
                 as="select"
                 value={selectedCountry}
                 onChange={(e) => setSelectedCountry(e.target.value as any)}
+                error={errors.country}
+                required
               >
                 {countryOptions.map(({ value, label }) => (
                   <option key={value} value={value}>{label}</option>

@@ -360,6 +360,12 @@ export const updateEvent = async (
 
     if (imageFiles?.mainImage instanceof File) formData.append('mainImage', imageFiles.mainImage);
     if (imageFiles?.eventImage instanceof File) formData.append('eventImage', imageFiles.eventImage);
+    // No new file: a string cover is a media-library URL, or '' to clear a removed cover.
+    // `eventImage` is kept in sync because cards display it first.
+    if (!(imageFiles?.mainImage instanceof File) && typeof d.mainImage === 'string' && !d.mainImage.startsWith('blob:')) {
+      formData.append('mainImage', d.mainImage);
+      formData.append('eventImage', d.mainImage);
+    }
     if (imageFiles?.galleryImages?.length) {
       imageFiles.galleryImages.forEach((file) => formData.append('galleryImages', file));
     }

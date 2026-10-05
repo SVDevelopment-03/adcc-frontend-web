@@ -11,6 +11,7 @@ import { useLocale } from '../../contexts/LocaleContext';
 import { useTranslation } from 'react-i18next';
 import { useCountries, useCities, useTrackFacilities } from '../../hooks/useLookups';
 import { ImagePickerModal } from '../media/ImagePickerModal';
+import { FieldError } from '../ui/FieldError';
 
 
 interface TrackCreateProps {
@@ -97,9 +98,11 @@ export function TrackCreate({ role }: TrackCreateProps) {
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [showThumbnailPicker, setShowThumbnailPicker] = useState(false);
   const [showCoverPicker, setShowCoverPicker] = useState(false);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+  const requiredMessage = t('common.fieldRequired', 'This field is required');
 
 
-  const { control, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormData>({
+  const { control, handleSubmit, watch, setValue, getValues, formState: { errors } } = useForm<FormData>({
     defaultValues: {
       name: '',
       nameAr: '',
@@ -303,6 +306,11 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
       setLoading(false);
       return;
     }
+    if (!image || !coverImage) {
+      toast.error(t('common.fillRequiredFields', 'Please fill all required fields'));
+      setLoading(false);
+      return;
+    }
 
     const slug = (data.slug?.trim() || slugify(title)).trim() || `track-${Date.now()}`;
 
@@ -374,6 +382,16 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
   }
 };
 
+  // Runs field validation, then onSubmit. Fields validated outside
+  // react-hook-form (loop options, images) show their message via submitAttempted.
+  const submitForm = (action: 'draft' | 'publish') => {
+    setSubmitAttempted(true);
+    void handleSubmit(
+      (data) => onSubmit(data, action),
+      () => toast.error(t('common.fillRequiredFields', 'Please fill all required fields')),
+    )();
+  };
+
   const cities = ['Abu Dhabi', 'Dubai', 'Sharjah', 'Ajman', 'Umm Al Quwain', 'Ras Al Khaimah', 'Fujairah', 'Al Ain'];
 
   const renderField = (field: any) => {
@@ -386,7 +404,7 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
         <Controller
           name={name as keyof FormData}
           control={control}
-          rules={{ required: required ? `${label} is required` : false, min: min ? { value: min, message: `Minimum value is ${min}` } : undefined }}
+          rules={{ required: required ? requiredMessage : false, min: min ? { value: min, message: `Minimum value is ${min}` } : undefined }}
           render={({ field: { onChange, value } }) => {
             if (type === 'text' || type === 'number') {
               const inputValue = value === undefined || value === null ? '' : String(value);
@@ -512,12 +530,16 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm mb-2" style={{ color: '#666' }}>
-                  {t('tracks.create.trackName')} <span className="text-gray-400">(English)</span>
+                  {t('tracks.create.trackName')} * <span className="text-gray-400">(English)</span>
                 </label>
                 <Controller
                   name="name"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{
+                    // English or Arabic name is enough
+                    validate: (value) =>
+                      Boolean(String(value ?? '').trim() || getValues('nameAr')?.trim()) || requiredMessage,
+                  }}
                   render={({ field: { onChange, value } }) => (
                     <input
                       type="text"
@@ -572,12 +594,16 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
 
               <div>
                 <label className="block text-sm mb-2" style={{ color: '#666' }}>
-                  {t('tracks.create.description')} <span className="text-gray-400">(English)</span>
+                  {t('tracks.create.description')} * <span className="text-gray-400">(English)</span>
                 </label>
                 <Controller
                   name="description"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{
+                    // English or Arabic description is enough
+                    validate: (value) =>
+                      Boolean(String(value ?? '').trim() || getValues('descriptionAr')?.trim()) || requiredMessage,
+                  }}
                   render={({ field: { onChange, value } }) => (
                     <textarea
                       value={value || ''}
@@ -681,6 +707,9 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
                     </span>
                   ))}
                 </div>
+                <FieldError
+                  message={submitAttempted && !watchedLoopOptions.length ? t('tracks.create.toasts.noLoopOption') : undefined}
+                />
               </div>
             </div>
           </div>
@@ -769,6 +798,7 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
                 >
                   Choose from Media Library
                 </button>
+                <FieldError message={submitAttempted && !image ? requiredMessage : undefined} />
                 {showThumbnailPicker && (
                   <ImagePickerModal
                     uploadFolder="tracks"
@@ -810,6 +840,7 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
                 >
                   Choose from Media Library
                 </button>
+                <FieldError message={submitAttempted && !coverImage ? requiredMessage : undefined} />
                 {showCoverPicker && (
                   <ImagePickerModal
                     uploadFolder="tracks"
@@ -887,7 +918,7 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
 
             <button
               type="button"
-              onClick={handleSubmit((data) => onSubmit(data, 'publish'))}
+              onClick={() => submitForm('publish')}
               className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-white transition-all hover:shadow-lg"
               style={{ backgroundColor: '#C12D32' }}
             >
@@ -898,7 +929,7 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
 
             <button
               type="button"
-              onClick={handleSubmit((data) => onSubmit(data, 'draft'))}
+              onClick={() => submitForm('draft')}
               className="w-full px-4 py-3 rounded-lg transition-all hover:shadow-md"
               style={{ backgroundColor: '#ECC180', color: '#333' }}
             >

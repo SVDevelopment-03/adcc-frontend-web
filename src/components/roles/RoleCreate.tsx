@@ -7,6 +7,7 @@ import {
   getAllPermissions,
   type RbacPermission,
 } from '../../services/rbacService';
+import { FieldError } from '../ui/FieldError';
 
 type PermissionRow = {
   id: string;
@@ -41,6 +42,7 @@ export function RoleCreate() {
   const [permissionRows, setPermissionRows] = useState<PermissionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [slugTouched, setSlugTouched] = useState(false);
@@ -97,12 +99,21 @@ export function RoleCreate() {
     });
   };
 
-  const canSave = useMemo(() => {
-    if (saving || loading) return false;
-    return name.trim().length > 0 && slug.trim().length >= 2;
-  }, [loading, name, saving, slug]);
+  // Stays clickable with empty fields so the required-field messages can show
+  const canSave = !saving && !loading;
+
+  // Shown only after a save attempt, and only while the field is still invalid
+  const nameError = submitAttempted && !name.trim() ? 'This field is required' : undefined;
+  const slugError = !submitAttempted
+    ? undefined
+    : !slug.trim()
+      ? 'This field is required'
+      : slugify(slug).length < 2
+        ? 'Role slug must be at least 2 characters'
+        : undefined;
 
   const handleSave = async () => {
+    setSubmitAttempted(true);
     const nextName = name.trim();
     const nextSlug = slugify(slug);
     if (!nextName) {
@@ -187,6 +198,7 @@ export function RoleCreate() {
               placeholder="e.g. Event Coordinator"
               className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-red-600"
             />
+            <FieldError message={nameError} />
           </div>
           <div>
             <div className="text-sm mb-2" style={{ color: '#333' }}>Slug *</div>
@@ -199,6 +211,7 @@ export function RoleCreate() {
               placeholder="e.g. event-coordinator"
               className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-red-600"
             />
+            <FieldError message={slugError} />
             <div className="text-xs mt-1" style={{ color: '#999' }}>
               Lowercase letters, numbers, underscores and hyphens only
             </div>

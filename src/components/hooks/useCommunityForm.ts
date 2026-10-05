@@ -74,7 +74,17 @@ const communityFormSchema = z.object({
   isFeatured: z.boolean(),
   allowPosts: z.boolean(),
   allowGallery: z.boolean(),
-}).passthrough(); // Allow legacy fields
+})
+  .passthrough() // Allow legacy fields
+  // Title/description are required, but either the English or Arabic value is enough
+  .superRefine((data, ctx) => {
+    if (!data.title?.trim() && !data.titleAr?.trim()) {
+      ctx.addIssue({ code: 'custom', path: ['title'], message: 'Community name is required' });
+    }
+    if (!data.description?.trim() && !data.descriptionAr?.trim()) {
+      ctx.addIssue({ code: 'custom', path: ['description'], message: 'Description is required' });
+    }
+  });
 
 type CommunityFormSchema = z.infer<typeof communityFormSchema>;
 

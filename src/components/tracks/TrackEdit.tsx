@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { DetailPageSkeleton } from '../ui/skeleton';
 import { useCountries, useCities, useTrackFacilities } from '../../hooks/useLookups';
 import { ImagePickerModal } from '../media/ImagePickerModal';
+import { FieldError } from '../ui/FieldError';
 
 interface TrackEditProps {
   navigate: (page: string, params?: any) => void;
@@ -23,7 +24,7 @@ export function TrackEdit({ role }: TrackEditProps) {
 
   const { id } = useParams<{ id: string }>();
   const trackId = id;
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [submitAttempted, setSubmitAttempted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { locale } = useLocale();
@@ -406,16 +407,30 @@ const handleGalleryUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
 // };
 
 
+  const validateForm = () => {
+    const errors: { [key: string]: string } = {};
+    const required = t('common.fieldRequired', 'This field is required');
+    if (!formData.title?.trim()) errors.title = required;
+    if (!formData.description?.trim()) errors.description = required;
+    if (!formData.trackType) errors.trackType = required;
+    if (!formData.country) errors.country = required;
+    if (!formData.city) errors.city = required;
+    if (!(Number(formData.distance) > 0)) errors.distance = t('tracks.edit.toasts.invalidDistance');
+    if (!formData.difficulty) errors.difficulty = required;
+    if (!formData.surfaceType) errors.surfaceType = required;
+    return errors;
+  };
+
+  // Shown only after a save attempt; re-derived on every render so each
+  // message disappears as soon as its field is filled.
+  const errors: { [key: string]: string } = submitAttempted ? validateForm() : {};
+
   const handleSubmit = async () => {
     if (!trackId) return;
 
-    if (!formData.title || !formData.city) {
+    setSubmitAttempted(true);
+    if (Object.keys(validateForm()).length > 0) {
       toast.error(t('tracks.edit.toasts.requiredFields'));
-      return;
-    }
-
-    if (formData.distance <= 0) {
-      toast.error(t('tracks.edit.toasts.invalidDistance'));
       return;
     }
 
@@ -566,6 +581,7 @@ const handleDisable = async (id: string, name: string) => {
                   placeholder={t('tracks.edit.placeholders.trackName')}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                <FieldError message={errors.title} />
               </div>
 
               <div>
@@ -606,6 +622,7 @@ const handleDisable = async (id: string, name: string) => {
                   rows={4}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                <FieldError message={errors.description} />
               </div>
 
               <div>
@@ -653,6 +670,7 @@ const handleDisable = async (id: string, name: string) => {
                     <option key={value} value={value}>{label}</option>
                   ))}
                 </select>
+                <FieldError message={errors.country} />
               </div>
 
               <div>
@@ -667,6 +685,7 @@ const handleDisable = async (id: string, name: string) => {
                     <option key={value} value={value}>{label}</option>
                   ))}
                 </select>
+                <FieldError message={errors.city} />
               </div>
 
               <div>
@@ -703,6 +722,7 @@ const handleDisable = async (id: string, name: string) => {
                   step="0.1"
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
+                <FieldError message={errors.distance} />
               </div>
 
               <div>
