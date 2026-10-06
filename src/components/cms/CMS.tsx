@@ -742,7 +742,7 @@ export function CMS() {
         <div className="space-y-6">
           {/* Tiles */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="p-6 rounded-2xl shadow-sm" style={{ backgroundColor: '#ECC180' }}>
+            <div className="p-6 rounded-2xl shadow-sm bg-white">
               <div className="flex items-center gap-3 mb-2">
                 <LayoutGrid className="w-5 h-5" style={{ color: '#C12D32' }} />
                 <span className="text-sm" style={{ color: '#666' }}>{t('cms.tiles.homepageSections')}</span>

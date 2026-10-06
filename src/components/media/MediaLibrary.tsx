@@ -12,36 +12,13 @@ import {
   AlertCircle,
   Loader2,
 } from 'lucide-react';
-import { api } from '../../services/api';
+import { toast } from 'sonner';
+import { backfillMediaLibrary, deleteMediaItem, getMediaPage, uploadToMediaLibrary, type MediaItem } from '../../services/mediaApi';
 import { ALLOWED_IMAGE_ACCEPT, IMAGE_UPLOAD_HINT, filterValidImageFiles } from '../../utils/imageValidation';
 
-/* ─── Types ─────────────────────────────────────────────────────────────────── */
-interface MediaItem {
-  id: string;
-  url: string;
-  key: string;
-  name: string;
-  folder: string;
-  uploadedAt: string;
-  size?: number;
-  mimeType?: string;
-}
-
-/* ─── Storage helpers ────────────────────────────────────────────────────────── */
-const STORAGE_KEY = 'adcc_media_library';
-
-function loadFromStorage(): MediaItem[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as MediaItem[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveToStorage(items: MediaItem[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-}
+// This page shows the shared, backend-tracked media catalog (services/mediaApi.ts) —
+// the same list the "choose an image" picker uses on every upload field.
+const PAGE_SIZE = 60;
 
 /* ─── Folder options ─────────────────────────────────────────────────────────── */
 const FOLDERS = [
@@ -141,7 +118,7 @@ function UrlModal({ item, onClose }: { item: MediaItem; onClose: () => void }) {
             </div>
           </div>
           <p className="text-xs text-gray-400">
-            Uploaded {new Date(item.uploadedAt).toLocaleString()}
+            Uploaded {new Date(item.createdAt).toLocaleString()}
           </p>
         </div>
       </div>
@@ -151,7 +128,15 @@ function UrlModal({ item, onClose }: { item: MediaItem; onClose: () => void }) {
 
 /* ─── Main component ─────────────────────────────────────────────────────────── */
 export function MediaLibrary() {
-  const [items, setItems] = useState<MediaItem[]>(loadFromStorage);
+  const [items, setItems] = useState<MediaItem[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [scanning, setScanning] = useState(false);
+  const autoScannedRef = useRef(false);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const [uploadFolder, setUploadFolder] = useState('content');
@@ -163,10 +148,53 @@ export function MediaLibrary() {
   const [uploadProgress, setUploadProgress] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  /* persist to localStorage on change */
+  /* ── Load from the shared library ── */
+  const load = useCallback(async (nextPage: number, query: string, append: boolean) => {
+    append ? setLoadingMore(true) : setLoading(true);
+    try {
+      const result = await getMediaPage({ page: nextPage, limit: PAGE_SIZE, search: query || undefined });
+      setItems((prev) => (append ? [...prev, ...result.items] : result.items));
+      setPage(result.pagination.page);
+      setPages(result.pagination.pages);
+      setTotal(result.pagination.total);
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to load media library');
+    } finally {
+      append ? setLoadingMore(false) : setLoading(false);
+    }
+  }, []);
+
+  // Images already used on events, tracks, communities, banners and lookups were
+  // uploaded before the library existed, so they have no entry yet — this adds them.
+  const scanExisting = useCallback(async (silent: boolean) => {
+    setScanning(true);
+    try {
+      const result = await backfillMediaLibrary();
+      if (result.added > 0) {
+        if (!silent) toast.success(`Found ${result.added} existing image${result.added === 1 ? '' : 's'}`);
+        await load(1, '', false);
+      } else if (!silent) {
+        toast.info('No additional existing images found.');
+      }
+    } catch (error: any) {
+      if (!silent) toast.error(error?.message || 'Failed to scan existing content');
+    } finally {
+      setScanning(false);
+    }
+  }, [load]);
+
+  // An empty library on first open: pull in the existing images automatically, once
   useEffect(() => {
-    saveToStorage(items);
-  }, [items]);
+    if (loading || autoScannedRef.current || search.trim() || total > 0) return;
+    autoScannedRef.current = true;
+    void scanExisting(true);
+  }, [loading, total, search, scanExisting]);
+
+  // Search runs on the server (across the whole library), so wait for typing to stop
+  useEffect(() => {
+    const handle = setTimeout(() => load(1, search.trim(), false), search ? 300 : 0);
+    return () => clearTimeout(handle);
+  }, [search, load]);
 
   /* ── Upload ── */
   const uploadFiles = useCallback(async (files: FileList | File[]) => {
@@ -177,45 +205,26 @@ export function MediaLibrary() {
     setUploading(true);
     setUploadError('');
     setUploadProgress([]);
-    const newItems: MediaItem[] = [];
+    let uploadedCount = 0;
 
     for (const file of fileArray) {
       setUploadProgress((prev) => [...prev, `Uploading ${file.name}…`]);
       try {
-        const formData = new FormData();
-        formData.append('image', file);
-
-        const res = await api.post<{ success: boolean; data: { url: string; key: string } }>(
-          `/v1/uploads/image/${uploadFolder}`,
-          formData
-        );
-
-        if (res.data?.success && res.data?.data?.url) {
-          const { url, key } = res.data.data;
-          newItems.push({
-            id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-            url,
-            key,
-            name: file.name,
-            folder: uploadFolder,
-            uploadedAt: new Date().toISOString(),
-            size: file.size,
-            mimeType: file.type,
-          });
-        }
+        await uploadToMediaLibrary(file, uploadFolder);
+        uploadedCount += 1;
       } catch (err: any) {
-        const msg = err?.response?.data?.message || err?.message || 'Upload failed';
-        setUploadError(`Failed to upload "${file.name}": ${msg}`);
+        setUploadError(`Failed to upload "${file.name}": ${err?.message || 'Upload failed'}`);
       }
     }
 
-    if (newItems.length) {
-      setItems((prev) => [...newItems, ...prev]);
-      setUploadProgress([`✓ ${newItems.length} file${newItems.length > 1 ? 's' : ''} uploaded successfully`]);
+    if (uploadedCount) {
+      // Reload so the new entries carry their real library ids (needed to delete them)
+      await load(1, search.trim(), false);
+      setUploadProgress([`✓ ${uploadedCount} file${uploadedCount > 1 ? 's' : ''} uploaded successfully`]);
       setTimeout(() => setUploadProgress([]), 3000);
     }
     setUploading(false);
-  }, [uploadFolder]);
+  }, [uploadFolder, load, search]);
 
   /* ── Drag & drop ── */
   const handleDrop = (e: React.DragEvent) => {
@@ -227,18 +236,25 @@ export function MediaLibrary() {
   };
 
   /* ── Delete ── */
-  const deleteItem = (id: string) => {
-    setItems((prev) => prev.filter((i) => i.id !== id));
-    setDeleteConfirm(null);
-    if (selectedItem?.id === id) setSelectedItem(null);
+  const deleteItem = async (id: string) => {
+    setDeletingId(id);
+    try {
+      await deleteMediaItem(id);
+      setItems((prev) => prev.filter((i) => i.id !== id));
+      setTotal((prev) => Math.max(0, prev - 1));
+      if (selectedItem?.id === id) setSelectedItem(null);
+      toast.success('Image deleted from the media library');
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to delete image');
+    } finally {
+      setDeletingId(null);
+      setDeleteConfirm(null);
+    }
   };
 
-  /* ── Filtered list ── */
-  const filtered = items.filter((item) => {
-    const matchSearch = !search || item.name.toLowerCase().includes(search.toLowerCase()) || item.url.toLowerCase().includes(search.toLowerCase());
-    const matchFolder = filterFolder === 'all' || item.folder === filterFolder;
-    return matchSearch && matchFolder;
-  });
+  /* ── Filtered list (search is applied by the server) ── */
+  const filtered = items.filter((item) => filterFolder === 'all' || item.folder === filterFolder);
+  const hasFilters = Boolean(search.trim()) || filterFolder !== 'all';
 
   const usedFolders = [...new Set(items.map((i) => i.folder))];
 
@@ -249,9 +265,19 @@ export function MediaLibrary() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Media Library</h1>
           <p className="text-sm text-gray-500 mt-0.5">
-            {items.length} file{items.length !== 1 ? 's' : ''} stored
+            {total} file{total !== 1 ? 's' : ''} stored
           </p>
         </div>
+        <button
+          type="button"
+          disabled={scanning}
+          onClick={() => void scanExisting(false)}
+          title="Adds images already used on events, tracks, communities, banners and lookups"
+          className="flex items-center gap-2 text-sm font-semibold text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg px-4 py-2 transition-colors disabled:opacity-50"
+        >
+          {scanning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+          {scanning ? 'Scanning…' : 'Scan existing images'}
+        </button>
       </div>
 
       {/* ── Upload zone ── */}
@@ -270,6 +296,7 @@ export function MediaLibrary() {
           type="file"
           accept={ALLOWED_IMAGE_ACCEPT}
           multiple
+          data-native-file
           className="hidden"
           onChange={(e) => e.target.files && uploadFiles(e.target.files)}
         />
@@ -345,14 +372,14 @@ export function MediaLibrary() {
       </div>
 
       {/* ── Toolbar ── */}
-      {items.length > 0 && (
+      {(items.length > 0 || hasFilters) && (
         <div className="flex flex-wrap items-center gap-3">
           {/* Search */}
           <div className="relative flex-1 min-w-48">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search by filename or URL…"
+              placeholder="Search by filename…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg bg-white outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-100"
@@ -388,13 +415,17 @@ export function MediaLibrary() {
             </div>
           )}
           <p className="text-xs text-gray-400 ml-auto">
-            {filtered.length} / {items.length} files
+            {filtered.length} / {total} files
           </p>
         </div>
       )}
 
       {/* ── Grid ── */}
-      {filtered.length === 0 && items.length === 0 ? (
+      {loading || (scanning && items.length === 0) ? (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+        </div>
+      ) : filtered.length === 0 && !hasFilters ? (
         <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
           <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center">
             <ImageIcon className="w-10 h-10 text-gray-300" />
@@ -424,10 +455,25 @@ export function MediaLibrary() {
               onSelect={() => setSelectedItem(item)}
               onDelete={() => setDeleteConfirm(item.id)}
               confirmDelete={deleteConfirm === item.id}
+              deleting={deletingId === item.id}
               onCancelDelete={() => setDeleteConfirm(null)}
-              onConfirmDelete={() => deleteItem(item.id)}
+              onConfirmDelete={() => void deleteItem(item.id)}
             />
           ))}
+        </div>
+      )}
+
+      {!loading && page < pages && (
+        <div className="flex justify-center">
+          <button
+            type="button"
+            disabled={loadingMore}
+            onClick={() => load(page + 1, search.trim(), true)}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-semibold bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
+          >
+            {loadingMore && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+            Load more
+          </button>
         </div>
       )}
 
@@ -445,6 +491,7 @@ function MediaCard({
   onSelect,
   onDelete,
   confirmDelete,
+  deleting,
   onCancelDelete,
   onConfirmDelete,
 }: {
@@ -452,6 +499,7 @@ function MediaCard({
   onSelect: () => void;
   onDelete: () => void;
   confirmDelete: boolean;
+  deleting: boolean;
   onCancelDelete: () => void;
   onConfirmDelete: () => void;
 }) {
@@ -470,8 +518,8 @@ function MediaCard({
     return (
       <div className="rounded-xl border-2 border-red-200 bg-red-50 p-3 flex flex-col items-center justify-center gap-2 min-h-[140px] text-center">
         <Trash2 className="w-5 h-5 text-red-400" />
-        <p className="text-xs text-red-700 font-semibold">Delete this file?</p>
-        <p className="text-xs text-red-500 leading-tight">This removes it from the library only.</p>
+        <p className="text-xs text-red-700 font-semibold">Delete this image?</p>
+        <p className="text-xs text-red-500 leading-tight">It is removed from the library for everyone. Pages already using it keep working.</p>
         <div className="flex gap-1.5 mt-1">
           <button
             onClick={onCancelDelete}
@@ -481,9 +529,10 @@ function MediaCard({
           </button>
           <button
             onClick={onConfirmDelete}
-            className="px-2.5 py-1 text-xs font-medium bg-red-600 text-white rounded-md hover:bg-red-700"
+            disabled={deleting}
+            className="px-2.5 py-1 text-xs font-medium bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50"
           >
-            Delete
+            {deleting ? 'Deleting…' : 'Delete'}
           </button>
         </div>
       </div>
@@ -530,7 +579,7 @@ function MediaCard({
           <p className="text-xs text-gray-400 truncate">{item.folder}</p>
         </div>
         {/* Action buttons */}
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+        <div className="flex items-center gap-1 shrink-0">
           <button
             onClick={handleCopy}
             title="Copy URL"
@@ -542,7 +591,7 @@ function MediaCard({
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); onDelete(); }}
-            title="Remove from library"
+            title="Delete image"
             className="w-6 h-6 rounded-md bg-gray-100 hover:bg-red-100 text-gray-500 hover:text-red-600 flex items-center justify-center transition-colors"
           >
             <Trash2 className="w-3 h-3" />

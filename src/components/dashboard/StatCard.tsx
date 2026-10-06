@@ -13,11 +13,10 @@ export function StatCard({ label, value, icon, trend, onClick }: StatCardProps) 
   return (
     <button
       onClick={onClick}
-      className="p-6 rounded-2xl shadow-sm transition-all hover:shadow-md hover:scale-105 cursor-pointer text-left w-full"
-      style={{ backgroundColor: '#ECC180' }}
+      className="p-6 rounded-2xl shadow-sm bg-white transition-all hover:shadow-md hover:scale-105 cursor-pointer text-left w-full"
     >
       <div className="flex items-start justify-between mb-3">
-        <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.5)' }}>
+        <div className="p-2 rounded-lg" style={{ backgroundColor: '#FFF3F4' }}>
           {icon}
         </div>
         {trend && (

@@ -6,7 +6,9 @@ import { compressImage } from '../../utils/imageUtils';
 import { ALLOWED_IMAGE_ACCEPT, IMAGE_UPLOAD_HINT, validateImageFile } from '../../utils/imageValidation';
 import { useAuth } from '../../contexts/AuthContext';
 import { getAllUsers, updateUser, updateUserPassword, User } from '../../services/usersApi';
-import { assignUserRole, getRbacRoles, type RbacRole } from '../../services/rbacService';
+import { assignUserRole, getRbacRoles, type RbacRole } from '../../services/rbacService';
+import { UserAvatar } from '../ui/UserAvatar';
+import { PasswordInput } from '../ui/PasswordInput';
 
 
 function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
@@ -211,11 +213,7 @@ export function AdminEdit() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
-            {profilePreview
-              ? <img src={profilePreview} alt="Preview" className="w-full h-full object-cover" />
-              : <ImageIcon className="w-6 h-6" style={{ color: '#999' }} />}
-          </div>
+          <UserAvatar name={fullName} src={profilePreview} className="w-16 h-16 text-xl" />
           <label className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer text-sm">
             <input
               type="file"
@@ -344,8 +342,7 @@ export function AdminEdit() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Field label="New Password">
-            <input
-              type="password"
+            <PasswordInput
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="At least 6 characters"
@@ -355,8 +352,7 @@ export function AdminEdit() {
           </Field>
 
           <Field label="Confirm Password">
-            <input
-              type="password"
+            <PasswordInput
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Re-enter password"

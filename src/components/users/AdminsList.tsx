@@ -7,7 +7,8 @@ import {
 import { toast } from 'sonner';
 import { getAllUsers, updateUserVerified, deleteUser, User } from '../../services/usersApi';
 import { getRbacRoles, type RbacRole } from '../../services/rbacService';
-import { forgotPassword } from '../../services/authApi';
+import { forgotPassword } from '../../services/authApi';
+import { UserAvatar } from '../ui/UserAvatar';
 
 const PAGE_SIZE = 15;
 const FETCH_LIMIT = 100;
@@ -384,12 +385,7 @@ export function AdminsList() {
                 <tr key={admin.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-3">
-                      <img
-                        src={admin.profileImage || `https://i.pravatar.cc/150?u=${admin.id}`}
-                        alt={admin.fullName}
-                        className="w-10 h-10 rounded-full object-cover"
-                        onError={(e) => { (e.target as HTMLImageElement).src = `https://i.pravatar.cc/150?u=${admin.id}`; }}
-                      />
+                      <UserAvatar name={admin.fullName} src={admin.profileImage} className="w-10 h-10 text-sm" />
                       <div>
                         <p className="font-medium" style={{ color: '#333' }}>{admin.fullName}</p>
                         <p className="text-sm" style={{ color: '#666' }}>{admin.email}</p>

@@ -2,9 +2,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { UserRole } from '../../App';
-import { Plus, Search, Calendar, Users, MapPin, Star, Edit, Eye, UserCheck, Trophy, Ban, Archive, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
+import { Plus, Search, Calendar, Users, MapPin, Star, Edit, Eye, UserCheck, Trophy, Ban, Archive, ChevronLeft, ChevronRight, Trash2, RotateCcw } from 'lucide-react';
 import { availableCities } from '../../data/eventsData';
-import { getAllEvents, deleteEvent as deleteEventApi, disableEvent as disableEventApi, EventApiResponse } from '../../services/eventsApi';
+import { getAllEvents, deleteEvent as deleteEventApi, disableEvent as disableEventApi, restoreEvent as restoreEventApi, permanentlyDeleteEvent as permanentlyDeleteEventApi, EventApiResponse } from '../../services/eventsApi';
 import { useEventCategories } from '../../hooks/useLookups';
 import { toast } from 'sonner';
 import { CardSkeleton } from '../ui/skeleton';
@@ -44,6 +44,9 @@ export function EventsList({ role }: EventsListProps) {
 
   const [currentPage, setCurrentPage] = useState(1);
   const eventsPerPage = 10;
+
+  // The "Trash" status lists soft-deleted events; they can only be restored or permanently deleted.
+  const isTrashView = statusFilter === 'Trash';
 
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [communityFilter, setCommunityFilter] = useState('');
@@ -203,16 +206,30 @@ export function EventsList({ role }: EventsListProps) {
     if (!eventToDelete) return;
 
     try {
-      await deleteEventApi(eventToDelete);
+      if (isTrashView) {
+        await permanentlyDeleteEventApi(eventToDelete);
+      } else {
+        await deleteEventApi(eventToDelete);
+      }
 
       setEvents(prev => prev.filter(e => ((e as any)._id ?? (e as any).id) !== eventToDelete));
 
-      toast.success(t('events.toasts.deleteSuccess'));
+      toast.success(isTrashView ? t('trash.permanentSuccess', 'Permanently deleted') : t('trash.movedSuccess', 'Moved to Trash'));
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || t('events.toasts.deleteError'));
+      toast.error(error?.response?.data?.message || (isTrashView ? t('trash.permanentError', 'Failed to delete permanently') : t('events.toasts.deleteError')));
     } finally {
       setShowDeleteModal(false);
       setEventToDelete(null);
+    }
+  };
+
+  const handleRestore = async (eventId: string) => {
+    try {
+      await restoreEventApi(eventId);
+      setEvents(prev => prev.filter(e => ((e as any)._id ?? (e as any).id) !== eventId));
+      toast.success(t('trash.restoredSuccess', 'Restored successfully'));
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || t('trash.restoreError', 'Failed to restore'));
     }
   };
 
@@ -402,8 +419,11 @@ export function EventsList({ role }: EventsListProps) {
               <option value="Draft">{t('events.filters.draft')}</option>
               <option value="Open">{t('events.filters.open')}</option>
               <option value="Full">{t('events.filters.full')}</option>
+              <option value="Closed">{t('data.statuses.Closed', 'Closed')}</option>
+              <option value="Disabled">{t('data.statuses.Disabled', 'Disabled')}</option>
               <option value="Completed">{t('events.filters.completed')}</option>
               <option value="Archived">{t('events.filters.archived')}</option>
+              <option value="Trash">{t('trash.status', 'Trash')}</option>
             </select>
           </div>
 
@@ -548,17 +568,38 @@ export function EventsList({ role }: EventsListProps) {
                         className="px-3 py-1 rounded-full text-xs capitalize text-white"
                         style={{
                           backgroundColor:
+                            isTrashView ? '#6B7280' :
                             event.status === 'Open' ? '#10B981' :
                               event.status === 'Full' ? '#F59E0B' :
                                 event.status === 'Completed' ? '#3B82F6' :
                                   event.status === 'Draft' ? '#6B7280' : '#EF4444'
                         }}
                       >
-                        {t(`data.statuses.${event.status}`, event.status)}
+                        {isTrashView ? t('trash.status', 'Trash') : t(`data.statuses.${event.status}`, event.status)}
                       </span>
                     </div>
 
                     {/* Actions */}
+                    {isTrashView ? (
+                    <div className="flex flex-wrap items-center gap-2 mt-4">
+                      <button
+                        onClick={() => handleRestore(eventId)}
+                        className="flex items-center gap-1 px-3 py-2 rounded-lg transition-all hover:shadow-md"
+                        style={{ backgroundColor: '#D1FAE5', color: '#047857' }}
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                        {t('trash.restore', 'Restore')}
+                      </button>
+                      <button
+                        onClick={() => handleDelete(eventId)}
+                        className="flex items-center gap-1 px-3 py-2 rounded-lg transition-all hover:shadow-md"
+                        style={{ backgroundColor: '#FEE2E2', color: '#C12D32' }}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        {t('trash.deletePermanently', 'Delete Permanently')}
+                      </button>
+                    </div>
+                    ) : (
                     <div className="flex flex-wrap items-center gap-2 mt-4">
                       <button
                         onClick={() => navigate(`/events/${eventId}`)}
@@ -618,6 +659,7 @@ export function EventsList({ role }: EventsListProps) {
                         {t('events.card.delete', 'Delete')}
                       </button>
                     </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -627,8 +669,8 @@ export function EventsList({ role }: EventsListProps) {
           {filteredEvents.length === 0 && (
             <div className="p-12 rounded-2xl bg-white text-center">
               <Calendar className="w-16 h-16 mx-auto mb-4" style={{ color: '#CCC' }} />
-              <p className="text-lg mb-2" style={{ color: '#666' }}>{t('events.empty.noResults')}</p>
-              <p className="text-sm" style={{ color: '#999' }}>{t('events.empty.tryFilters')}</p>
+              <p className="text-lg mb-2" style={{ color: '#666' }}>{isTrashView ? t('trash.empty', 'Trash is empty') : t('events.empty.noResults')}</p>
+              {!isTrashView && <p className="text-sm" style={{ color: '#999' }}>{t('events.empty.tryFilters')}</p>}
             </div>
           )}
         </div>
@@ -706,9 +748,11 @@ export function EventsList({ role }: EventsListProps) {
         open={showDeleteModal}
         onClose={() => { setShowDeleteModal(false); setEventToDelete(null); }}
         onConfirm={confirmDelete}
-        title={t('events.deleteModal.title', 'Delete Event') + '?'}
-        message={t('events.deleteModal.message', 'Are you sure you want to delete this event? This action cannot be undone.')}
-        confirmLabel={t('events.deleteModal.confirm', 'Delete')}
+        title={isTrashView ? t('trash.permanentTitle', 'Delete permanently?') : t('trash.moveTitle', 'Move to Trash?')}
+        message={isTrashView
+          ? t('trash.permanentMessage', 'This item will be permanently deleted. This action cannot be undone.')
+          : t('trash.moveMessage', 'This item will be moved to Trash. You can restore it or delete it permanently from there.')}
+        confirmLabel={isTrashView ? t('trash.deletePermanently', 'Delete Permanently') : t('trash.moveConfirm', 'Move to Trash')}
         cancelLabel={t('common.cancel', 'Cancel')}
         icon={Trash2}
         iconBgColor="#FEE2E2"

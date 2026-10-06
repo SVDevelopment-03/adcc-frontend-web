@@ -384,9 +384,12 @@ const onSubmit = async (data: FormData, action: 'draft' | 'publish') => {
     const { name, label, type, required, placeholder, options, min, step, readOnly } = field;
     return (
       <div key={name}>
-        <label className="block text-sm mb-2" style={{ color: '#666' }}>
-          {label} {required && '*'}
-        </label>
+        {/* A checkbox carries its own label next to the box */}
+        {type !== 'checkbox' && (
+          <label className="block text-sm mb-2" style={{ color: '#666' }}>
+            {label} {required && '*'}
+          </label>
+        )}
         <Controller
           name={name as keyof FormData}
           control={control}

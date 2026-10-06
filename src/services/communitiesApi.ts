@@ -359,7 +359,7 @@ export const getAllCommunities = async (params?: { page?: number; limit?: number
   }
 };
 
-// Delete community
+// Delete community — moves it to the Trash (see restoreCommunity / permanentlyDeleteCommunity)
 export const deleteCommunity = async (id: string): Promise<void> => {
   invalidateCache('communities');
   try {
@@ -367,6 +367,43 @@ export const deleteCommunity = async (id: string): Promise<void> => {
     // console.log('✅ deleteCommunity successful');
   } catch (error) {
     console.error('Error deleting community:', error);
+    throw error;
+  }
+};
+
+// Communities currently in the Trash (dashboard only, not cached)
+export const getTrashedCommunities = async (): Promise<CommunityApiResponse[]> => {
+  try {
+    const response = await api.get<any>('/v1/communities', {
+      params: { trashed: 'true', page: 1, limit: 100 },
+    });
+    const inner = (response.data as any)?.data ?? response.data;
+    if (Array.isArray(inner?.communities)) return inner.communities;
+    return Array.isArray(inner) ? inner : [];
+  } catch (error) {
+    console.error('Error fetching trashed communities:', error);
+    throw error;
+  }
+};
+
+// Restore a community from the Trash
+export const restoreCommunity = async (id: string): Promise<void> => {
+  invalidateCache('communities');
+  try {
+    await api.patch(`/v1/communities/${id}/restore`);
+  } catch (error) {
+    console.error('Error restoring community:', error);
+    throw error;
+  }
+};
+
+// Permanently delete a community that is in the Trash
+export const permanentlyDeleteCommunity = async (id: string): Promise<void> => {
+  invalidateCache('communities');
+  try {
+    await api.delete(`/v1/communities/${id}/permanent`);
+  } catch (error) {
+    console.error('Error permanently deleting community:', error);
     throw error;
   }
 };

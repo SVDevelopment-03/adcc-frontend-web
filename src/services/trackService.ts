@@ -523,7 +523,7 @@ export const deleteTrackGalleryImage = async (
   }
 };
 
-// Delete track
+// Delete track — moves it to the Trash (see restoreTrack / permanentlyDeleteTrack)
 export const deleteTrack = async (id: string): Promise<void> => {
   invalidateCache("tracks");
   try {
@@ -534,8 +534,46 @@ export const deleteTrack = async (id: string): Promise<void> => {
   }
 };
 
+// Tracks currently in the Trash (dashboard only, not cached)
+export const getTrashedTracks = async (): Promise<Track[]> => {
+  try {
+    const response = await api.get("/v1/tracks", {
+      params: { status: "trash", limit: 500, page: 1 },
+    });
+    const data = (response.data as any)?.data ?? response.data;
+    if (Array.isArray(data?.tracks)) return data.tracks;
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error("Error fetching trashed tracks:", error);
+    throw error;
+  }
+};
+
+// Restore a track from the Trash
+export const restoreTrack = async (id: string): Promise<void> => {
+  invalidateCache("tracks");
+  try {
+    await api.patch(`/v1/tracks/${id}/restore`);
+  } catch (error) {
+    console.error("Error restoring track:", error);
+    throw error;
+  }
+};
+
+// Permanently delete a track that is in the Trash
+export const permanentlyDeleteTrack = async (id: string): Promise<void> => {
+  invalidateCache("tracks");
+  try {
+    await api.delete(`/v1/tracks/${id}/permanent`);
+  } catch (error) {
+    console.error("Error permanently deleting track:", error);
+    throw error;
+  }
+};
+
 // disable track
 export const disableTrack = async (id: string): Promise<void> => {
+  invalidateCache("tracks");
   try {
     await api.patch(`/v1/tracks/${id}/disable`);
   } catch (error) {
@@ -545,6 +583,7 @@ export const disableTrack = async (id: string): Promise<void> => {
 };
 // enable track
 export const enableTrack = async (id: string): Promise<void> => {
+  invalidateCache("tracks");
   try {
     await api.patch(`/v1/tracks/${id}/enable`);
   } catch (error) {
@@ -635,6 +674,7 @@ export const trackCommunityResults = async (
 };
 
 export const archiveTrack = async (id: string) => {
+  invalidateCache("tracks");
   try {
     const response = await api.patch(`/v1/tracks/${id}/archive`);
     return response.data;

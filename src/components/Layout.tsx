@@ -32,6 +32,7 @@ import { Merchandise } from './merchandise/Merchandise';
 import { MarketplaceItemEdit } from './marketplace/MarketplaceItemEdit';
 import { CMS } from './cms/CMS';
 import { MediaLibrary } from './media/MediaLibrary';
+import { MediaLibraryUploadBridge } from './media/MediaLibraryUploadBridge';
 import { PushNotifications } from './push/PushNotifications';
 import { NewsList } from './news/NewsList';
 import { NewsCreate } from './news/NewsCreate';
@@ -282,6 +283,7 @@ export function Layout() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#FFF9EF' }}>
       <TopBar roleTitle={roleTitle} />
+      <MediaLibraryUploadBridge />
       <div className="flex">
         <Sidebar hasPermission={hasPermission} />
         <main className="flex-1 p-8 ml-64 mt-16">

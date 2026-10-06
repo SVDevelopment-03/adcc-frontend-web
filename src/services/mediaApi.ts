@@ -95,6 +95,32 @@ export const uploadToMediaLibrary = async (file: File, folder: string): Promise<
   }
 };
 
+const MIME_EXTENSIONS: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/jpg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/gif': 'gif',
+};
+
+/**
+ * Downloads a library image as a File, so it can be handed to an upload field
+ * exactly as if it had been picked from the computer. Goes through the API
+ * because the browser can't read the storage bucket directly.
+ */
+export const getMediaFile = async (item: MediaItem): Promise<File> => {
+  try {
+    const { data } = await api.get<Blob>(`/v1/media/${item.id}/file`, { responseType: 'blob' });
+    const type = data.type || item.mimeType || 'image/jpeg';
+    const extension = MIME_EXTENSIONS[type.toLowerCase()];
+    const hasExtension = /\.[a-z0-9]{2,5}$/i.test(item.name || '');
+    const name = hasExtension || !extension ? item.name || 'image' : `${item.name || 'image'}.${extension}`;
+    return new File([data], name, { type });
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, 'Failed to load image from the media library'));
+  }
+};
+
 /** Removes the catalog entry only — the S3 object stays in place. */
 export const deleteMediaItem = async (id: string): Promise<void> => {
   try {

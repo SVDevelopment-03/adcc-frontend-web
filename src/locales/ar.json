@@ -1,4 +1,20 @@
 {
+  "trash": {
+    "status": "سلة المحذوفات",
+    "restore": "استعادة",
+    "deletePermanently": "حذف نهائي",
+    "moveTitle": "نقل إلى سلة المحذوفات؟",
+    "moveMessage": "سيتم نقل هذا العنصر إلى سلة المحذوفات. يمكنك استعادته أو حذفه نهائيًا من هناك.",
+    "moveConfirm": "نقل إلى سلة المحذوفات",
+    "permanentTitle": "حذف نهائي؟",
+    "permanentMessage": "سيتم حذف هذا العنصر نهائيًا. لا يمكن التراجع عن هذا الإجراء.",
+    "movedSuccess": "تم النقل إلى سلة المحذوفات",
+    "restoredSuccess": "تمت الاستعادة بنجاح",
+    "restoreError": "فشلت الاستعادة",
+    "permanentSuccess": "تم الحذف نهائيًا",
+    "permanentError": "فشل الحذف النهائي",
+    "empty": "سلة المحذوفات فارغة"
+  },
   "sidebar": {
     "appTitle": "إدارة ADCC",
     "dashboard": "لوحة التحكم",

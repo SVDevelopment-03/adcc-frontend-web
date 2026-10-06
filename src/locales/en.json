@@ -1,4 +1,20 @@
 {
+  "trash": {
+    "status": "Trash",
+    "restore": "Restore",
+    "deletePermanently": "Delete Permanently",
+    "moveTitle": "Move to Trash?",
+    "moveMessage": "This item will be moved to Trash. You can restore it or delete it permanently from there.",
+    "moveConfirm": "Move to Trash",
+    "permanentTitle": "Delete permanently?",
+    "permanentMessage": "This item will be permanently deleted. This action cannot be undone.",
+    "movedSuccess": "Moved to Trash",
+    "restoredSuccess": "Restored successfully",
+    "restoreError": "Failed to restore",
+    "permanentSuccess": "Permanently deleted",
+    "permanentError": "Failed to delete permanently",
+    "empty": "Trash is empty"
+  },
   "sidebar": {
     "appTitle": "ADCC Admin",
     "dashboard": "Dashboard",

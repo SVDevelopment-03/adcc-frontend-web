@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Users, MapPin, Calendar, Star, Filter, ChevronLeft, ChevronRight, Edit, Trash2 } from 'lucide-react';
+import { Plus, Search, Users, MapPin, Calendar, Star, Filter, ChevronLeft, ChevronRight, Edit, Trash2, RotateCcw } from 'lucide-react';
 import { CardSkeleton } from '../ui/skeleton';
 import { UserRole } from '../../App';
 import { toast } from 'sonner';
-import { getAllCommunities as getAllCommunitiesApi, deleteCommunity as deleteCommunityApi, CommunityApiResponse } from '../../services/communitiesApi';
+import { getAllCommunities as getAllCommunitiesApi, deleteCommunity as deleteCommunityApi, getTrashedCommunities, restoreCommunity as restoreCommunityApi, permanentlyDeleteCommunity as permanentlyDeleteCommunityApi, CommunityApiResponse } from '../../services/communitiesApi';
 import { useLookupList, useCommunityCategories } from '../../hooks/useLookups';
 import { useTranslation } from 'react-i18next';
 
@@ -50,6 +50,9 @@ export function CommunitiesList({ role }: CommunitiesListProps) {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const communitiesPerPage = 9;
+
+  // The "Trash" status lists soft-deleted communities; they can only be restored or permanently deleted.
+  const isTrashView = statusFilter === 'trash';
 
 
   /** Map any raw key/camelCase/prefixed value back to English display name for t() lookup */
@@ -142,7 +145,7 @@ export function CommunitiesList({ role }: CommunitiesListProps) {
     try {
       setLoading(true);
       setError(null);
-      const response = await getAllCommunitiesApi();
+      const response = isTrashView ? await getTrashedCommunities() : await getAllCommunitiesApi();
 
       // Handle different API response structures
       let apiCommunities: CommunityApiResponse[] = [];
@@ -212,7 +215,7 @@ export function CommunitiesList({ role }: CommunitiesListProps) {
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, [t, isTrashView]);
 
   useEffect(() => {
     fetchCommunities();
@@ -235,11 +238,11 @@ export function CommunitiesList({ role }: CommunitiesListProps) {
     const matchesSearch = !q || community.name.toLowerCase().includes(q) || community.description.toLowerCase().includes(q);
     const matchesCity = cityFilter === 'all' || community.city === cityFilter;
     const matchesCommunityType = communityTypeFilter === 'all' || community.communityType === communityTypeFilter;
-    const matchesStatus = statusFilter === 'all' || (statusFilter === 'active' ? community.isActive : !community.isActive);
+    const matchesStatus = statusFilter === 'all' || isTrashView || (statusFilter === 'active' ? community.isActive : !community.isActive);
     const matchesCategory = categoryFilter.length === 0 || (community.type || []).some(cat => categoryFilter.includes(cat));
     const matchesFeatured = featuredFilter === 'all' || (featuredFilter === 'yes' ? community.isFeatured : !community.isFeatured);
     return matchesSearch && matchesCity && matchesCommunityType && matchesStatus && matchesCategory && matchesFeatured;
-  }), [communities, searchTerm, cityFilter, communityTypeFilter, statusFilter, categoryFilter, featuredFilter]);
+  }), [communities, searchTerm, cityFilter, communityTypeFilter, statusFilter, isTrashView, categoryFilter, featuredFilter]);
 
   const totalPages = Math.ceil(filteredCommunities.length / communitiesPerPage);
   const paginatedCommunities = useMemo(() => {
@@ -258,8 +261,12 @@ export function CommunitiesList({ role }: CommunitiesListProps) {
   const confirmDelete = async () => {
     if (communityToDelete) {
       try {
-        await deleteCommunityApi(communityToDelete);
-        toast.success(t('communities.toasts.deleteSuccess'));
+        if (isTrashView) {
+          await permanentlyDeleteCommunityApi(communityToDelete);
+        } else {
+          await deleteCommunityApi(communityToDelete);
+        }
+        toast.success(isTrashView ? t('trash.permanentSuccess', 'Permanently deleted') : t('trash.movedSuccess', 'Moved to Trash'));
         // Remove the deleted community from the list
         setCommunities(communities.filter(c => c.id !== communityToDelete));
         setShowDeleteModal(false);
@@ -270,6 +277,16 @@ export function CommunitiesList({ role }: CommunitiesListProps) {
         setShowDeleteModal(false);
         setCommunityToDelete(null);
       }
+    }
+  };
+
+  const handleRestore = async (communityId: string) => {
+    try {
+      await restoreCommunityApi(communityId);
+      setCommunities((prev) => prev.filter((c) => c.id !== communityId));
+      toast.success(t('trash.restoredSuccess', 'Restored successfully'));
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || t('trash.restoreError', 'Failed to restore'));
     }
   };
 
@@ -335,7 +352,7 @@ export function CommunitiesList({ role }: CommunitiesListProps) {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="p-6 rounded-2xl shadow-sm" style={{ backgroundColor: '#ECC180' }}>
+        <div className="p-6 rounded-2xl shadow-sm bg-white">
           <div className="flex items-center gap-3 mb-2">
             <Users className="w-5 h-5" style={{ color: '#C12D32' }} />
             <span className="text-sm" style={{ color: '#666' }}>{t('communities.totalCommunities')}</span>
@@ -425,6 +442,7 @@ export function CommunitiesList({ role }: CommunitiesListProps) {
             <option value="all">{t('communities.filters.allStatus')}</option>
             <option value="active">{t('communities.filters.active')}</option>
             <option value="inactive">{t('communities.filters.inactive')}</option>
+            <option value="trash">{t('trash.status', 'Trash')}</option>
           </select>
 
           <select
@@ -469,8 +487,8 @@ export function CommunitiesList({ role }: CommunitiesListProps) {
         {paginatedCommunities.map((community) => (
           <div
             key={community.id}
-            onClick={() => navigate(`/communities/${community.id}`)}
-            className="p-6 rounded-2xl shadow-sm bg-white hover:shadow-md transition-all cursor-pointer relative"
+            onClick={() => { if (!isTrashView) navigate(`/communities/${community.id}`); }}
+            className={`p-6 rounded-2xl shadow-sm bg-white hover:shadow-md transition-all relative ${isTrashView ? '' : 'cursor-pointer'}`}
           >
             {/* Featured Badge - only show when backend isFeatured/featured is true */}
             {community.isFeatured && (
@@ -539,26 +557,39 @@ export function CommunitiesList({ role }: CommunitiesListProps) {
             <div className="mt-4 flex items-center justify-between">
               <span
                 className="px-3 py-1 rounded-full text-xs text-white"
-                style={{ backgroundColor: community.isActive ? '#10B981' : '#6B7280' }}
+                style={{ backgroundColor: !isTrashView && community.isActive ? '#10B981' : '#6B7280' }}
               >
-                {community.isActive ? t('communities.card.active') : t('communities.card.inactive')}
+                {isTrashView
+                  ? t('trash.status', 'Trash')
+                  : community.isActive ? t('communities.card.active') : t('communities.card.inactive')}
               </span>
               <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-                <button
-                  onClick={() => navigate(`/communities/${community.id}/edit`)}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs border border-gray-200 hover:bg-gray-50 transition-all"
-                  style={{ color: '#666' }}
-                >
-                  <Edit className="w-3.5 h-3.5" />
-                  {t('communities.card.edit', 'Edit')}
-                </button>
+                {isTrashView ? (
+                  <button
+                    onClick={() => handleRestore(community.id)}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs border border-green-200 hover:bg-green-50 transition-all"
+                    style={{ color: '#047857' }}
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    {t('trash.restore', 'Restore')}
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => navigate(`/communities/${community.id}/edit`)}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs border border-gray-200 hover:bg-gray-50 transition-all"
+                    style={{ color: '#666' }}
+                  >
+                    <Edit className="w-3.5 h-3.5" />
+                    {t('communities.card.edit', 'Edit')}
+                  </button>
+                )}
                 <button
                   onClick={() => handleDelete(community.id)}
                   className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs border border-red-200 hover:bg-red-50 transition-all"
                   style={{ color: '#C12D32' }}
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                  {t('communities.card.delete', 'Delete')}
+                  {isTrashView ? t('trash.deletePermanently', 'Delete Permanently') : t('communities.card.delete', 'Delete')}
                 </button>
               </div>
             </div>
@@ -571,9 +602,9 @@ export function CommunitiesList({ role }: CommunitiesListProps) {
       {!loading && filteredCommunities.length === 0 && (
         <div className="text-center py-12">
           <Users className="w-16 h-16 mx-auto mb-4" style={{ color: '#ECC180' }} />
-          <h3 className="text-xl mb-2" style={{ color: '#333' }}>{t('communities.empty.noResults')}</h3>
+          <h3 className="text-xl mb-2" style={{ color: '#333' }}>{isTrashView ? t('trash.empty', 'Trash is empty') : t('communities.empty.noResults')}</h3>
           <p style={{ color: '#666' }}>
-            {searchTerm || cityFilter !== 'all' || communityTypeFilter !== 'all' || statusFilter !== 'all' || categoryFilter.length > 0 || featuredFilter !== 'all'
+            {isTrashView ? '' : searchTerm || cityFilter !== 'all' || communityTypeFilter !== 'all' || statusFilter !== 'all' || categoryFilter.length > 0 || featuredFilter !== 'all'
               ? t('communities.empty.tryFilters')
               : t('communities.empty.createFirst')}
           </p>
@@ -638,9 +669,13 @@ export function CommunitiesList({ role }: CommunitiesListProps) {
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowDeleteModal(false)}>
           <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-xl mb-4" style={{ color: '#333' }}>{t('communities.deleteModal.title')}</h3>
+            <h3 className="text-xl mb-4" style={{ color: '#333' }}>
+              {isTrashView ? t('trash.permanentTitle', 'Delete permanently?') : t('trash.moveTitle', 'Move to Trash?')}
+            </h3>
             <p className="mb-6" style={{ color: '#666' }}>
-              {t('communities.deleteModal.body')}
+              {isTrashView
+                ? t('trash.permanentMessage', 'This item will be permanently deleted. This action cannot be undone.')
+                : t('trash.moveMessage', 'This item will be moved to Trash. You can restore it or delete it permanently from there.')}
             </p>
             <div className="flex gap-3">
               <button
@@ -648,7 +683,7 @@ export function CommunitiesList({ role }: CommunitiesListProps) {
                 className="flex-1 px-4 py-2 rounded-lg text-white transition-all hover:shadow-md"
                 style={{ backgroundColor: '#C12D32' }}
               >
-                {t('communities.deleteModal.confirm')}
+                {isTrashView ? t('trash.deletePermanently', 'Delete Permanently') : t('trash.moveConfirm', 'Move to Trash')}
               </button>
               <button
                 onClick={() => setShowDeleteModal(false)}

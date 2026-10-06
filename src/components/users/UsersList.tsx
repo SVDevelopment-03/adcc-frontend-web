@@ -5,7 +5,8 @@ import {
   X, Activity, Users, Trophy, Award, CircleX,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { getAllUsers, updateUserVerified, User } from '../../services/usersApi';
+import { getAllUsers, updateUserVerified, User } from '../../services/usersApi';
+import { UserAvatar } from '../ui/UserAvatar';
 
 const PAGE_SIZE = 10;
 const FETCH_LIMIT = 100; // backend caps at 100
@@ -50,12 +51,7 @@ function ProfileModal({ user, onClose, onSuspend }: ProfileModalProps) {
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-4">
-              <img
-                src={user.profileImage || `https://i.pravatar.cc/150?u=${user.id}`}
-                alt={user.fullName}
-                className="w-20 h-20 rounded-full object-cover"
-                onError={(e) => { (e.target as HTMLImageElement).src = `https://i.pravatar.cc/150?u=${user.id}`; }}
-              />
+              <UserAvatar name={user.fullName} src={user.profileImage} className="w-20 h-20 text-2xl" />
               <div>
                 <div className="flex items-center gap-3 mb-2">
                   <h2 className="text-2xl" style={{ color: '#333' }}>{user.fullName}</h2>
@@ -374,12 +370,7 @@ export function UsersList() {
             <div key={user.id} className="p-6 rounded-2xl shadow-sm bg-white hover:shadow-md transition-all">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4 flex-1">
-                  <img
-                    src={user.profileImage || `https://i.pravatar.cc/150?u=${user.id}`}
-                    alt={user.fullName}
-                    className="w-16 h-16 rounded-full object-cover shrink-0"
-                    onError={(e) => { (e.target as HTMLImageElement).src = `https://i.pravatar.cc/150?u=${user.id}`; }}
-                  />
+                  <UserAvatar name={user.fullName} src={user.profileImage} className="w-16 h-16 text-xl" />
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="font-medium text-lg" style={{ color: '#333' }}>{user.fullName}</h3>

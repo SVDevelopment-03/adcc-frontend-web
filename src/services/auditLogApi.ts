@@ -22,6 +22,7 @@ export async function getAuditLogs(params: {
   limit?: number;
   action?: string;
   targetType?: string;
+  search?: string;
   from?: string;
   to?: string;
 }): Promise<AuditLogPage> {
@@ -33,8 +34,12 @@ export async function getAuditLogs(params: {
   };
 }
 
-export async function getAuditLogActions(): Promise<string[]> {
+/** Action keys and modules that appear in the log, for the filter dropdowns. */
+export async function getAuditLogFilters(): Promise<{ actions: string[]; modules: string[] }> {
   const response = await api.get('/v1/audit-logs/actions');
   const data = response.data?.data ?? response.data;
-  return Array.isArray(data?.actions) ? data.actions : [];
+  return {
+    actions: Array.isArray(data?.actions) ? data.actions : [],
+    modules: Array.isArray(data?.modules) ? data.modules : [],
+  };
 }

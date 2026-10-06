@@ -423,16 +423,6 @@ export function CommunityDetail() {
               <div className="flex items-center gap-4 text-sm flex-wrap">
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: '#555' }}>Image URL (optional)</label>
-              <input
-                type="text"
-                value={notifImageUrl}
-                onChange={e => setNotifImageUrl(e.target.value)}
-                placeholder="https://example.com/image.jpg"
-                className="w-full px-4 py-2 rounded-lg border border-gray-200"
-              />
-            </div>
                   <span>{community.location || '—'}</span>
                 </div>
                 {(() => {

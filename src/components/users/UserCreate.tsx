@@ -7,7 +7,8 @@ import { compressImage } from '../../utils/imageUtils';
 import { ALLOWED_IMAGE_ACCEPT, validateImageFile } from '../../utils/imageValidation';
 import { createUser, type CreateUserInput } from '../../services/usersApi';
 import { assignUserRole, getRbacRoles, type RbacRole } from '../../services/rbacService';
-import { FieldError } from '../ui/FieldError';
+import { FieldError } from '../ui/FieldError';
+import { PasswordInput } from '../ui/PasswordInput';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -266,8 +267,7 @@ export function UserCreate() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1">
             <label className="text-sm" style={{ color: '#333' }}>{t('users.create.password')}</label>
-            <input
-              type="password"
+            <PasswordInput
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder={t('users.create.placeholders.password')}
@@ -278,8 +278,7 @@ export function UserCreate() {
 
           <div className="space-y-1">
             <label className="text-sm" style={{ color: '#333' }}>{t('users.create.confirmPassword')}</label>
-            <input
-              type="password"
+            <PasswordInput
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder={t('users.create.placeholders.confirmPassword')}

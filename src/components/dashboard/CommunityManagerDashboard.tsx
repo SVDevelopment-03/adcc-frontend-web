@@ -150,13 +150,13 @@ export function CommunityManagerDashboard() {
         <div className="p-6 rounded-2xl shadow-sm bg-white">
           <h2 className="text-xl mb-6" style={{ color: '#333' }}>{t('dashboard.communityManager.communityEngagement')}</h2>
           <div className="space-y-4">
-            <div className="p-4 rounded-xl" style={{ backgroundColor: '#ECC180' }}>
+            <div className="p-4 rounded-xl" style={{ backgroundColor: '#F9FAFB' }}>
               <div className="text-2xl mb-1" style={{ color: '#333' }}>
                 {loading ? '—' : engagement?.averageEventRating != null ? String(engagement.averageEventRating) : '—'}
               </div>
               <div className="text-sm" style={{ color: '#666' }}>{t('dashboard.communityManager.avgEventRating')}</div>
             </div>
-            <div className="p-4 rounded-xl" style={{ backgroundColor: '#E1C06E' }}>
+            <div className="p-4 rounded-xl" style={{ backgroundColor: '#F9FAFB' }}>
               <div className="text-2xl mb-1" style={{ color: '#333' }}>
                 {loading
                   ? '—'
@@ -166,11 +166,11 @@ export function CommunityManagerDashboard() {
               </div>
               <div className="text-sm" style={{ color: '#666' }}>{t('dashboard.communityManager.memberSatisfaction')}</div>
             </div>
-            <div className="p-4 rounded-xl" style={{ backgroundColor: '#CF9F0C', color: '#fff' }}>
-              <div className="text-2xl mb-1">
+            <div className="p-4 rounded-xl" style={{ backgroundColor: '#F9FAFB' }}>
+              <div className="text-2xl mb-1" style={{ color: '#333' }}>
                 {loading ? '—' : formatStat(engagement?.monthlyActiveMembers ?? 0)}
               </div>
-              <div className="text-sm opacity-90">{t('dashboard.communityManager.monthlyActiveMembers')}</div>
+              <div className="text-sm" style={{ color: '#666' }}>{t('dashboard.communityManager.monthlyActiveMembers')}</div>
             </div>
           </div>
         </div>

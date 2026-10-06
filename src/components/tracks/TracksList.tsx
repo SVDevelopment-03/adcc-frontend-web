@@ -2,12 +2,12 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from '../../contexts/LocaleContext';
-import { Plus, Search, MapPin, Calendar, Users, Edit, Eye, Archive, Trash2 } from 'lucide-react';
+import { Plus, Search, MapPin, Calendar, Users, Edit, Eye, Archive, Trash2, RotateCcw } from 'lucide-react';
 import { UserRole } from '../../App';
 import { toast } from 'sonner';
 import { CardSkeleton } from '../ui/skeleton';
 import { getTrackUpcomingEvents, getTrackCommunities } from '../../data/tracksData';
-import { getAllTracks, deleteTrack, Track, archiveTrack } from '../../services/trackService';
+import { getAllTracks, deleteTrack, Track, archiveTrack, getTrashedTracks, restoreTrack, permanentlyDeleteTrack } from '../../services/trackService';
 import { getAllEvents, EventApiResponse } from '../../services/eventsApi';
 import { getAllCommunities, deleteCommunity as deleteCommunityApi, CommunityApiResponse } from '../../services/communitiesApi';
 
@@ -41,6 +41,8 @@ export function TracksList({ role }: TracksListProps) {
 
   const [archivingId, setArchivingId] = useState<string | null>(null);
 
+  // The "Trash" status lists soft-deleted tracks; they can only be restored or permanently deleted.
+  const isTrashView = statusFilter === 'trash';
 
   const fetchTracks = useCallback(async () => {
     try {
@@ -48,7 +50,7 @@ export function TracksList({ role }: TracksListProps) {
       setError(null);
 
       const [results, eventsRes, communitiesRes] = await Promise.all([
-        getAllTracks(),
+        isTrashView ? getTrashedTracks() : getAllTracks(),
         getAllEvents(),
         getAllCommunities(),
       ]);
@@ -73,7 +75,7 @@ export function TracksList({ role }: TracksListProps) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isTrashView]);
 
   const getTrackId = (track: any): string | null => {
     if (!track) return null;
@@ -140,8 +142,8 @@ export function TracksList({ role }: TracksListProps) {
       const eventsCount = stats?.eventsCount || 0;
       const communitiesCount = stats?.communitiesCount || 0;
 
-      const status = (track.status ?? '').toString();
-      const matchesStatus = statusFilter === 'all' || status === statusFilter;
+      const status = (track.status ?? '').toString().toLowerCase();
+      const matchesStatus = statusFilter === 'all' || isTrashView || status === statusFilter;
 
       const matchesEvents =
         hasEventsFilter === "all" ||
@@ -156,7 +158,7 @@ export function TracksList({ role }: TracksListProps) {
 
       return matchesSearch && matchesCity && matchesDifficulty && matchesStatus && matchesEvents && matchesCommunities;
     });
-  }, [tracks, searchTerm, cityFilter, difficultyFilter, statusFilter, hasEventsFilter, hasCommunitiesFilter, trackStats]);
+  }, [tracks, searchTerm, cityFilter, difficultyFilter, statusFilter, isTrashView, hasEventsFilter, hasCommunitiesFilter, trackStats]);
 
 
   const canEdit = true;
@@ -207,12 +209,31 @@ export function TracksList({ role }: TracksListProps) {
     setShowDeleteModal(true);
   };
 
-  const confirmDelete = () => {
-    if (trackToDelete) {
-      deleteTrack(trackToDelete);
-      toast.success(t('tracks.toasts.deleteSuccess'));
+  const confirmDelete = async () => {
+    if (!trackToDelete) return;
+    try {
+      if (isTrashView) {
+        await permanentlyDeleteTrack(trackToDelete);
+      } else {
+        await deleteTrack(trackToDelete);
+      }
+      setTracks((prev) => prev.filter((track) => getTrackId(track) !== trackToDelete));
+      toast.success(isTrashView ? t('trash.permanentSuccess', 'Permanently deleted') : t('trash.movedSuccess', 'Moved to Trash'));
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || (isTrashView ? t('trash.permanentError', 'Failed to delete permanently') : t('tracks.edit.toasts.deleteError', 'Failed to delete track')));
+    } finally {
       setShowDeleteModal(false);
       setTrackToDelete(null);
+    }
+  };
+
+  const handleRestore = async (trackId: string) => {
+    try {
+      await restoreTrack(trackId);
+      setTracks((prev) => prev.filter((track) => getTrackId(track) !== trackId));
+      toast.success(t('trash.restoredSuccess', 'Restored successfully'));
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || t('trash.restoreError', 'Failed to restore'));
     }
   };
 
@@ -247,7 +268,7 @@ export function TracksList({ role }: TracksListProps) {
         </div>
         <div className="p-4 rounded-xl bg-white shadow-sm">
           <p className="text-sm mb-1" style={{ color: '#666' }}>{t('tracks.openTracks')}</p>
-          <p className="text-2xl" style={{ color: '#10B981' }}>{tracks.filter(t => t.status === 'Open').length}</p>
+          <p className="text-2xl" style={{ color: '#10B981' }}>{tracks.filter(t => String(t.status).toLowerCase() === 'open').length}</p>
         </div>
         <div className="p-4 rounded-xl bg-white shadow-sm">
           <p className="text-sm mb-1" style={{ color: '#666' }}>{t('tracks.citiesCovered')}</p>
@@ -298,9 +319,12 @@ export function TracksList({ role }: TracksListProps) {
               className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
             >
               <option value="all">{t('tracks.filters.allStatus')}</option>
-              <option value="Open">{t('tracks.filters.open')}</option>
-              <option value="Limited">{t('tracks.filters.limited')}</option>
-              <option value="Closed">{t('tracks.filters.closed')}</option>
+              <option value="open">{t('tracks.filters.open')}</option>
+              <option value="limited">{t('tracks.filters.limited')}</option>
+              <option value="closed">{t('tracks.filters.closed')}</option>
+              <option value="disabled">{t('data.statuses.Disabled', 'Disabled')}</option>
+              <option value="archived">{t('data.statuses.Archived', 'Archived')}</option>
+              <option value="trash">{t('trash.status', 'Trash')}</option>
             </select>
           </div>
 
@@ -378,15 +402,15 @@ export function TracksList({ role }: TracksListProps) {
                             <h3
                               className="text-xl cursor-pointer hover:underline"
                               style={{ color: '#333', textTransform: 'capitalize' }}
-                              onClick={() => trackId && navigate(`/tracks/${trackId}`)}
+                              onClick={() => trackId && !isTrashView && navigate(`/tracks/${trackId}`)}
                             >
                               {locale === 'ar' && track.titleAr ? track.titleAr : track.title}
                             </h3>
                             <span
                               className="px-3 py-1 rounded-full text-xs text-white"
-                              style={{ backgroundColor: getStatusColor(track.status), textTransform: 'capitalize' }}
+                              style={{ backgroundColor: isTrashView ? '#6B7280' : getStatusColor(track.status), textTransform: 'capitalize' }}
                             >
-                              {t(`data.statuses.${track.status}`, track.status)}
+                              {isTrashView ? t('trash.status', 'Trash') : t(`data.statuses.${track.status}`, track.status)}
                             </span>
                             <span className="px-2 py-1 rounded text-xs" style={{ backgroundColor: '#ECC180', color: '#333',textTransform: 'capitalize' }}>
                               {t(`data.trackTypes.${track.trackType}`, track.trackType)}
@@ -441,6 +465,26 @@ export function TracksList({ role }: TracksListProps) {
                         </div>
                       </div>
 
+                      {isTrashView ? (
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => trackId && handleRestore(trackId)}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg transition-all hover:shadow-md"
+                          style={{ backgroundColor: '#D1FAE5', color: '#047857' }}
+                        >
+                          <RotateCcw className="w-4 h-4" />
+                          <span className="text-sm">{t('trash.restore', 'Restore')}</span>
+                        </button>
+                        <button
+                          onClick={() => trackId && handleDelete(trackId)}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg transition-all hover:shadow-md"
+                          style={{ backgroundColor: '#FEE2E2', color: '#C12D32' }}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          <span className="text-sm">{t('trash.deletePermanently', 'Delete Permanently')}</span>
+                        </button>
+                      </div>
+                      ) : (
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => trackId && navigate(`/tracks/${trackId}`)}
@@ -479,6 +523,7 @@ export function TracksList({ role }: TracksListProps) {
                           </>
                         )}
                       </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -487,8 +532,8 @@ export function TracksList({ role }: TracksListProps) {
           ) : (
             <div className="p-12 text-center rounded-2xl bg-white">
               <MapPin className="w-16 h-16 mx-auto mb-4" style={{ color: '#CCC' }} />
-              <p className="text-lg mb-2" style={{ color: '#666' }}>{t('tracks.empty.noResults')}</p>
-              <p className="text-sm" style={{ color: '#999' }}>{t('tracks.empty.tryFilters')}</p>
+              <p className="text-lg mb-2" style={{ color: '#666' }}>{isTrashView ? t('trash.empty', 'Trash is empty') : t('tracks.empty.noResults')}</p>
+              {!isTrashView && <p className="text-sm" style={{ color: '#999' }}>{t('tracks.empty.tryFilters')}</p>}
             </div>
           )}
         </div>
@@ -498,9 +543,13 @@ export function TracksList({ role }: TracksListProps) {
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowDeleteModal(false)}>
           <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-xl mb-4" style={{ color: '#333' }}>{t('tracks.deleteModal.title', 'Delete Track?')}</h3>
+            <h3 className="text-xl mb-4" style={{ color: '#333' }}>
+              {isTrashView ? t('trash.permanentTitle', 'Delete permanently?') : t('trash.moveTitle', 'Move to Trash?')}
+            </h3>
             <p className="mb-6" style={{ color: '#666' }}>
-              {t('tracks.deleteModal.body', 'Are you sure you want to delete this track? This action cannot be undone.')}
+              {isTrashView
+                ? t('trash.permanentMessage', 'This item will be permanently deleted. This action cannot be undone.')
+                : t('trash.moveMessage', 'This item will be moved to Trash. You can restore it or delete it permanently from there.')}
             </p>
             <div className="flex gap-3">
               <button
@@ -508,7 +557,7 @@ export function TracksList({ role }: TracksListProps) {
                 className="flex-1 px-4 py-2 rounded-lg text-white transition-all hover:shadow-md"
                 style={{ backgroundColor: '#C12D32' }}
               >
-                {t('tracks.deleteModal.confirm', 'Delete')}
+                {isTrashView ? t('trash.deletePermanently', 'Delete Permanently') : t('trash.moveConfirm', 'Move to Trash')}
               </button>
               <button
                 onClick={() => setShowDeleteModal(false)}

@@ -56,7 +56,8 @@ export interface EventApiResponse {
 }
 
 export interface GetEventsParams {
-  status?: 'Draft' | 'Open' | 'Full' | 'Closed' | 'Disabled' | 'Completed' | 'Archived' | 'Upcoming' | 'Ongoing' | string;
+  /** 'Trash' lists soft-deleted events (dashboard only). */
+  status?: 'Draft' | 'Open' | 'Full' | 'Closed' | 'Disabled' | 'Completed' | 'Archived' | 'Upcoming' | 'Ongoing' | 'Trash' | string;
   city?: string;
   category?: string;
   level?: string;
@@ -431,13 +432,35 @@ export const disableEvent = async (id: string): Promise<EventApiResponse> => {
   }
 };
 
-// Delete event
+// Delete event — moves it to the Trash (see restoreEvent / permanentlyDeleteEvent)
 export const deleteEvent = async (id: string): Promise<void> => {
   invalidateCache('events');
   try {
     await api.delete(`/v1/events/${id}`);
   } catch (error) {
     console.error('Error deleting event:', error);
+    throw error;
+  }
+};
+
+// Restore an event from the Trash
+export const restoreEvent = async (id: string): Promise<void> => {
+  invalidateCache('events');
+  try {
+    await api.patch(`/v1/events/${id}/restore`);
+  } catch (error) {
+    console.error('Error restoring event:', error);
+    throw error;
+  }
+};
+
+// Permanently delete an event that is in the Trash
+export const permanentlyDeleteEvent = async (id: string): Promise<void> => {
+  invalidateCache('events');
+  try {
+    await api.delete(`/v1/events/${id}/permanent`);
+  } catch (error) {
+    console.error('Error permanently deleting event:', error);
     throw error;
   }
 };

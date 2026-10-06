@@ -1,15 +1,26 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ImageIcon, Loader2, Search, Upload, X } from 'lucide-react';
+import { Check, ImageIcon, Loader2, Search, Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { backfillMediaLibrary, getMediaPage, uploadToMediaLibrary, MediaItem } from '../../services/mediaApi';
 import { ALLOWED_IMAGE_ACCEPT, IMAGE_UPLOAD_HINT, validateImageFile } from '../../utils/imageValidation';
+
+/** One chosen image: a library entry, plus the local file when it was just uploaded from this picker. */
+export interface PickedImage {
+  url: string;
+  item: MediaItem;
+  file?: File;
+}
 
 interface ImagePickerModalProps {
   /** Upload folder used when a brand-new file is uploaded from this picker (see backend FOLDER_MAP). */
   uploadFolder: string;
   onClose: () => void;
   /** Called with the chosen image's URL — either picked from the library or just uploaded. */
-  onSelect: (url: string) => void;
+  onSelect?: (url: string) => void;
+  /** Allow choosing / uploading several images at once (gallery fields). */
+  multiple?: boolean;
+  /** Like onSelect, but with the full entries (and every one of them when `multiple`). */
+  onPick?: (picked: PickedImage[]) => void;
 }
 
 type Tab = 'library' | 'upload';
@@ -19,7 +30,7 @@ type Tab = 'library' | 'upload';
  * uploaded anywhere in the dashboard (shared backend catalog — see
  * services/mediaApi.ts), or upload a new one, then hand back its URL.
  */
-export function ImagePickerModal({ uploadFolder, onClose, onSelect }: ImagePickerModalProps) {
+export function ImagePickerModal({ uploadFolder, onClose, onSelect, multiple = false, onPick }: ImagePickerModalProps) {
   const [tab, setTab] = useState<Tab>('library');
   const [items, setItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,7 +40,21 @@ export function ImagePickerModal({ uploadFolder, onClose, onSelect }: ImagePicke
   const [pages, setPages] = useState(1);
   const [uploading, setUploading] = useState(false);
   const [scanning, setScanning] = useState(false);
+  const [selected, setSelected] = useState<MediaItem[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const firstLoadRef = useRef(true);
+
+  const finish = (picked: PickedImage[]) => {
+    if (picked.length === 0) return;
+    if (onPick) onPick(picked);
+    else onSelect?.(picked[0].url);
+  };
+
+  const toggleSelected = (item: MediaItem) => {
+    setSelected((prev) =>
+      prev.some((p) => p.id === item.id) ? prev.filter((p) => p.id !== item.id) : [...prev, item]
+    );
+  };
 
   const load = useCallback(async (nextPage: number, query: string, append: boolean) => {
     append ? setLoadingMore(true) : setLoading(true);
@@ -38,6 +63,9 @@ export function ImagePickerModal({ uploadFolder, onClose, onSelect }: ImagePicke
       setItems((prev) => (append ? [...prev, ...result.items] : result.items));
       setPage(result.pagination.page);
       setPages(result.pagination.pages);
+      // Nothing in the library yet: go straight to uploading the first image
+      if (firstLoadRef.current && !query && result.items.length === 0) setTab('upload');
+      firstLoadRef.current = false;
     } catch (error: any) {
       toast.error(error?.message || 'Failed to load media library');
     } finally {
@@ -60,14 +88,20 @@ export function ImagePickerModal({ uploadFolder, onClose, onSelect }: ImagePicke
   }, [onClose]);
 
   const handleUpload = async (files: FileList | null) => {
-    const file = files?.[0];
+    const chosen = Array.from(files || []).slice(0, multiple ? undefined : 1);
     if (fileInputRef.current) fileInputRef.current.value = '';
-    if (!validateImageFile(file)) return;
+    const valid = chosen.filter((file) => validateImageFile(file));
+    if (valid.length === 0) return;
 
     setUploading(true);
     try {
-      const uploaded = await uploadToMediaLibrary(file, uploadFolder);
-      onSelect(uploaded.url);
+      // Every new image is stored in the Media Library first, then handed to the form
+      const picked: PickedImage[] = [];
+      for (const file of valid) {
+        const uploaded = await uploadToMediaLibrary(file, uploadFolder);
+        picked.push({ url: uploaded.url, item: uploaded, file });
+      }
+      finish(picked);
     } catch (error: any) {
       toast.error(error?.message || 'Upload failed');
     } finally {
@@ -192,10 +226,17 @@ export function ImagePickerModal({ uploadFolder, onClose, onSelect }: ImagePicke
                       <button
                         key={item.id}
                         type="button"
-                        onClick={() => onSelect(item.url)}
+                        onClick={() => (multiple ? toggleSelected(item) : finish([{ url: item.url, item }]))}
                         title={item.name}
-                        className="group relative aspect-square rounded-xl overflow-hidden bg-gray-50 border border-gray-100 hover:border-blue-400 hover:shadow-md transition-all"
+                        className={`group relative aspect-square rounded-xl overflow-hidden bg-gray-50 border hover:border-blue-400 hover:shadow-md transition-all ${
+                          selected.some((p) => p.id === item.id) ? 'border-blue-500 ring-2 ring-blue-300' : 'border-gray-100'
+                        }`}
                       >
+                        {selected.some((p) => p.id === item.id) && (
+                          <span className="absolute top-1.5 right-1.5 z-10 w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center">
+                            <Check className="w-3.5 h-3.5" />
+                          </span>
+                        )}
                         <img
                           src={item.url}
                           alt={item.name}
@@ -226,6 +267,22 @@ export function ImagePickerModal({ uploadFolder, onClose, onSelect }: ImagePicke
                 </>
               )}
             </div>
+            {multiple && (
+              <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100">
+                <span className="text-sm text-gray-500">
+                  {selected.length === 0 ? 'Select one or more images' : `${selected.length} selected`}
+                </span>
+                <button
+                  type="button"
+                  disabled={selected.length === 0}
+                  onClick={() => finish(selected.map((item) => ({ url: item.url, item })))}
+                  className="px-4 py-2 text-sm font-semibold text-white rounded-lg disabled:opacity-50"
+                  style={{ backgroundColor: '#C12D32' }}
+                >
+                  Use selected
+                </button>
+              </div>
+            )}
           </>
         ) : (
           <div className="flex-1 flex items-center justify-center p-8">
@@ -242,6 +299,8 @@ export function ImagePickerModal({ uploadFolder, onClose, onSelect }: ImagePicke
                 ref={fileInputRef}
                 type="file"
                 accept={ALLOWED_IMAGE_ACCEPT}
+                multiple={multiple}
+                data-native-file
                 className="hidden"
                 onChange={(e) => handleUpload(e.target.files)}
               />
@@ -256,7 +315,7 @@ export function ImagePickerModal({ uploadFolder, onClose, onSelect }: ImagePicke
                     <Upload className="w-7 h-7 text-gray-400" />
                   </div>
                   <p className="text-sm font-semibold text-gray-700">
-                    Drop an image here or <span className="text-blue-600 underline underline-offset-2">browse files</span>
+                    Drop {multiple ? 'images' : 'an image'} here or <span className="text-blue-600 underline underline-offset-2">browse files</span>
                   </p>
                   <p className="text-xs text-gray-400">{IMAGE_UPLOAD_HINT}</p>
                 </div>
