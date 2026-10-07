@@ -645,19 +645,21 @@ function EventCard({ event }: { event: EventApiResponse }) {
           <MapPin size={20} /> {event.city || event.address || t("public.communities.detail.locationTBA")}
         </p>
       </div>
-      <AnimatedButton
-        variant="outline"
-        size="sm"
-        className="event-card-button mt-5 sm:mt-6"
-        onClick={() => {
-          const eventSlug = event.slug || event._id || event.id;
-          if (eventSlug) {
-            navigate(`/events/${encodeURIComponent(eventSlug)}`);
-          }
-        }}
-      >
-        {t("public.common.viewDetails")}
-      </AnimatedButton>
+      {!isEventClosed(event) && (
+        <AnimatedButton
+          variant="outline"
+          size="sm"
+          className="event-card-button mt-5 sm:mt-6"
+          onClick={() => {
+            const eventSlug = event.slug || event._id || event.id;
+            if (eventSlug) {
+              navigate(`/events/${encodeURIComponent(eventSlug)}`);
+            }
+          }}
+        >
+          {t("public.common.viewDetails")}
+        </AnimatedButton>
+      )}
     </article>
   );
 }

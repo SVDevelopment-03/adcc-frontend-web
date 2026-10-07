@@ -686,13 +686,15 @@ function EventCard({ event }: { event: EventApiResponse }) {
           />
         </div>
 
-        <AnimatedButton
-          variant="outline"
-          size="sm"
-          onClick={() => navigate(eventHref)}
-        >
-          {t("public.common.viewDetails")}
-        </AnimatedButton>
+        {!isEventClosed(event) && (
+          <AnimatedButton
+            variant="outline"
+            size="sm"
+            onClick={() => navigate(eventHref)}
+          >
+            {t("public.common.viewDetails")}
+          </AnimatedButton>
+        )}
       </div>
     </div>
   );

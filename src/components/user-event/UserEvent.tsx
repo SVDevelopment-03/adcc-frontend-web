@@ -851,19 +851,21 @@ function EventCard({
           )}
         </div>
 
-        <AnimatedButton
-          variant="outline"
-          size="sm"
-          className="event-card-button"
-          onClick={() => {
-            const eventSlug = event.slug || event._id || event.id;
-            if (eventSlug) {
-              navigate(`/events/${encodeURIComponent(eventSlug)}`);
-            }
-          }}
-        >
-          {t("public.common.viewDetails")}
-        </AnimatedButton>
+        {!isEventClosed(event) && (
+          <AnimatedButton
+            variant="outline"
+            size="sm"
+            className="event-card-button"
+            onClick={() => {
+              const eventSlug = event.slug || event._id || event.id;
+              if (eventSlug) {
+                navigate(`/events/${encodeURIComponent(eventSlug)}`);
+              }
+            }}
+          >
+            {t("public.common.viewDetails")}
+          </AnimatedButton>
+        )}
       </div>
     </motion.div>
   );

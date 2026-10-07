@@ -11,6 +11,7 @@ import {
 } from "../../services/communitiesApi";
 import { EventApiResponse, getEventsPage } from "../../services/eventsApi";
 import { AnimatedButton } from "../ui/AnimatedButton";
+import { isEventClosed } from "../../utils/eventStatus";
 
 const TARGET_COMMUNITY_TITLE = "Abu Dhabi Cycling Community";
 const TARGET_COMMUNITY_SLUG = "abu-dhabi-cycling-community";
@@ -482,13 +483,15 @@ function EventCard({ event }: { event: EventApiResponse }) {
           )}
         </div>
 
-        <AnimatedButton
-          variant="outline"
-          size="sm"
-          onClick={() => navigate(eventHref)}
-        >
-          {t("public.common.viewDetails")}
-        </AnimatedButton>
+        {!isEventClosed(event) && (
+          <AnimatedButton
+            variant="outline"
+            size="sm"
+            onClick={() => navigate(eventHref)}
+          >
+            {t("public.common.viewDetails")}
+          </AnimatedButton>
+        )}
       </div>
     </div>
   );
