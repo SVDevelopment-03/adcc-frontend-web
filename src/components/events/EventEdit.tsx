@@ -324,7 +324,7 @@ export function EventEdit({ role }: EventEditProps) {
         endTime: ev.endTime ?? '',
         distance: ev.distance ?? 25,
         difficulty: (ev.difficulty === 'Easy' || ev.difficulty === 'Medium' || ev.difficulty === 'Hard' ? ev.difficulty : 'Medium'),
-        maxParticipants: ev.maxParticipants,
+        maxParticipants: ev.maxParticipants ?? 0,
         registrationFeeType: ev.registrationFeeType === 'paid' ? 'paid' : 'free',
         registrationFeeAmount: Number(ev.registrationFeeAmount) || 0,
         schedule: (ev.schedule && ev.schedule.length > 0) ? ev.schedule : [{ time: '', title: '' }],
@@ -569,14 +569,12 @@ export function EventEdit({ role }: EventEditProps) {
       errors.description = required;
     }
     if (!formData.category) errors.category = required;
-    if (!formData.communityId) errors.communityId = required;
     if (!formData.country) errors.country = required;
     if (!formData.city) errors.city = required;
     if (!formData.trackId) errors.trackId = required;
     if (!formData.eventDate) errors.eventDate = required;
     if (!formData.eventTime) errors.eventTime = required;
     if (!formData.endTime) errors.endTime = required;
-    if (!(Number(formData.maxParticipants) > 0)) errors.maxParticipants = required;
     return errors;
   };
 
@@ -1092,7 +1090,7 @@ export function EventEdit({ role }: EventEditProps) {
                     value={formData.maxParticipants}
                     onChange={(e) => setFormData({ ...formData, maxParticipants: parseInt(e.target.value) || 0 })}
                     placeholder="100"
-                    min="1"
+                    min="0"
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                   />
                   <FieldError message={formErrors.maxParticipants} />
@@ -1644,7 +1642,7 @@ export function EventEdit({ role }: EventEditProps) {
                 <input
                   type="number"
                   value={formData.maxParticipants}
-                  onChange={(e) => setFormData({ ...formData, maxParticipants: parseInt(e.target.value) || 500 })}
+                  onChange={(e) => setFormData({ ...formData, maxParticipants: parseInt(e.target.value) || 0 })}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#C12D32]"
                 />
                 <FieldError message={formErrors.maxParticipants} />

@@ -385,13 +385,13 @@ const formatTimeInput = (raw: string): string => {
             <span className="text-sm" style={{ color: '#666' }}>{t('events.detail.registered')}</span>
           </div>
           <p className="text-2xl" style={{ color: '#333' }}>
-            {event.currentParticipants} / {event.maxParticipants}
+            {event.currentParticipants}{event.maxParticipants > 0 ? ` / ${event.maxParticipants}` : ''}
           </p>
           <div className="mt-2 h-2 rounded-full bg-gray-200 overflow-hidden">
             <div
               className="h-full rounded-full"
               style={{
-                width: `${(event.currentParticipants / event.maxParticipants) * 100}%`,
+                width: event.maxParticipants > 0 ? `${(event.currentParticipants / event.maxParticipants) * 100}%` : '0%',
                 backgroundColor: '#C12D32'
               }}
             />

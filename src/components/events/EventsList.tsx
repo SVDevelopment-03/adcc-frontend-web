@@ -554,7 +554,7 @@ export function EventsList({ role }: EventsListProps) {
                           <div className="flex items-center gap-1">
                             <Users className="w-4 h-4" style={{ color: '#999' }} />
                             <span className="text-sm" style={{ color: '#666' }}>
-                              {event.currentParticipants} / {event.maxParticipants}
+                              {event.currentParticipants}{event.maxParticipants > 0 ? ` / ${event.maxParticipants}` : ''}
                             </span>
                           </div>
                           <div className="flex items-center gap-1">
