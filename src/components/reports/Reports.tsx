@@ -90,6 +90,8 @@ export function Reports({ role }: ReportsProps) {
             from: defaultRange.from,
             to: defaultRange.to,
             groupBy: 'month',
+            // Every published event by its date, not only ones marked completed
+            scope: 'all',
           },
         });
 

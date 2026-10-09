@@ -5,7 +5,7 @@ import { UserRole } from '../../App';
 import { Plus, Search, Calendar, Users, MapPin, Star, Edit, Eye, UserCheck, Trophy, Ban, Archive, ChevronLeft, ChevronRight, Trash2, RotateCcw } from 'lucide-react';
 import { availableCities } from '../../data/eventsData';
 import { getAllEvents, deleteEvent as deleteEventApi, disableEvent as disableEventApi, restoreEvent as restoreEventApi, permanentlyDeleteEvent as permanentlyDeleteEventApi, EventApiResponse } from '../../services/eventsApi';
-import { useEventCategories } from '../../hooks/useLookups';
+import { useEventCategories, useEventOrganizers } from '../../hooks/useLookups';
 import { toast } from 'sonner';
 import { CardSkeleton } from '../ui/skeleton';
 import { getAllTracks, deleteTrack } from '../../services/trackService';
@@ -24,6 +24,7 @@ export function EventsList({ role }: EventsListProps) {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { options: categoryOptions, resolveLabel: resolveCategoryLabel } = useEventCategories();
+  const { options: organizerOptions } = useEventOrganizers();
 
   const [events, setEvents] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -52,6 +53,7 @@ export function EventsList({ role }: EventsListProps) {
   const [communityFilter, setCommunityFilter] = useState('');
   const [trackFilter, setTrackFilter] = useState('');
   const [featuredFilter, setFeaturedFilter] = useState('');
+  const [organizerFilter, setOrganizerFilter] = useState('');
 
   // DEMO ONLY: temporary state for rating display - remove when real rating from API is available
   // DEMO ONLY: temporary state for track - remove when event.track or API is available
@@ -128,7 +130,7 @@ export function EventsList({ role }: EventsListProps) {
   // Reset to page 1 when any filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, cityFilter, communityFilter, trackFilter, categoryFilter, featuredFilter]);
+  }, [searchTerm, cityFilter, communityFilter, trackFilter, categoryFilter, featuredFilter, organizerFilter]);
 
   const filteredEvents = useMemo(() => {
     // Events whose date has passed (or that are completed) go to the end
@@ -157,9 +159,12 @@ export function EventsList({ role }: EventsListProps) {
         (featuredFilter === 'yes' && event.isFeatured) ||
         (featuredFilter === 'no' && !event.isFeatured);
 
-      return matchesSearch && matchesCity && matchesCommunity && matchesTrack && matchesCategory && matchesFeatured;
+      const matchesOrganizer =
+        !organizerFilter || (event.organizedBy || '') === organizerFilter;
+
+      return matchesSearch && matchesCity && matchesCommunity && matchesTrack && matchesCategory && matchesFeatured && matchesOrganizer;
     });
-  }, [events, searchTerm, cityFilter, communityFilter, trackFilter, categoryFilter, featuredFilter]);
+  }, [events, searchTerm, cityFilter, communityFilter, trackFilter, categoryFilter, featuredFilter, organizerFilter]);
 
   const trackStats = useMemo(() => {
     const stats: Record<string, { eventsCount: number; communitiesCount: number }> = {};
@@ -440,6 +445,20 @@ export function EventsList({ role }: EventsListProps) {
             </select>
           </div>
 
+          <div>
+            <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.filters.organizedBy', 'Organised by')}</label>
+            <select
+              value={organizerFilter}
+              onChange={(e) => setOrganizerFilter(e.target.value)}
+              className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
+            >
+              <option value="">{t('events.filters.allOrganizers', 'All Organisers')}</option>
+              {organizerOptions.map(({ value, label }) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </div>
+
           <div className="flex items-end">
             <button
               onClick={() => {
@@ -450,6 +469,7 @@ export function EventsList({ role }: EventsListProps) {
                 setTrackFilter('');
                 setStatusFilter('');
                 setFeaturedFilter('');
+                setOrganizerFilter('');
               }}
               className="w-full px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
               style={{ color: '#666' }}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Edit, Users, CheckCircle, Calendar, TrendingUp, Award, Trophy, Bell, Send } from 'lucide-react';
-import { getChallengeById, getChallengeParticipants, ChallengeParticipant } from '../../services/challengesApi';
+import { getChallengeById, getChallengeParticipants, updateChallengeParticipantProgress, ChallengeParticipant } from '../../services/challengesApi';
 import { sendTestBroadcastPush } from '../../services/authApi';
 import { toast } from 'sonner';
 import { UserRole } from '../../App';
@@ -27,11 +27,49 @@ export function ChallengeDetail({ role }: ChallengeDetailProps) {
   const [notifResult, setNotifResult] = useState<{ ok: boolean; message: string } | null>(null);
   const [challengeParticipants, setChallengeParticipants] = useState<ChallengeParticipant[]>([]);
   const [participantsLoaded, setParticipantsLoaded] = useState(false);
+  const [progressEdits, setProgressEdits] = useState<Record<string, string>>({});
+  const [savingProgressFor, setSavingProgressFor] = useState<string | null>(null);
+
+  const handleSaveProgress = async (participant: ChallengeParticipant) => {
+    const raw = progressEdits[participant.userId];
+    if (!challengeId || raw === undefined) return;
+    const value = Number(raw);
+    if (raw.trim() === '' || Number.isNaN(value) || value < 0) {
+      toast.error('Enter a number of 0 or more');
+      return;
+    }
+    setSavingProgressFor(participant.userId);
+    try {
+      const saved = await updateChallengeParticipantProgress(challengeId, participant.userId, value);
+      setChallengeParticipants((prev) =>
+        prev.map((p) =>
+          p.userId === participant.userId
+            ? { ...p, progressValue: saved.progressValue, progressPercent: saved.progressPercent }
+            : p
+        )
+      );
+      setProgressEdits((prev) => {
+        const next = { ...prev };
+        delete next[participant.userId];
+        return next;
+      });
+      toast.success('Progress saved');
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Failed to save progress');
+    } finally {
+      setSavingProgressFor(null);
+    }
+  };
+
+  // Ranked by progress, highest first; riders with no progress yet are left out
+  const leaderboardRows = [...challengeParticipants]
+    .filter((p) => (p.progressValue ?? 0) > 0 || p.progressPercent > 0)
+    .sort((a, b) => (b.progressValue ?? 0) - (a.progressValue ?? 0) || b.progressPercent - a.progressPercent);
 
   const canEdit = true;
 
   useEffect(() => {
-    if ((activeTab === 'participants' || activeTab === 'notifications') && challengeId && !participantsLoaded) {
+    if ((activeTab === 'participants' || activeTab === 'leaderboard' || activeTab === 'notifications') && challengeId && !participantsLoaded) {
       getChallengeParticipants(challengeId)
         .then(data => { setChallengeParticipants(data); setParticipantsLoaded(true); })
         .catch(() => setParticipantsLoaded(true));
@@ -336,6 +374,9 @@ export function ChallengeDetail({ role }: ChallengeDetailProps) {
                     <th className="text-left px-4 py-3 text-sm font-medium" style={{ color: '#666' }}>Name</th>
                     <th className="text-left px-4 py-3 text-sm font-medium" style={{ color: '#666' }}>Email</th>
                     <th className="text-left px-4 py-3 text-sm font-medium" style={{ color: '#666' }}>Progress</th>
+                    <th className="text-left px-4 py-3 text-sm font-medium" style={{ color: '#666' }}>
+                      Record progress{challenge?.unit ? ` (${challenge.unit})` : ''}
+                    </th>
                     <th className="text-left px-4 py-3 text-sm font-medium" style={{ color: '#666' }}>Joined</th>
                   </tr>
                 </thead>
@@ -365,8 +406,29 @@ export function ChallengeDetail({ role }: ChallengeDetailProps) {
                           </span>
                         </div>
                       </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            min={0}
+                            value={progressEdits[p.userId] ?? String(p.progressValue ?? 0)}
+                            onChange={(e) => setProgressEdits((prev) => ({ ...prev, [p.userId]: e.target.value }))}
+                            className="w-24 px-2 py-1 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-red-600"
+                            aria-label={`Progress for ${p.fullName || p.email}`}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => void handleSaveProgress(p)}
+                            disabled={progressEdits[p.userId] === undefined || savingProgressFor === p.userId}
+                            className="px-3 py-1 rounded-lg text-xs text-white disabled:opacity-40"
+                            style={{ backgroundColor: '#C12D32' }}
+                          >
+                            {savingProgressFor === p.userId ? 'Saving...' : 'Save'}
+                          </button>
+                        </div>
+                      </td>
                       <td className="px-4 py-3 text-sm" style={{ color: '#999' }}>
-                        {p.joinedAt ? new Date(p.joinedAt).toLocaleDateString() : '—'}
+                        {p.joinedAt ? new Date(p.joinedAt).toLocaleDateString('en-GB') : '—'}
                       </td>
                     </tr>
                   ))}
@@ -378,12 +440,45 @@ export function ChallengeDetail({ role }: ChallengeDetailProps) {
       )}
 
       {activeTab === 'leaderboard' && (
-        <div className="p-6 rounded-2xl shadow-sm bg-white">
-          <div className="text-center py-12">
-            <Trophy className="w-12 h-12 mx-auto mb-3" style={{ color: '#ECC180' }} />
-            <h3 className="text-lg mb-1" style={{ color: '#333' }}>{t('challenges.noLeaderboard')}</h3>
-            <p className="text-sm" style={{ color: '#999' }}>{t('challenges.leaderboardHint')}</p>
-          </div>
+        <div className="rounded-2xl shadow-sm bg-white overflow-hidden">
+          {!participantsLoaded ? (
+            <div className="flex items-center justify-center py-16">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: '#C12D32' }} />
+            </div>
+          ) : leaderboardRows.length === 0 ? (
+            <div className="text-center py-12 px-6">
+              <Trophy className="w-12 h-12 mx-auto mb-3" style={{ color: '#ECC180' }} />
+              <h3 className="text-lg mb-1" style={{ color: '#333' }}>{t('challenges.noLeaderboard')}</h3>
+              <p className="text-sm" style={{ color: '#999' }}>
+                Record each rider's progress in the Participants tab and the ranking appears here.
+              </p>
+            </div>
+          ) : (
+            <table className="w-full">
+              <thead>
+                <tr style={{ backgroundColor: '#FFF9EF' }}>
+                  <th className="text-left px-6 py-3 text-sm font-medium" style={{ color: '#666' }}>Rank</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium" style={{ color: '#666' }}>Rider</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium" style={{ color: '#666' }}>
+                    Progress{challenge?.unit ? ` (${challenge.unit})` : ''}
+                  </th>
+                  <th className="text-left px-4 py-3 text-sm font-medium" style={{ color: '#666' }}>Completion</th>
+                </tr>
+              </thead>
+              <tbody>
+                {leaderboardRows.map((p, idx) => (
+                  <tr key={p.userId} className="border-t border-gray-100">
+                    <td className="px-6 py-3 text-sm font-medium" style={{ color: idx < 3 ? '#C12D32' : '#666' }}>{idx + 1}</td>
+                    <td className="px-4 py-3 text-sm" style={{ color: '#333' }}>{p.fullName || p.email || '—'}</td>
+                    <td className="px-4 py-3 text-sm" style={{ color: '#333' }}>{p.progressValue ?? 0}</td>
+                    <td className="px-4 py-3 text-sm" style={{ color: p.progressPercent >= 100 ? '#10B981' : '#666' }}>
+                      {p.progressPercent}%
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       )}
 

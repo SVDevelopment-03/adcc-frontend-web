@@ -5,7 +5,7 @@ import {
   X, Activity, Users, Trophy, Award, CircleX,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { getAllUsers, updateUserVerified, User } from '../../services/usersApi';
+import { getAllUsers, getUserActivity, updateUserVerified, User, UserActivity } from '../../services/usersApi';
 import { UserAvatar } from '../ui/UserAvatar';
 
 const PAGE_SIZE = 10;
@@ -43,6 +43,48 @@ interface ProfileModalProps {
 function ProfileModal({ user, onClose, onSuspend }: ProfileModalProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'events' | 'communities' | 'challenges' | 'activity'>('overview');
   const tabs = ['overview', 'events', 'communities', 'challenges', 'activity'] as const;
+  const [activity, setActivity] = useState<UserActivity | null>(null);
+  const [activityLoading, setActivityLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setActivityLoading(true);
+    getUserActivity(user.id)
+      .then((data) => { if (!cancelled) setActivity(data); })
+      .catch(() => { if (!cancelled) setActivity(null); })
+      .finally(() => { if (!cancelled) setActivityLoading(false); });
+    return () => { cancelled = true; };
+  }, [user.id]);
+
+  const formatDate = (value?: string) => (value ? new Date(value).toLocaleDateString('en-GB') : '-');
+
+  // Rows for the non-overview tabs
+  const tabRows: Record<string, Array<{ key: string; title: string; subtitle: string; meta: string }>> = {
+    events: (activity?.events ?? []).map((e) => ({
+      key: e.id,
+      title: e.title,
+      subtitle: [e.city, e.eventDate ? `Event date ${formatDate(e.eventDate)}` : ''].filter(Boolean).join(' • '),
+      meta: `${e.status} • registered ${formatDate(e.registeredAt)}`,
+    })),
+    communities: (activity?.communities ?? []).map((c) => ({
+      key: c.id,
+      title: c.title,
+      subtitle: [c.city, c.role].filter(Boolean).join(' • '),
+      meta: `${c.status} • joined ${formatDate(c.joinedAt)}`,
+    })),
+    challenges: (activity?.challenges ?? []).map((c) => ({
+      key: c.id,
+      title: c.title,
+      subtitle: `${formatDate(c.startDate)} – ${formatDate(c.endDate)}`,
+      meta: `${c.status} • ${Math.round(c.progressPercent)}% complete`,
+    })),
+    activity: (activity?.activity ?? []).map((a, index) => ({
+      key: `${a.type}-${index}`,
+      title: a.title,
+      subtitle: a.detail,
+      meta: formatDate(a.date),
+    })),
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -77,9 +119,9 @@ function ProfileModal({ user, onClose, onSuspend }: ProfileModalProps) {
 
           <div className="grid grid-cols-4 gap-4">
             {[
-              { icon: <Calendar className="w-4 h-4" style={{ color: '#C12D32' }} />, label: 'Events', value: user.stats.totalEventsParticipated },
-              { icon: <Users className="w-4 h-4" style={{ color: '#3B82F6' }} />, label: 'Communities', value: 0 },
-              { icon: <Trophy className="w-4 h-4" style={{ color: '#F59E0B' }} />, label: 'Challenges', value: 0 },
+              { icon: <Calendar className="w-4 h-4" style={{ color: '#C12D32' }} />, label: 'Events', value: activity ? activity.events.length : user.stats.totalEventsParticipated },
+              { icon: <Users className="w-4 h-4" style={{ color: '#3B82F6' }} />, label: 'Communities', value: activity ? activity.communities.filter((c) => c.status === 'active').length : 0 },
+              { icon: <Trophy className="w-4 h-4" style={{ color: '#F59E0B' }} />, label: 'Challenges', value: activity ? activity.challenges.filter((c) => c.status === 'joined').length : 0 },
               { icon: <Activity className="w-4 h-4" style={{ color: '#10B981' }} />, label: 'Tracks', value: user.stats.completedCount },
             ].map((s) => (
               <div key={s.label} className="p-4 rounded-lg" style={{ backgroundColor: '#F9FAFB' }}>
@@ -162,9 +204,27 @@ function ProfileModal({ user, onClose, onSuspend }: ProfileModalProps) {
               </div>
             </div>
           )}
-          {activeTab !== 'overview' && (
+          {activeTab !== 'overview' && activityLoading && (
+            <div className="flex items-center justify-center h-32" style={{ color: '#999' }}>
+              Loading...
+            </div>
+          )}
+          {activeTab !== 'overview' && !activityLoading && tabRows[activeTab].length === 0 && (
             <div className="flex items-center justify-center h-32" style={{ color: '#999' }}>
               No data available yet.
+            </div>
+          )}
+          {activeTab !== 'overview' && !activityLoading && tabRows[activeTab].length > 0 && (
+            <div className="space-y-2">
+              {tabRows[activeTab].map((row) => (
+                <div key={row.key} className="flex items-center justify-between gap-4 p-3 rounded-lg border border-gray-100">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate" style={{ color: '#333' }}>{row.title}</p>
+                    {row.subtitle && <p className="text-xs truncate" style={{ color: '#666' }}>{row.subtitle}</p>}
+                  </div>
+                  <p className="text-xs whitespace-nowrap" style={{ color: '#999' }}>{row.meta}</p>
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -172,13 +232,6 @@ function ProfileModal({ user, onClose, onSuspend }: ProfileModalProps) {
         {/* Footer */}
         <div className="p-6 border-t border-gray-200">
           <div className="flex gap-3">
-            <button
-              className="flex-1 inline-flex items-center justify-center gap-2 h-9 px-4 rounded-md text-sm font-medium border border-gray-200 hover:bg-gray-50 transition-colors"
-              style={{ color: '#333' }}
-            >
-              <Award className="w-4 h-4" />
-              Assign Role
-            </button>
             <button
               onClick={() => onSuspend(user)}
               className="flex-1 inline-flex items-center justify-center gap-2 h-9 px-4 rounded-md text-sm font-medium transition-colors"

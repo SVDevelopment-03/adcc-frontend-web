@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Send, Users, Clock, Trash2, Plus, UploadCloud, Image as ImageIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { sendStaffWebPush, sendTestBroadcastPush } from '../../services/authApi';
+import { sendTestBroadcastPush } from '../../services/authApi';
 import { uploadToMediaLibrary } from '../../services/mediaApi';
 import { ALLOWED_IMAGE_ACCEPT, IMAGE_UPLOAD_HINT, validateImageFile } from '../../utils/imageValidation';
 import { getAllUsers, type User } from '../../services/usersApi';
@@ -128,6 +128,10 @@ export function PushNotifications() {
   const handleSend = async () => {
     
     if (isSending) return;
+    if (isUploading) {
+      toast.error('Wait for the image upload to finish');
+      return;
+    }
 
     const values = { title, message, scheduleDate, scheduleTime };
     const nextErrors = validateForm(values);
@@ -163,23 +167,35 @@ export function PushNotifications() {
       return;
     }
 
+    // The backend has no scheduler yet, so a scheduled send would go out immediately.
+    if (values.scheduleDate || values.scheduleTime) {
+      toast.error('Scheduling is not available yet. Clear the schedule to send now.');
+      return;
+    }
+
     // console.log('📤 Push payload:', nextPayload);
 
     setIsSending(true);
     setLastResponse('');
     setLastError('');
     try {
+      // A file that was chosen but not yet uploaded would otherwise be dropped silently.
+      if (selectedFile) {
+        const media = await uploadToMediaLibrary(selectedFile, 'galleries');
+        nextPayload.image = media.url;
+        setImageUrlInput(media.url);
+        setUploadedMediaName(media.name || selectedFile.name);
+        setUploadedMediaSize(media.size || selectedFile.size || null);
+        setUploadedFromUpload(true);
+        setSelectedFile(null);
+      }
+
+      // Every audience on this page targets app users, so always use the broadcast
+      // endpoint (it writes the in-app inbox entry and sends the device push).
       const shouldBroadcastAllDevices = audience === 'all_devices';
-      const needsBroadcast =
-        shouldBroadcastAllDevices ||
-        audience === 'selected_users' ||
-        nextPayload.deliveryType === 'email' ||
-        nextPayload.deliveryType === 'both';
-      const response = needsBroadcast
-        ? await sendTestBroadcastPush(
-            shouldBroadcastAllDevices ? { ...nextPayload, audienceType: 'all' } : nextPayload
-          )
-        : await sendStaffWebPush(nextPayload);
+      const response = await sendTestBroadcastPush(
+        shouldBroadcastAllDevices ? { ...nextPayload, audienceType: 'all' } : nextPayload
+      );
 
       setHistory((prev) => [
         {

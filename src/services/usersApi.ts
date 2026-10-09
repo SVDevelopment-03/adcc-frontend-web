@@ -140,3 +140,22 @@ export async function deleteUser(userId: string): Promise<void> {
 export async function updateUserPassword(userId: string, password: string): Promise<void> {
   await api.patch(`/v1/user/${userId}/password`, { password });
 }
+
+export interface UserActivity {
+  events: Array<{ id: string; eventId: string; title: string; eventDate?: string; city?: string | null; status: string; registeredAt?: string; rank?: number | null; pointsEarned?: number | null }>;
+  communities: Array<{ id: string; communityId: string; title: string; city?: string | null; role?: string; status: string; joinedAt?: string }>;
+  challenges: Array<{ id: string; challengeId: string; title: string; startDate?: string; endDate?: string; status: string; progressPercent: number; joinedAt?: string }>;
+  activity: Array<{ type: 'event' | 'community' | 'challenge'; title: string; detail: string; date?: string }>;
+}
+
+/** Everything a user has joined, for the profile modal tabs (admin only). */
+export const getUserActivity = async (userId: string): Promise<UserActivity> => {
+  const response = await api.get(`/v1/user/${userId}/activity`);
+  const data = response.data?.data ?? {};
+  return {
+    events: data.events ?? [],
+    communities: data.communities ?? [],
+    challenges: data.challenges ?? [],
+    activity: data.activity ?? [],
+  };
+};

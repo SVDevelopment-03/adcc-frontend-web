@@ -16,6 +16,7 @@ import {
   getAdminNotifications,
   getAdminUnreadNotificationCount,
   markAdminNotificationRead,
+  getAdminNotificationLink,
   markAllAdminNotificationsRead,
   type AdminNotification,
 } from '../services/adminNotificationsApi';
@@ -145,6 +146,11 @@ export function TopBarNotifications({ isRtl }: TopBarNotificationsProps) {
   };
 
   const handleItemClick = async (n: AdminNotification) => {
+    const link = getAdminNotificationLink(n);
+    if (link) {
+      setOpen(false);
+      navigate(link);
+    }
     if (n.read) return;
     try {
       await markAdminNotificationRead(n.id);

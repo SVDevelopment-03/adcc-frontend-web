@@ -3608,14 +3608,6 @@ function CyclingJourneySection() {
     const cardsEl = cardsRef.current;
     if (!cardsEl) return;
 
-    if (textRef.current) {
-      if (locale === "ar") {
-        textRef.current.textContent = journeyText;
-      } else {
-        scrambleText(textRef.current, journeyText);
-      }
-    }
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return;
@@ -3785,10 +3777,10 @@ function CyclingJourneySection() {
             {journeyText}
           </p>
           <AnimatedButton
-            onClick={() => navigate("/tracks")}
+            onClick={() => navigate("/contact-us")}
             className="journey-button"
           >
-            {t("public.home.journey.exploreRoutes")}
+            {t("public.common.getInTouch")}
           </AnimatedButton>
         </div>
       </div>

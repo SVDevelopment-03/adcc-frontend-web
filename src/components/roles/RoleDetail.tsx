@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { getPermissionDisplay } from '../../rbac/permissionLabels';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Calendar, CheckCircle, Edit, Shield, Users } from 'lucide-react';
 import { toast } from 'sonner';
@@ -329,8 +330,8 @@ export function RoleDetail() {
                         >
                           <CheckCircle className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: '#10B981' }} />
                           <div className="flex-1">
-                            <p className="text-sm font-medium" style={{ color: '#333' }}>{perm.name}</p>
-                            <p className="text-xs mt-1" style={{ color: '#666' }}>{perm.key}</p>
+                            <p className="text-sm font-medium" style={{ color: '#333' }}>{getPermissionDisplay(perm).title}</p>
+                            <p className="text-xs mt-1" style={{ color: '#666' }}>{getPermissionDisplay(perm).description}</p>
                           </div>
                         </div>
                       ))}

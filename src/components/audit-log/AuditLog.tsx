@@ -68,8 +68,54 @@ function humanize(value: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
+/** Plain names for the modules that are logged automatically as `<module>.<create|update|delete>`. */
+const MODULE_NAMES: Record<string, string> = {
+  'app-config': 'app settings',
+  'push-notifications': 'push notification',
+  'admin-notifications': 'dashboard notification',
+  challenges: 'challenge',
+  badges: 'badge',
+  news: 'news article',
+  lookups: 'dropdown option',
+  media: 'media file',
+  merchandise: 'merchandise item',
+  store: 'marketplace listing',
+  items: 'marketplace listing',
+  'feed-posts': 'feed post',
+  'community-posts': 'community post',
+  'community-rides': 'community ride',
+  settings: 'website content',
+  'app-banners': 'app banner',
+  'app-banners-ar': 'app banner (Arabic)',
+  'product-banners': 'store banner',
+  'product-banners-ar': 'store banner (Arabic)',
+  contact: 'contact message',
+  'newsletter-subscriptions': 'newsletter subscriber',
+  splash: 'splash screen',
+  rbac: 'role or permission',
+  user: 'user',
+};
+
+const VERB_LABELS: Record<string, string> = { create: 'Created', update: 'Updated', delete: 'Deleted' };
+
 function actionLabel(action: string): string {
-  return ACTION_LABELS[action] || humanize(action);
+  if (ACTION_LABELS[action]) return ACTION_LABELS[action];
+  if (action === 'push-notifications.create') return 'Sent push notification';
+  if (action === 'admin-notifications.update') return 'Marked notification as read';
+
+  // '<module>.<verb>' entries written by the automatic audit hook
+  const [moduleKey, verb] = action.split('.');
+  if (VERB_LABELS[verb] && action.split('.').length === 2) {
+    return `${VERB_LABELS[verb]} ${MODULE_NAMES[moduleKey] || humanize(moduleKey).toLowerCase()}`;
+  }
+  return humanize(action);
+}
+
+/** Database ids mean nothing to the reader; show the record's name or nothing. */
+function targetLabel(entry: AuditLogEntry): string {
+  if (entry.targetLabel) return entry.targetLabel;
+  const id = entry.targetId ? String(entry.targetId) : '';
+  return id && !/^[a-f0-9]{24}$/i.test(id) ? id : '—';
 }
 
 function formatDateTime(iso: string): string {
@@ -118,7 +164,8 @@ function detailLines(entry: AuditLogEntry): string[] {
   }
 
   for (const [key, value] of Object.entries(metadata)) {
-    if (['changes', 'from', 'to', 'method'].includes(key)) continue;
+    // `path` is the technical API route — not useful to the reader
+    if (['changes', 'from', 'to', 'method', 'path'].includes(key)) continue;
     if (Array.isArray(value) && value.length === 0) continue;
     lines.push(`${humanize(key)}: ${formatValue(value)}`);
   }
@@ -273,7 +320,7 @@ export function AuditLog() {
                       </span>
                     </td>
                     <td className="py-3 px-4 text-sm" style={{ color: '#333' }}>
-                      {entry.targetLabel || entry.targetId || '—'}
+                      {targetLabel(entry)}
                     </td>
                     <td className="py-3 px-4 text-xs" style={{ color: '#666', maxWidth: 360 }}>
                       {details.length === 0 ? (

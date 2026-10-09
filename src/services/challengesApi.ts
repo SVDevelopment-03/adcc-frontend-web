@@ -259,9 +259,21 @@ export interface ChallengeParticipant {
   userId: string;
   fullName: string;
   email: string;
+  /** Raw amount achieved, in the challenge's unit (km, rides...). */
+  progressValue?: number;
   progressPercent: number;
   joinedAt: string;
 }
+
+/** Staff records a participant's progress; the backend derives the percentage from the target. */
+export const updateChallengeParticipantProgress = async (
+  challengeId: string,
+  userId: string,
+  progress: number
+): Promise<{ progressValue: number; progressPercent: number }> => {
+  const res = await api.patch(`/v1/challenges/${challengeId}/participants/${userId}/progress`, { progress });
+  return res.data?.data;
+};
 
 /** Get all joined participants for a challenge */
 export const getChallengeParticipants = async (id: string): Promise<ChallengeParticipant[]> => {

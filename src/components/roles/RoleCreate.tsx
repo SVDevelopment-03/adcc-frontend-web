@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { getPermissionDisplay } from '../../rbac/permissionLabels';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, CheckSquare, Shield, Square } from 'lucide-react';
 import { toast } from 'sonner';
@@ -296,8 +297,8 @@ export function RoleCreate() {
                             )}
                           </div>
                           <div className="min-w-0">
-                            <div className="text-sm font-medium" style={{ color: '#333' }}>{perm.name}</div>
-                            <div className="text-xs mt-1 truncate" style={{ color: '#999' }}>{perm.key}</div>
+                            <div className="text-sm font-medium" style={{ color: '#333' }}>{getPermissionDisplay(perm).title}</div>
+                            <div className="text-xs mt-1" style={{ color: '#999' }}>{getPermissionDisplay(perm).description}</div>
                           </div>
                         </button>
                       );

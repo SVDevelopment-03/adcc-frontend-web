@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { getPermissionDisplay } from '../../rbac/permissionLabels';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, AlertTriangle, Shield, CheckSquare, Square } from 'lucide-react';
@@ -362,8 +363,8 @@ export function RoleEdit() {
                               )}
                             </div>
                             <div className="min-w-0">
-                              <div className="text-sm font-medium" style={{ color: '#333' }}>{perm.name}</div>
-                              <div className="text-xs mt-1 truncate" style={{ color: '#999' }}>{perm.key}</div>
+                              <div className="text-sm font-medium" style={{ color: '#333' }}>{getPermissionDisplay(perm).title}</div>
+                              <div className="text-xs mt-1" style={{ color: '#999' }}>{getPermissionDisplay(perm).description}</div>
                             </div>
                           </button>
                         );

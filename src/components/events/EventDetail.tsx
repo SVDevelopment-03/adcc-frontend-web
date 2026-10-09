@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Edit, Bell, ImageIcon, Trophy, UserCheck, Users, Star, Calendar, MapPin, Clock, Award, Upload, Trash2, Plus, Send } from 'lucide-react';
 import { toast } from 'sonner';
+import readXlsxFile from 'read-excel-file';
 import { addEventGalleryImages, deleteEventGalleryImage, getEventByIdAdmin as getEventById, updateEvent as updateEventApi, EventApiResponse, getEventResults, adminUpdateParticipantResult } from '../../services/eventsApi';
 import { getAllCommunities } from '../../services/communitiesApi';
 import { sendTestBroadcastPush } from '../../services/authApi';
@@ -45,6 +46,7 @@ export function EventDetail() {
   const [showAddResult, setShowAddResult] = useState(false);
   const [addForm, setAddForm] = useState({ participantId: '', communityId: '', time: '', rank: '', points: '' });
   const [addingSaving, setAddingSaving] = useState(false);
+  const [importingResults, setImportingResults] = useState(false);
 
   useEffect(() => {
     loadEvent();
@@ -94,6 +96,8 @@ const formatTimeInput = (raw: string): string => {
     id: p._id || p.id,
     userId: p.user?._id || p.userId,
     userName: p.user?.fullName || p.userName || '-',
+    userEmail: p.user?.email || '',
+    participantCode: String(p.participantCode || p.registrationCode || ''),
     userCommunity: p.community?.title || p.userCommunity || '-',
     communityId: p.community?._id || p.community?.id || '',
     status: normalizeStatus(p.status),
@@ -120,6 +124,121 @@ const formatTimeInput = (raw: string): string => {
     } catch (error: any) {
       toast.error(error?.response?.data?.message || 'Failed to save result');
       setResultEdits(prev => ({ ...prev, [participant.id]: { ...prev[participant.id], saving: false } }));
+    }
+  };
+
+  // ---- Bulk results upload (.xlsx or .csv) ----
+  const RESULT_TEMPLATE_HEADERS = ['Participant ID', 'Name', 'Email', 'Rank', 'Time (HH:MM:SS)', 'Points'];
+
+  const downloadResultsTemplate = () => {
+    const escape = (value: string) => `"${value.replace(/"/g, '""')}"`;
+    const rows = [
+      RESULT_TEMPLATE_HEADERS,
+      ...normalizedParticipants.map((p) => [p.participantCode, p.userName, p.userEmail, p.rank ?? '', p.time ?? '', p.points ?? '']),
+    ];
+    const csv = rows.map((row) => row.map((cell) => escape(String(cell ?? ''))).join(',')).join('\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `results-template-${eventId}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const parseCsv = (text: string): string[][] =>
+    text
+      .split(/\r?\n/)
+      .filter((line) => line.trim().length > 0)
+      .map((line) => {
+        const cells: string[] = [];
+        let current = '';
+        let quoted = false;
+        for (let i = 0; i < line.length; i += 1) {
+          const ch = line[i];
+          if (quoted) {
+            if (ch === '"' && line[i + 1] === '"') { current += '"'; i += 1; }
+            else if (ch === '"') quoted = false;
+            else current += ch;
+          } else if (ch === '"') quoted = true;
+          else if (ch === ',') { cells.push(current); current = ''; }
+          else current += ch;
+        }
+        cells.push(current);
+        return cells.map((cell) => cell.trim());
+      });
+
+  const handleResultsFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file || !eventId) return;
+
+    setImportingResults(true);
+    try {
+      const isCsv = file.name.toLowerCase().endsWith('.csv');
+      const rawRows: unknown[][] = isCsv ? parseCsv(await file.text()) : ((await readXlsxFile(file)) as unknown[][]);
+      if (rawRows.length < 2) {
+        toast.error('The file has no result rows');
+        return;
+      }
+
+      const headers = rawRows[0].map((h) => String(h ?? '').trim().toLowerCase());
+      const col = (...names: string[]) => headers.findIndex((h) => names.some((n) => h.startsWith(n)));
+      const idCol = col('participant id', 'participant code', 'id');
+      const emailCol = col('email');
+      const nameCol = col('name', 'rider');
+      const rankCol = col('rank', 'position');
+      const timeCol = col('time');
+      const pointsCol = col('points', 'pts');
+      if (idCol < 0 && emailCol < 0 && nameCol < 0) {
+        toast.error('Add a "Participant ID", "Email" or "Name" column so rows can be matched');
+        return;
+      }
+
+      const cell = (row: unknown[], index: number) => (index >= 0 ? String(row[index] ?? '').trim() : '');
+      const toNumber = (value: string) => (value === '' || Number.isNaN(Number(value)) ? null : Number(value));
+
+      let saved = 0;
+      const skipped: string[] = [];
+      for (let i = 1; i < rawRows.length; i += 1) {
+        const row = rawRows[i];
+        const code = cell(row, idCol);
+        const email = cell(row, emailCol).toLowerCase();
+        const name = cell(row, nameCol).toLowerCase();
+        const target =
+          (code && normalizedParticipants.find((p) => p.participantCode === code)) ||
+          (email && normalizedParticipants.find((p) => p.userEmail.toLowerCase() === email)) ||
+          (name && normalizedParticipants.find((p) => p.userName.toLowerCase() === name)) ||
+          null;
+        const rank = toNumber(cell(row, rankCol));
+        const time = cell(row, timeCol);
+        const points = toNumber(cell(row, pointsCol));
+
+        if (!target?.userId) { skipped.push(`row ${i + 1}: participant not found`); continue; }
+        if (rank === null && !time && points === null) continue; // nothing to save for this rider
+
+        try {
+          // eslint-disable-next-line no-await-in-loop
+          await adminUpdateParticipantResult(eventId, target.userId, {
+            ...(rank !== null ? { rank } : {}),
+            ...(time ? { time } : {}),
+            ...(points !== null ? { points } : {}),
+          });
+          saved += 1;
+        } catch (error: any) {
+          skipped.push(`row ${i + 1}: ${error?.response?.data?.message || 'save failed'}`);
+        }
+      }
+
+      await loadEvent();
+      if (saved > 0) toast.success(`${saved} result(s) imported`);
+      if (skipped.length > 0) {
+        toast.error(`${skipped.length} row(s) skipped — ${skipped.slice(0, 3).join('; ')}${skipped.length > 3 ? '…' : ''}`);
+      }
+      if (saved === 0 && skipped.length === 0) toast.error('No results found in the file');
+    } catch {
+      toast.error('Could not read the file. Use the template (.xlsx or .csv).');
+    } finally {
+      setImportingResults(false);
     }
   };
 
@@ -791,14 +910,38 @@ const formatTimeInput = (raw: string): string => {
               <Trophy className="w-5 h-5" style={{ color: '#C12D32' }} />
               <h3 className="text-lg" style={{ color: '#333' }}>Add Result Entry</h3>
             </div>
-            <button
-              onClick={() => setShowAddResult(v => !v)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all hover:shadow-md"
-              style={{ backgroundColor: showAddResult ? '#F3F4F6' : '#C12D32', color: showAddResult ? '#666' : '#fff' }}
-            >
-              <Plus className="w-4 h-4" />
-              {showAddResult ? 'Cancel' : 'Add Result'}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={downloadResultsTemplate}
+                className="px-4 py-2 rounded-lg text-sm border border-gray-200 hover:bg-gray-50"
+                style={{ color: '#666' }}
+              >
+                Download template
+              </button>
+              <label
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm border border-gray-200 hover:bg-gray-50 cursor-pointer"
+                style={{ color: '#333', opacity: importingResults ? 0.6 : 1 }}
+              >
+                <Upload className="w-4 h-4" />
+                {importingResults ? 'Importing...' : 'Upload Excel'}
+                <input
+                  type="file"
+                  accept=".xlsx,.csv"
+                  className="sr-only"
+                  disabled={importingResults}
+                  onChange={handleResultsFile}
+                />
+              </label>
+              <button
+                onClick={() => setShowAddResult(v => !v)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all hover:shadow-md"
+                style={{ backgroundColor: showAddResult ? '#F3F4F6' : '#C12D32', color: showAddResult ? '#666' : '#fff' }}
+              >
+                <Plus className="w-4 h-4" />
+                {showAddResult ? 'Cancel' : 'Add Result'}
+              </button>
+            </div>
           </div>
 
           {/* Add Result Form */}

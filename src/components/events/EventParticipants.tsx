@@ -44,7 +44,9 @@ export function EventParticipants({ role }: EventParticipantsProps) {
       status: normalizeStatus(p.status),
       registeredAt: p.createdAt || p.registeredAt || null,
       checkedInAt: p.checkedInAt || null,
-    }));
+    }))
+    // Latest registrations first
+    .sort((a, b) => new Date(b.registeredAt || 0).getTime() - new Date(a.registeredAt || 0).getTime());
 
   const fetchParticipants = useCallback(async (silent = false) => {
     if (!eventId || eventId === 'undefined') { setIsLoading(false); return; }
@@ -326,10 +328,10 @@ export function EventParticipants({ role }: EventParticipantsProps) {
                     </span>
                   </td>
                   <td className="py-3 px-4 text-sm" style={{ color: '#666' }}>
-                    {participant.registeredAt ? new Date(participant.registeredAt).toLocaleDateString() : '-'}
+                    {participant.registeredAt ? new Date(participant.registeredAt).toLocaleDateString('en-GB') : '-'}
                   </td>
                   <td className="py-3 px-4 text-sm" style={{ color: '#666' }}>
-                    {participant.checkedInAt ? new Date(participant.checkedInAt).toLocaleString() : '-'}
+                    {participant.checkedInAt ? new Date(participant.checkedInAt).toLocaleString('en-GB') : '-'}
                   </td>
 
                   {/* Actions — always visible, disabled when already in that state */}

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Bell, Calendar, CheckCircle, Trophy, Users } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { toast } from 'sonner';
@@ -8,6 +9,7 @@ import {
   getAdminNotifications,
   getAdminUnreadNotificationCount,
   markAdminNotificationRead,
+  getAdminNotificationLink,
   markAllAdminNotificationsRead,
   type AdminNotification,
 } from '../../services/adminNotificationsApi';
@@ -65,6 +67,8 @@ export function AdminNotificationsPage() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [markingAll, setMarkingAll] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -103,6 +107,7 @@ export function AdminNotificationsPage() {
   };
 
   const handleItemClick = async (n: AdminNotification) => {
+    setExpandedId((current) => (current === n.id ? null : n.id));
     if (n.read) return;
     try {
       await markAdminNotificationRead(n.id);
@@ -150,12 +155,25 @@ export function AdminNotificationsPage() {
         {!loading &&
           items.map((n) => {
             const { Icon, bg, color } = iconForNotification(n.type);
+            const link = getAdminNotificationLink(n);
+            const isExpanded = expandedId === n.id;
+            const meta = n.metadata || {};
+            const detailRows = [
+              ['Date', n.createdAt ? new Date(n.createdAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }) : ''],
+              ['Member', String(meta.participantName ?? meta.memberName ?? '')],
+              ['Event', String(meta.eventTitle ?? '')],
+              ['Community', String(meta.communityTitle ?? '')],
+              ['Challenge', String(meta.challengeTitle ?? '')],
+              ['Reason', String(meta.reason ?? '')],
+              ['Feedback', String(meta.feedback ?? '')],
+            ].filter(([, value]) => value);
             return (
+              <div key={n.id} className="border-b border-amber-50/50 last:border-0">
               <button
-                key={n.id}
                 type="button"
                 onClick={() => void handleItemClick(n)}
-                className={`w-full text-left px-4 py-4 flex gap-3 border-b border-amber-50/50 last:border-0 transition-colors hover:bg-white/60 ${
+                aria-expanded={isExpanded}
+                className={`w-full text-left px-4 py-4 flex gap-3 transition-colors hover:bg-white/60 ${
                   n.read ? 'bg-white' : ''
                 } ${isRtl ? 'flex-row-reverse text-right' : ''}`}
                 style={!n.read ? { backgroundColor: 'rgba(236, 193, 128, 0.25)' } : undefined}
@@ -187,6 +205,29 @@ export function AdminNotificationsPage() {
                   />
                 )}
               </button>
+              {isExpanded && (
+                <div className={`px-4 pb-4 bg-white ${isRtl ? 'pr-[68px] text-right' : 'pl-[68px]'}`}>
+                  <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1 text-sm">
+                    {detailRows.map(([label, value]) => (
+                      <React.Fragment key={label}>
+                        <dt style={{ color: '#999' }}>{label}</dt>
+                        <dd style={{ color: '#333' }}>{value}</dd>
+                      </React.Fragment>
+                    ))}
+                  </dl>
+                  {link && (
+                    <button
+                      type="button"
+                      onClick={() => navigate(link)}
+                      className="mt-3 text-sm font-medium px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50"
+                      style={{ color: '#C12D32' }}
+                    >
+                      Open details
+                    </button>
+                  )}
+                </div>
+              )}
+              </div>
             );
           })}
       </div>

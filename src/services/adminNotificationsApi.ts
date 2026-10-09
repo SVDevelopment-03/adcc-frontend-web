@@ -9,6 +9,22 @@ export interface AdminNotification {
   createdAt: string;
   /** Backend hint for icon styling (e.g. event, challenge, community, system). */
   type: string;
+  /** Ids and extra context (reason, member name...) attached by the backend. */
+  metadata: Record<string, unknown>;
+}
+
+/** Dashboard page that shows what a notification is about, if any. */
+export function getAdminNotificationLink(n: AdminNotification): string | null {
+  const m = n.metadata || {};
+  const id = (key: string) => (typeof m[key] === 'string' && m[key] ? String(m[key]) : '');
+  if (id('eventId')) {
+    return n.type === 'event' ? `/events/${id('eventId')}/event-participants` : `/events/${id('eventId')}`;
+  }
+  if (id('communityId')) return `/communities/${id('communityId')}`;
+  if (id('challengeId')) return `/challenges/${id('challengeId')}`;
+  if (id('feedPostId')) return '/feed';
+  if (id('storeItemId')) return '/marketplace';
+  return null;
 }
 
 interface ApiErrorResponse {
@@ -66,7 +82,11 @@ function normalizeNotification(raw: Record<string, unknown>): AdminNotification 
       String(raw.readAt).length > 0);
   const createdAt = String(raw.createdAt ?? raw.created_at ?? raw.updatedAt ?? '');
   const type = String(raw.type ?? raw.category ?? raw.kind ?? '').toLowerCase();
-  return { id, title, description, read, createdAt, type };
+  const metadata =
+    raw.metadata && typeof raw.metadata === 'object'
+      ? (raw.metadata as Record<string, unknown>)
+      : {};
+  return { id, title, description, read, createdAt, type, metadata };
 }
 
 function extractUnreadCount(payload: unknown): number {
