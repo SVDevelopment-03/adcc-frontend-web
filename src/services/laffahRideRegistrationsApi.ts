@@ -95,6 +95,8 @@ export interface LaffahRideRegistrationInput {
   gender: LaffahRideGender;
   nationality: string;
   city: string;
+  emergencyContactName: string;
+  emergencyContactNumber: string;
   raceLocations: LaffahRideLocation[];
 }
 

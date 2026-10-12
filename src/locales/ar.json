@@ -1816,6 +1816,7 @@
       "gender": "الجنس",
       "nationality": "الجنسية",
       "city": "المنطقة/المدينة",
+      "emergencyContact": "جهة اتصال الطوارئ",
       "raceLocations": "مواقع السباق",
       "submittedOn": "تاريخ الإرسال"
     },

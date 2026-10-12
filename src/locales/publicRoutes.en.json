@@ -542,7 +542,7 @@
     },
     "intro": {
       "title": "Register for Laffah Ride",
-      "body": "Fill in your details and choose where you would like to join the race."
+      "body": "Fill in your details and choose where you would like to join the ride."
     },
     "locations": {
       "Al Dhafra": { "name": "Al Dhafra Oasis Parking", "date": "29 October", "time": "4:30 PM" },
@@ -563,6 +563,10 @@
       "gender": "Gender",
       "nationality": "Nationality",
       "city": "Region/City",
+      "emergencyContact": "Emergency Contact",
+      "emergencyContactName": "Name",
+      "emergencyContactNumber": "Mobile Number",
+      "emergencyContactNamePlaceholder": "Emergency contact's name",
       "raceLocations": "Where do you want to join the race?",
       "raceLocationsHint": "You can select more than one location.",
       "firstNamePlaceholder": "Your first name",
@@ -593,6 +597,8 @@
         "genderRequired": "Gender is required.",
         "nationalityRequired": "Nationality is required.",
         "cityRequired": "Region/City is required.",
+        "emergencyNameRequired": "Emergency contact name is required.",
+        "emergencyNumberRequired": "Emergency contact mobile number is required.",
         "raceLocationsRequired": "Select at least one race location."
       }
     }

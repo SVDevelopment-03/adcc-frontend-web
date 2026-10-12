@@ -25,6 +25,9 @@ interface FormValues {
   gender: LaffahRideGender | "";
   nationality: string;
   city: string;
+  emergencyContactName: string;
+  emergencyCountryCode: string;
+  emergencyContactNumber: string;
   raceLocations: LaffahRideLocation[];
 }
 
@@ -40,6 +43,9 @@ const INITIAL: FormValues = {
   gender: "",
   nationality: "",
   city: "",
+  emergencyContactName: "",
+  emergencyCountryCode: DEFAULT_COUNTRY_CODE.dialCode,
+  emergencyContactNumber: "",
   raceLocations: [],
 };
 
@@ -104,6 +110,14 @@ export default function LaffahRideRegistrationPage() {
     if (!vals.gender) e.gender = tf("errors.genderRequired");
     if (!vals.nationality.trim()) e.nationality = tf("errors.nationalityRequired");
     if (!vals.city.trim()) e.city = tf("errors.cityRequired");
+    if (!vals.emergencyContactName.trim()) {
+      e.emergencyContactName = tf("errors.emergencyNameRequired");
+    }
+    if (!vals.emergencyContactNumber.trim()) {
+      e.emergencyContactNumber = tf("errors.emergencyNumberRequired");
+    } else if (!PHONE_RE.test(vals.emergencyContactNumber.trim())) {
+      e.emergencyContactNumber = tf("errors.mobileInvalid");
+    }
     if (vals.raceLocations.length === 0) e.raceLocations = tf("errors.raceLocationsRequired");
     return e;
   }
@@ -150,6 +164,10 @@ export default function LaffahRideRegistrationPage() {
         gender: values.gender as LaffahRideGender,
         nationality: values.nationality.trim(),
         city: values.city.trim(),
+        emergencyContactName: values.emergencyContactName.trim(),
+        emergencyContactNumber: `${values.emergencyCountryCode} ${values.emergencyContactNumber
+          .trim()
+          .replace(/^0+/, "")}`,
         raceLocations: values.raceLocations,
       });
       toast.success(tf("successMessage"));
@@ -333,6 +351,57 @@ export default function LaffahRideRegistrationPage() {
                   ))}
                 </select>
                 {errors.city && <p className="mt-1 text-[12px] text-red-500">{errors.city}</p>}
+              </label>
+
+              <h4 className="mt-2 text-[16px] font-bold md:col-span-2">{tf("emergencyContact")}</h4>
+
+              <label className="block">
+                <span className="text-[14px]">{tf("emergencyContactName")}</span>
+                <input
+                  name="emergencyContactName"
+                  value={values.emergencyContactName}
+                  onChange={handleChange}
+                  placeholder={tf("emergencyContactNamePlaceholder")}
+                  className={inputClass(errors.emergencyContactName)}
+                />
+                {errors.emergencyContactName && (
+                  <p className="mt-1 text-[12px] text-red-500">{errors.emergencyContactName}</p>
+                )}
+              </label>
+
+              <label className="block">
+                <span className="text-[14px]">{tf("emergencyContactNumber")}</span>
+                <div
+                  className={`mt-2 flex h-10.5 items-center rounded-[10px] border px-2 text-[14px] ${
+                    errors.emergencyContactNumber ? "border-red-500" : "border-[#CBCBCB]"
+                  }`}
+                >
+                  <select
+                    name="emergencyCountryCode"
+                    value={values.emergencyCountryCode}
+                    onChange={handleChange}
+                    aria-label={tf("countryCode")}
+                    className="shrink-0 cursor-pointer bg-transparent py-2 text-[14px] font-bold outline-none"
+                  >
+                    {COUNTRY_CODES.map(({ iso2, dialCode, flag }) => (
+                      <option key={iso2} value={dialCode}>
+                        {flag} {dialCode}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="mx-2 h-5 border-l border-[#ccc]" />
+                  <input
+                    name="emergencyContactNumber"
+                    type="tel"
+                    value={values.emergencyContactNumber}
+                    onChange={handleChange}
+                    placeholder={tf("mobilePlaceholder")}
+                    className="min-w-0 flex-1 bg-transparent text-[14px] outline-none"
+                  />
+                </div>
+                {errors.emergencyContactNumber && (
+                  <p className="mt-1 text-[12px] text-red-500">{errors.emergencyContactNumber}</p>
+                )}
               </label>
             </div>
 

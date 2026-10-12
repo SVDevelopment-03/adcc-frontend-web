@@ -141,6 +141,7 @@ export function LaffahRideRegistrationsList() {
                   <th className="text-left px-6 py-3 font-medium">{t('laffahRide.columns.gender', 'Gender')}</th>
                   <th className="text-left px-6 py-3 font-medium">{t('laffahRide.columns.nationality', 'Nationality')}</th>
                   <th className="text-left px-6 py-3 font-medium">{t('laffahRide.columns.city', 'Region/City')}</th>
+                  <th className="text-left px-6 py-3 font-medium">{t('laffahRide.columns.emergencyContact', 'Emergency Contact')}</th>
                   <th className="text-left px-6 py-3 font-medium">{t('laffahRide.columns.raceLocations', 'Race Locations')}</th>
                   <th className="text-left px-6 py-3 font-medium">{t('laffahRide.columns.submittedOn', 'Submitted On')}</th>
                 </tr>
@@ -171,6 +172,17 @@ export function LaffahRideRegistrationsList() {
                     <td className="px-6 py-3" style={{ color: '#666' }}>{item.gender}</td>
                     <td className="px-6 py-3" style={{ color: '#666' }}>{item.nationality}</td>
                     <td className="px-6 py-3" style={{ color: '#666' }}>{item.city}</td>
+                    <td className="px-6 py-3 whitespace-nowrap" style={{ color: '#666' }}>
+                      {/* Leads submitted before this field existed have none */}
+                      {item.emergencyContactName || item.emergencyContactNumber ? (
+                        <>
+                          <div style={{ color: '#333' }}>{item.emergencyContactName}</div>
+                          <div>{item.emergencyContactNumber}</div>
+                        </>
+                      ) : (
+                        '—'
+                      )}
+                    </td>
                     <td className="px-6 py-3">
                       <div className="flex flex-wrap gap-1.5">
                         {item.raceLocations.map((location) => (

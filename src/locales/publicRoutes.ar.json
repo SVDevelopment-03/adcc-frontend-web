@@ -524,7 +524,7 @@
     },
     "intro": {
       "title": "سجّل في جولة لفّة",
-      "body": "أدخل بياناتك واختر المكان الذي ترغب في المشاركة فيه بالسباق."
+      "body": "أدخل بياناتك واختر المكان الذي ترغب في الانضمام فيه إلى الجولة."
     },
     "locations": {
       "Al Dhafra": { "name": "مواقف واحة الظفرة", "date": "29 أكتوبر", "time": "4:30 مساءً" },
@@ -545,6 +545,10 @@
       "gender": "الجنس",
       "nationality": "الجنسية",
       "city": "المنطقة/المدينة",
+      "emergencyContact": "جهة الاتصال في حالات الطوارئ",
+      "emergencyContactName": "الاسم",
+      "emergencyContactNumber": "رقم الجوال",
+      "emergencyContactNamePlaceholder": "اسم جهة الاتصال في حالات الطوارئ",
       "raceLocations": "أين ترغب في المشاركة في السباق؟",
       "raceLocationsHint": "يمكنك اختيار أكثر من موقع.",
       "firstNamePlaceholder": "أدخل اسمك الأول",
@@ -575,6 +579,8 @@
         "genderRequired": "الجنس مطلوب.",
         "nationalityRequired": "الجنسية مطلوبة.",
         "cityRequired": "المنطقة/المدينة مطلوبة.",
+        "emergencyNameRequired": "اسم جهة الاتصال في حالات الطوارئ مطلوب.",
+        "emergencyNumberRequired": "رقم جوال جهة الاتصال في حالات الطوارئ مطلوب.",
         "raceLocationsRequired": "اختر موقع سباق واحداً على الأقل."
       }
     }
