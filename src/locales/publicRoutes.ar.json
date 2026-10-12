@@ -552,7 +552,7 @@
       "mobilePlaceholder": "50 123 4567",
       "emailPlaceholder": "أدخل بريدك الإلكتروني",
       "genderPlaceholder": "اختر الجنس",
-      "nationalityPlaceholder": "اختر أو اكتب جنسيتك",
+      "nationalityPlaceholder": "اختر الجنسية",
       "cityPlaceholder": "اختر المنطقة أو المدينة",
       "genders": {
         "male": "ذكر",

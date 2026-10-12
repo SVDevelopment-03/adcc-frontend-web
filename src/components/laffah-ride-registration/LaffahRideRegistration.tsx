@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { PublicPageHero, useWordList } from "../public/publicPageHelpers";
 import { COUNTRY_CODES, DEFAULT_COUNTRY_CODE } from "../../constants/countryCodes";
+import { NATIONALITY_COUNTRIES } from "../../constants/nationalities";
 import {
   LAFFAH_RIDE_CITIES,
   LAFFAH_RIDE_LOCATIONS,
@@ -13,10 +14,6 @@ import {
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^[0-9\s\-+()]{6,20}$/;
-
-const NATIONALITY_OPTIONS = COUNTRY_CODES.map((country) => country.name).sort((a, b) =>
-  a.localeCompare(b),
-);
 
 interface FormValues {
   firstName: string;
@@ -304,20 +301,19 @@ export default function LaffahRideRegistrationPage() {
 
               <label className="block">
                 <span className="text-[14px]">{tf("nationality")}</span>
-                <input
+                <select
                   name="nationality"
-                  list="laffah-ride-nationalities"
                   value={values.nationality}
                   onChange={handleChange}
-                  placeholder={tf("nationalityPlaceholder")}
-                  autoComplete="country-name"
-                  className={inputClass(errors.nationality)}
-                />
-                <datalist id="laffah-ride-nationalities">
-                  {NATIONALITY_OPTIONS.map((name) => (
-                    <option key={name} value={name} />
+                  className={`${inputClass(errors.nationality)} cursor-pointer`}
+                >
+                  <option value="">{tf("nationalityPlaceholder")}</option>
+                  {NATIONALITY_COUNTRIES.map((name) => (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
                   ))}
-                </datalist>
+                </select>
                 {errors.nationality && <p className="mt-1 text-[12px] text-red-500">{errors.nationality}</p>}
               </label>
 

@@ -570,7 +570,7 @@
       "mobilePlaceholder": "50 123 4567",
       "emailPlaceholder": "you@example.com",
       "genderPlaceholder": "Select gender",
-      "nationalityPlaceholder": "Select or type your nationality",
+      "nationalityPlaceholder": "Select nationality",
       "cityPlaceholder": "Select region or city",
       "genders": {
         "male": "Male",

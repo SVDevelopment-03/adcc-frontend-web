@@ -65,6 +65,20 @@ const publicRoutePrefixes = [
   '/laffah-ride-registration',
 ];
 
+// Public pages that look the same whether or not someone is signed in, so
+// they can render straight away instead of waiting for the sign-in check.
+const authIndependentPrefixes = [
+  '/home',
+  '/aboutus',
+  '/user-adcc-store',
+  '/user-store-detail',
+  '/user-marketplace',
+  '/user-news',
+  '/contact-us',
+  '/privacy-policy',
+  '/laffah-ride-registration',
+];
+
 function normalizePathname(pathname: string) {
   if (pathname.length > 1 && pathname.endsWith('/')) return pathname.slice(0, -1);
   return pathname;
@@ -88,7 +102,11 @@ function AppContent() {
     }
   }, [isAuthenticated, isPublicRoute, loading, navigate]);
 
-  if (loading) {
+  const isAuthIndependentRoute = authIndependentPrefixes.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  );
+
+  if (loading && !isAuthIndependentRoute) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
