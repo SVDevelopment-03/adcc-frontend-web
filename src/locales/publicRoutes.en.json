@@ -545,11 +545,11 @@
       "body": "Fill in your details and choose where you would like to join the race."
     },
     "locations": {
-      "Al Dhafra": "Al Dhafra",
-      "Al Wathba": "Al Wathba",
-      "Al Ain": "Al Ain",
-      "Yas Marina": "Yas Marina",
-      "Al Hudariyat": "Al Hudariyat"
+      "Al Dhafra": { "name": "Al Dhafra Oasis Parking", "date": "29 October", "time": "4:30 PM" },
+      "Al Ain": { "name": "Al Ain Cycle Track / Path", "date": "26 November", "time": "4:30 PM" },
+      "Al Wathba": { "name": "Al Wathba Cycle Track / Path", "date": "24 December", "time": "4:30 PM" },
+      "Yas Marina": { "name": "Yas Marina Circuit - TBC", "date": "28 January", "time": "4:30 PM" },
+      "Al Hudariyat": { "name": "Hudayriyat Island", "date": "25 March", "time": "4:30 PM" }
     },
     "form": {
       "title": "Registration Form",
@@ -571,7 +571,7 @@
       "emailPlaceholder": "you@example.com",
       "genderPlaceholder": "Select gender",
       "nationalityPlaceholder": "Select or type your nationality",
-      "cityPlaceholder": "Your region or city",
+      "cityPlaceholder": "Select region or city",
       "genders": {
         "male": "Male",
         "female": "Female"

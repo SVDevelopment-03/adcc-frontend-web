@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { PublicPageHero, useWordList } from "../public/publicPageHelpers";
 import { COUNTRY_CODES, DEFAULT_COUNTRY_CODE } from "../../constants/countryCodes";
 import {
+  LAFFAH_RIDE_CITIES,
   LAFFAH_RIDE_LOCATIONS,
   submitLaffahRideRegistration,
   type LaffahRideGender,
@@ -146,7 +147,8 @@ export default function LaffahRideRegistrationPage() {
         firstName: values.firstName.trim(),
         lastName: values.lastName.trim(),
         dateOfBirth: values.dateOfBirth,
-        mobileNumber: `${values.countryCode} ${values.mobileNumber.trim()}`,
+        // Drop the national trunk "0" (050… → 50…) so the stored number is valid with its country code
+        mobileNumber: `${values.countryCode} ${values.mobileNumber.trim().replace(/^0+/, "")}`,
         email: values.email.trim().toLowerCase(),
         gender: values.gender as LaffahRideGender,
         nationality: values.nationality.trim(),
@@ -170,7 +172,7 @@ export default function LaffahRideRegistrationPage() {
       <PublicPageHero
         titleWords={heroTitleWords}
         breadcrumb={heroBreadcrumb}
-        backgroundImage="/img/paolo-candelo-8tXukRrs7yk-unsplash 1.png"
+        backgroundImage="/img/laffah.png"
         classPrefix="contact-page"
       />
 
@@ -328,14 +330,19 @@ export default function LaffahRideRegistrationPage() {
 
               <label className="block">
                 <span className="text-[14px]">{tf("city")}</span>
-                <input
+                <select
                   name="city"
                   value={values.city}
                   onChange={handleChange}
-                  placeholder={tf("cityPlaceholder")}
-                  autoComplete="address-level2"
-                  className={inputClass(errors.city)}
-                />
+                  className={`${inputClass(errors.city)} cursor-pointer`}
+                >
+                  <option value="">{tf("cityPlaceholder")}</option>
+                  {LAFFAH_RIDE_CITIES.map((city) => (
+                    <option key={city} value={city}>
+                      {city}
+                    </option>
+                  ))}
+                </select>
                 {errors.city && <p className="mt-1 text-[12px] text-red-500">{errors.city}</p>}
               </label>
             </div>
@@ -343,9 +350,10 @@ export default function LaffahRideRegistrationPage() {
             <fieldset className="mt-6">
               <legend className="text-[14px]">{tf("raceLocations")}</legend>
               <p className="mt-1 text-[12px] text-black/50">{tf("raceLocationsHint")}</p>
-              <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
+              <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {LAFFAH_RIDE_LOCATIONS.map((location) => {
                   const checked = values.raceLocations.includes(location);
+                  const key = `public.laffahRide.locations.${location}`;
                   return (
                     <label
                       key={location}
@@ -357,9 +365,14 @@ export default function LaffahRideRegistrationPage() {
                         type="checkbox"
                         checked={checked}
                         onChange={() => toggleLocation(location)}
-                        className="h-4 w-4 accent-[#019839]"
+                        className="h-4 w-4 shrink-0 accent-[#019839]"
                       />
-                      {t(`public.laffahRide.locations.${location}`, location)}
+                      <span className="min-w-0">
+                        <span className="block font-bold">{t(`${key}.name`, location)}</span>
+                        <span className="mt-0.5 block text-[12px] text-black/60">
+                          {t(`${key}.date`)} · {t(`${key}.time`)}
+                        </span>
+                      </span>
                     </label>
                   );
                 })}

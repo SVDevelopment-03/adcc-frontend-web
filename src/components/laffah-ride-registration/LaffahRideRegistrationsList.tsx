@@ -128,7 +128,9 @@ export function LaffahRideRegistrationsList() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          // w-0 + min-w-full: the wide table scrolls inside the card instead of
+          // stretching the page (which pushed the header buttons off-screen).
+          <div className="w-0 min-w-full overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100" style={{ color: '#666' }}>
