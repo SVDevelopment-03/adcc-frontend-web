@@ -562,7 +562,6 @@
       "submitting": "جارٍ الإرسال...",
       "successTitle": "شكراً لك!",
       "successMessage": "تم استلام تسجيلك بنجاح.",
-      "registerAnother": "تسجيل مشارك آخر",
       "errorMessage": "فشل إرسال التسجيل. يرجى المحاولة مرة أخرى.",
       "errors": {
         "firstNameRequired": "الاسم الأول مطلوب.",

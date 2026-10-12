@@ -188,13 +188,6 @@ export default function LaffahRideRegistrationPage() {
           <div className="mt-10 rounded-[15px] border border-black/20 p-8 text-center max-md:mt-6">
             <h3 className="text-[28px] uppercase">{tf("successTitle")}</h3>
             <p className="mt-3 text-[16px] text-black/70">{tf("successMessage")}</p>
-            <button
-              type="button"
-              onClick={() => setSubmitted(false)}
-              className="mt-6 inline-flex cursor-pointer items-center rounded-full bg-[#019839] px-6 py-3 text-[16px] font-bold text-white"
-            >
-              {tf("registerAnother")}
-            </button>
           </div>
         ) : (
           <form

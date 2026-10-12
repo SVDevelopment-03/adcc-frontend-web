@@ -580,7 +580,6 @@
       "submitting": "Submitting...",
       "successTitle": "Thank You!",
       "successMessage": "Your registration has been received.",
-      "registerAnother": "Register another rider",
       "errorMessage": "Failed to submit registration. Please try again.",
       "errors": {
         "firstNameRequired": "First name is required.",
