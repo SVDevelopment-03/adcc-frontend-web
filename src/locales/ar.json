@@ -36,6 +36,7 @@
     "reports": "التقارير والتحليلات",
     "contactMessages": "رسائل التواصل",
     "newsletter": "مشتركو النشرة البريدية",
+    "laffahRideRegistrations": "تسجيلات جولة لفّة",
     "config": "إعدادات التطبيق",
     "languages": "اللغات",
     "roles": "الأدوار والصلاحيات",
@@ -1794,6 +1795,29 @@
     "status": {
       "active": "نشط",
       "unsubscribed": "ملغى الاشتراك"
+    },
+    "pagination": {
+      "showing": "عرض {{from}}-{{to}} من {{total}}"
+    }
+  },
+  "laffahRide": {
+    "subtitle": "التسجيلات المُرسلة عبر صفحة التسجيل في جولة لفّة",
+    "loadError": "فشل في تحميل التسجيلات",
+    "exportButton": "تصدير CSV",
+    "exportError": "فشل تصدير التسجيلات",
+    "empty": "لا توجد تسجيلات بعد",
+    "totalCount": "{{count}} تسجيل",
+    "allLocations": "جميع المواقع",
+    "columns": {
+      "name": "الاسم",
+      "dateOfBirth": "تاريخ الميلاد",
+      "mobile": "رقم الجوال",
+      "email": "البريد الإلكتروني",
+      "gender": "الجنس",
+      "nationality": "الجنسية",
+      "city": "المنطقة/المدينة",
+      "raceLocations": "مواقع السباق",
+      "submittedOn": "تاريخ الإرسال"
     },
     "pagination": {
       "showing": "عرض {{from}}-{{to}} من {{total}}"

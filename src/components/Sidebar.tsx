@@ -26,6 +26,7 @@ import {
   Database,
   History,
   Building2,
+  Bike,
 } from 'lucide-react';
 import { SIDEBAR_ITEM_PERMISSION } from '../rbac/rbacKeys';
 
@@ -63,6 +64,7 @@ const menuItems: MenuItemDef[] = [
   { id: 'reports', labelKey: 'sidebar.reports', icon: <BarChart3 className="w-5 h-5" />, roles: ['Admin', 'content-manager', 'community-manager', 'moderator'], path: '/reports' },
   { id: 'contactMessages', labelKey: 'sidebar.contactMessages', icon: <Mail className="w-5 h-5" />, roles: ['Admin', 'content-manager'], path: '/contact-messages' },
   { id: 'newsletter', labelKey: 'sidebar.newsletter', icon: <UserPlus className="w-5 h-5" />, roles: ['Admin', 'content-manager'], path: '/newsletter' },
+  { id: 'laffahRideRegistrations', labelKey: 'sidebar.laffahRideRegistrations', icon: <Bike className="w-5 h-5" />, roles: ['Admin', 'content-manager'], path: '/laffah-ride-leads' },
   { id: 'config', labelKey: 'sidebar.config', icon: <Settings className="w-5 h-5" />, roles: ['Admin'], path: '/config' },
   { id: 'staticData', labelKey: 'sidebar.staticData', icon: <Database className="w-5 h-5" />, roles: ['Admin'], path: '/static-data' },
   { id: 'languages', labelKey: 'sidebar.languages', icon: <Globe className="w-5 h-5" />, roles: ['Admin'], path: '/languages' },

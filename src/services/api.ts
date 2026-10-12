@@ -27,6 +27,7 @@ const publicRoutePrefixes = [
   '/user-adcc-store',
   '/user-store-detail',
   '/contact-us',
+  '/laffah-ride-registration',
 ];
 
 const normalizePathname = (pathname: string) => {

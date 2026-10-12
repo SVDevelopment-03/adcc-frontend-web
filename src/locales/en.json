@@ -36,6 +36,7 @@
     "reports": "Reports & Analytics",
     "contactMessages": "Contact Messages",
     "newsletter": "Newsletter Subscribers",
+    "laffahRideRegistrations": "Laffah Ride Registration",
     "config": "App Configuration",
     "languages": "Languages",
     "roles": "Roles & Permissions",
@@ -1821,6 +1822,29 @@
     "status": {
       "active": "Active",
       "unsubscribed": "Unsubscribed"
+    },
+    "pagination": {
+      "showing": "Showing {{from}}-{{to}} of {{total}}"
+    }
+  },
+  "laffahRide": {
+    "subtitle": "Leads submitted through the public Laffah Ride registration page",
+    "loadError": "Failed to load registrations",
+    "exportButton": "Export CSV",
+    "exportError": "Failed to export registrations",
+    "empty": "No registrations yet",
+    "totalCount": "{{count}} registrations",
+    "allLocations": "All Locations",
+    "columns": {
+      "name": "Name",
+      "dateOfBirth": "Date of Birth",
+      "mobile": "Mobile Number",
+      "email": "Email",
+      "gender": "Gender",
+      "nationality": "Nationality",
+      "city": "Region/City",
+      "raceLocations": "Race Locations",
+      "submittedOn": "Submitted On"
     },
     "pagination": {
       "showing": "Showing {{from}}-{{to}} of {{total}}"

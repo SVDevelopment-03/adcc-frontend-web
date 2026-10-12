@@ -91,6 +91,7 @@ const MODULE_NAMES: Record<string, string> = {
   'product-banners-ar': 'store banner (Arabic)',
   contact: 'contact message',
   'newsletter-subscriptions': 'newsletter subscriber',
+  'laffah-ride-registrations': 'Laffah Ride registration',
   splash: 'splash screen',
   rbac: 'role or permission',
   user: 'user',

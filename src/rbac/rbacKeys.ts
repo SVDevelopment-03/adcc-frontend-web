@@ -19,6 +19,7 @@ export type SidebarItemId =
   | 'reports'
   | 'contactMessages'
   | 'newsletter'
+  | 'laffahRideRegistrations'
   | 'config'
   | 'languages'
   | 'roles'
@@ -61,6 +62,7 @@ export const SIDEBAR_ITEM_PERMISSION: Record<SidebarItemId, string | null> = {
   reports: null,
   contactMessages: 'manage_cms',
   newsletter: 'manage_cms',
+  laffahRideRegistrations: 'manage_cms',
   config: 'app_configuration',
   staticData: 'app_configuration',
   languages: 'app_configuration',
@@ -95,6 +97,7 @@ export const SIDEBAR_ITEM_PATH: Record<SidebarItemId, string> = {
   reports: '/reports',
   contactMessages: '/contact-messages',
   newsletter: '/newsletter',
+  laffahRideRegistrations: '/laffah-ride-leads',
   config: '/config',
   staticData: '/static-data',
   languages: '/languages',

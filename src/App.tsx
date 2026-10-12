@@ -27,6 +27,7 @@ import UserNews from './components/user-news/UserNews';
 import UserNewsDetail from './components/user-news-detail/UserNewsDetail';
 import ContactUs from './components/contact-us/contactUs.jsx';
 import PrivacyPolicy from './components/privacy-policy/PrivacyPolicy';
+import LaffahRideRegistration from './components/laffah-ride-registration/LaffahRideRegistration';
 import { Home } from './components/home/Home';
 
 
@@ -61,6 +62,7 @@ const publicRoutePrefixes = [
   '/user-news',
   '/contact-us',
   '/privacy-policy',
+  '/laffah-ride-registration',
 ];
 
 function normalizePathname(pathname: string) {
@@ -186,6 +188,7 @@ function AppContent() {
 
       <Route path="/contact-us/*" element={publicPage(<ContactUs />)} />
       <Route path="/privacy-policy/*" element={publicPage(<PrivacyPolicy />)} />
+      <Route path="/laffah-ride-registration/*" element={publicPage(<LaffahRideRegistration />)} />
 
       <Route path="/home/*" element={publicPage(<Home />)} />
       

@@ -535,6 +535,69 @@
     },
     "imageAlt": "Cycling group"
   },
+  "laffahRide": {
+    "hero": {
+      "titleWords": ["Laffah", "Ride"],
+      "breadcrumb": ["Home", "/", "Laffah Ride Registration"]
+    },
+    "intro": {
+      "title": "Register for Laffah Ride",
+      "body": "Fill in your details and choose where you would like to join the race."
+    },
+    "locations": {
+      "Al Dhafra": "Al Dhafra",
+      "Al Wathba": "Al Wathba",
+      "Al Ain": "Al Ain",
+      "Yas Marina": "Yas Marina",
+      "Al Hudariyat": "Al Hudariyat"
+    },
+    "form": {
+      "title": "Registration Form",
+      "description": "All fields are required.",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "dateOfBirth": "Date of Birth",
+      "mobileNumber": "Mobile Number",
+      "countryCode": "Country code",
+      "email": "Email",
+      "gender": "Gender",
+      "nationality": "Nationality",
+      "city": "Region/City",
+      "raceLocations": "Where do you want to join the race?",
+      "raceLocationsHint": "You can select more than one location.",
+      "firstNamePlaceholder": "Your first name",
+      "lastNamePlaceholder": "Your last name",
+      "mobilePlaceholder": "50 123 4567",
+      "emailPlaceholder": "you@example.com",
+      "genderPlaceholder": "Select gender",
+      "nationalityPlaceholder": "Select or type your nationality",
+      "cityPlaceholder": "Your region or city",
+      "genders": {
+        "male": "Male",
+        "female": "Female"
+      },
+      "submit": "Register",
+      "submitting": "Submitting...",
+      "successTitle": "Thank You!",
+      "successMessage": "Your registration has been received.",
+      "registerAnother": "Register another rider",
+      "errorMessage": "Failed to submit registration. Please try again.",
+      "errors": {
+        "firstNameRequired": "First name is required.",
+        "lastNameRequired": "Last name is required.",
+        "dateOfBirthRequired": "Date of birth is required.",
+        "dateOfBirthInvalid": "Please enter a valid date of birth.",
+        "mobileRequired": "Mobile number is required.",
+        "mobileInvalid": "Please enter a valid mobile number.",
+        "emailRequired": "Email is required.",
+        "emailInvalid": "Please enter a valid email address.",
+        "genderRequired": "Gender is required.",
+        "nationalityRequired": "Nationality is required.",
+        "cityRequired": "Region/City is required.",
+        "raceLocationsRequired": "Select at least one race location."
+      }
+    }
+  },
   "privacyPolicy": {
     "hero": {
       "titleWords": ["Privacy", "Policy"],

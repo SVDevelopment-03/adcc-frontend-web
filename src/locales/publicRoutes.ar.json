@@ -517,6 +517,69 @@
     },
     "imageAlt": "مجتمع الدرّاجين"
   },
+  "laffahRide": {
+    "hero": {
+      "titleWords": ["جولة", "لفّة"],
+      "breadcrumb": ["الرئيسية", "/", "التسجيل في جولة لفّة"]
+    },
+    "intro": {
+      "title": "سجّل في جولة لفّة",
+      "body": "أدخل بياناتك واختر المكان الذي ترغب في المشاركة فيه بالسباق."
+    },
+    "locations": {
+      "Al Dhafra": "الظفرة",
+      "Al Wathba": "الوثبة",
+      "Al Ain": "العين",
+      "Yas Marina": "ياس مارينا",
+      "Al Hudariyat": "الحديريات"
+    },
+    "form": {
+      "title": "نموذج التسجيل",
+      "description": "جميع الحقول مطلوبة.",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "dateOfBirth": "تاريخ الميلاد",
+      "mobileNumber": "رقم الجوال",
+      "countryCode": "رمز الدولة",
+      "email": "البريد الإلكتروني",
+      "gender": "الجنس",
+      "nationality": "الجنسية",
+      "city": "المنطقة/المدينة",
+      "raceLocations": "أين ترغب في المشاركة في السباق؟",
+      "raceLocationsHint": "يمكنك اختيار أكثر من موقع.",
+      "firstNamePlaceholder": "أدخل اسمك الأول",
+      "lastNamePlaceholder": "أدخل اسم العائلة",
+      "mobilePlaceholder": "50 123 4567",
+      "emailPlaceholder": "أدخل بريدك الإلكتروني",
+      "genderPlaceholder": "اختر الجنس",
+      "nationalityPlaceholder": "اختر أو اكتب جنسيتك",
+      "cityPlaceholder": "أدخل منطقتك أو مدينتك",
+      "genders": {
+        "male": "ذكر",
+        "female": "أنثى"
+      },
+      "submit": "سجّل الآن",
+      "submitting": "جارٍ الإرسال...",
+      "successTitle": "شكراً لك!",
+      "successMessage": "تم استلام تسجيلك بنجاح.",
+      "registerAnother": "تسجيل مشارك آخر",
+      "errorMessage": "فشل إرسال التسجيل. يرجى المحاولة مرة أخرى.",
+      "errors": {
+        "firstNameRequired": "الاسم الأول مطلوب.",
+        "lastNameRequired": "اسم العائلة مطلوب.",
+        "dateOfBirthRequired": "تاريخ الميلاد مطلوب.",
+        "dateOfBirthInvalid": "يرجى إدخال تاريخ ميلاد صحيح.",
+        "mobileRequired": "رقم الجوال مطلوب.",
+        "mobileInvalid": "يرجى إدخال رقم جوال صحيح.",
+        "emailRequired": "البريد الإلكتروني مطلوب.",
+        "emailInvalid": "يرجى إدخال بريد إلكتروني صحيح.",
+        "genderRequired": "الجنس مطلوب.",
+        "nationalityRequired": "الجنسية مطلوبة.",
+        "cityRequired": "المنطقة/المدينة مطلوبة.",
+        "raceLocationsRequired": "اختر موقع سباق واحداً على الأقل."
+      }
+    }
+  },
   "privacyPolicy": {
     "hero": {
       "titleWords": ["سياسة", "الخصوصية"],

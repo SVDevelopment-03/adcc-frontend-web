@@ -45,6 +45,7 @@ import { AdminEdit } from './users/AdminEdit';
 import { Reports } from './reports/Reports';
 import { ContactMessagesList } from './contact-messages/ContactMessagesList';
 import { NewsletterSubscribersList } from './newsletter/NewsletterSubscribersList';
+import { LaffahRideRegistrationsList } from './laffah-ride-registration/LaffahRideRegistrationsList';
 import { AppConfig } from './config/AppConfig';
 import { RolesPermissions } from './roles/RolesPermissions';
 import { RoleCreate } from './roles/RoleCreate';
@@ -349,6 +350,7 @@ export function Layout() {
             <Route path="/reports" element={withRoleSidebarAccess('reports', <Reports role={currentRole} />)} />
             <Route path="/contact-messages" element={withRoleSidebarAccess('contactMessages', <ContactMessagesList />)} />
             <Route path="/newsletter" element={withRoleSidebarAccess('newsletter', <NewsletterSubscribersList />)} />
+            <Route path="/laffah-ride-leads" element={withRoleSidebarAccess('laffahRideRegistrations', <LaffahRideRegistrationsList />)} />
             <Route path="/config" element={withRoleSidebarAccess('config', <AppConfig />)} />
             <Route path="/static-data" element={withRoleSidebarAccess('staticData', <StaticDataManager />)} />
             <Route path="/admin/product-banners-ar" element={withPermission('app_configuration', <ProductBannersArAdmin />)} />
