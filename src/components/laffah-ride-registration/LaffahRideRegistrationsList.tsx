@@ -140,7 +140,7 @@ export function LaffahRideRegistrationsList() {
                   <th className="text-left px-6 py-3 font-medium">{t('laffahRide.columns.email', 'Email')}</th>
                   <th className="text-left px-6 py-3 font-medium">{t('laffahRide.columns.gender', 'Gender')}</th>
                   <th className="text-left px-6 py-3 font-medium">{t('laffahRide.columns.nationality', 'Nationality')}</th>
-                  <th className="text-left px-6 py-3 font-medium">{t('laffahRide.columns.city', 'Region/City')}</th>
+                  <th className="text-left px-6 py-3 font-medium">{t('laffahRide.columns.city', 'City')}</th>
                   <th className="text-left px-6 py-3 font-medium">{t('laffahRide.columns.emergencyContact', 'Emergency Contact')}</th>
                   <th className="text-left px-6 py-3 font-medium">{t('laffahRide.columns.raceLocations', 'Race Locations')}</th>
                   <th className="text-left px-6 py-3 font-medium">{t('laffahRide.columns.submittedOn', 'Submitted On')}</th>

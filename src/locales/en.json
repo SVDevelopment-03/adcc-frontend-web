@@ -1842,7 +1842,7 @@
       "email": "Email",
       "gender": "Gender",
       "nationality": "Nationality",
-      "city": "Region/City",
+      "city": "City",
       "emergencyContact": "Emergency Contact",
       "raceLocations": "Race Locations",
       "submittedOn": "Submitted On"
