@@ -212,6 +212,7 @@ font-family: var(--font-satoshi) !important;}
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    isolation: isolate;
     min-height: 44px;
     padding: 0 22px;
     border: 2px solid #019839;
@@ -232,19 +233,17 @@ font-family: var(--font-satoshi) !important;}
     color: #fff;
   }
   .hero-explore-btn-inner {
-    position: relative;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    z-index: 1;
   }
   .hero-explore-btn-inner::before {
     content: "";
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 300%;
-    padding-top: 300%;
+    width: 200%;
+    padding-top: 200%;
     border-radius: 50%;
     background: #019839;
     transform: translate(-50%, -50%) scale(0);

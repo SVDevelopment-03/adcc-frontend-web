@@ -187,8 +187,8 @@ export function MerchandiseOrders({ orders, setOrders }: MerchandiseOrdersProps)
                   })}
                   <button
                     onClick={() => updateStatus(order.id, 'cancelled')}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs transition-all hover:bg-gray-100"
-                    style={{ color: '#6B7280', backgroundColor: '#F9FAFB' }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs transition-all bg-[#F9FAFB] hover:bg-gray-100"
+                    style={{ color: '#6B7280' }}
                   >
                     <XCircle className="w-3.5 h-3.5" />
                     Cancel

@@ -78,15 +78,24 @@
     --adcc-btn-hover-fill: #000;
   }
 
+  /* The fill is clipped to the padding box, so the border has to follow it
+     or the resting colour stays visible as a rim around the hovered button. */
+  .adcc-btn:hover,
+  .adcc-btn:focus-visible {
+    border-color: var(--adcc-btn-hover-fill);
+  }
+
   .adcc-btn--outline:hover,
   .adcc-btn--outline:focus-visible {
     color: #fff;
   }
 
+  /* Not positioned on purpose: the hover-fill circle below must size and
+     centre itself on the button, not on this label wrapper. Sized from the
+     label, the circle stops short of the edges on any button wider than its
+     text (short labels, min-width, full-width). */
   .adcc-btn__inner {
-    position: relative;
     display: block;
-    z-index: 1;
   }
 
   .adcc-btn__inner::before {
