@@ -168,18 +168,9 @@ const getTrackName = (event?: GrandPrixEvent | null) => {
   );
 };
 
-const getLevel = (event: GrandPrixEvent | null | undefined, t: TFunction) => {
-  if (!event) return "Level TBA";
-  if (event.difficulty) return event.difficulty;
-  const eligibility = Array.isArray(event.eligibility)
-    ? event.eligibility[0]
-    : event.eligibility;
-  return (
-    eligibility?.experienceLevel ||
-    eligibility?.experinceLevel ||
-    t("public.common.filters.allLevels")
-  );
-};
+// Only what the admin chose in the dashboard; empty means the level is hidden.
+const getLevel = (event: GrandPrixEvent | null | undefined) =>
+  event?.difficulty?.trim() || "";
 
 // `city` is always dashboard-translated (see backend localizeEventStatic); `address`
 // is free text that may not have an Arabic version filled in for a given event, so
@@ -206,7 +197,9 @@ const titleCase = (value: string) =>
 const getStats = (
   event: GrandPrixEvent | null | undefined,
   t: TFunction,
-): StatCard[] => [
+): StatCard[] => {
+  const level = getLevel(event);
+  return [
   {
     icon: CalendarDays,
     title: formatDate(event?.eventDate, t),
@@ -232,12 +225,17 @@ const getStats = (
         : t("public.events.detail.stats.ridersLabel"),
     label: t("public.events.detail.stats.participantsLabel"),
   },
-  {
-    icon: Trophy,
-    title: titleCase(getLevel(event, t)),
-    label: t("public.tracks.detail.level"),
-  },
-];
+  ...(level
+    ? [
+        {
+          icon: Trophy,
+          title: titleCase(level),
+          label: t("public.tracks.detail.level"),
+        },
+      ]
+    : []),
+  ];
+};
 
 const facilityIconMap: Array<{ match: RegExp; icon: LucideIcon }> = [
   // Amenity labels come through as whatever the admin-managed lookup list
@@ -288,7 +286,7 @@ const getSchedule = (
 const getFaqs = (event: GrandPrixEvent | null | undefined, t: TFunction) => {
   if (!event) return [];
   const fee = formatFee(event, t);
-  const level = titleCase(getLevel(event, t));
+  const level = titleCase(getLevel(event));
   const location =
     event.city ||
     event.address ||
@@ -296,7 +294,7 @@ const getFaqs = (event: GrandPrixEvent | null | undefined, t: TFunction) => {
   return [
     t("public.events.detail.faq.whenScheduled", { title: event.title }),
     t("public.events.detail.faq.whereTakingPlace", { title: event.title }),
-    t("public.events.detail.faq.riderLevel", { level }),
+    ...(level ? [t("public.events.detail.faq.riderLevel", { level })] : []),
     t("public.events.detail.faq.registrationFee", {
       fee: fee.toLowerCase(),
       title: event.title,

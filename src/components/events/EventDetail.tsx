@@ -741,19 +741,23 @@ const formatTimeInput = (raw: string): string => {
                   <p className="text-sm mb-1" style={{ color: '#666' }}>{t('events.detail.labels.distance')}</p>
                   <p className="text-xl" style={{ color: '#333' }}>{event.distance} {t('common.km')}</p>
                 </div>
-                <div>
-                  <p className="text-sm mb-1" style={{ color: '#666' }}>{t('events.detail.labels.difficulty')}</p>
-                  <span
-                    className="inline-block px-3 py-1 rounded-full text-sm text-white"
-                    style={{
-                      backgroundColor: 
-                        event.difficulty === 'Easy' ? '#10B981' :
-                        event.difficulty === 'Medium' ? '#F59E0B' : '#EF4444'
-                    }}
-                  >
-                    {event.difficulty}
-                  </span>
-                </div>
+                {event.difficulty && (
+                  <div>
+                    <p className="text-sm mb-1" style={{ color: '#666' }}>{t('events.detail.labels.difficulty')}</p>
+                    <span
+                      className="inline-block px-3 py-1 rounded-full text-sm text-white"
+                      style={{
+                        backgroundColor:
+                          event.difficulty === 'Race' ? '#C12D32' :
+                          event.difficulty === 'Ride' ? '#10B981' :
+                          event.difficulty === 'Easy' ? '#10B981' :
+                          event.difficulty === 'Medium' ? '#F59E0B' : '#EF4444'
+                      }}
+                    >
+                      {event.difficulty}
+                    </span>
+                  </div>
+                )}
                 <div>
                   <p className="text-sm mb-1" style={{ color: '#666' }}>{t('events.detail.labels.registrationFee')}</p>
                   {(() => {

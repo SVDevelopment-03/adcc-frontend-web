@@ -876,6 +876,9 @@
         "customAmenity": "Add custom amenity"
       },
       "difficultyOptions": {
+        "none": "Not specified",
+        "race": "Race",
+        "ride": "Ride",
         "easy": "Easy",
         "medium": "Medium",
         "hard": "Hard"
@@ -1015,6 +1018,9 @@
       "coverImage": "Cover Image",
       "englishReference": "English reference",
       "difficultyOptions": {
+        "none": "Not specified",
+        "race": "Race",
+        "ride": "Ride",
         "easy": "Easy",
         "medium": "Medium",
         "hard": "Hard"

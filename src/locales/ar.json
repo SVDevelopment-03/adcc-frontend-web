@@ -838,6 +838,9 @@
         "customAmenity": "إضافة مرفق مخصص"
       },
       "difficultyOptions": {
+        "none": "غير محدد",
+        "race": "سباق",
+        "ride": "جولة",
         "easy": "سهل",
         "medium": "متوسط",
         "hard": "صعب"
@@ -977,6 +980,9 @@
       "coverImage": "صورة الغلاف",
       "englishReference": "المرجع الإنجليزي",
       "difficultyOptions": {
+        "none": "غير محدد",
+        "race": "سباق",
+        "ride": "جولة",
         "easy": "سهل",
         "medium": "متوسط",
         "hard": "صعب"

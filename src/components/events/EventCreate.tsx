@@ -136,7 +136,7 @@ const removeBadgeImage = () => {
     eventTime: string;
     endTime: string;
     distance: number;
-    difficulty: 'Easy' | 'Medium' | 'Hard';
+    difficulty: '' | 'Race' | 'Ride';
     maxParticipants: number;
     registrationFeeType: 'free' | 'paid';
     registrationFeeAmount: number;
@@ -171,7 +171,7 @@ const removeBadgeImage = () => {
     eventTime: '06:00',
     endTime: '08:00',
     distance: 25,
-    difficulty: 'Medium',
+    difficulty: '',
     maxParticipants: 100,
     registrationFeeType: 'free',
     registrationFeeAmount: 0,
@@ -889,9 +889,9 @@ const removeBadgeImage = () => {
                     onChange={(e) => setFormData({ ...formData, difficulty: e.target.value as any })}
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                   >
-                    <option value="Easy">{t('events.create.difficultyOptions.easy')}</option>
-                    <option value="Medium">{t('events.create.difficultyOptions.medium')}</option>
-                    <option value="Hard">{t('events.create.difficultyOptions.hard')}</option>
+                    <option value="">{t('events.create.difficultyOptions.none')}</option>
+                    <option value="Race">{t('events.create.difficultyOptions.race')}</option>
+                    <option value="Ride">{t('events.create.difficultyOptions.ride')}</option>
                   </select>
                 </div>
               </div>

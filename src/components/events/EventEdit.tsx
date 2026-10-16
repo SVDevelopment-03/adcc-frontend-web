@@ -204,7 +204,7 @@ export function EventEdit({ role }: EventEditProps) {
     eventTime: string;
     endTime: string;
     distance: number;
-    difficulty: 'Easy' | 'Medium' | 'Hard';
+    difficulty: string;
     maxParticipants: number;
     registrationFeeType: 'free' | 'paid';
     registrationFeeAmount: number;
@@ -244,7 +244,7 @@ export function EventEdit({ role }: EventEditProps) {
     eventTime: '07:00',
     endTime: '08:00',
     distance: 25,
-    difficulty: 'Medium',
+    difficulty: '',
     maxParticipants: 100,
     registrationFeeType: 'free',
     registrationFeeAmount: 0,
@@ -334,7 +334,7 @@ export function EventEdit({ role }: EventEditProps) {
         eventTime: ev.eventTime ?? '',
         endTime: ev.endTime ?? '',
         distance: ev.distance ?? 25,
-        difficulty: (ev.difficulty === 'Easy' || ev.difficulty === 'Medium' || ev.difficulty === 'Hard' ? ev.difficulty : 'Medium'),
+        difficulty: ev.difficulty ?? '',
         maxParticipants: ev.maxParticipants ?? 0,
         registrationFeeType: ev.registrationFeeType === 'paid' ? 'paid' : 'free',
         registrationFeeAmount: Number(ev.registrationFeeAmount) || 0,
@@ -1110,9 +1110,13 @@ export function EventEdit({ role }: EventEditProps) {
                     onChange={(e) => setFormData({ ...formData, difficulty: e.target.value as any })}
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                   >
-                    <option value="Easy">{t('events.edit.difficultyOptions.easy')}</option>
-                    <option value="Medium">{t('events.edit.difficultyOptions.medium')}</option>
-                    <option value="Hard">{t('events.edit.difficultyOptions.hard')}</option>
+                    <option value="">{t('events.edit.difficultyOptions.none')}</option>
+                    <option value="Race">{t('events.edit.difficultyOptions.race')}</option>
+                    <option value="Ride">{t('events.edit.difficultyOptions.ride')}</option>
+                    {/* Older events may still hold Easy/Medium/Hard; keep it until the admin picks another */}
+                    {formData.difficulty && !['Race', 'Ride'].includes(formData.difficulty) && (
+                      <option value={formData.difficulty}>{formData.difficulty}</option>
+                    )}
                   </select>
                 </div>
               </div>
