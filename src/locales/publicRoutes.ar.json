@@ -205,6 +205,9 @@
       }
     },
     "detail": {
+      "internal": {
+        "introTitle": "سجّل في {{title}}"
+      },
       "loading": "جارٍ تحميل تفاصيل الفعالية...",
       "loadErrorSelected": "تعذر تحميل تفاصيل الفعالية المحددة في الوقت الحالي.",
       "aboutHeading": "عن هذه الفعالية",

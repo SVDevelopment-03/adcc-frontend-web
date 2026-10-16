@@ -208,6 +208,9 @@
       }
     },
     "detail": {
+      "internal": {
+        "introTitle": "Register for {{title}}"
+      },
       "loading": "Loading event details...",
       "loadErrorSelected": "The selected event details could not be loaded right now.",
       "aboutHeading": "About This Event",

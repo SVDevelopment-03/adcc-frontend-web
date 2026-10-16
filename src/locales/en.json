@@ -775,6 +775,33 @@
       "deleteSuccess": "Event deleted successfully",
       "deleteError": "Delete failed"
     },
+    "internal": {
+      "heading": "Event Type",
+      "internal": "Internal Event",
+      "external": "External Event",
+      "hint": "Internal events show a registration form on the public event page and collect leads here in the dashboard.",
+      "tracksHeading": "Tracks",
+      "trackName": "Track name",
+      "trackNamePlaceholder": "e.g. Al Dhafra Oasis Parking",
+      "trackDate": "Date",
+      "trackTime": "Time",
+      "addTrack": "Add Track",
+      "removeTrack": "Remove track",
+      "errors": {
+        "trackRequired": "Add at least one track.",
+        "trackIncomplete": "Each track needs a name, date and time."
+      }
+    },
+    "leads": {
+      "heading": "Leads",
+      "subtitle": "Registrations submitted through the public event page",
+      "totalCount": "{{count}} leads",
+      "exportButton": "Export CSV",
+      "allTracks": "All Tracks",
+      "empty": "No leads yet",
+      "loadError": "Failed to load leads",
+      "exportError": "Failed to export leads"
+    },
     "organizers": {
       "title": "Organised by",
       "subtitle": "Organisers you can pick on an event. Add each one with an English and an Arabic name.",
@@ -1035,7 +1062,8 @@
         "participants": "Participants",
         "results": "Results",
         "gallery": "Gallery",
-        "notifications": "Notifications"
+        "notifications": "Notifications",
+        "leads": "Leads"
       },
       "aboutEvent": "About This Event",
       "eventDetails": "Event Details",

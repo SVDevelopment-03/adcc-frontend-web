@@ -4,7 +4,8 @@ import { useEventCategories, useEventAmenities, useEventOrganizers } from '../..
 import { toast } from 'sonner';
 import { getAllTracksEn } from '../../services/trackService';
 import { gccCountries, getCitiesByCountry, normalizeCountryValue, type GCCCountry } from '../../data/gccLocations';
-import { createEvent } from '../../services/eventsApi';
+import { createEvent, type EventRaceTrack } from '../../services/eventsApi';
+import { EventInternalTracks, getRaceTracksEventSchedule, serializeRaceTracks, validateRaceTracks } from './EventInternalTracks';
 import { getAllCommunities, deleteCommunity as deleteCommunityApi, CommunityApiResponse } from '../../services/communitiesApi';
 import { ImagePickerModal } from '../media/ImagePickerModal';
 import { FieldError } from '../ui/FieldError';
@@ -37,6 +38,8 @@ export function EventCreate({ role }: EventCreateProps) {
   const [tracks, setTracks] = useState<any[]>([]);
   const [communities, setCommunities] = useState<any[]>([]);
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [isInternal, setIsInternal] = useState(false);
+  const [raceTracks, setRaceTracks] = useState<EventRaceTrack[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { locale } = useLocale();
   const [badgePreview, setBadgePreview] = useState<string | null>(null);
@@ -399,28 +402,33 @@ const removeBadgeImage = () => {
     if (!formData.description.trim() && !(locale === 'ar' && formData.descriptionAr?.trim())) {
       errors.description = required;
     }
-    if (!formData.category) errors.category = required;
-    if (!formData.country) errors.country = required;
-    if (!formData.city) errors.city = required;
-    if (!formData.trackId) errors.trackId = required;
-    if (!formData.eventDate) errors.eventDate = required;
-    if (!formData.eventTime) errors.eventTime = required;
-    if (!formData.endTime) errors.endTime = required;
-    // Backend rejects non-URL values for these optional links
-    const isValidUrl = (value: string) => {
-      try {
-        new URL(value);
-        return true;
-      } catch {
-        return false;
+    // Internal events hide these fields (their date/time come from the tracks)
+    if (!isInternal) {
+      if (!formData.category) errors.category = required;
+      if (!formData.country) errors.country = required;
+      if (!formData.city) errors.city = required;
+      if (!formData.trackId) errors.trackId = required;
+      if (!formData.eventDate) errors.eventDate = required;
+      if (!formData.eventTime) errors.eventTime = required;
+      if (!formData.endTime) errors.endTime = required;
+      // Backend rejects non-URL values for these optional links
+      const isValidUrl = (value: string) => {
+        try {
+          new URL(value);
+          return true;
+        } catch {
+          return false;
+        }
+      };
+      if (formData.youtubeLink.trim() && !isValidUrl(formData.youtubeLink.trim())) {
+        errors.youtubeLink = t('events.create.invalidUrl');
       }
-    };
-    if (formData.youtubeLink.trim() && !isValidUrl(formData.youtubeLink.trim())) {
-      errors.youtubeLink = t('events.create.invalidUrl');
+      if (formData.registrationLink.trim() && !isValidUrl(formData.registrationLink.trim())) {
+        errors.registrationLink = t('events.create.invalidUrl');
+      }
     }
-    if (formData.registrationLink.trim() && !isValidUrl(formData.registrationLink.trim())) {
-      errors.registrationLink = t('events.create.invalidUrl');
-    }
+    const raceTracksError = validateRaceTracks(isInternal, raceTracks, t);
+    if (raceTracksError) errors.raceTracks = raceTracksError;
     return errors;
   };
 
@@ -446,7 +454,8 @@ const removeBadgeImage = () => {
         title: formData.title.trim() || formData.titleAr?.trim() || '',
         ...(formData.titleAr?.trim() ? { titleAr: formData.titleAr.trim() } : {}),
         slug: formData.slug,
-        category: formData.category,
+        // Category is hidden for internal events; don't save its default
+        category: isInternal ? '' : formData.category,
         communityId: formData.communityId,
         organizedBy: formData.organizedBy || undefined,
         youtubeLink: formData.youtubeLink.trim() || undefined,
@@ -493,6 +502,9 @@ const removeBadgeImage = () => {
         isFeatured: !!formData.isFeatured,
         allowCancellation: !!formData.allowCancellation,
         isPurposeBased: !!formData.isPurposeBased,
+        isInternal,
+        raceTracks: isInternal ? serializeRaceTracks(raceTracks) : [],
+        ...(isInternal ? getRaceTracksEventSchedule(raceTracks) : {}),
         badgeImage: badgeImage || undefined,
       };
 
@@ -614,6 +626,7 @@ const removeBadgeImage = () => {
 
             {/* Common fields always visible */}
             <div className="space-y-4 mt-4">
+              {!isInternal && (<>
               <div>
                 <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.create.category')}</label>
                 <select
@@ -642,6 +655,7 @@ const removeBadgeImage = () => {
                 </select>
                 {formErrors.communityId && <div className="text-xs text-red-600 mt-1">{formErrors.communityId}</div>}
               </div>
+              </>)}
 
               <div>
                 <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.create.organizedBy')}</label>
@@ -657,6 +671,7 @@ const removeBadgeImage = () => {
                 </select>
               </div>
 
+              {!isInternal && (<>
               <div>
                 <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.create.youtubeLink')}</label>
                 <input
@@ -680,9 +695,21 @@ const removeBadgeImage = () => {
                 />
                 {formErrors.registrationLink && <div className="text-xs text-red-600 mt-1">{formErrors.registrationLink}</div>}
               </div>
+              </>)}
             </div>
           </div>
 
+          {/* Internal / External event + race tracks */}
+          <EventInternalTracks
+            isInternal={isInternal}
+            onInternalChange={setIsInternal}
+            tracks={raceTracks}
+            onTracksChange={setRaceTracks}
+            error={formErrors.raceTracks}
+          />
+
+          {/* Sections B-H apply to external events only */}
+          {!isInternal && (<>
           {/* SECTION B - Location & Track */}
           <div className="p-6 rounded-2xl shadow-sm bg-white">
             <div className="flex items-center gap-3 mb-6">
@@ -1222,6 +1249,8 @@ const removeBadgeImage = () => {
             </div>
           </div>
 
+          </>)}
+
           {/* SECTION I - Media */}
           <div className="p-6 rounded-2xl shadow-sm bg-white">
             <div className="flex items-center gap-3 mb-6">
@@ -1362,6 +1391,7 @@ const removeBadgeImage = () => {
                 </select>
               </div>
 
+              {!isInternal && (
               <div className="pt-4 border-t border-gray-200 space-y-3">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -1396,6 +1426,7 @@ const removeBadgeImage = () => {
                   <span className="text-sm" style={{ color: '#666' }}>{t('events.create.purposeBasedEvent')}</span>
                 </label>
               </div>
+              )}
             </div>
           </div>
 

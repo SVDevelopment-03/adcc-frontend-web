@@ -25,6 +25,7 @@ import {
   getEventById,
   getEventsPage,
 } from "../../services/eventsApi";
+import InternalEventRegistration from "./InternalEventRegistration";
 
 type TFunction = (key: string, options?: Record<string, unknown>) => string;
 
@@ -1025,7 +1026,11 @@ export default function CommunitiesAbuDhabiGrandPrixRide() {
           <p className="mt-4 text-[20px] font-medium text-black/70">{error}</p>
         </section>
       )}
-      {!loading && !error && event && (
+      {/* Internal events: Laffah-style hero + registration form only */}
+      {!loading && !error && event?.isInternal && (
+        <InternalEventRegistration event={event} heroImage={getImage(event)} />
+      )}
+      {!loading && !error && event && !event.isInternal && (
         <>
           <HeroSection event={event} />
           <AboutSection event={event} />

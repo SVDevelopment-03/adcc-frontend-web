@@ -1,5 +1,17 @@
 import api, { publicApi } from './api';
 import { getCached, setCache, invalidateCache } from '../utils/apiCache';
+
+/** A track/location riders can pick on an internal event's registration form. */
+export interface EventRaceTrack {
+  /** Set once saved; leads reference it. */
+  _id?: string;
+  name: string;
+  /** YYYY-MM-DD */
+  date: string;
+  /** HH:mm (24h) */
+  time: string;
+}
+
 export interface EventApiResponse {
   _id?: string;
   id?: string;
@@ -53,6 +65,9 @@ export interface EventApiResponse {
   allowCancellation?: boolean;
   galleryImages: string[];
   currentParticipants?: number;
+  /** Internal events collect leads through the public registration form. */
+  isInternal?: boolean;
+  raceTracks?: EventRaceTrack[];
 }
 
 export interface GetEventsParams {
@@ -231,6 +246,10 @@ export const createEvent = async (
     formData.append("isFeatured", String(eventData.isFeatured ?? false));
     formData.append("allowCancellation", String(eventData.allowCancellation ?? true));
     formData.append("isPurposeBased", String(eventData.isPurposeBased ?? false));
+    formData.append("isInternal", String(eventData.isInternal ?? false));
+    if (Array.isArray(eventData.raceTracks)) {
+      formData.append("raceTracks", JSON.stringify(eventData.raceTracks));
+    }
     if (eventData.minAge != null) formData.append("minAge", String(eventData.minAge));
     if (eventData.maxAge != null) formData.append("maxAge", String(eventData.maxAge));
     if (eventData.eligibility) {
@@ -351,6 +370,11 @@ export const updateEvent = async (
     append('isFeatured', d.isFeatured);
     append('allowCancellation', d.allowCancellation);
     append('isPurposeBased', d.isPurposeBased);
+    append('isInternal', d.isInternal);
+    // Single JSON string so the backend gets an array (see schedule above)
+    if (Array.isArray(d.raceTracks)) {
+      formData.append('raceTracks', JSON.stringify(d.raceTracks));
+    }
     append('youtubeLink', d.youtubeLink);
     append('registrationLink', d.registrationLink);
     // Sent even when empty so the organiser can be cleared
@@ -603,4 +627,100 @@ export const exportEventResultsCsv = async (eventId: string): Promise<Blob> => {
     console.error('Error exporting event results CSV:', error);
     throw error;
   }
+};
+
+// ─── Internal event leads ───────────────────────────────────────────────────
+
+export const EVENT_LEAD_CITIES = [
+  'Abu Dhabi',
+  'Dubai',
+  'Sharjah',
+  'Ajman',
+  'Umm Al Quwain',
+  'Ras Al Khaimah',
+  'Fujairah',
+  'Al Ain',
+  'Al Dhafra',
+] as const;
+
+export type EventLeadCity = (typeof EVENT_LEAD_CITIES)[number];
+export type EventLeadGender = 'Male' | 'Female';
+
+export interface EventLeadInput {
+  firstName: string;
+  lastName: string;
+  /** YYYY-MM-DD */
+  dateOfBirth: string;
+  mobileNumber: string;
+  email: string;
+  gender: EventLeadGender;
+  nationality: string;
+  city: EventLeadCity;
+  emergencyContactName: string;
+  emergencyContactNumber: string;
+  /** `_id`s of the picked event raceTracks */
+  raceTrackIds: string[];
+}
+
+export interface EventLead extends Omit<EventLeadInput, 'raceTrackIds'> {
+  _id: string;
+  eventId: string;
+  raceTracks: { trackId: string; name: string; date: string; time: string }[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface EventLeadsPage {
+  items: EventLead[];
+  pagination: { page: number; limit: number; total: number; pages: number };
+}
+
+export const submitEventLead = async (eventId: string, input: EventLeadInput): Promise<void> => {
+  await publicApi.post(`/v1/events/${eventId}/leads`, input);
+};
+
+export const getEventLeads = async (
+  eventId: string,
+  params?: { trackId?: string; page?: number; limit?: number }
+): Promise<EventLeadsPage> => {
+  const { data } = await api.get(`/v1/events/${eventId}/leads`, { params });
+  return (data?.data ?? data) as EventLeadsPage;
+};
+
+export const exportEventLeadsCsv = async (
+  eventId: string,
+  params?: { trackId?: string }
+): Promise<Blob> => {
+  const response = await api.get(`/v1/events/${eventId}/leads/export`, {
+    params,
+    responseType: 'blob',
+  });
+  return response.data as Blob;
+};
+
+/** "2026-10-29" + "16:30" → "29 October · 4:30 PM" (Arabic numerals/month names when lang is "ar"). */
+export const formatRaceTrackSchedule = (track: Pick<EventRaceTrack, 'date' | 'time'>, lang = 'en'): string => {
+  const isArabic = lang.startsWith('ar');
+  const [year, month, day] = (track.date || '').split('-').map(Number);
+  const [hours, minutes] = (track.time || '').split(':').map(Number);
+  const parts: string[] = [];
+  if (year && month && day) {
+    parts.push(
+      new Date(Date.UTC(year, month - 1, day)).toLocaleDateString(isArabic ? 'ar-AE' : 'en-GB', {
+        day: 'numeric',
+        month: 'long',
+        timeZone: 'UTC',
+      })
+    );
+  }
+  if (Number.isFinite(hours) && Number.isFinite(minutes)) {
+    parts.push(
+      new Date(Date.UTC(2000, 0, 1, hours, minutes)).toLocaleTimeString(isArabic ? 'ar-AE' : 'en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        timeZone: 'UTC',
+      })
+    );
+  }
+  return parts.join(' · ');
 };

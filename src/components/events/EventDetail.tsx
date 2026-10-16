@@ -9,6 +9,7 @@ import { getAllCommunities } from '../../services/communitiesApi';
 import { sendTestBroadcastPush } from '../../services/authApi';
 import { uploadToMediaLibrary } from '../../services/mediaApi';
 import { DetailPageSkeleton } from '../ui/skeleton';
+import { EventLeads } from './EventLeads';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { ALLOWED_IMAGE_ACCEPT, filterValidImageFiles, validateImageFile } from '../../utils/imageValidation';
 
@@ -22,7 +23,7 @@ export function EventDetail() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [updatingField, setUpdatingField] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'participants' | 'results' | 'gallery' | 'notifications'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'participants' | 'results' | 'gallery' | 'notifications' | 'leads'>('overview');
   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
   const [deleteImageUrl, setDeleteImageUrl] = useState<string | null>(null);
 
@@ -73,6 +74,7 @@ export function EventDetail() {
         // getparticipants(eventId),
       ]);
       setEvent(fetchedEvent);
+      if (fetchedEvent?.isInternal) setActiveTab('leads');
       setParticipants(fetchedParticipants);
     } catch (error: any) {
       console.error('Error loading event:', error);
@@ -457,6 +459,7 @@ const formatTimeInput = (raw: string): string => {
               )}
             </div>
             <div className="flex items-center gap-3">
+              {!event.isInternal && (
               <span
                 className="px-3 py-1 rounded-full text-xs text-white"
                 style={{
@@ -470,6 +473,7 @@ const formatTimeInput = (raw: string): string => {
               >
                 {t(`data.eventCategories.${event.category}`, event.category)}
               </span>
+              )}
               <span
                 className="px-3 py-1 rounded-full text-xs capitalize text-white"
                 style={{
@@ -496,7 +500,8 @@ const formatTimeInput = (raw: string): string => {
         </button>
       </div>
 
-      {/* Stats Bar */}
+      {/* Stats Bar (app registrations; internal events collect leads instead) */}
+      {!event.isInternal && (
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="p-4 rounded-xl bg-white shadow-sm">
           <div className="flex items-center gap-2 mb-1">
@@ -547,9 +552,11 @@ const formatTimeInput = (raw: string): string => {
           </p>
         </div>
       </div>
+      )}
 
-      {/* Tabs */}
+      {/* Tabs (internal events only have Leads) */}
       <div className="flex items-center gap-2 border-b border-gray-200">
+        {!event.isInternal && (<>
         <button
           onClick={() => setActiveTab('overview')}
           className="px-6 py-3 transition-colors"
@@ -600,7 +607,28 @@ const formatTimeInput = (raw: string): string => {
         >
           {t('events.detail.tabs.notifications')}
         </button>
+        </>)}
+        {event.isInternal && (
+          <button
+            onClick={() => setActiveTab('leads')}
+            className="px-6 py-3 transition-colors"
+            style={{
+              color: activeTab === 'leads' ? '#C12D32' : '#666',
+              borderBottom: activeTab === 'leads' ? '2px solid #C12D32' : 'none',
+            }}
+          >
+            {t('events.detail.tabs.leads', 'Leads')}
+          </button>
+        )}
       </div>
+
+      {activeTab === 'leads' && event.isInternal && (
+        <EventLeads
+          eventId={event._id || event.id || eventId}
+          eventSlug={event.slug}
+          raceTracks={event.raceTracks ?? []}
+        />
+      )}
 
       {/* Tab Content */}
       {activeTab === 'overview' && (
