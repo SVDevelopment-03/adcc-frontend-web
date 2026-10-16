@@ -331,6 +331,12 @@ const FontLoader = () => (
       font-family: 'Outfit', sans-serif;
     }
 
+    /* Headings split into word <span>s (e.g. PublicPageHero) must keep the
+       heading font instead of the Outfit span rule above. */
+    .grand-prix-page :is(h1, h2, h3, h4, .bebas, .grand-prix-bebas) span {
+      font-family: inherit;
+    }
+
     .grand-prix-page * {
       box-sizing: border-box;
     }
