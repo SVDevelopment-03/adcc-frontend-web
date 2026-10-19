@@ -635,8 +635,9 @@ export function EventEdit({ role }: EventEditProps) {
         address: formData.address,
         country: formData.country,
         maxAge: formData.maxAge,
-        youtubeLink: formData.youtubeLink || undefined,
-        registrationLink: formData.registrationLink || undefined,
+        // Sent even when empty so clearing a link removes it
+        youtubeLink: formData.youtubeLink.trim(),
+        registrationLink: formData.registrationLink.trim(),
         // Empty string is sent on purpose: it clears a previously selected organiser
         organizedBy: formData.organizedBy,
       };
