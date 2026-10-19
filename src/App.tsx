@@ -15,7 +15,7 @@ import UserEvent from './components/user-event/UserEvent';
 import UserTracks from './components/user-tracks/UserTracks';
 import UserChallenges from './components/user-challenges/UserChallenges';
 import UserCommunities from './components/user-communities/UserCommunities';
-import CommunitiesAbuDhabiGrandPrixRide from './components/communities-abu-dhabi-grand-prix-ride/CommunitiesAbuDhabiGrandPrixRide';
+import CommunitiesAbuDhabiGrandPrixRide, { InternalEventRegisterPage } from './components/communities-abu-dhabi-grand-prix-ride/CommunitiesAbuDhabiGrandPrixRide';
 import CommunitiesAbuDhabiCyclingCommunity from './components/communities-abu-dhabi-cycling-community/CommunitiesAbuDhabiCyclingCommunity';
 import CommunitiesAlQuadraCyclePath from './components/communities-al-quadra-cycle-path/CommunitiesAlQuadraCyclePath';
 import CommunitiesMarchDistanceChallenge from './components/communities-march-distance-challenge/CommunitiesMarchDistanceChallenge';
@@ -170,6 +170,8 @@ function AppContent() {
       <Route path="/user-tracks/*" element={<LegacyRedirect from="/user-tracks" to="/tracks" />} />
       <Route path="/user-challenges/*" element={<LegacyRedirect from="/user-challenges" to="/challenges" />} />
       <Route path="/user-communities/*" element={<LegacyRedirect from="/user-communities" to="/communities" />} />
+      {/* Internal event registration form; no admin page uses this path */}
+      <Route path="/events/:eventId/register" element={publicPage(<InternalEventRegisterPage />)} />
       {/* These paths are shared with the admin panel: visitors get the public
           pages, signed-in users fall through to the Layout routes below. */}
       {!isAuthenticated && (

@@ -684,19 +684,6 @@ function EventCard({
 
   const participants = event.currentParticipants ?? event.registrations ?? 0;
 
-  // Internal events register through their own form: show their tracks
-  // (first → last date, track names) instead of distance/participants/city.
-  const raceTracks = event.isInternal
-    ? [...(event.raceTracks ?? [])].sort((a, b) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`))
-    : [];
-  const internalDates = raceTracks.length
-    ? Array.from(
-        new Set([raceTracks[0], raceTracks[raceTracks.length - 1]].map((track) =>
-          formatEventDate(track.date, t("public.common.dateTBA")),
-        )),
-      ).join(" – ")
-    : formatEventDate(event.eventDate, t("public.common.dateTBA"));
-
   // The list API populates trackId as { _id, title, titleAr }
   const track = event.trackId as
     | string
@@ -756,7 +743,6 @@ function EventCard({
           />
         </motion.div>
         {isEventClosed(event) && <EventClosedOverlay />}
-        {!event.isInternal && (
         <span
           style={{
             position: "absolute",
@@ -775,7 +761,6 @@ function EventCard({
         >
           {tag}
         </span>
-        )}
       </div>
 
       <div style={{ paddingTop: 20 }}>
@@ -804,22 +789,8 @@ function EventCard({
                 height={14}
               />
             }
-            text={event.isInternal ? internalDates : formatEventDate(event.eventDate, t("public.common.dateTBA"))}
+            text={formatEventDate(event.eventDate, t("public.common.dateTBA"))}
           />
-          {event.isInternal ? (
-            <Meta
-              fullWidth
-              icon={
-                <img
-                  src="/img/icons/map.svg"
-                  alt={t("public.events.listing.card.locationAlt")}
-                  width={14}
-                  height={14}
-                />
-              }
-              text={raceTracks.map((track) => track.name).join(" · ") || "—"}
-            />
-          ) : (<>
           <Meta
             icon={
               <img
@@ -866,8 +837,7 @@ function EventCard({
             }
             text={event.city || event.address || "—"}
           />
-          </>)}
-          {!event.isInternal && trackName && (
+          {trackName && (
             <Meta
               fullWidth
               icon={
@@ -893,9 +863,7 @@ function EventCard({
               }
             }}
           >
-            {event.isInternal
-              ? t("public.events.detail.register.registerNow")
-              : t("public.common.viewDetails")}
+            {t("public.common.viewDetails")}
           </AnimatedButton>
         )}
       </div>

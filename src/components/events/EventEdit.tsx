@@ -3,8 +3,8 @@ import { ArrowLeft, FileText, Calendar, Clock, MapPin, Users, Settings, Award, I
 import { toast } from 'sonner';
 import { UserRole } from '../../App';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getEventByIdEn, updateEvent as updateEventApi, deleteEvent as deleteEventApi, disableEvent as disableEventApi, closeEventRegistration, reopenEventRegistration, completeEvent as completeEventApi, deleteEventGalleryImage, EventApiResponse, type EventRaceTrack } from '../../services/eventsApi';
-import { EventInternalTracks, EMPTY_RACE_TRACK, getRaceTracksEventSchedule, serializeRaceTracks, validateRaceTracks } from './EventInternalTracks';
+import { getEventByIdEn, updateEvent as updateEventApi, deleteEvent as deleteEventApi, disableEvent as disableEventApi, closeEventRegistration, reopenEventRegistration, completeEvent as completeEventApi, deleteEventGalleryImage, EventApiResponse } from '../../services/eventsApi';
+import { EventTypeSelector } from './EventTypeSelector';
 import { useEventCategories, useEventAmenities, useEventOrganizers } from '../../hooks/useLookups';
 import { getAllTracksEn, deleteTrack } from '../../services/trackService';
 import { gccCountries, getCitiesByCountry, normalizeCountryValue, type GCCCountry } from '../../data/gccLocations';
@@ -42,7 +42,6 @@ export function EventEdit({ role }: EventEditProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [isInternal, setIsInternal] = useState(false);
-  const [raceTracks, setRaceTracks] = useState<EventRaceTrack[]>([]);
   const [existingEvent, setExistingEvent] = useState<EventApiResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -309,13 +308,6 @@ export function EventEdit({ role }: EventEditProps) {
         : [];
       setEligibilityCustom(customEligibility.length > 0 ? customEligibility : [{ id: `eligibility-${Math.random()}-${Date.now()}`, value: '' }]);
       setIsInternal(!!ev.isInternal);
-      setRaceTracks(
-        Array.isArray(ev.raceTracks) && ev.raceTracks.length > 0
-          ? ev.raceTracks.map(({ _id, name, date, time }) => ({ _id, name, date, time }))
-          : ev.isInternal
-            ? [{ ...EMPTY_RACE_TRACK }]
-            : []
-      );
       setFormData({
         title: ev.title,
         titleAr: (ev as any).titleAr || '',
@@ -579,18 +571,13 @@ export function EventEdit({ role }: EventEditProps) {
     if (!formData.description?.trim() && !(locale === 'ar' && formData.descriptionAr?.trim())) {
       errors.description = required;
     }
-    // Internal events hide these fields (their date/time come from the tracks)
-    if (!isInternal) {
-      if (!formData.category) errors.category = required;
-      if (!formData.country) errors.country = required;
-      if (!formData.city) errors.city = required;
-      if (!formData.trackId) errors.trackId = required;
-      if (!formData.eventDate) errors.eventDate = required;
-      if (!formData.eventTime) errors.eventTime = required;
-      if (!formData.endTime) errors.endTime = required;
-    }
-    const raceTracksError = validateRaceTracks(isInternal, raceTracks, t);
-    if (raceTracksError) errors.raceTracks = raceTracksError;
+    if (!formData.category) errors.category = required;
+    if (!formData.country) errors.country = required;
+    if (!formData.city) errors.city = required;
+    if (!formData.trackId) errors.trackId = required;
+    if (!formData.eventDate) errors.eventDate = required;
+    if (!formData.eventTime) errors.eventTime = required;
+    if (!formData.endTime) errors.endTime = required;
     return errors;
   };
 
@@ -614,8 +601,7 @@ export function EventEdit({ role }: EventEditProps) {
         title: formData.title?.trim() || formData.titleAr?.trim() || '',
         ...(formData.titleAr?.trim() ? { titleAr: formData.titleAr.trim() } : {}),
         slug: formData.slug,
-        // Category is hidden for internal events; don't save its default
-        category: isInternal ? '' : formData.category,
+        category: formData.category,
         communityId: formData.communityId,
         trackId: formData.trackId,
         description: formData.description,
@@ -646,8 +632,6 @@ export function EventEdit({ role }: EventEditProps) {
         allowCancellation: formData.allowCancellation,
         isPurposeBased: formData.isPurposeBased,
         isInternal,
-        raceTracks: isInternal ? serializeRaceTracks(raceTracks) : [],
-        ...(isInternal ? getRaceTracksEventSchedule(raceTracks) : {}),
         address: formData.address,
         country: formData.country,
         maxAge: formData.maxAge,
@@ -809,7 +793,6 @@ export function EventEdit({ role }: EventEditProps) {
 
             {/* Common fields always visible */}
             <div className="space-y-4 mt-4">
-              {!isInternal && (<>
               <div>
                 <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.edit.category')}</label>
                 <select
@@ -844,7 +827,6 @@ export function EventEdit({ role }: EventEditProps) {
                 </select>
                 <FieldError message={formErrors.communityId} />
               </div>
-              </>)}
 
               <div>
                 <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.create.organizedBy')}</label>
@@ -864,7 +846,6 @@ export function EventEdit({ role }: EventEditProps) {
                 </select>
               </div>
 
-              {!isInternal && (<>
               <div>
                 <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.edit.youtubeLink')}</label>
                 <input
@@ -886,21 +867,12 @@ export function EventEdit({ role }: EventEditProps) {
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#C12D32]"
                 />
               </div>
-              </>)}
             </div>
           </div>
 
-          {/* Internal / External event + race tracks */}
-          <EventInternalTracks
-            isInternal={isInternal}
-            onInternalChange={setIsInternal}
-            tracks={raceTracks}
-            onTracksChange={setRaceTracks}
-            error={formErrors.raceTracks}
-          />
+          {/* Internal / External event */}
+          <EventTypeSelector isInternal={isInternal} onInternalChange={setIsInternal} />
 
-          {/* Date/time through section H apply to external events only */}
-          {!isInternal && (<>
           {/* Schedule */}
           <div className="p-6 rounded-2xl shadow-sm bg-white">
             <div className="flex items-center gap-3 mb-6">
@@ -1422,7 +1394,6 @@ export function EventEdit({ role }: EventEditProps) {
             </div>
           </div>
 
-          </>)}
 
           {/* SECTION I - Media */}
           <div className="p-6 rounded-2xl shadow-sm bg-white">
@@ -1734,7 +1705,6 @@ export function EventEdit({ role }: EventEditProps) {
                 <p className="text-xs mt-2" style={{ color: '#999' }}>{t('events.edit.statusHint')}</p>
               </div>
 
-              {!isInternal && (
               <div className="pt-4 border-t border-gray-200 space-y-3">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -1769,7 +1739,6 @@ export function EventEdit({ role }: EventEditProps) {
                   <span className="text-sm" style={{ color: '#666' }}>{t('events.create.purposeBasedEvent')}</span>
                 </label>
               </div>
-              )}
             </div>
           </div>
 

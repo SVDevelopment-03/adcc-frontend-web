@@ -15,7 +15,7 @@ import {
   Users,
   Wrench,
 } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 import { scrollToAppListing } from "../../utils/appStoreLink";
 import { isEventClosed } from "../../utils/eventStatus";
 import { useTranslation } from "react-i18next";
@@ -493,8 +493,17 @@ function AboutSection({ event }: { event: GrandPrixEvent }) {
       <p className="mx-auto mt-4 max-w-[851px] text-[14px] font-normal leading-relaxed text-black sm:text-[17px] md:text-[20px] lg:text-[24px]">
         {event.description}
       </p>
-      {/* No joining once the event is over */}
-      {isEventClosed(event) ? null : registrationLink ? (
+      {/* No joining once the event is over. Internal events register on the
+          website form; external ones on their own link or in the app. */}
+      {isEventClosed(event) ? null : event.isInternal ? (
+        <Link
+          to={`/events/${encodeURIComponent(event.slug || event._id || event.id || "")}/register`}
+          className={JOIN_EVENT_BUTTON_CLASS}
+        >
+          {t("public.events.detail.joinEvent")}
+          {JoinEventArrowIcon}
+        </Link>
+      ) : registrationLink ? (
         <a
           href={registrationLink}
           target="_blank"
@@ -1030,11 +1039,7 @@ export default function CommunitiesAbuDhabiGrandPrixRide() {
           <p className="mt-4 text-[20px] font-medium text-black/70">{error}</p>
         </section>
       )}
-      {/* Internal events: Laffah-style hero + registration form only */}
-      {!loading && !error && event?.isInternal && (
-        <InternalEventRegistration event={event} heroImage={getImage(event)} />
-      )}
-      {!loading && !error && event && !event.isInternal && (
+      {!loading && !error && event && (
         <>
           <HeroSection event={event} />
           <AboutSection event={event} />
@@ -1046,6 +1051,58 @@ export default function CommunitiesAbuDhabiGrandPrixRide() {
           {/* <FaqSection faqs={faqs} /> */}
         </>
       )}
+    </div>
+  );
+}
+
+/**
+ * /events/:eventId/register — the registration form of an internal event.
+ * Other events have no form here, so they go back to their detail page.
+ */
+export function InternalEventRegisterPage() {
+  const { t } = useTranslation();
+  const { eventId = "" } = useParams<{ eventId: string }>();
+  const [event, setEvent] = useState<GrandPrixEvent | null>(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    setEvent(null);
+    setError("");
+    getEventById(eventId.trim())
+      .then((loaded) => {
+        if (!cancelled) setEvent(loaded as GrandPrixEvent);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("Failed to load event for registration:", err);
+        setError(t("public.events.detail.loadErrorSelected"));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [eventId, i18n.language]);
+
+  if (event && !event.isInternal) {
+    return <Navigate to={`/events/${encodeURIComponent(eventId)}`} replace />;
+  }
+
+  return (
+    <div className="grand-prix-page">
+      <FontLoader />
+      {!event && !error && (
+        <section className="grand-prix-section grand-prix-shell py-24 text-center">
+          <p className="text-[22px] font-medium text-black/70">
+            {t("public.events.detail.loading")}
+          </p>
+        </section>
+      )}
+      {error && (
+        <section className="grand-prix-section grand-prix-shell py-24 text-center">
+          <p className="mt-4 text-[20px] font-medium text-black/70">{error}</p>
+        </section>
+      )}
+      {event && <InternalEventRegistration event={event} heroImage={getImage(event)} />}
     </div>
   );
 }

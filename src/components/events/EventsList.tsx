@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { UserRole } from '../../App';
-import { Plus, Search, Calendar, Users, MapPin, Star, Edit, Eye, UserCheck, Trophy, Ban, Archive, ChevronLeft, ChevronRight, Trash2, RotateCcw, Flag, Inbox } from 'lucide-react';
+import { Plus, Search, Calendar, Users, MapPin, Star, Edit, Eye, UserCheck, Trophy, Ban, Archive, ChevronLeft, ChevronRight, Trash2, RotateCcw, Inbox } from 'lucide-react';
 import { availableCities } from '../../data/eventsData';
 import { getAllEvents, deleteEvent as deleteEventApi, disableEvent as disableEventApi, restoreEvent as restoreEventApi, permanentlyDeleteEvent as permanentlyDeleteEventApi, EventApiResponse } from '../../services/eventsApi';
 import { useEventCategories, useEventOrganizers } from '../../hooks/useLookups';
@@ -538,18 +538,12 @@ export function EventsList({ role }: EventsListProps) {
                           )}
                         </div>
 
-                        {event.isInternal ? (
                         <div className="flex flex-wrap items-center gap-3 mb-2">
-                          <span className="px-3 py-1 rounded-full text-xs text-white" style={{ backgroundColor: '#435974' }}>
-                            {t('events.internal.internal', 'Internal Event')}
-                          </span>
-                          <span className="flex items-center gap-1 text-sm" style={{ color: '#666' }}>
-                            <Flag className="w-4 h-4" style={{ color: '#999' }} />
-                            {(event.raceTracks ?? []).map((track: { name: string }) => track.name).join(', ') || t('events.card.noTrack')}
-                          </span>
-                        </div>
-                        ) : (
-                        <div className="flex flex-wrap items-center gap-3 mb-2">
+                          {event.isInternal && (
+                            <span className="px-3 py-1 rounded-full text-xs text-white" style={{ backgroundColor: '#435974' }}>
+                              {t('events.internal.internal', 'Internal Event')}
+                            </span>
+                          )}
                           <span
                             className="px-3 py-1 rounded-full text-xs text-white"
                             style={{
@@ -574,7 +568,6 @@ export function EventsList({ role }: EventsListProps) {
                             })()}
                           </span>
                         </div>
-                        )}
 
                         <div className="flex items-center gap-4">
                           <div className="flex items-center gap-1">
@@ -583,7 +576,6 @@ export function EventsList({ role }: EventsListProps) {
                               {new Date(event.eventDate).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric' })}
                             </span>
                           </div>
-                          {!event.isInternal && (<>
                           <div className="flex items-center gap-1">
                             <Users className="w-4 h-4" style={{ color: '#999' }} />
                             <span className="text-sm" style={{ color: '#666' }}>
@@ -594,7 +586,6 @@ export function EventsList({ role }: EventsListProps) {
                             <MapPin className="w-4 h-4" style={{ color: '#999' }} />
                             <span className="text-sm" style={{ color: '#666' }}>{event.city ? t(`data.locations.${event.city}`, event.city) : t('events.card.noLocation', 'No Location')}</span>
                           </div>
-                          </>)}
                         </div>
                       </div>
 

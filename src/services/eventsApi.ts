@@ -658,8 +658,8 @@ export interface EventLeadInput {
   city: EventLeadCity;
   emergencyContactName: string;
   emergencyContactNumber: string;
-  /** `_id`s of the picked event raceTracks */
-  raceTrackIds: string[];
+  /** `_id`s of picked event raceTracks (the form no longer asks for them) */
+  raceTrackIds?: string[];
 }
 
 export interface EventLead extends Omit<EventLeadInput, 'raceTrackIds'> {

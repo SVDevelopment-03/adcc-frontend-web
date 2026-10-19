@@ -8,7 +8,6 @@ import { NATIONALITY_COUNTRIES } from "../../constants/nationalities";
 import { isEventClosed } from "../../utils/eventStatus";
 import {
   EVENT_LEAD_CITIES,
-  formatRaceTrackSchedule,
   submitEventLead,
   type EventApiResponse,
   type EventLeadCity,
@@ -30,7 +29,6 @@ interface FormValues {
   emergencyContactName: string;
   emergencyCountryCode: string;
   emergencyContactNumber: string;
-  raceTrackIds: string[];
 }
 
 type FormErrors = Partial<Record<keyof FormValues, string>>;
@@ -48,7 +46,6 @@ const INITIAL: FormValues = {
   emergencyContactName: "",
   emergencyCountryCode: DEFAULT_COUNTRY_CODE.dialCode,
   emergencyContactNumber: "",
-  raceTrackIds: [],
 };
 
 // Same hero/spacing tweaks as the Laffah Ride registration page
@@ -80,9 +77,9 @@ const inputClass = (hasError?: string) =>
   }`;
 
 /**
- * Registration form shown on an internal event's public page (instead of the
- * regular event sections). Same fields as the Laffah Ride form; the race
- * locations come from the event's dashboard-managed tracks.
+ * Registration page of an internal event (/events/:eventId/register), opened
+ * by Join Event on its detail page. Same fields as the Laffah Ride form; each
+ * submission is stored as a lead of this event.
  */
 export default function InternalEventRegistration({
   event,
@@ -91,13 +88,12 @@ export default function InternalEventRegistration({
   event: EventApiResponse;
   heroImage: string;
 }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   // "Home" comes from the Laffah breadcrumb, which is already translated
   const [homeLabel = "Home"] = useWordList("public.laffahRide.hero.breadcrumb");
   const heroTitleWords = event.title.split(/\s+/).filter(Boolean);
   const heroBreadcrumb = [homeLabel, "/", event.title];
   const eventId = event._id || event.id || event.slug || "";
-  const tracks = (event.raceTracks ?? []).filter((track) => track._id);
   const closed = isEventClosed(event);
 
   const [values, setValues] = useState<FormValues>(INITIAL);
@@ -138,7 +134,6 @@ export default function InternalEventRegistration({
     } else if (!normalizePhoneForCountry(vals.emergencyCountryCode, vals.emergencyContactNumber)) {
       e.emergencyContactNumber = tf("errors.mobileInvalid");
     }
-    if (vals.raceTrackIds.length === 0) e.raceTrackIds = tf("errors.raceLocationsRequired");
     return e;
   }
 
@@ -153,16 +148,6 @@ export default function InternalEventRegistration({
     const { name, value } = e.target;
     setValues((prev) => ({ ...prev, [name]: value }));
     clearError(name as keyof FormValues);
-  }
-
-  function toggleTrack(trackId: string) {
-    setValues((prev) => ({
-      ...prev,
-      raceTrackIds: prev.raceTrackIds.includes(trackId)
-        ? prev.raceTrackIds.filter((item) => item !== trackId)
-        : [...prev.raceTrackIds, trackId],
-    }));
-    clearError("raceTrackIds");
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -189,7 +174,6 @@ export default function InternalEventRegistration({
           values.emergencyCountryCode,
           values.emergencyContactNumber,
         )!,
-        raceTrackIds: values.raceTrackIds,
       });
       toast.success(tf("successMessage"));
       setValues(INITIAL);
@@ -395,7 +379,7 @@ export default function InternalEventRegistration({
                 {errors.city && <p className="mt-1 text-[12px] text-red-500">{errors.city}</p>}
               </label>
 
-              <h4 className="mt-2 text-[16px] font-bold md:col-span-2">{tf("emergencyContact")}</h4>
+              <h3 className="mt-2 text-[28px] uppercase md:col-span-2">{tf("emergencyContact")}</h3>
 
               <label className="block">
                 <span className="text-[14px]">{tf("emergencyContactName")}</span>
@@ -417,40 +401,6 @@ export default function InternalEventRegistration({
               </label>
             </div>
 
-            {tracks.length > 0 && (
-              <fieldset className="mt-6">
-                <legend className="text-[14px]">{tf("raceLocations")}</legend>
-                <p className="mt-1 text-[12px] text-black/50">{tf("raceLocationsHint")}</p>
-                <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  {tracks.map((track) => {
-                    const trackId = track._id as string;
-                    const checked = values.raceTrackIds.includes(trackId);
-                    return (
-                      <label
-                        key={trackId}
-                        className={`flex cursor-pointer items-center gap-3 rounded-[10px] border px-4 py-3 text-[14px] transition-colors ${
-                          checked ? "border-[#019839] bg-[#019839]/10" : "border-[#CBCBCB]"
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          onChange={() => toggleTrack(trackId)}
-                          className="h-4 w-4 shrink-0 accent-[#019839]"
-                        />
-                        <span className="min-w-0">
-                          <span className="block font-bold">{track.name}</span>
-                          <span className="mt-0.5 block text-[12px] text-black/60">
-                            {formatRaceTrackSchedule(track, i18n.language)}
-                          </span>
-                        </span>
-                      </label>
-                    );
-                  })}
-                </div>
-                {errors.raceTrackIds && <p className="mt-2 text-[12px] text-red-500">{errors.raceTrackIds}</p>}
-              </fieldset>
-            )}
 
             <button
               type="submit"

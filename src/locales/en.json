@@ -779,7 +779,7 @@
       "heading": "Event Type",
       "internal": "Internal Event",
       "external": "External Event",
-      "hint": "Internal events show a registration form on the public event page and collect leads here in the dashboard.",
+      "hint": "Internal events use the registration form on the website: Join Event opens it and submissions are collected as leads here in the dashboard.",
       "tracksHeading": "Tracks",
       "trackName": "Track name",
       "trackNamePlaceholder": "e.g. Al Dhafra Oasis Parking",
@@ -1062,7 +1062,7 @@
       "qr": {
         "button": "QR Code",
         "title": "Event QR Code",
-        "description": "Scanning this code opens the event's registration page. Download it to print or share.",
+        "description": "Scanning this code opens the event page, where riders tap Join Event to register. Download it to print or share.",
         "download": "Download QR Code",
         "copyLink": "Copy link",
         "linkCopied": "Event link copied",
@@ -2408,7 +2408,7 @@
     },
     "home": {
       "hero": {
-        "line1": "Ride. Connect.",
+        "line1": "RIDE Your Future TODAY!",
         "line2": "Experience Abu Dhabi.",
         "downloadApp": "Download App",
         "exploreTracks": "Explore Tracks"
