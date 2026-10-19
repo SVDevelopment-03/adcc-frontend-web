@@ -576,7 +576,7 @@
         "dateOfBirthRequired": "تاريخ الميلاد مطلوب.",
         "dateOfBirthInvalid": "يرجى إدخال تاريخ ميلاد صحيح.",
         "mobileRequired": "رقم الجوال مطلوب.",
-        "mobileInvalid": "يرجى إدخال رقم جوال صحيح.",
+        "mobileInvalid": "يرجى إدخال رقم جوال صحيح لرمز الدولة المحدد.",
         "emailRequired": "البريد الإلكتروني مطلوب.",
         "emailInvalid": "يرجى إدخال بريد إلكتروني صحيح.",
         "genderRequired": "الجنس مطلوب.",

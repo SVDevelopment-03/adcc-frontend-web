@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { PublicPageHero, useWordList } from "../public/publicPageHelpers";
+import { normalizePhoneForCountry } from "../../utils/phone";
 import { COUNTRY_CODES, DEFAULT_COUNTRY_CODE } from "../../constants/countryCodes";
 import { NATIONALITY_COUNTRIES } from "../../constants/nationalities";
 import {
@@ -13,7 +14,6 @@ import {
 } from "../../services/laffahRideRegistrationsApi";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_RE = /^[0-9\s\-+()]{6,20}$/;
 
 interface FormValues {
   firstName: string;
@@ -99,7 +99,7 @@ export default function LaffahRideRegistrationPage() {
     }
     if (!vals.mobileNumber.trim()) {
       e.mobileNumber = tf("errors.mobileRequired");
-    } else if (!PHONE_RE.test(vals.mobileNumber.trim())) {
+    } else if (!normalizePhoneForCountry(vals.countryCode, vals.mobileNumber)) {
       e.mobileNumber = tf("errors.mobileInvalid");
     }
     if (!vals.email.trim()) {
@@ -115,7 +115,7 @@ export default function LaffahRideRegistrationPage() {
     }
     if (!vals.emergencyContactNumber.trim()) {
       e.emergencyContactNumber = tf("errors.emergencyNumberRequired");
-    } else if (!PHONE_RE.test(vals.emergencyContactNumber.trim())) {
+    } else if (!normalizePhoneForCountry(vals.emergencyCountryCode, vals.emergencyContactNumber)) {
       e.emergencyContactNumber = tf("errors.mobileInvalid");
     }
     if (vals.raceLocations.length === 0) e.raceLocations = tf("errors.raceLocationsRequired");
@@ -158,16 +158,17 @@ export default function LaffahRideRegistrationPage() {
         firstName: values.firstName.trim(),
         lastName: values.lastName.trim(),
         dateOfBirth: values.dateOfBirth,
-        // Drop the national trunk "0" (050… → 50…) so the stored number is valid with its country code
-        mobileNumber: `${values.countryCode} ${values.mobileNumber.trim().replace(/^0+/, "")}`,
+        // Validated above; stored as "+971 501234567"
+        mobileNumber: normalizePhoneForCountry(values.countryCode, values.mobileNumber)!,
         email: values.email.trim().toLowerCase(),
         gender: values.gender as LaffahRideGender,
         nationality: values.nationality.trim(),
         city: values.city.trim(),
         emergencyContactName: values.emergencyContactName.trim(),
-        emergencyContactNumber: `${values.emergencyCountryCode} ${values.emergencyContactNumber
-          .trim()
-          .replace(/^0+/, "")}`,
+        emergencyContactNumber: normalizePhoneForCountry(
+          values.emergencyCountryCode,
+          values.emergencyContactNumber,
+        )!,
         raceLocations: values.raceLocations,
       });
       toast.success(tf("successMessage"));

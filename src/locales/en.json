@@ -1059,6 +1059,16 @@
     "detail": {
       "notFound": "Event not found",
       "editButton": "Edit Event",
+      "qr": {
+        "button": "QR Code",
+        "title": "Event QR Code",
+        "description": "Scanning this code opens the event's registration page. Download it to print or share.",
+        "download": "Download QR Code",
+        "copyLink": "Copy link",
+        "linkCopied": "Event link copied",
+        "copyFailed": "Could not copy the link",
+        "close": "Close"
+      },
       "registered": "Registered",
       "checkedIn": "Checked In",
       "completed": "Completed",

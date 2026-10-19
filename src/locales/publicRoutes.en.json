@@ -594,7 +594,7 @@
         "dateOfBirthRequired": "Date of birth is required.",
         "dateOfBirthInvalid": "Please enter a valid date of birth.",
         "mobileRequired": "Mobile number is required.",
-        "mobileInvalid": "Please enter a valid mobile number.",
+        "mobileInvalid": "Please enter a valid mobile number for the selected country code.",
         "emailRequired": "Email is required.",
         "emailInvalid": "Please enter a valid email address.",
         "genderRequired": "Gender is required.",

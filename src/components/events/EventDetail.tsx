@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Edit, Bell, ImageIcon, Trophy, UserCheck, Users, Star, Calendar, MapPin, Clock, Award, Upload, Trash2, Plus, Send } from 'lucide-react';
+import { ArrowLeft, Edit, Bell, ImageIcon, Trophy, UserCheck, Users, Star, Calendar, MapPin, Clock, Award, Upload, Trash2, Plus, Send, QrCode } from 'lucide-react';
 import { toast } from 'sonner';
 import readXlsxFile from 'read-excel-file';
 import { addEventGalleryImages, deleteEventGalleryImage, getEventByIdAdmin as getEventById, updateEvent as updateEventApi, EventApiResponse, getEventResults, adminUpdateParticipantResult } from '../../services/eventsApi';
@@ -10,6 +10,7 @@ import { sendTestBroadcastPush } from '../../services/authApi';
 import { uploadToMediaLibrary } from '../../services/mediaApi';
 import { DetailPageSkeleton } from '../ui/skeleton';
 import { EventLeads } from './EventLeads';
+import { EventQrCodeDialog } from './EventQrCodeDialog';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { ALLOWED_IMAGE_ACCEPT, filterValidImageFiles, validateImageFile } from '../../utils/imageValidation';
 
@@ -26,6 +27,7 @@ export function EventDetail() {
   const [activeTab, setActiveTab] = useState<'overview' | 'participants' | 'results' | 'gallery' | 'notifications' | 'leads'>('overview');
   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
   const [deleteImageUrl, setDeleteImageUrl] = useState<string | null>(null);
+  const [isQrOpen, setIsQrOpen] = useState(false);
 
   // Notifications tab state
   const [notifTitle, setNotifTitle] = useState('');
@@ -490,15 +492,37 @@ const formatTimeInput = (raw: string): string => {
           </div>
         </div>
 
-        <button
-          onClick={() => navigate(`/events/${id}/edit`)}
-          className="flex items-center gap-2 px-6 py-3 rounded-xl text-white transition-all hover:shadow-lg"
-          style={{ backgroundColor: '#C12D32' }}
-        >
-          <Edit className="w-5 h-5" />
-          {t('events.detail.editButton')}
-        </button>
+        <div className="flex items-center gap-3">
+          {event.isInternal && (
+            <button
+              onClick={() => setIsQrOpen(true)}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl border transition-all hover:shadow-lg"
+              style={{ borderColor: '#C12D32', color: '#C12D32' }}
+            >
+              <QrCode className="w-5 h-5" />
+              {t('events.detail.qr.button')}
+            </button>
+          )}
+          <button
+            onClick={() => navigate(`/events/${id}/edit`)}
+            className="flex items-center gap-2 px-6 py-3 rounded-xl text-white transition-all hover:shadow-lg"
+            style={{ backgroundColor: '#C12D32' }}
+          >
+            <Edit className="w-5 h-5" />
+            {t('events.detail.editButton')}
+          </button>
+        </div>
       </div>
+
+      {event.isInternal && (
+        <EventQrCodeDialog
+          open={isQrOpen}
+          onClose={() => setIsQrOpen(false)}
+          // Public registration page of the event (same domain as the dashboard)
+          eventUrl={`${window.location.origin}/events/${encodeURIComponent(event.slug || event._id || eventId)}`}
+          eventTitle={event.title}
+        />
+      )}
 
       {/* Stats Bar (app registrations; internal events collect leads instead) */}
       {!event.isInternal && (
