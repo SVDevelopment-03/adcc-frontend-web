@@ -655,7 +655,8 @@ export interface EventLeadInput {
   email: string;
   gender: EventLeadGender;
   nationality: string;
-  city: EventLeadCity;
+  /** Only asked for UAE nationals */
+  city?: EventLeadCity;
   emergencyContactName: string;
   emergencyContactNumber: string;
   /** `_id`s of picked event raceTracks (the form no longer asks for them) */

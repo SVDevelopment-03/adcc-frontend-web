@@ -16,6 +16,9 @@ import {
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// The Region/City field (UAE emirates) is only asked for UAE nationals
+const UAE_NATIONALITY = "United Arab Emirates";
+
 interface FormValues {
   firstName: string;
   lastName: string;
@@ -125,7 +128,7 @@ export default function InternalEventRegistration({
     }
     if (!vals.gender) e.gender = tf("errors.genderRequired");
     if (!vals.nationality.trim()) e.nationality = tf("errors.nationalityRequired");
-    if (!vals.city) e.city = tf("errors.cityRequired");
+    if (vals.nationality === UAE_NATIONALITY && !vals.city) e.city = tf("errors.cityRequired");
     if (!vals.emergencyContactName.trim()) {
       e.emergencyContactName = tf("errors.emergencyNameRequired");
     }
@@ -137,17 +140,20 @@ export default function InternalEventRegistration({
     return e;
   }
 
-  function clearError(name: keyof FormValues) {
-    if (!errors[name]) return;
-    const nextErrors = { ...errors };
-    delete nextErrors[name];
-    setErrors(nextErrors);
-  }
-
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     const { name, value } = e.target;
-    setValues((prev) => ({ ...prev, [name]: value }));
-    clearError(name as keyof FormValues);
+    setValues((prev) => ({
+      ...prev,
+      [name]: value,
+      // Drop a picked city when switching away from UAE
+      ...(name === "nationality" && value !== UAE_NATIONALITY ? { city: "" } : {}),
+    }));
+    setErrors((prev) => {
+      const next = { ...prev };
+      delete next[name as keyof FormValues];
+      if (name === "nationality" && value !== UAE_NATIONALITY) delete next.city;
+      return next;
+    });
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -168,7 +174,7 @@ export default function InternalEventRegistration({
         email: values.email.trim().toLowerCase(),
         gender: values.gender as EventLeadGender,
         nationality: values.nationality.trim(),
-        city: values.city as EventLeadCity,
+        city: values.nationality === UAE_NATIONALITY ? (values.city as EventLeadCity) : undefined,
         emergencyContactName: values.emergencyContactName.trim(),
         emergencyContactNumber: normalizePhoneForCountry(
           values.emergencyCountryCode,
@@ -361,6 +367,7 @@ export default function InternalEventRegistration({
                 {errors.nationality && <p className="mt-1 text-[12px] text-red-500">{errors.nationality}</p>}
               </label>
 
+              {values.nationality === UAE_NATIONALITY && (
               <label className="block">
                 <span className="text-[14px]">{tf("city")}</span>
                 <select
@@ -378,6 +385,7 @@ export default function InternalEventRegistration({
                 </select>
                 {errors.city && <p className="mt-1 text-[12px] text-red-500">{errors.city}</p>}
               </label>
+              )}
 
               <h3 className="mt-2 text-[28px] uppercase md:col-span-2">{tf("emergencyContact")}</h3>
 
