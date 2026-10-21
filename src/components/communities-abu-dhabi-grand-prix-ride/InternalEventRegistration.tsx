@@ -44,7 +44,7 @@ const INITIAL: FormValues = {
   mobileNumber: "",
   email: "",
   gender: "",
-  nationality: "",
+  nationality: UAE_NATIONALITY,
   city: "",
   emergencyContactName: "",
   emergencyCountryCode: DEFAULT_COUNTRY_CODE.dialCode,
