@@ -4037,6 +4037,7 @@ const PARTNERS = [
   { name: "Partner 2", logo: "/images/logos/logo2.png" },
   { name: "Partner 5", logo: "/images/logos/logo5.png" },
   { name: "Partner 6", logo: "/images/logos/logo6-v1.png" },
+  { name: "Partner 6 v2", logo: "/images/logos/logo6-v2.png" },
   { name: "Partner 7", logo: "/images/logos/logo7.png" },
   { name: "Partner 8", logo: "/images/logos/logo8.png" },
 ];
