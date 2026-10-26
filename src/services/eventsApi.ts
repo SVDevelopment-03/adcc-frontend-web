@@ -258,6 +258,11 @@ export const createEvent = async (
     if (eventData.schedule) {
       formData.append("schedule", JSON.stringify(eventData.schedule));
     }
+    // Repeating event: backend creates one event per matching weekday
+    if (Array.isArray(eventData.repeatWeekdays) && eventData.repeatUntil) {
+      formData.append("repeatWeekdays", JSON.stringify(eventData.repeatWeekdays));
+      formData.append("repeatUntil", eventData.repeatUntil);
+    }
     // Send amenities as JSON string so backend can parse to array (FormData sends strings only)
     if (eventData.amenities && Array.isArray(eventData.amenities)) {
       formData.append("amenities", JSON.stringify(eventData.amenities));

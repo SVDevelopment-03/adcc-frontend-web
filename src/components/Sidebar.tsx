@@ -44,7 +44,7 @@ interface MenuItemDef {
   isChild?: boolean;
 }
 
-const menuItems: MenuItemDef[] = [
+export const menuItems: MenuItemDef[] = [
   { id: 'dashboard', labelKey: 'sidebar.dashboard', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['Admin', 'content-manager', 'community-manager', 'moderator'], path: '/dashboard' },
   { id: 'events', labelKey: 'sidebar.events', icon: <Calendar className="w-5 h-5" />, roles: ['Admin', 'content-manager', 'community-manager'], path: '/events' },
   { id: 'eventOrganizers', labelKey: 'sidebar.eventOrganizers', icon: <Building2 className="w-4 h-4" />, roles: ['Admin'], path: '/events/organizers', isChild: true },
@@ -72,29 +72,22 @@ const menuItems: MenuItemDef[] = [
   { id: 'auditLog', labelKey: 'sidebar.auditLog', icon: <History className="w-5 h-5" />, roles: ['Admin'], path: '/audit-log' },
 ];
 
-export function Sidebar({ hasPermission }: SidebarProps) {
-  const { t } = useTranslation();
-
-  const visibleItems = menuItems.filter((item) => {
+/** Menu items the current user's permissions unlock. */
+export const getVisibleMenuItems = (hasPermission: (permissionKey: string) => boolean) =>
+  menuItems.filter((item) => {
     const requiredPerm = SIDEBAR_ITEM_PERMISSION[item.id as keyof typeof SIDEBAR_ITEM_PERMISSION];
     if (!requiredPerm) return true;
     return hasPermission(requiredPerm);
   });
 
+export function Sidebar({ hasPermission }: SidebarProps) {
+  const { t } = useTranslation();
+
+  const visibleItems = getVisibleMenuItems(hasPermission);
+
   return (
     <div className="scroller fixed left-0 top-16 w-64 h-[calc(100vh-4rem)] overflow-x-scroll bg-white shadow-sm border-r border-gray-200 scroll-smooth">
       <div className="p-6">
-        <div className="flex items-center gap-3 mb-8">
-          <img
-            src="/images/favicon.png"
-            alt={t('sidebar.appTitle')}
-            className="w-10 h-10 rounded-full object-cover"
-          />
-          <div>
-            <div className="text-lg" style={{ color: '#333' }}>{t('sidebar.appTitle')}</div>
-          </div>
-        </div>
-
         <nav className="space-y-1">
           {visibleItems.map(item => (
             <NavLink

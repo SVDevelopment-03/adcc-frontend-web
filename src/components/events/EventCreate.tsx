@@ -20,6 +20,22 @@ interface EventCreateProps {
   role: UserRole;
 }
 
+// Must match MAX_SERIES_OCCURRENCES in the backend event controller.
+const MAX_REPEAT_OCCURRENCES = 104;
+const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+/** YYYY-MM-DD dates from start through until (inclusive) on the given weekdays (0 = Sunday). */
+const getRepeatDates = (start: string, until: string, weekdays: number[]): string[] => {
+  if (!start || !until || weekdays.length === 0) return [];
+  const dates: string[] = [];
+  const end = new Date(`${until}T00:00:00Z`);
+  for (let day = new Date(`${start}T00:00:00Z`); day <= end; day.setUTCDate(day.getUTCDate() + 1)) {
+    if (weekdays.includes(day.getUTCDay())) dates.push(day.toISOString().slice(0, 10));
+    if (dates.length > MAX_REPEAT_OCCURRENCES) break;
+  }
+  return dates;
+};
+
 export function EventCreate({ role }: EventCreateProps) {
 
   const navigate = useNavigate();
@@ -39,6 +55,10 @@ export function EventCreate({ role }: EventCreateProps) {
   const [communities, setCommunities] = useState<any[]>([]);
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [isInternal, setIsInternal] = useState(false);
+  // Repeat weekly: one event per selected weekday from the event date to repeatUntil
+  const [repeatEnabled, setRepeatEnabled] = useState(false);
+  const [repeatWeekdays, setRepeatWeekdays] = useState<number[]>([]);
+  const [repeatUntil, setRepeatUntil] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { locale } = useLocale();
   const [badgePreview, setBadgePreview] = useState<string | null>(null);
@@ -391,6 +411,24 @@ const removeBadgeImage = () => {
     });
   };
 
+  const repeatOccurrences = repeatEnabled
+    ? getRepeatDates(formData.eventDate, repeatUntil, repeatWeekdays)
+    : [];
+
+  const toggleRepeat = (enabled: boolean) => {
+    setRepeatEnabled(enabled);
+    // Start with the event date's own weekday selected
+    if (enabled && repeatWeekdays.length === 0 && formData.eventDate) {
+      setRepeatWeekdays([new Date(`${formData.eventDate}T00:00:00Z`).getUTCDay()]);
+    }
+  };
+
+  const toggleRepeatWeekday = (day: number) => {
+    setRepeatWeekdays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day].sort(),
+    );
+  };
+
   const validateForm = () => {
     const errors: { [key: string]: string } = {};
     const required = t('common.fieldRequired', 'This field is required');
@@ -408,6 +446,17 @@ const removeBadgeImage = () => {
     if (!formData.eventDate) errors.eventDate = required;
     if (!formData.eventTime) errors.eventTime = required;
     if (!formData.endTime) errors.endTime = required;
+    if (repeatEnabled) {
+      if (repeatWeekdays.length === 0) errors.repeatWeekdays = 'Pick at least one day';
+      if (!repeatUntil) errors.repeatUntil = required;
+      else if (formData.eventDate && repeatUntil < formData.eventDate) {
+        errors.repeatUntil = 'Must be on or after the event date';
+      } else if (repeatOccurrences.length === 0) {
+        errors.repeatUntil = 'No selected days fall in this range';
+      } else if (repeatOccurrences.length > MAX_REPEAT_OCCURRENCES) {
+        errors.repeatUntil = `At most ${MAX_REPEAT_OCCURRENCES} events per series`;
+      }
+    }
     // Backend rejects non-URL values for these optional links
     const isValidUrl = (value: string) => {
       try {
@@ -497,11 +546,16 @@ const removeBadgeImage = () => {
         isPurposeBased: !!formData.isPurposeBased,
         isInternal,
         badgeImage: badgeImage || undefined,
+        ...(repeatEnabled ? { repeatWeekdays, repeatUntil } : {}),
       };
 
       await createEvent(payload);
       console.log("FINAL PAYLOAD GOING TO BACKEND 👉", payload);
-      toast.success(t('events.create.toasts.createSuccess'));
+      toast.success(
+        repeatEnabled
+          ? `${repeatOccurrences.length} events created`
+          : t('events.create.toasts.createSuccess'),
+      );
       navigate('/events');
     } catch (error) {
       toast.error(t('events.create.toasts.createError'));
@@ -835,6 +889,71 @@ const removeBadgeImage = () => {
                 />
                 <FieldError message={formErrors.endTime} />
               </div>
+            </div>
+
+            <div className="mt-6 pt-6 border-t border-gray-100">
+              <label className="flex items-center gap-3 cursor-pointer w-fit">
+                <input
+                  type="checkbox"
+                  checked={repeatEnabled}
+                  onChange={(e) => toggleRepeat(e.target.checked)}
+                  className="w-4 h-4 accent-red-700"
+                />
+                <span className="text-sm" style={{ color: '#333' }}>Repeat weekly</span>
+              </label>
+              <p className="text-xs mt-1 ms-7" style={{ color: '#999' }}>
+                Creates a separate event for each date, each with its own registrations.
+              </p>
+
+              {repeatEnabled && (
+                <div className="mt-4 ms-7 space-y-4">
+                  <div>
+                    <label className="block text-sm mb-2" style={{ color: '#666' }}>Repeat on</label>
+                    <div className="flex flex-wrap gap-2">
+                      {WEEKDAY_LABELS.map((label, day) => {
+                        const selected = repeatWeekdays.includes(day);
+                        return (
+                          <button
+                            key={label}
+                            type="button"
+                            onClick={() => toggleRepeatWeekday(day)}
+                            className="px-3 py-1.5 rounded-lg text-sm border transition-colors"
+                            style={
+                              selected
+                                ? { backgroundColor: '#C12D32', borderColor: '#C12D32', color: '#fff' }
+                                : { backgroundColor: '#fff', borderColor: '#E5E7EB', color: '#333' }
+                            }
+                          >
+                            {label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <FieldError message={formErrors.repeatWeekdays} />
+                  </div>
+
+                  <div className="max-w-xs">
+                    <label className="block text-sm mb-2" style={{ color: '#666' }}>Repeat until</label>
+                    <input
+                      type="date"
+                      value={repeatUntil}
+                      min={formData.eventDate || undefined}
+                      onChange={(e) => setRepeatUntil(e.target.value)}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
+                    />
+                    <FieldError message={formErrors.repeatUntil} />
+                  </div>
+
+                  {!formData.eventDate ? (
+                    <p className="text-sm" style={{ color: '#999' }}>Pick the event date to start the series.</p>
+                  ) : repeatOccurrences.length > 0 && repeatOccurrences.length <= MAX_REPEAT_OCCURRENCES ? (
+                    <p className="text-sm" style={{ color: '#333' }}>
+                      <strong>{repeatOccurrences.length}</strong> events will be created, from{' '}
+                      {repeatOccurrences[0]} to {repeatOccurrences[repeatOccurrences.length - 1]}.
+                    </p>
+                  ) : null}
+                </div>
+              )}
             </div>
           </div>
 

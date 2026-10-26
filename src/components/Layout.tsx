@@ -283,7 +283,7 @@ export function Layout() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#FFF9EF' }}>
-      <TopBar roleTitle={roleTitle} />
+      <TopBar roleTitle={roleTitle} hasPermission={hasPermission} />
       <MediaLibraryUploadBridge />
       <div className="flex">
         <Sidebar hasPermission={hasPermission} />
