@@ -11,6 +11,7 @@ export type SidebarItemId =
   | 'marketplace'
   | 'merchandise'
   | 'cms'
+  | 'partners'
   | 'media'
   | 'push'
   | 'news'
@@ -54,6 +55,8 @@ export const SIDEBAR_ITEM_PERMISSION: Record<SidebarItemId, string | null> = {
   marketplace: 'moderate_content',
   merchandise: 'manage_store',
   cms: 'app_configuration',
+  // partner.route.ts gates writes on app_configuration.
+  partners: 'app_configuration',
   media: null,
   push: 'app_configuration',
   news: 'manage_cms',
@@ -89,6 +92,7 @@ export const SIDEBAR_ITEM_PATH: Record<SidebarItemId, string> = {
   marketplace: '/marketplace',
   merchandise: '/merchandise',
   cms: '/cms',
+  partners: '/partners',
   media: '/media',
   push: '/push',
   news: '/news',

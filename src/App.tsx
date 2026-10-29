@@ -21,6 +21,7 @@ import CommunitiesAlQuadraCyclePath from './components/communities-al-quadra-cyc
 import CommunitiesMarchDistanceChallenge from './components/communities-march-distance-challenge/CommunitiesMarchDistanceChallenge';
 import UserAdccStore from './components/user-adcc-store/UserAdccStore';
 import MerchandiseDetailPage from './components/user-adcc-store/MerchandiseDetailPage';
+import { STORE_LAUNCHED } from './components/user-adcc-store/storeConfig';
 import UserMarketplace from './components/user-marketplace/UserMarketplace';
 import StoreDetailPage from './components/user-store-detail/userStoreDetail';
 import UserNews from './components/user-news/UserNews';
@@ -198,7 +199,10 @@ function AppContent() {
           />
         </>
       )}
-      <Route path="/user-adcc-store/product/:id" element={publicPage(<MerchandiseDetailPage />)} />
+      <Route
+        path="/user-adcc-store/product/:id"
+        element={STORE_LAUNCHED ? publicPage(<MerchandiseDetailPage />) : <Navigate to="/user-adcc-store" replace />}
+      />
       <Route path="/user-adcc-store/*" element={publicPage(<UserAdccStore />)} />
       <Route path="/user-marketplace" element={publicPage(<UserMarketplace />)} />
       <Route path="/user-marketplace/:id" element={publicPage(<StoreDetailPage />)} />

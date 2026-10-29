@@ -14,6 +14,7 @@ import { AppStoreButton } from "../public/AppStoreButton";
 import { showAppComingSoon } from "../../utils/appStoreLink";
 import { Bike, CalendarDays, MapPin, Users, UserRound } from "lucide-react";
 import { getPublicFeedPosts, FeedPost } from "../../services/feedPostsApi";
+import { getPartners } from "../../services/partnersApi";
 
 const TICKER_ITEMS = [
   {
@@ -4032,7 +4033,9 @@ function AppSection() {
 
 /* ─── PARTNERS ──────────────────────────────────────────────────────────────*/
 
-const PARTNERS = [
+// Shown only if the partners API can't be reached; the live list is managed
+// from the dashboard (Partners page).
+const FALLBACK_PARTNERS = [
   { name: "Partner 1", logo: "/images/logos/logo1.png" },
   { name: "Partner 2", logo: "/images/logos/logo2.png" },
   { name: "Partner 5", logo: "/images/logos/logo5.png" },
@@ -4052,13 +4055,33 @@ const FEED_CARD_WIDTH_ESTIMATE = 430; // clamp(280px, 32vw, 409px) card + 20px g
 
 function PartnersSection() {
   const { t } = useTranslation();
+  const [partners, setPartners] = useState<{ name: string; logo: string }[]>(
+    [],
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    getPartners(true)
+      .then((list) => {
+        if (!cancelled) setPartners(list);
+      })
+      .catch(() => {
+        if (!cancelled) setPartners(FALLBACK_PARTNERS);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (partners.length === 0) return null;
+
   const repeatCount = Math.max(
     1,
     Math.ceil(
-      MARQUEE_MIN_HALF_WIDTH / (PARTNERS.length * PARTNER_CARD_WIDTH_ESTIMATE),
+      MARQUEE_MIN_HALF_WIDTH / (partners.length * PARTNER_CARD_WIDTH_ESTIMATE),
     ),
   );
-  const half = Array.from({ length: repeatCount }, () => PARTNERS).flat();
+  const half = Array.from({ length: repeatCount }, () => partners).flat();
   // Duplicated so the marquee track can loop seamlessly (translateX -50%).
   const marqueeLogos = [...half, ...half];
 

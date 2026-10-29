@@ -6,7 +6,6 @@ import {
   Search,
   ChevronDown,
   ChevronRight,
-  ArrowRight,
   Phone,
   Mail,
   MapPin,
@@ -18,11 +17,9 @@ import {
   type ProductsPagination,
 } from "../../services/merchandiseApi";
 import type { Category, Product } from "../merchandise/merchandiseData";
-import {
-  AnimatedWords,
-  PublicPageHero,
-  useWordList,
-} from "../public/publicPageHelpers";
+import { AnimatedWords } from "../public/publicPageHelpers";
+
+import { STORE_LAUNCHED } from "./storeConfig";
 
 const PRODUCTS_PAGE_SIZE = 6;
 
@@ -70,12 +67,6 @@ function MerchandiseCard({ product }: { product: Product }) {
 
 export default function AdccStorePage() {
   const { t, i18n } = useTranslation();
-  const heroTitleWords = useWordList("public.store.listing.hero.titleWords");
-  const heroBreadcrumb = useWordList("public.store.listing.hero.breadcrumb");
-  const browseTitleWords = useWordList("public.store.listing.browseTitleWords");
-  const gearUpTitleWords = useWordList(
-    "public.store.listing.gearUp.titleWords",
-  );
   const [merchandiseProducts, setMerchandiseProducts] = useState<Product[]>([]);
   const [merchandiseLoading, setMerchandiseLoading] = useState(true);
   const [merchandisePage, setMerchandisePage] = useState(1);
@@ -93,12 +84,14 @@ export default function AdccStorePage() {
   const [activeSearch, setActiveSearch] = useState("");
 
   useEffect(() => {
+    if (!STORE_LAUNCHED) return;
     getMerchandiseCategories()
       .then(setCategories)
       .catch(() => setCategories([]));
   }, [i18n.language]);
 
   useEffect(() => {
+    if (!STORE_LAUNCHED) return;
     setMerchandiseLoading(true);
     getMerchandiseProductsPage({
       source: "adcc",
@@ -143,7 +136,7 @@ export default function AdccStorePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#eaf4ff] text-black">
+    <div className="bg-[#eaf4ff] text-black">
       <header className="flex h-[78px] items-center justify-between px-4 sm:h-[96px] sm:px-6 md:px-10 lg:h-[134px] lg:px-12 xl:px-20">
         <img
           src="/ADCC-Logo.png"
@@ -167,18 +160,19 @@ export default function AdccStorePage() {
         </div>
       </header>
 
-      <PublicPageHero
-        titleWords={heroTitleWords}
-        breadcrumb={heroBreadcrumb}
-        backgroundImage="/img/pexels-zakhar-36955801 1.png"
-        classPrefix="store-page"
-      />
-
-      <section className="w-full px-4 py-10 sm:px-6 sm:py-20 md:px-10 lg:px-12 lg:py-24 xl:px-20 min-[1920px]:max-w-300 min-[1920px]:mx-auto">
-        <h2 className="flex justify-center overflow-hidden text-center text-[28px] font-normal uppercase sm:text-[38px] lg:text-[50px]">
-          <AnimatedWords words={browseTitleWords} gap={16} />
-        </h2>
-
+      <section className="w-full px-4 pb-6 pt-28 sm:px-6 sm:pb-10 sm:pt-36 md:px-10 lg:px-12 lg:pb-12 lg:pt-44 xl:px-20 min-[1920px]:max-w-300 min-[1920px]:mx-auto">
+        {!STORE_LAUNCHED ? (
+          <div className="flex items-center justify-center rounded-md border border-black/5 px-4 py-10 text-center shadow-inner sm:py-16">
+            <h2 className="flex justify-center overflow-hidden text-[28px] font-normal uppercase leading-tight sm:text-[38px] sm:leading-[46px] lg:text-[50px] lg:leading-[60px]">
+              <AnimatedWords
+                words={t("public.store.listing.launchingSoon").split(" ")}
+                gap={16}
+                className="justify-center"
+              />
+            </h2>
+          </div>
+        ) : (
+        <>
         <div className="mt-6 grid grid-cols-1 gap-4 sm:mt-10 sm:gap-5 lg:grid-cols-[1fr_292px_156px]">
           <div className="flex h-[52px] items-center rounded-full border border-[#CBCBCB] bg-white px-6 sm:h-[66px] sm:px-8">
             <input
@@ -344,31 +338,8 @@ export default function AdccStorePage() {
             </button>
           </div>
         )}
-      </section>
-
-      <section className="pt-8 relative grid w-full grid-cols-1 items-end gap-8 overflow-hidden px-4 pb-12 sm:gap-16 sm:px-6 sm:pb-28 md:px-10 lg:grid-cols-2 lg:px-12 xl:px-20 bg-b-0 min-[1920px]:max-w-300 min-[1920px]:mx-auto">
-        <div>
-          <h2 className="max-w-[516px] overflow-hidden text-[28px] font-normal uppercase leading-tight sm:text-[38px] sm:leading-[46px] lg:text-[50px] lg:leading-[60px]">
-            <AnimatedWords words={gearUpTitleWords} gap={16} />
-          </h2>
-
-          <p className="mt-6 max-w-[615px] text-[15px] font-normal leading-6 sm:mt-12 sm:text-[24px] sm:leading-[30px]">
-            {t("public.store.listing.gearUp.body")}
-          </p>
-
-          <Link
-            to="/contact-us"
-            className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#019839] px-6 py-3 text-[16px] font-bold text-white sm:mt-10 sm:px-8 sm:py-4 sm:text-[18px]"
-          >
-            {t("public.common.getInTouch")} <ArrowRight size={20} />
-          </Link>
-        </div>
-
-        <img
-          src="/img/image 30691.png"
-          alt={t("public.store.listing.gearUp.imageAlt")}
-          className="h-[300px] w-full max-w-[500px] object-contain sm:h-[500px] lg:absolute lg:bottom-[-25px] lg:end-0 mb--0"
-        />
+        </>
+        )}
       </section>
 
       <footer className="w-full px-4 py-24 sm:px-6 md:px-10 lg:px-12 xl:px-20">

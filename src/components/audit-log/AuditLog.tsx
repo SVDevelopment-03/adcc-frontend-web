@@ -89,6 +89,7 @@ const MODULE_NAMES: Record<string, string> = {
   'app-banners-ar': 'app banner (Arabic)',
   'product-banners': 'store banner',
   'product-banners-ar': 'store banner (Arabic)',
+  partners: 'partner logo',
   contact: 'contact message',
   'newsletter-subscriptions': 'newsletter subscriber',
   'laffah-ride-registrations': 'Laffah Ride registration',

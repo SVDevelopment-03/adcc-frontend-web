@@ -27,6 +27,7 @@ import {
   History,
   Building2,
   Bike,
+  Handshake,
 } from 'lucide-react';
 import { SIDEBAR_ITEM_PERMISSION } from '../rbac/rbacKeys';
 
@@ -56,6 +57,7 @@ export const menuItems: MenuItemDef[] = [
   { id: 'marketplace', labelKey: 'sidebar.marketplace', icon: <ShoppingBag className="w-5 h-5" />, roles: ['Admin', 'community-manager', 'content-manager', 'moderator'], path: '/marketplace' },
   { id: 'merchandise', labelKey: 'sidebar.merchandise', icon: <Store className="w-5 h-5" />, roles: ['Admin'], path: '/merchandise' },
   { id: 'cms', labelKey: 'sidebar.cms', icon: <FileText className="w-5 h-5" />, roles: ['Admin', 'content-manager'], path: '/cms' },
+  { id: 'partners', labelKey: 'sidebar.partners', icon: <Handshake className="w-5 h-5" />, roles: ['Admin', 'content-manager'], path: '/partners' },
   { id: 'media', labelKey: 'sidebar.media', icon: <Image className="w-5 h-5" />, roles: ['Admin', 'content-manager'], path: '/media' },
   { id: 'push', labelKey: 'sidebar.push', icon: <Bell className="w-5 h-5" />, roles: ['Admin', 'content-manager', 'community-manager'], path: '/push' },
   { id: 'news', labelKey: 'sidebar.news', icon: <Newspaper className="w-5 h-5" />, roles: ['Admin', 'content-manager'], path: '/news' },
