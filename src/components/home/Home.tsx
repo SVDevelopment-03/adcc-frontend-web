@@ -15,6 +15,7 @@ import { showAppComingSoon } from "../../utils/appStoreLink";
 import { Bike, CalendarDays, MapPin, Users, UserRound } from "lucide-react";
 import { getPublicFeedPosts, FeedPost } from "../../services/feedPostsApi";
 import { getPartners } from "../../services/partnersApi";
+import { useHomeBanner } from "./useHomeBanner";
 
 const TICKER_ITEMS = [
   {
@@ -3394,10 +3395,19 @@ function HeroSection() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { locale } = useLocale();
-  const line1 = t("public.home.hero.line1");
-  const line2 = t("public.home.hero.line2");
-  const heroImage =
-    locale === "ar" ? "/img/ar-home.png" : "/img/DSC04620.jpg 1.png";
+  const banner = useHomeBanner();
+  const isAr = locale === "ar";
+
+  const heroImage = banner
+    ? (isAr && banner.imageAr) || banner.imageEn
+    : "";
+  const lines = banner && !banner.hideText
+    ? (isAr
+        ? [banner.titleLine1Ar, banner.titleLine2Ar]
+        : [banner.titleLine1En, banner.titleLine2En]
+      ).filter((line) => line.trim())
+    : [];
+  const showButtons = Boolean(banner && !banner.hideText);
 
   const lineVariants = {
     hidden: { y: "120%", opacity: 0 },
@@ -3408,79 +3418,83 @@ function HeroSection() {
     <section className="home-hero public-hero-bleed">
       <div
         className="home-hero-bg"
-        style={{ backgroundImage: `url('${heroImage}')` }}
+        style={heroImage ? { backgroundImage: `url('${heroImage}')` } : undefined}
         aria-hidden
       />
       <div className="home-hero-content">
-        <motion.h1
-          key={locale}
-          className="home-hero-title"
-          initial="hidden"
-          animate="visible"
-          variants={{
-            visible: {
-              transition: { staggerChildren: 0.12 },
-            },
-          }}
-        >
-          {[line1, line2].map((line, lineIndex) => (
-            <span key={lineIndex} className="home-hero-title-line">
-              <motion.span
-                className="inline-block"
-                variants={lineVariants}
-                transition={{
-                  duration: 0.7,
-                  delay: lineIndex * 0.08,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-              >
-                {line}
-              </motion.span>
-            </span>
-          ))}
-        </motion.h1>
-        <div className="home-hero-actions">
-          <AnimatedButton
-            showArrow={false}
-            size="default"
-            className="home-hero-download-btn"
-            onClick={() =>
-              document
-                .getElementById("start-your-ride")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
+        {lines.length > 0 && (
+          <motion.h1
+            key={`${locale}-${lines.join("|")}`}
+            className="home-hero-title"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              visible: {
+                transition: { staggerChildren: 0.12 },
+              },
+            }}
           >
-            {t("public.home.hero.downloadApp")}{" "}
-            <img
-              src="/img/download-gif.gif"
-              alt=""
-              aria-hidden="true"
-              style={{
-                width: 20,
-                height: 20,
-                display: "inline-block",
-                verticalAlign: "middle",
-              }}
-            />
-          </AnimatedButton>
-          <button
-            className="hero-explore-btn"
-            onClick={() => navigate("/tracks")}
-          >
-            <span className="hero-explore-btn-inner">
-              {t("public.home.hero.exploreTracks")}
-
+            {lines.map((line, lineIndex) => (
+              <span key={lineIndex} className="home-hero-title-line">
+                <motion.span
+                  className="inline-block"
+                  variants={lineVariants}
+                  transition={{
+                    duration: 0.7,
+                    delay: lineIndex * 0.08,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  {line}
+                </motion.span>
+              </span>
+            ))}
+          </motion.h1>
+        )}
+        {showButtons && (
+          <div className="home-hero-actions">
+            <AnimatedButton
+              showArrow={false}
+              size="default"
+              className="home-hero-download-btn"
+              onClick={() =>
+                document
+                  .getElementById("start-your-ride")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
+            >
+              {t("public.home.hero.downloadApp")}{" "}
               <img
-                src="/img/explore.svg"
+                src="/img/download-gif.gif"
                 alt=""
                 aria-hidden="true"
-                width={28}
-                height={28}
-                className="hero-explore-btn-icon"
+                style={{
+                  width: 20,
+                  height: 20,
+                  display: "inline-block",
+                  verticalAlign: "middle",
+                }}
               />
-            </span>
-          </button>
-        </div>
+            </AnimatedButton>
+            <button
+              className="hero-explore-btn"
+              onClick={() => navigate("/tracks")}
+            >
+              <span className="hero-explore-btn-inner">
+                {t("public.home.hero.exploreTracks")}
+
+                <img
+                  src="/img/explore.svg"
+                  alt=""
+                  aria-hidden="true"
+                  width={28}
+                  height={28}
+                  className="hero-explore-btn-icon"
+                />
+              </span>
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

@@ -32,6 +32,8 @@ import { Merchandise } from './merchandise/Merchandise';
 import { MarketplaceItemEdit } from './marketplace/MarketplaceItemEdit';
 import { CMS } from './cms/CMS';
 import { PartnersManager } from './partners/PartnersManager';
+import { PagesList } from './pages/PagesList';
+import { HomePageEditor } from './pages/HomePageEditor';
 import { MediaLibrary } from './media/MediaLibrary';
 import { MediaLibraryUploadBridge } from './media/MediaLibraryUploadBridge';
 import { PushNotifications } from './push/PushNotifications';
@@ -337,6 +339,8 @@ export function Layout() {
             <Route path="/merchandise" element={withRoleSidebarAccess('merchandise', <Merchandise navigate={() => {}} />)} />
             <Route path="/marketplace/:id/edit" element={withRoleSidebarAccess('marketplace', <MarketplaceItemEdit />)} />
             <Route path="/cms" element={withRoleSidebarAccess('cms', <CMS />)} />
+            <Route path="/pages" element={withRoleSidebarAccess('pages', <PagesList />)} />
+            <Route path="/pages/home" element={withRoleSidebarAccess('pages', <HomePageEditor />)} />
             <Route path="/partners" element={withRoleSidebarAccess('partners', <PartnersManager />)} />
             <Route path="/media" element={withRoleSidebarAccess('media', <MediaLibrary />)} />
             <Route path="/push" element={withRoleSidebarAccess('push', <PushNotifications />)} />
