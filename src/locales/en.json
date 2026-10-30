@@ -63,6 +63,7 @@
       "hideTextHint": "When checked, the banner title and buttons are not shown on the website, even if they are filled in below. Only the image is shown.",
       "hiddenOnSite": "(hidden on the website)",
       "imageEn": "Banner image (English)",
+      "imageSize": "Recommended size: {{size}}.",
       "imageEnHint": "Required.",
       "imageAr": "Banner image (Arabic)",
       "imageArHint": "Optional — the English image is used when empty.",

@@ -16,6 +16,9 @@ import { HOME_BANNER_CACHE_KEY } from '../home/useHomeBanner';
 
 type ImageField = 'imageEn' | 'imageAr';
 
+// Size the homepage hero is designed for.
+const BANNER_IMAGE_SIZE = '1440 × 806 px';
+
 const inputClass = 'w-full border rounded-lg px-3 py-2 text-sm';
 const inputStyle = { borderColor: '#E5DDD4' };
 
@@ -133,7 +136,7 @@ function ImageUploadField({
         )}
       </div>
       <p className="text-xs" style={{ color: '#999' }}>
-        {IMAGE_UPLOAD_HINT}. {hint}
+        {IMAGE_UPLOAD_HINT}. {t('pages.banner.imageSize', { size: BANNER_IMAGE_SIZE })} {hint}
       </p>
     </div>
   );
