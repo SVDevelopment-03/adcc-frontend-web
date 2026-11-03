@@ -16,10 +16,12 @@ import { Bike, CalendarDays, MapPin, Users, UserRound } from "lucide-react";
 import { getPublicFeedPosts, FeedPost } from "../../services/feedPostsApi";
 import { getPartners } from "../../services/partnersApi";
 import { useHomeBanner } from "./useHomeBanner";
+import { openHomeLink, useHomeSection } from "./useHomeSection";
 
-const TICKER_ITEMS = [
+// Visual style of each ticker position; the text comes from the "stats" home
+// section and the styles repeat when there are more than four items.
+const TICKER_STYLES = [
   {
-    key: "members" as const,
     Icon: Users,
     iconClass: "home-ticker-icon--members",
     textClass: "home-ticker-text--members",
@@ -27,7 +29,6 @@ const TICKER_ITEMS = [
     dark: false,
   },
   {
-    key: "loop" as const,
     Icon: MapPin,
     iconClass: "home-ticker-icon--md",
     textClass: "home-ticker-text--stat",
@@ -35,7 +36,6 @@ const TICKER_ITEMS = [
     dark: true,
   },
   {
-    key: "events" as const,
     Icon: CalendarDays,
     iconClass: "home-ticker-icon--md",
     textClass: "home-ticker-text--stat",
@@ -43,7 +43,6 @@ const TICKER_ITEMS = [
     dark: false,
   },
   {
-    key: "distance" as const,
     Icon: Bike,
     iconClass: "home-ticker-icon--lg",
     textClass: "home-ticker-text--stat",
@@ -3502,9 +3501,15 @@ function HeroSection() {
 
 /* ─── STATS TICKER ───────────────────────────────────────────────────────────*/
 function StatsTicker() {
-  const { t } = useTranslation();
+  const { visible, list, pickItem } = useHomeSection("stats");
+  const items = list("items")
+    .map((item) => pickItem(item, "text"))
+    .filter((text) => text.trim());
 
-  const renderItem = (item: (typeof TICKER_ITEMS)[number], itemKey: string) => {
+  if (!visible || items.length === 0) return null;
+
+  const renderItem = (text: string, index: number, itemKey: string) => {
+    const item = TICKER_STYLES[index % TICKER_STYLES.length];
     const { Icon } = item;
     const iconColor = item.dark ? "#ffffff" : "#000000";
 
@@ -3527,21 +3532,17 @@ function StatsTicker() {
             item.dark ? "home-ticker-text--dark" : "home-ticker-text--light"
           }`}
         >
-          {t(`public.home.stats.${item.key}`)}
+          {text}
         </span>
       </div>
     );
   };
 
   return (
-    <div className="home-ticker" aria-label={t("public.home.stats.members")}>
+    <div className="home-ticker" aria-label={items[0]}>
       <div className="home-ticker-track">
-        {TICKER_ITEMS.map((item, index) =>
-          renderItem(item, `ticker-a-${index}`),
-        )}
-        {TICKER_ITEMS.map((item, index) =>
-          renderItem(item, `ticker-b-${index}`),
-        )}
+        {items.map((text, index) => renderItem(text, index, `ticker-a-${index}`))}
+        {items.map((text, index) => renderItem(text, index, `ticker-b-${index}`))}
       </div>
     </div>
   );
@@ -3588,35 +3589,18 @@ function CyclingJourneySection() {
       behavior: "smooth",
     });
   };
-  const titleLine1 = t("public.home.journey.titleLine1");
-  const titleLine2 = t("public.home.journey.titleLine2");
-  const journeyText = t("public.home.journey.text");
-  const cards = [
-    {
-      label: t("public.home.journey.cards.tracks"),
-      bg: "#777777",
-      img: "/images/journey-1.png",
-      to: "/tracks",
-    },
-    {
-      label: t("public.home.journey.cards.events"),
-      bg: "#777777",
-      img: "/images/journey-2.png",
-      to: "/events",
-    },
-    {
-      label: t("public.home.journey.cards.challenges"),
-      bg: "#777777",
-      img: "/images/journey-3.png",
-      to: "/challenges",
-    },
-    {
-      label: t("public.home.journey.cards.community"),
-      bg: "#777777",
-      img: "https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=400&q=80",
-      to: "/communities",
-    },
-  ];
+  const { visible, pick, pickItem, list, value } = useHomeSection("journey");
+  const titleLine1 = pick("titleLine1");
+  const titleLine2 = pick("titleLine2");
+  const journeyText = pick("text");
+  const buttonLabel = pick("buttonLabel");
+  const riderImage = pick("riderImage");
+  const cards = list("cards").map((card) => ({
+    label: pickItem(card, "label"),
+    bg: "#777777",
+    img: card.image,
+    to: card.link,
+  }));
 
   useEffect(() => {
     const cardsEl = cardsRef.current;
@@ -3634,7 +3618,9 @@ function CyclingJourneySection() {
     observer.observe(cardsEl);
 
     return () => observer.disconnect();
-  }, [journeyText, locale]);
+  }, [journeyText, locale, visible]);
+
+  if (!visible) return null;
 
   return (
     <section className="journey-section">
@@ -3657,7 +3643,7 @@ function CyclingJourneySection() {
             },
           }}
         >
-          {[titleLine1, titleLine2].map((line, lineIndex) => (
+          {[titleLine1, titleLine2].filter((line) => line.trim()).map((line, lineIndex) => (
             <span key={lineIndex} className="journey-title-line">
               <motion.span
                 className="inline-block"
@@ -3676,6 +3662,7 @@ function CyclingJourneySection() {
             </span>
           ))}
         </motion.h2>
+        {riderImage && (
         <motion.div
           className="journey-rider"
           initial={{ opacity: 0, x: -150 }}
@@ -3687,12 +3674,11 @@ function CyclingJourneySection() {
           viewport={{ once: true }}
         >
           <img
-            src={
-              locale === "ar" ? "/images/journey-ar.png" : "/images/journey.png"
-            }
+            src={riderImage}
             alt={t("public.home.journey.riderAlt")}
           />
         </motion.div>
+        )}
       </div>
       <div className="journey-content">
         <div
@@ -3704,7 +3690,7 @@ function CyclingJourneySection() {
               key={i}
               className="card-hover journey-card"
               style={{ background: card.bg }}
-              onClick={() => navigate(card?.to)}
+              onClick={() => openHomeLink(navigate, card.to)}
             >
               <span className="journey-card-label">{card.label}</span>
               <div className="journey-card-arrow">
@@ -3726,6 +3712,7 @@ function CyclingJourneySection() {
               {/* <div className="journey-card-image">
                 <img src={card.img} alt={card.label.replace('\n', ' ')} />
               </div> */}
+              {card.img && (
               <div className="journey-card-image adcc-image adcc-image--fill adcc-image--strong">
                 <img
                   className="adcc-image__img"
@@ -3739,6 +3726,7 @@ function CyclingJourneySection() {
                   }}
                 />
               </div>
+              )}
             </div>
           ))}
         </div>
@@ -3790,12 +3778,14 @@ function CyclingJourneySection() {
           <p ref={textRef} className="journey-text">
             {journeyText}
           </p>
-          <AnimatedButton
-            onClick={() => navigate("/contact-us")}
-            className="journey-button"
-          >
-            {t("public.common.getInTouch")}
-          </AnimatedButton>
+          {buttonLabel && (
+            <AnimatedButton
+              onClick={() => openHomeLink(navigate, value("buttonLink"))}
+              className="journey-button"
+            >
+              {buttonLabel}
+            </AnimatedButton>
+          )}
         </div>
       </div>
       </div>
@@ -3821,18 +3811,13 @@ function AppSection() {
   const downloadLabelWords: string[] = Array.isArray(_dlRaw) ? _dlRaw : [];
   const downloadLine1 = downloadLabelWords.slice(0, 1);
   const downloadLine2 = downloadLabelWords.slice(1);
-  const features = [
-    { icon: "/images/icon-1.png", label: t("public.home.app.features.track") },
-    {
-      icon: "/images/icon-2.png",
-      label: t("public.home.app.features.challenges"),
-    },
-    {
-      icon: "/images/icon-3.png",
-      label: t("public.home.app.features.connect"),
-    },
-    { icon: "/images/icon-4.png", label: t("public.home.app.features.routes") },
-  ];
+  const { visible, pick, pickItem, list, value } = useHomeSection("app");
+  const features = list("features").map((feature) => ({
+    icon: feature.icon,
+    label: pickItem(feature, "label"),
+  }));
+  const logoImage = value("logoImage");
+  const phoneImage = value("phoneImage");
 
   useEffect(() => {
     const phoneEl = phoneRef.current;
@@ -3850,7 +3835,9 @@ function AppSection() {
     observer.observe(phoneEl);
 
     return () => observer.disconnect();
-  }, []);
+  }, [visible]);
+
+  if (!visible) return null;
 
   return (
     <section
@@ -3889,17 +3876,19 @@ function AppSection() {
           minWidth: 0,
         }}
       >
-        <img
-          src="/images/darraja.png"
-          alt="Darraja"
-          style={{
-            display: "block",
-            width: 180,
-            height: "auto",
-            objectFit: "contain",
-            marginBottom: 24,
-          }}
-        />
+        {logoImage && (
+          <img
+            src={logoImage}
+            alt="Darraja"
+            style={{
+              display: "block",
+              width: 180,
+              height: "auto",
+              objectFit: "contain",
+              marginBottom: 24,
+            }}
+          />
+        )}
 
         <h2
           className="home-app-title overflow-hidden"
@@ -3914,7 +3903,7 @@ function AppSection() {
             whiteSpace: "pre-line",
           }}
         >
-          {t("public.home.darrajaApp.headline")}
+          {pick("headline")}
         </h2>
 
         <p
@@ -3929,7 +3918,7 @@ function AppSection() {
             maxWidth: 360,
           }}
         >
-          {t("public.home.darrajaApp.tagline")}
+          {pick("tagline")}
         </p>
 
         <p
@@ -3944,7 +3933,7 @@ function AppSection() {
             lineHeight: 1.2,
           }}
         >
-          {t("public.home.darrajaApp.downloadLabel")}
+          {pick("downloadLabel")}
         </p>
 
         <div
@@ -3969,8 +3958,9 @@ function AppSection() {
           minHeight: 520,
         }}
       >
+        {phoneImage && (
         <img
-          src="/images/image%203066.png"
+          src={phoneImage}
           alt={t("public.home.app.phoneAlt")}
           style={{
             display: "block",
@@ -3983,6 +3973,7 @@ function AppSection() {
             zIndex: 1,
           }}
         />
+        )}
       </div>
 
       {/* Right: Feature list */}
@@ -4018,11 +4009,11 @@ function AppSection() {
                 flexShrink: 0,
               }}
             >
-              <img
+              {f.icon && <img
                 src={f.icon}
                 alt={f.label.replace("\n", " ")}
                 style={{ filter: "brightness(0)" }}
-              />
+              />}
             </div>
             <span
               className="font-satoshi"
@@ -4068,7 +4059,7 @@ const PARTNER_CARD_WIDTH_ESTIMATE = 274; // 250px card + 24px gap
 const FEED_CARD_WIDTH_ESTIMATE = 430; // clamp(280px, 32vw, 409px) card + 20px gap
 
 function PartnersSection() {
-  const { t } = useTranslation();
+  const section = useHomeSection("partners");
   const [partners, setPartners] = useState<{ name: string; logo: string }[]>(
     [],
   );
@@ -4087,7 +4078,7 @@ function PartnersSection() {
     };
   }, []);
 
-  if (partners.length === 0) return null;
+  if (!section.visible || partners.length === 0) return null;
 
   const repeatCount = Math.max(
     1,
@@ -4101,10 +4092,8 @@ function PartnersSection() {
 
   return (
     <section id="partners" className="home-partners-section">
-      <h2 className="home-partners-title">{t("public.home.partners.title")}</h2>
-      <p className="home-partners-subtitle">
-        {t("public.home.partners.subtitle")}
-      </p>
+      <h2 className="home-partners-title">{section.pick("title")}</h2>
+      <p className="home-partners-subtitle">{section.pick("subtitle")}</p>
       <div className="home-partners-marquee">
         <div className="home-partners-track">
           {marqueeLogos.map((partner, i) => (
@@ -4138,29 +4127,30 @@ function PartnersSection() {
 
 /* ─── BOOK YOUR VENUE ───────────────────────────────────────────────────────*/
 
-const VENUE_BOOK_URL =
-  "https://erp.adcyclingclub.ae/contracts/venue/public/book/";
-
 function BookVenueSection() {
-  const { t } = useTranslation();
+  const { visible, pick, pickItem, list, value } = useHomeSection("venue");
+  const [eventsCard, spacesCard] = list("cards");
+  const venueImage = value("image");
+  const buttonLabel = pick("buttonLabel");
+  const buttonLink = value("buttonLink");
+
+  if (!visible) return null;
+
   return (
     <section id="book-venue" className="home-venue-section">
       <h2 className="home-venue-title">
-        {t("public.home.venue.title1")}
+        {pick("title1")}
         <br />
-        {t("public.home.venue.title2")}
+        {pick("title2")}
       </h2>
 
       <div className="home-venue-grid">
         <div className="home-venue-image-card">
-          <img
-            src="/images/book-venue.png"
-            alt={t("public.home.venue.imageAlt")}
-          />
+          {venueImage && <img src={venueImage} alt={pick("imageTitle")} />}
           <div className="home-venue-image-overlay" />
           <div className="home-venue-image-caption">
-            <h3>{t("public.home.venue.imageTitle")}</h3>
-            <p>{t("public.home.venue.imageSubtitle")}</p>
+            <h3>{pick("imageTitle")}</h3>
+            <p>{pick("imageSubtitle")}</p>
           </div>
         </div>
 
@@ -4171,27 +4161,30 @@ function BookVenueSection() {
                 className="home-venue-card-icon"
                 strokeWidth={1.75}
               />
-              <h4>{t("public.home.venue.eventsTitle")}</h4>
-              <p>{t("public.home.venue.eventsText")}</p>
+              <h4>{eventsCard ? pickItem(eventsCard, "title") : ""}</h4>
+              <p>{eventsCard ? pickItem(eventsCard, "text") : ""}</p>
             </div>
             <div className="home-venue-card">
               <Users className="home-venue-card-icon" strokeWidth={1.75} />
-              <h4>{t("public.home.venue.spacesTitle")}</h4>
-              <p>{t("public.home.venue.spacesText")}</p>
+              <h4>{spacesCard ? pickItem(spacesCard, "title") : ""}</h4>
+              <p>{spacesCard ? pickItem(spacesCard, "text") : ""}</p>
             </div>
           </div>
 
-          <p className="home-venue-text">{t("public.home.venue.text")}</p>
+          <p className="home-venue-text">{pick("text")}</p>
 
-          <a
-            className="home-venue-book-btn"
-            href={VENUE_BOOK_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <span>{t("public.home.venue.bookNow")}</span>
-            <ArrowRight color="#ffffff" size={16} />
-          </a>
+          {buttonLabel && buttonLink && (
+            <a
+              className="home-venue-book-btn"
+              href={buttonLink}
+              {...(/^https?:\/\//i.test(buttonLink)
+                ? { target: "_blank", rel: "noopener noreferrer" }
+                : {})}
+            >
+              <span>{buttonLabel}</span>
+              <ArrowRight color="#ffffff" size={16} />
+            </a>
+          )}
         </div>
       </div>
     </section>
@@ -4226,6 +4219,7 @@ interface FeedCardData {
 
 function FeedSection() {
   const { t } = useTranslation();
+  const section = useHomeSection("feed");
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [loaded, setLoaded] = useState(false);
 
@@ -4264,7 +4258,7 @@ function FeedSection() {
 
   const showSkeleton = !loaded && cards.length === 0;
 
-  if (!showSkeleton && cards.length === 0) return null;
+  if (!section.visible || (!showSkeleton && cards.length === 0)) return null;
 
   const renderCard = (card: FeedCardData | null, key: string, dup = false) => (
     <article
@@ -4306,8 +4300,8 @@ function FeedSection() {
   return (
     <section id="feed" className="home-feed-section">
       <div className="home-feed-head">
-        <h2 className="home-feed-title">{t("public.home.feed.title")}</h2>
-        <p className="home-feed-subtitle">{t("public.home.feed.subtitle")}</p>
+        <h2 className="home-feed-title">{section.pick("title")}</h2>
+        <p className="home-feed-subtitle">{section.pick("subtitle")}</p>
       </div>
 
       <div className="home-feed-rail">
@@ -4353,6 +4347,8 @@ function FeedSection() {
 function CommunitySection() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { visible, pick, value } = useHomeSection("community");
+  const buttonLabel = pick("buttonLabel");
 
   const icons = [
     {
@@ -4378,6 +4374,8 @@ function CommunitySection() {
     visible: { y: "0%", opacity: 1 },
   };
 
+  if (!visible) return null;
+
   return (
     <section id="community" className="home-community-section">
       <motion.p
@@ -4392,7 +4390,7 @@ function CommunitySection() {
           variants={lineVariants}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
-          {t("public.home.community.eyebrow")}
+          {pick("eyebrow")}
         </motion.span>
       </motion.p>
 
@@ -4408,7 +4406,7 @@ function CommunitySection() {
           variants={lineVariants}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
-          {t("public.home.community.title")}
+          {pick("title")}
         </motion.span>
       </motion.h2>
 
@@ -4441,16 +4439,18 @@ function CommunitySection() {
           variants={lineVariants}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
-          {t("public.home.community.subtitle")}
+          {pick("subtitle")}
         </motion.span>
       </motion.p>
 
-      <AnimatedButton
-        className="home-community-start-btn"
-        onClick={() => navigate("/events")}
-      >
-        {t("public.home.community.startRiding")}
-      </AnimatedButton>
+      {buttonLabel && (
+        <AnimatedButton
+          className="home-community-start-btn"
+          onClick={() => openHomeLink(navigate, value("buttonLink"))}
+        >
+          {buttonLabel}
+        </AnimatedButton>
+      )}
     </section>
   );
 }
@@ -4461,29 +4461,14 @@ function ExplorePlatformSection() {
   const { t } = useTranslation();
   const cardsRef = useRef<HTMLDivElement | null>(null);
   const [cardsVisible, setCardsVisible] = useState(false);
-  const cards = [
-    {
-      tag: t("public.home.platform.cards.events.tag"),
-      img: "/images/explore-1.png",
-      title: t("public.home.platform.cards.events.title"),
-      action: t("public.home.platform.cards.events.action"),
-      to: "/events",
-    },
-    {
-      tag: t("public.home.platform.cards.tracks.tag"),
-      img: "/images/explore-2.png",
-      title: t("public.home.platform.cards.tracks.title"),
-      action: t("public.home.platform.cards.tracks.action"),
-      to: "/tracks",
-    },
-    {
-      tag: t("public.home.platform.cards.challenges.tag"),
-      img: "/images/explore-3.png",
-      title: t("public.home.platform.cards.challenges.title"),
-      action: t("public.home.platform.cards.challenges.action"),
-      to: "/challenges",
-    },
-  ];
+  const { visible, pick, pickItem, list } = useHomeSection("platform");
+  const cards = list("cards").map((card) => ({
+    tag: pickItem(card, "tag"),
+    img: card.image,
+    title: pickItem(card, "title"),
+    action: pickItem(card, "action"),
+    to: card.link,
+  }));
 
   useEffect(() => {
     const cardsEl = cardsRef.current;
@@ -4501,7 +4486,9 @@ function ExplorePlatformSection() {
     observer.observe(cardsEl);
 
     return () => observer.disconnect();
-  }, []);
+  }, [visible]);
+
+  if (!visible) return null;
 
   return (
     <section id="platform" className="home-platform-section">
@@ -4522,7 +4509,7 @@ function ExplorePlatformSection() {
           }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
-          {t("public.home.platform.title")}
+          {pick("title")}
         </motion.span>
       </motion.h2>
       <div
@@ -4531,10 +4518,11 @@ function ExplorePlatformSection() {
       >
         {cards.map((card, i) => (
           <div
-            key={card.to}
-            onClick={() => navigate(card.to)}
+            key={i}
+            onClick={() => openHomeLink(navigate, card.to)}
             className="card-hover platform-card home-platform-card"
           >
+            {card.img && (
             <div className="home-platform-card-media adcc-image adcc-image--fill adcc-image--strong">
               <img
                 className="adcc-image__img home-platform-card-image"
@@ -4548,6 +4536,7 @@ function ExplorePlatformSection() {
                 }}
               />
             </div>
+            )}
             <div className="home-platform-card-overlay" aria-hidden />
             <div className="home-platform-card-tag">
               <span>{card.tag}</span>
@@ -4703,26 +4692,19 @@ function AboutSection() {
   const aboutRef = useRef<HTMLElement | null>(null);
   const statsRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [aboutVisible, setAboutVisible] = useState(false);
-  const _titleWordsRaw = t("public.home.about.titleWords", {
-    returnObjects: true,
-  });
-  const titleWords: string[] = Array.isArray(_titleWordsRaw)
-    ? _titleWordsRaw
-    : [];
-  const stats = [
-    {
-      num: t("public.home.about.stats.ridersValue"),
-      label: t("public.home.about.stats.riders"),
-    },
-    {
-      num: t("public.home.about.stats.eventsValue"),
-      label: t("public.home.about.stats.events"),
-    },
-    {
-      num: t("public.home.about.stats.yearsValue"),
-      label: t("public.home.about.stats.years"),
-    },
-  ];
+  const { visible, pick, pickItem, list, value } = useHomeSection("about");
+  // The first three words sit on the first line, the rest on the second.
+  const titleWords = pick("title").split(/\s+/).filter(Boolean);
+  const buttonLabel = pick("buttonLabel");
+  const riderImage = pick("riderImage");
+  const stats = list("stats").map((stat) => ({
+    num: pickItem(stat, "value"),
+    label: pickItem(stat, "label"),
+  }));
+  // Read by the scramble animation, which may start before the saved
+  // content arrives.
+  const latestStats = useRef(stats);
+  latestStats.current = stats;
 
   useEffect(() => {
     const aboutEl = aboutRef.current;
@@ -4740,7 +4722,8 @@ function AboutSection() {
           statsRefs.current.forEach((el, index) => {
             if (el) {
               setTimeout(() => {
-                scrambleNumber(el, stats[index].num, 25);
+                const num = latestStats.current[index]?.num;
+                if (num) scrambleNumber(el, num, 25);
               }, index * 180);
             }
           });
@@ -4755,7 +4738,9 @@ function AboutSection() {
     observer.observe(aboutEl);
 
     return () => observer.disconnect();
-  }, []);
+  }, [visible]);
+
+  if (!visible) return null;
 
   return (
     <section
@@ -4843,7 +4828,7 @@ function AboutSection() {
             </>
           )}
         </motion.h2>
-        <p className="home-about-text">{t("public.home.about.text")}</p>
+        <p className="home-about-text">{pick("text")}</p>
         <div className="home-about-stats">
           {stats.map((s, i) => (
             <div key={i}>
@@ -4854,14 +4839,17 @@ function AboutSection() {
             </div>
           ))}
         </div>
-        <AnimatedButton
-          className="home-about-read-btn"
-          onClick={() => navigate("/aboutus")}
-        >
-          {t("public.home.about.readMore")}
-        </AnimatedButton>
+        {buttonLabel && (
+          <AnimatedButton
+            className="home-about-read-btn"
+            onClick={() => openHomeLink(navigate, value("buttonLink"))}
+          >
+            {buttonLabel}
+          </AnimatedButton>
+        )}
       </div>
       </div>
+      {riderImage && (
       <motion.div
         className="home-about-rider about-right-image adcc-image-group"
         initial={{ opacity: 0, x: 150 }}
@@ -4873,11 +4861,12 @@ function AboutSection() {
           bare
           fill
           zoom="subtle"
-          src={isRtl ? "/images/right-cycle-ar.png" : "/images/right-cycle.png"}
+          src={riderImage}
           alt={t("public.home.about.riderAlt")}
           style={{ width: "100%", height: "100%" }}
         />
       </motion.div>
+      )}
     </section>
   );
 }

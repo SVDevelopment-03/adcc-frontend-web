@@ -50,8 +50,8 @@
     "backToPages": "Back to pages",
     "home": {
       "title": "Home Page",
-      "description": "Banner and homepage sections",
-      "editorSubtitle": "Edit the sections shown on the public homepage"
+      "description": "Banner and every homepage section",
+      "editorSubtitle": "Edit the sections shown on the public homepage. Each section saves on its own."
     },
     "banner": {
       "title": "Banner Section",
@@ -84,6 +84,107 @@
       "saveSuccess": "Banner saved",
       "saveError": "Failed to save banner",
       "loadError": "Failed to load banner"
+    },
+    "sections": {
+      "english": "English",
+      "arabic": "Arabic",
+      "arabicTextHint": "Leave empty to show the English text on the Arabic site.",
+      "imageHint": "Remove the image to hide it on the website.",
+      "arabicImageHint": "Optional — the English image is used when empty.",
+      "linkHint": "A site path such as /events, or a full https:// link (opens in a new tab).",
+      "linkInvalid": "Links must start with \"/\" or \"http(s)://\".",
+      "visible": "Show this section on the website",
+      "visibleHint": "Uncheck to hide the whole section from the homepage without losing its content.",
+      "hiddenBadge": "Hidden",
+      "savedNote": "Changes appear on the homepage as soon as you save.",
+      "fixedCount": "({{count}} items)",
+      "countRange": "({{min}}–{{max}} items)",
+      "addItem": "Add {{item}}",
+      "removeItem": "Remove",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "pendingImages_one": "{{count}} new image will be uploaded",
+      "pendingImages_other": "{{count}} new images will be uploaded",
+      "save": "Save section",
+      "saveSuccess": "{{section}} saved",
+      "saveError": "Failed to save section",
+      "loadError": "Failed to load homepage sections",
+      "stats": {
+        "title": "Stats Ticker",
+        "description": "The scrolling strip of numbers below the banner."
+      },
+      "app": {
+        "title": "Darraja App Section",
+        "description": "App headline, phone image and feature list.",
+        "note": "The Google Play / App Store buttons are not edited here."
+      },
+      "journey": {
+        "title": "Cycling Journey Section",
+        "description": "\"Begin your cycling journey\" title, rider image, cards and button."
+      },
+      "community": {
+        "title": "Community Section",
+        "description": "\"Eat • Sleep • Bike • Repeat\" text and button.",
+        "note": "The animated icons are fixed."
+      },
+      "platform": {
+        "title": "Explore the Platform Section",
+        "description": "Section title and the image cards."
+      },
+      "feed": {
+        "title": "Community Voices Section",
+        "description": "Title and subtitle of the community feed.",
+        "note": "The posts themselves come from approved Feed posts."
+      },
+      "partners": {
+        "title": "Partners Section",
+        "description": "Title and subtitle above the partner logos.",
+        "note": "Partner logos are managed on the Partners page."
+      },
+      "about": {
+        "title": "About Section",
+        "description": "About title, text, stats, button and rider image.",
+        "note": "The background video is fixed."
+      },
+      "venue": {
+        "title": "Book Your Venue Section",
+        "description": "Venue title, image, cards, text and booking button.",
+        "note": "The two cards keep their icons, so there are always two."
+      },
+      "fields": {
+        "text": "Text",
+        "label": "Label",
+        "title": "Title",
+        "subtitle": "Subtitle",
+        "eyebrow": "Small heading above the title",
+        "titleLine1": "Title line 1",
+        "titleLine2": "Title line 2",
+        "aboutTitle": "Title (the first three words go on the first line)",
+        "headline": "Headline",
+        "tagline": "Tagline",
+        "downloadLabel": "Download label",
+        "logoImage": "Logo",
+        "phoneImage": "Phone image",
+        "riderImage": "Rider image",
+        "image": "Image",
+        "icon": "Icon",
+        "imageTitle": "Image caption title",
+        "imageSubtitle": "Image caption text",
+        "buttonLabel": "Button text (leave empty to hide the button)",
+        "buttonLink": "Button link",
+        "link": "Link",
+        "tag": "Tag",
+        "action": "Action text",
+        "value": "Number",
+        "tickerItems": "Ticker items",
+        "tickerItem": "Item",
+        "features": "Features",
+        "feature": "Feature",
+        "cards": "Cards",
+        "card": "Card",
+        "stats": "Stats",
+        "stat": "Stat"
+      }
     }
   },
   "partners": {

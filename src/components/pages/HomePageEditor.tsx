@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { ArrowLeft, Image as ImageIcon, RotateCcw, Save, Upload, X } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Save } from 'lucide-react';
 import {
   DEFAULT_HOME_BANNER,
   getHomeBanner,
@@ -11,136 +11,15 @@ import {
   type HomeBannerContent,
 } from '../../services/pagesApi';
 import { invalidateCache } from '../../utils/apiCache';
-import { ALLOWED_IMAGE_ACCEPT, IMAGE_UPLOAD_HINT, validateImageFile } from '../../utils/imageValidation';
 import { HOME_BANNER_CACHE_KEY } from '../home/useHomeBanner';
+import { Field, ImageUploadField, inputClass, inputStyle } from './PageFields';
+import { HomeSectionEditor } from './HomeSectionEditor';
+import { HOME_SECTIONS, getHomeSections, normalizeHomeSection } from '../../services/homeSections';
 
 type ImageField = 'imageEn' | 'imageAr';
 
 // Size the homepage hero is designed for.
 const BANNER_IMAGE_SIZE = '1440 × 806 px';
-
-const inputClass = 'w-full border rounded-lg px-3 py-2 text-sm';
-const inputStyle = { borderColor: '#E5DDD4' };
-
-function Field({ label, children, hint }: { label: string; children: ReactNode; hint?: string }) {
-  return (
-    <label className="block space-y-1">
-      <span className="text-sm" style={{ color: '#333' }}>
-        {label}
-      </span>
-      {children}
-      {hint && (
-        <span className="block text-xs" style={{ color: '#999' }}>
-          {hint}
-        </span>
-      )}
-    </label>
-  );
-}
-
-function ImageUploadField({
-  label,
-  hint,
-  currentUrl,
-  file,
-  onSelect,
-  onClearFile,
-  onRemove,
-}: {
-  label: string;
-  hint: string;
-  currentUrl: string;
-  file: File | null;
-  onSelect: (file: File) => void;
-  onClearFile: () => void;
-  onRemove?: () => void;
-}) {
-  const { t } = useTranslation();
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const previewUrl = useMemo(() => (file ? URL.createObjectURL(file) : ''), [file]);
-
-  useEffect(() => () => {
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-  }, [previewUrl]);
-
-  const shownUrl = previewUrl || currentUrl;
-
-  return (
-    <div className="space-y-2">
-      <span className="text-sm" style={{ color: '#333' }}>
-        {label}
-      </span>
-      <div
-        className="relative flex aspect-[16/7] w-full items-center justify-center overflow-hidden rounded-xl border"
-        style={{ borderColor: '#E5DDD4', backgroundColor: '#F7F3EE' }}
-      >
-        {shownUrl ? (
-          <img src={shownUrl} alt="" className="h-full w-full object-cover" />
-        ) : (
-          <div className="flex flex-col items-center gap-1 text-sm" style={{ color: '#999' }}>
-            <ImageIcon className="w-8 h-8" />
-            {t('pages.banner.noImage')}
-          </div>
-        )}
-        {file && (
-          <span
-            className="absolute left-2 top-2 rounded-md px-2 py-1 text-xs text-white"
-            style={{ backgroundColor: '#C12D32' }}
-          >
-            {t('pages.banner.newImagePending')}
-          </span>
-        )}
-      </div>
-      <input
-        ref={inputRef}
-        type="file"
-        accept={ALLOWED_IMAGE_ACCEPT}
-        className="hidden"
-        onChange={(e) => {
-          const selected = e.target.files?.[0];
-          if (validateImageFile(selected)) onSelect(selected);
-          e.target.value = '';
-        }}
-      />
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          className="flex items-center gap-2 px-3 py-2 rounded-lg border text-sm"
-          style={inputStyle}
-        >
-          <Upload className="w-4 h-4" />
-          {shownUrl ? t('pages.banner.replaceImage') : t('pages.banner.uploadImage')}
-        </button>
-        {file && (
-          <button
-            type="button"
-            onClick={onClearFile}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg border text-sm"
-            style={inputStyle}
-          >
-            <X className="w-4 h-4" />
-            {t('pages.banner.discardNewImage')}
-          </button>
-        )}
-        {!file && currentUrl && onRemove && (
-          <button
-            type="button"
-            onClick={onRemove}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg border text-sm"
-            style={inputStyle}
-          >
-            <X className="w-4 h-4" />
-            {t('pages.banner.removeImage')}
-          </button>
-        )}
-      </div>
-      <p className="text-xs" style={{ color: '#999' }}>
-        {IMAGE_UPLOAD_HINT}. {t('pages.banner.imageSize', { size: BANNER_IMAGE_SIZE })} {hint}
-      </p>
-    </div>
-  );
-}
 
 export function HomePageEditor() {
   const { t } = useTranslation();
@@ -151,6 +30,22 @@ export function HomePageEditor() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [loadError, setLoadError] = useState('');
+  const [sections, setSections] = useState<Partial<Record<string, unknown>> | null>(null);
+  const [sectionsError, setSectionsError] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+    getHomeSections()
+      .then((loaded) => {
+        if (!cancelled) setSections(loaded);
+      })
+      .catch((error) => {
+        if (!cancelled) setSectionsError(getPagesErrorMessage(error, t('pages.sections.loadError')));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [t]);
 
   useEffect(() => {
     let cancelled = false;
@@ -282,6 +177,7 @@ export function HomePageEditor() {
               <ImageUploadField
                 label={t('pages.banner.imageEn')}
                 hint={t('pages.banner.imageEnHint')}
+                size={BANNER_IMAGE_SIZE}
                 currentUrl={form.imageEn}
                 file={files.imageEn}
                 onSelect={(file) => setFile('imageEn', file)}
@@ -290,6 +186,7 @@ export function HomePageEditor() {
               <ImageUploadField
                 label={t('pages.banner.imageAr')}
                 hint={t('pages.banner.imageArHint')}
+                size={BANNER_IMAGE_SIZE}
                 currentUrl={form.imageAr}
                 file={files.imageAr}
                 onSelect={(file) => setFile('imageAr', file)}
@@ -362,6 +259,27 @@ export function HomePageEditor() {
               </button>
             </div>
           </>
+        )}
+      </div>
+
+      <div className="space-y-4">
+        {sectionsError ? (
+          <div className="p-6 rounded-2xl shadow-sm bg-white text-sm" style={{ color: '#C12D32' }}>
+            {sectionsError}
+          </div>
+        ) : !sections ? (
+          <div className="flex items-center justify-center py-10">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2" style={{ borderColor: '#C12D32' }} />
+          </div>
+        ) : (
+          HOME_SECTIONS.map((def) => (
+            <HomeSectionEditor
+              key={def.key}
+              def={def}
+              initial={normalizeHomeSection(def.key, sections[def.key])}
+              initiallySaved={Boolean(sections[def.key])}
+            />
+          ))
         )}
       </div>
     </div>
