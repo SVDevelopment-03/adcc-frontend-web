@@ -51,15 +51,19 @@ export interface ListField {
 
 export type SectionField = ScalarField | ListField;
 
-export interface HomeSectionDef {
-  key: HomeSectionKey;
+export interface SectionDef<K extends string = string> {
+  key: K;
   title: string;
   description: string;
   /** Explains what this section does not control (e.g. content from other dashboard pages). */
   note?: string;
+  /** False for sections the site always shows (no "visible" switch in the editor). */
+  hideable?: boolean;
   fields: SectionField[];
   defaults: () => SectionValues;
 }
+
+export type HomeSectionDef = SectionDef<HomeSectionKey>;
 
 const p = 'public.home.';
 const en = (key: string) => i18n.getFixedT('en')(p + key);
@@ -366,8 +370,7 @@ const normalizeScalars = (
 };
 
 /** Saved content merged over the defaults, so missing or malformed keys never break the site. */
-export const normalizeHomeSection = (key: HomeSectionKey, raw: unknown): SectionValues => {
-  const def = getHomeSectionDef(key);
+export const normalizeSection = (def: SectionDef, raw: unknown): SectionValues => {
   const defaults = def.defaults();
   if (!raw || typeof raw !== 'object') return defaults;
   const source = raw as Record<string, unknown>;
@@ -389,10 +392,29 @@ export const normalizeHomeSection = (key: HomeSectionKey, raw: unknown): Section
   return out;
 };
 
-/** Every saved home section (raw), keyed by section; unsaved sections are absent. */
-export const getHomeSections = async (): Promise<Partial<Record<string, unknown>>> => {
-  const response = await api.get('/v1/pages/home/sections');
+export const normalizeHomeSection = (key: HomeSectionKey, raw: unknown): SectionValues =>
+  normalizeSection(getHomeSectionDef(key), raw);
+
+/** Every saved section of a page (raw), keyed by section; unsaved sections are absent. */
+export const getPageSections = async (page: string): Promise<Partial<Record<string, unknown>>> => {
+  const response = await api.get(`/v1/pages/${page}/sections`);
   return response.data?.data?.sections ?? {};
+};
+
+export const getHomeSections = () => getPageSections('home');
+
+/** `files` maps a content path (e.g. `phoneImage`, `cards.2.image`) to the new image for it. */
+export const savePageSection = async (
+  page: string,
+  def: SectionDef,
+  content: SectionValues,
+  files: Record<string, File>,
+): Promise<SectionValues> => {
+  const formData = new FormData();
+  formData.append('content', JSON.stringify(content));
+  for (const [path, file] of Object.entries(files)) formData.append(path, file);
+  const response = await api.put(`/v1/pages/${page}/sections/${def.key}`, formData);
+  return normalizeSection(def, response.data?.data?.content);
 };
 
 export const getHomeSection = async (
@@ -403,15 +425,5 @@ export const getHomeSection = async (
   return { content: normalizeHomeSection(key, raw), saved: Boolean(raw) };
 };
 
-/** `files` maps a content path (e.g. `phoneImage`, `cards.2.image`) to the new image for it. */
-export const saveHomeSection = async (
-  key: HomeSectionKey,
-  content: SectionValues,
-  files: Record<string, File>,
-): Promise<SectionValues> => {
-  const formData = new FormData();
-  formData.append('content', JSON.stringify(content));
-  for (const [path, file] of Object.entries(files)) formData.append(path, file);
-  const response = await api.put(`/v1/pages/home/sections/${key}`, formData);
-  return normalizeHomeSection(key, response.data?.data?.content);
-};
+export const saveHomeSection = (key: HomeSectionKey, content: SectionValues, files: Record<string, File>) =>
+  savePageSection('home', getHomeSectionDef(key), content, files);

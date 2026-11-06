@@ -232,7 +232,9 @@
         "date": "Date",
         "ridersCount": "{{count}} riders",
         "ridersLabel": "riders",
-        "participantsLabel": "Participants"
+        "participantsLabel": "Participants",
+        "location": "Location",
+        "clickToView": "Click to View"
       },
       "schedule": {
         "titleSuffix": "{{title}} Schedule",

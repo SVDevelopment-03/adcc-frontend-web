@@ -146,6 +146,7 @@ const removeBadgeImage = () => {
     organizedBy: string;
     youtubeLink: string;
     registrationLink: string;
+    locationLink: string;
     description: string;
     descriptionAr: string;
     country: string;
@@ -181,6 +182,7 @@ const removeBadgeImage = () => {
     organizedBy: '',
     youtubeLink: '',
     registrationLink: '',
+    locationLink: '',
     description: '',
     descriptionAr: '',
     country: 'UAE',
@@ -472,6 +474,9 @@ const removeBadgeImage = () => {
     if (formData.registrationLink.trim() && !isValidUrl(formData.registrationLink.trim())) {
       errors.registrationLink = t('events.create.invalidUrl');
     }
+    if (formData.locationLink.trim() && !isValidUrl(formData.locationLink.trim())) {
+      errors.locationLink = t('events.create.invalidUrl');
+    }
     return errors;
   };
 
@@ -502,6 +507,7 @@ const removeBadgeImage = () => {
         organizedBy: formData.organizedBy || undefined,
         youtubeLink: formData.youtubeLink.trim() || undefined,
         registrationLink: formData.registrationLink.trim() || undefined,
+        locationLink: formData.locationLink.trim() || undefined,
         description: formData.description.trim() || formData.descriptionAr?.trim() || '',
         ...(formData.descriptionAr?.trim() ? { descriptionAr: formData.descriptionAr.trim() } : {}),
         address: `${formData.city}, ${formData.country}`,
@@ -736,6 +742,18 @@ const removeBadgeImage = () => {
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
                 {formErrors.registrationLink && <div className="text-xs text-red-600 mt-1">{formErrors.registrationLink}</div>}
+              </div>
+
+              <div>
+                <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.create.locationLink')}</label>
+                <input
+                  type="url"
+                  value={formData.locationLink}
+                  onChange={(e) => setFormData({ ...formData, locationLink: e.target.value })}
+                  placeholder={t('events.create.placeholders.locationLink')}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
+                />
+                {formErrors.locationLink && <div className="text-xs text-red-600 mt-1">{formErrors.locationLink}</div>}
               </div>
             </div>
           </div>

@@ -34,6 +34,7 @@ import { CMS } from './cms/CMS';
 import { PartnersManager } from './partners/PartnersManager';
 import { PagesList } from './pages/PagesList';
 import { HomePageEditor } from './pages/HomePageEditor';
+import { LayoutPageEditor } from './pages/LayoutPageEditor';
 import { MediaLibrary } from './media/MediaLibrary';
 import { MediaLibraryUploadBridge } from './media/MediaLibraryUploadBridge';
 import { PushNotifications } from './push/PushNotifications';
@@ -341,6 +342,7 @@ export function Layout() {
             <Route path="/cms" element={withRoleSidebarAccess('cms', <CMS />)} />
             <Route path="/pages" element={withRoleSidebarAccess('pages', <PagesList />)} />
             <Route path="/pages/home" element={withRoleSidebarAccess('pages', <HomePageEditor />)} />
+            <Route path="/pages/layout" element={withRoleSidebarAccess('pages', <LayoutPageEditor />)} />
             <Route path="/partners" element={withRoleSidebarAccess('partners', <PartnersManager />)} />
             <Route path="/media" element={withRoleSidebarAccess('media', <MediaLibrary />)} />
             <Route path="/push" element={withRoleSidebarAccess('push', <PushNotifications />)} />

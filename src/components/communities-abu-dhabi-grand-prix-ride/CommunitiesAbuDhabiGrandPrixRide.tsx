@@ -11,6 +11,7 @@ import {
   MapPin,
   ParkingCircle,
   Plus,
+  Route,
   Trophy,
   Users,
   Wrench,
@@ -33,6 +34,8 @@ type StatCard = {
   icon: LucideIcon;
   title: string;
   label: string;
+  /** When set, the card opens this URL in a new tab. */
+  href?: string;
 };
 
 type Facility = {
@@ -199,6 +202,7 @@ const getStats = (
   t: TFunction,
 ): StatCard[] => {
   const level = getLevel(event);
+  const locationLink = event?.locationLink?.trim();
   return [
   {
     icon: CalendarDays,
@@ -206,7 +210,7 @@ const getStats = (
     label: t("public.events.detail.stats.date"),
   },
   {
-    icon: MapPin,
+    icon: Route,
     title:
       typeof event?.distance === "number"
         ? event.distance > 0
@@ -225,6 +229,17 @@ const getStats = (
         : t("public.events.detail.stats.ridersLabel"),
     label: t("public.events.detail.stats.participantsLabel"),
   },
+  // Shown only when the admin added a map link for the event.
+  ...(locationLink
+    ? [
+        {
+          icon: MapPin,
+          title: t("public.events.detail.stats.location"),
+          label: t("public.events.detail.stats.clickToView"),
+          href: locationLink,
+        },
+      ]
+    : []),
   ...(level
     ? [
         {
@@ -527,7 +542,35 @@ function AboutSection({ event }: { event: GrandPrixEvent }) {
   );
 }
 
-function RegisterCard({ event }: { event: GrandPrixEvent }) {
+function StatCardShell({
+  href,
+  className,
+  children,
+}: {
+  href?: string;
+  className: string;
+  children: React.ReactNode;
+}) {
+  if (!href) return <article className={className}>{children}</article>;
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`${className} block transition-colors hover:bg-[#3a4e66]`}
+    >
+      {children}
+    </a>
+  );
+}
+
+function RegisterCard({
+  event,
+  compact = false,
+}: {
+  event: GrandPrixEvent;
+  compact?: boolean;
+}) {
   const { t } = useTranslation();
   const total = event.maxParticipants ?? 0;
   const joined = getParticipants(event);
@@ -546,7 +589,11 @@ function RegisterCard({ event }: { event: GrandPrixEvent }) {
     t("public.events.detail.register.defaultOrganizer");
 
   return (
-    <article className="relative h-[200px] w-full shrink-0 rounded-2xl bg-[#435974] text-white lg:h-[236px] lg:w-[426px]">
+    <article
+      className={`relative h-[200px] w-full shrink-0 rounded-2xl bg-[#435974] text-white lg:h-[236px] ${
+        compact ? "lg:w-[380px]" : "lg:w-[426px]"
+      }`}
+    >
       <p className="absolute left-4 top-[14px] flex items-center gap-[6px] text-[12px] font-medium leading-[18px] lg:left-6 lg:top-[19px] lg:text-[14px]">
         <span className="h-[7px] w-[7px] rounded-full bg-white" />
         {closed
@@ -593,6 +640,8 @@ function StatsStrip({
   event: GrandPrixEvent;
   stats: StatCard[];
 }) {
+  // Five stat cards (location link added) need narrower cards to fit the strip.
+  const compact = stats.length > 4;
   return (
     <section className="grand-prix-section mt-10 mb-20 px-4 lg:mt-[60px] lg:px-0">
       {/* Mobile (< lg): register card stacked on top of a 2x2 stats grid */}
@@ -600,9 +649,10 @@ function StatsStrip({
         <div className="flex flex-col gap-3">
           <RegisterCard event={event} />
           <div className="grid grid-cols-2 gap-3">
-            {stats.map(({ icon: Icon, title, label }) => (
-              <article
+            {stats.map(({ icon: Icon, title, label, href }) => (
+              <StatCardShell
                 key={title}
+                href={href}
                 className="relative overflow-hidden rounded-[14px] bg-[#435974] p-4 text-white sm:p-5"
               >
                 <span className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-white text-[#019839] sm:h-[50px] sm:w-[50px]">
@@ -614,7 +664,7 @@ function StatsStrip({
                 <p className="mt-1 text-[13px] leading-5 text-white/60 sm:text-[16px]">
                   {label}
                 </p>
-              </article>
+              </StatCardShell>
             ))}
           </div>
         </div>
@@ -623,11 +673,14 @@ function StatsStrip({
       {/* Desktop (lg+): original horizontal strip (unchanged) */}
       <div className="mx-auto hidden max-w-[1192px] overflow-x-auto rounded-2xl bg-[#A2BFDB] p-3 lg:block lg:overflow-visible">
         <div className="flex w-max gap-2 lg:gap-3">
-          <RegisterCard event={event} />
-          {stats.map(({ icon: Icon, title, label }) => (
-            <article
+          <RegisterCard event={event} compact={compact} />
+          {stats.map(({ icon: Icon, title, label, href }) => (
+            <StatCardShell
               key={title}
-              className="relative h-[200px] w-[140px] shrink-0 overflow-hidden rounded-[10px] bg-[#435974] text-white lg:h-[236px] lg:w-[171px]"
+              href={href}
+              className={`relative h-[200px] w-[140px] shrink-0 overflow-hidden rounded-[10px] bg-[#435974] text-white lg:h-[236px] ${
+                compact ? "lg:w-[143px]" : "lg:w-[171px]"
+              }`}
             >
               <span className="absolute left-4 top-4 flex h-[38px] w-[38px] items-center justify-center rounded-full bg-white text-[#019839] lg:h-[50px] lg:w-[50px] lg:left-5 lg:top-5">
                 <Icon className="h-[18px] w-[18px] lg:h-[25px] lg:w-[25px]" />
@@ -638,7 +691,7 @@ function StatsStrip({
               <p className="absolute left-4 top-[152px] text-[14px] leading-5 text-white/60 lg:left-5 lg:top-[191px] lg:text-[18px]">
                 {label}
               </p>
-            </article>
+            </StatCardShell>
           ))}
         </div>
       </div>
@@ -1021,6 +1074,13 @@ export default function CommunitiesAbuDhabiGrandPrixRide() {
   const schedule = useMemo(() => getSchedule(event, t), [event, t]);
   const faqs = useMemo(() => getFaqs(event, t), [event, t]);
 
+  // A closed event has no detail page (the listing hides View Details for it):
+  // links to it go back to the events list. FALLBACK_EVENT is only the
+  // placeholder shown before the requested event loads.
+  if (selectedEventId && !loading && event !== FALLBACK_EVENT && isEventClosed(event)) {
+    return <Navigate to="/events" replace />;
+  }
+
   return (
     <div className="grand-prix-page">
       <FontLoader />
@@ -1057,7 +1117,8 @@ export default function CommunitiesAbuDhabiGrandPrixRide() {
 
 /**
  * /events/:eventId/register — the registration form of an internal event.
- * Other events have no form here, so they go back to their detail page.
+ * Other events have no form here, so they go back to their detail page;
+ * closed events go to the events list.
  */
 export function InternalEventRegisterPage() {
   const { t } = useTranslation();
@@ -1082,6 +1143,11 @@ export function InternalEventRegisterPage() {
       cancelled = true;
     };
   }, [eventId, i18n.language]);
+
+  // Closed events take no registrations and have no detail page: back to the list
+  if (event && isEventClosed(event)) {
+    return <Navigate to="/events" replace />;
+  }
 
   if (event && !event.isInternal) {
     return <Navigate to={`/events/${encodeURIComponent(eventId)}`} replace />;

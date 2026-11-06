@@ -53,6 +53,11 @@
       "description": "Banner and every homepage section",
       "editorSubtitle": "Edit the sections shown on the public homepage. Each section saves on its own."
     },
+    "layout": {
+      "title": "Header & Footer",
+      "description": "Menu, logos, footer links and contact details shown on every page",
+      "editorSubtitle": "Edit the header, the \"Start your ride\" banner and the footer shown on every public page. Each section saves on its own."
+    },
     "banner": {
       "title": "Banner Section",
       "subtitle": "The hero banner at the top of the homepage.",
@@ -86,6 +91,21 @@
       "loadError": "Failed to load banner"
     },
     "sections": {
+      "header": {
+        "title": "Header",
+        "description": "Logo and main menu",
+        "note": "Links starting with \"/\" open a page of this site; full https:// links open in a new tab. The weather and language switcher stay as they are."
+      },
+      "cta": {
+        "title": "Start Your Ride Banner",
+        "description": "The banner above the footer with the app store buttons",
+        "note": "The Google Play and App Store buttons keep their own links."
+      },
+      "footer": {
+        "title": "Footer",
+        "description": "Logo, text, social links, quick links, contact details and copyright",
+        "note": "Social icons are picked from each link (Twitter/X, Facebook, Instagram, YouTube, LinkedIn; others show a globe). Leave phone, email or address empty to hide it. The newsletter form stays as it is."
+      },
       "english": "English",
       "arabic": "Arabic",
       "arabicTextHint": "Leave empty to show the English text on the Arabic site.",
@@ -152,6 +172,21 @@
         "note": "The two cards keep their icons, so there are always two."
       },
       "fields": {
+        "navItems": "Menu items",
+        "navItem": "Menu item",
+        "backgroundImage": "Background image",
+        "brandText": "About text",
+        "socialLinks": "Social links",
+        "socialLink": "Social link",
+        "quickLinksTitle": "Quick links heading",
+        "quickLinks": "Quick links",
+        "quickLink": "Quick link",
+        "contactTitle": "Contact heading",
+        "phone": "Phone number",
+        "email": "Email address",
+        "address": "Address",
+        "addressLink": "Address map link",
+        "copyright": "Copyright text",
         "text": "Text",
         "label": "Label",
         "title": "Title",
@@ -1005,6 +1040,7 @@
       "organizedByNone": "Not specified",
       "youtubeLink": "YouTube Link",
       "registrationLink": "Event Registration Link (add link only if it is external)",
+      "locationLink": "Location Map Link (optional)",
       "invalidUrl": "Please enter a valid URL (including https://)",
       "country": "Country *",
       "city": "City *",
@@ -1037,6 +1073,7 @@
         "community": "Select community...",
         "youtubeLink": "https://www.youtube.com/watch?v=example",
         "registrationLink": "https://example.com/register",
+        "locationLink": "https://maps.google.com/...",
         "country": "Select country...",
         "city": "Select city...",
         "track": "Select track...",
@@ -1132,6 +1169,7 @@
       "community": "Community (optional)",
       "youtubeLink": "YouTube Link",
       "registrationLink": "Event Registration Link (add link only if it is external)",
+      "locationLink": "Location Map Link (optional)",
       "statusHint": "Draft, Disabled and Archived events are hidden from the website and app. Set to Open to publish.",
       "country": "Country",
       "city": "City *",
@@ -1159,6 +1197,7 @@
         "track": "Select track...",
         "youtubeLink": "https://www.youtube.com/watch?v=example",
         "registrationLink": "https://example.com/register",
+        "locationLink": "https://maps.google.com/...",
         "distance": "25",
         "maxParticipants": "100",
         "ageRequirement": "18+",

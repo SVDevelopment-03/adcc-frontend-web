@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronRight, Home } from 'lucide-react';
+import { ChevronRight, Home, PanelsTopLeft } from 'lucide-react';
 
 const PAGES = [
   {
@@ -9,6 +9,13 @@ const PAGES = [
     icon: <Home className="w-6 h-6" style={{ color: '#C12D32' }} />,
     titleKey: 'pages.home.title',
     descriptionKey: 'pages.home.description',
+  },
+  {
+    id: 'layout',
+    path: '/pages/layout',
+    icon: <PanelsTopLeft className="w-6 h-6" style={{ color: '#C12D32' }} />,
+    titleKey: 'pages.layout.title',
+    descriptionKey: 'pages.layout.description',
   },
 ];
 

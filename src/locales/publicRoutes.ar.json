@@ -229,7 +229,9 @@
         "date": "التاريخ",
         "ridersCount": "{{count}} دراج",
         "ridersLabel": "دراجون",
-        "participantsLabel": "المشاركون"
+        "participantsLabel": "المشاركون",
+        "location": "الموقع",
+        "clickToView": "انقر للعرض"
       },
       "schedule": {
         "titleSuffix": "جدول {{title}}",

@@ -225,6 +225,7 @@ export function EventEdit({ role }: EventEditProps) {
     address: string;
     youtubeLink: string;
     registrationLink: string;
+    locationLink: string;
     organizedBy: string;
     maxAge: number;
   }>({
@@ -265,6 +266,7 @@ export function EventEdit({ role }: EventEditProps) {
     address: '',
     youtubeLink: '',
     registrationLink: '',
+    locationLink: '',
     organizedBy: '',
     maxAge: 70,
   });
@@ -348,6 +350,7 @@ export function EventEdit({ role }: EventEditProps) {
         address: ev.address ?? '',
         youtubeLink: ev.youtubeLink ?? '',
         registrationLink: ev.registrationLink ?? '',
+        locationLink: ev.locationLink ?? '',
         organizedBy: ev.organizedBy ?? '',
         maxAge: ev.maxAge ?? 70,
       });
@@ -638,6 +641,7 @@ export function EventEdit({ role }: EventEditProps) {
         // Sent even when empty so clearing a link removes it
         youtubeLink: formData.youtubeLink.trim(),
         registrationLink: formData.registrationLink.trim(),
+        locationLink: formData.locationLink.trim(),
         // Empty string is sent on purpose: it clears a previously selected organiser
         organizedBy: formData.organizedBy,
       };
@@ -865,6 +869,17 @@ export function EventEdit({ role }: EventEditProps) {
                   value={formData.registrationLink}
                   onChange={(e) => setFormData({ ...formData, registrationLink: e.target.value })}
                   placeholder={t('events.edit.placeholders.registrationLink')}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#C12D32]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.edit.locationLink')}</label>
+                <input
+                  type="url"
+                  value={formData.locationLink}
+                  onChange={(e) => setFormData({ ...formData, locationLink: e.target.value })}
+                  placeholder={t('events.edit.placeholders.locationLink')}
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#C12D32]"
                 />
               </div>

@@ -5,8 +5,8 @@ import { ArrowDown, ArrowUp, ChevronDown, Plus, RotateCcw, Save, Trash2 } from '
 import {
   emptyListItem,
   fieldKeys,
-  saveHomeSection,
-  type HomeSectionDef,
+  savePageSection,
+  type SectionDef,
   type ListField,
   type ListItem,
   type ScalarField,
@@ -252,15 +252,20 @@ function ListEditor({
   );
 }
 
-/** Collapsible card editing one homepage section, built from its definition in homeSections.ts. */
+/** Collapsible card editing one page section, built from its definition (see homeSections.ts). */
 export function HomeSectionEditor({
   def,
   initial,
   initiallySaved,
+  page = 'home',
+  cacheKey = HOME_SECTIONS_CACHE_KEY,
 }: {
-  def: HomeSectionDef;
+  def: SectionDef;
   initial: SectionValues;
   initiallySaved: boolean;
+  page?: string;
+  /** Site cache cleared after a save so the change shows without a reload. */
+  cacheKey?: string;
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -299,11 +304,11 @@ export function HomeSectionEditor({
     }
     setIsSaving(true);
     try {
-      const saved = await saveHomeSection(def.key, form, files);
+      const saved = await savePageSection(page, def, form, files);
       setForm(saved);
       setFiles({});
       setIsSaved(true);
-      invalidateCache(HOME_SECTIONS_CACHE_KEY);
+      invalidateCache(cacheKey);
       toast.success(t('pages.sections.saveSuccess', { section: t(def.title) }));
     } catch (err) {
       toast.error(getPagesErrorMessage(err, t('pages.sections.saveError')));
@@ -366,6 +371,7 @@ export function HomeSectionEditor({
             </button>
           </div>
 
+          {def.hideable !== false && (
           <label
             className="flex items-start gap-3 rounded-xl border p-4"
             style={{
@@ -388,6 +394,7 @@ export function HomeSectionEditor({
               </span>
             </span>
           </label>
+          )}
 
           <div className={`space-y-6 ${form.visible ? '' : 'opacity-60'}`}>
             {def.fields.map((field) =>

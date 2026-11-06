@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
-  ChevronDown,
   Facebook,
+  Globe,
   Instagram,
+  Linkedin,
   LogOut,
   Mail,
   MapPin,
@@ -11,6 +12,7 @@ import {
   Phone,
   Twitter,
   Youtube,
+  type LucideIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../contexts/AuthContext";
@@ -18,111 +20,83 @@ import { useLocale } from "../../contexts/LocaleContext";
 import { HeaderWeather } from "./HeaderWeather";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { AppStoreButton } from "./AppStoreButton";
+import { useLayoutSection } from "./useLayoutSection";
 import { subscribeToNewsletter } from "../../services/newsletterApi";
 
 interface PublicLayoutProps {
   children: React.ReactNode;
 }
 
-interface NavChild {
-  labelKey: string;
-  to: string;
-  match: string[];
+const isExternalLink = (link: string) => /^https?:\/\//i.test(link);
+
+function isLinkActive(link: string, pathname: string): boolean {
+  if (!link || isExternalLink(link)) return false;
+  if (link === "/") return pathname === "/" || pathname === "/home";
+  return pathname === link || pathname.startsWith(`${link}/`);
 }
 
-interface NavItem {
-  labelKey: string;
-  match: string[];
-  to?: string;
-  children?: NavChild[];
-  hidden?: boolean;
-}
-
-const navItems: NavItem[] = [
-  { labelKey: "public.nav.home", to: "/", match: ["/", "/home"] },
-  { labelKey: "public.nav.aboutUs", to: "/aboutus", match: ["/aboutus"] },
-  {
-    labelKey: "public.nav.events",
-    to: "/events",
-    match: ["/events"],
-  },
-  {
-    labelKey: "public.nav.community",
-    to: "/communities",
-    match: ["/communities"],
-  },
-  {
-    labelKey: "public.nav.challenges",
-    to: "/challenges",
-    match: ["/challenges"],
-  },
-  {
-    labelKey: "public.nav.tracks",
-    to: "/tracks",
-    match: ["/tracks"],
-  },
-  {
-    labelKey: "public.nav.store",
-    match: ["/user-adcc-store", "/user-marketplace"],
-    // Hidden per request — keep the item (and its children/routes) intact,
-    // just don't render it in the header nav.
-    hidden: true,
-    children: [
-      {
-        labelKey: "public.nav.clubStore",
-        to: "/user-adcc-store",
-        match: ["/user-adcc-store"],
-      },
-      {
-        labelKey: "public.nav.marketplace",
-        to: "/user-marketplace",
-        match: ["/user-marketplace"],
-      },
-    ],
-  },
-  {
-    labelKey: "public.footer.contactUs",
-    to: "/contact-us",
-    match: ["/contact-us"],
-  },
-];
-
-const socialLinks = [
-  {
-    labelKey: "public.footer.social.twitter",
-    href: "https://twitter.com/adcyclingclub",
-    Icon: Twitter,
-  },
-  {
-    labelKey: "public.footer.social.facebook",
-    href: "https://www.facebook.com/adcyclingclub/",
-    Icon: Facebook,
-  },
-  {
-    labelKey: "public.footer.social.instagram",
-    href: "https://www.instagram.com/adcyclingclub/",
-    Icon: Instagram,
-  },
-  {
-    labelKey: "public.footer.social.youtube",
-    href: "https://www.youtube.com/channel/UCmAQA4sNHPvpae86czU-U4g",
-    Icon: Youtube,
-  },
-];
-
-function isNavItemActive(item: NavItem | NavChild, pathname: string): boolean {
-  return item.match.some(
-    (path) => pathname === path || pathname.startsWith(`${path}/`),
+/** Router link for site paths, new-tab anchor for absolute URLs (both set in the dashboard). */
+function SiteLink({
+  link,
+  className,
+  onClick,
+  children,
+  ...rest
+}: {
+  link: string;
+  className?: string;
+  onClick?: () => void;
+  children: React.ReactNode;
+  "aria-label"?: string;
+}) {
+  if (isExternalLink(link)) {
+    return (
+      <a
+        href={link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={className}
+        onClick={onClick}
+        {...rest}
+      >
+        {children}
+      </a>
+    );
+  }
+  return (
+    <NavLink to={link || "/"} className={className} onClick={onClick} {...rest}>
+      {children}
+    </NavLink>
   );
 }
 
-function Logo({ compact = false }: { compact?: boolean }) {
+// Social icons are picked from the link's domain, so admins only enter URLs.
+const socialIcons: Array<{ match: RegExp; Icon: LucideIcon }> = [
+  { match: /(^|\.)(twitter|x)\.com$/i, Icon: Twitter },
+  { match: /(^|\.)(facebook|fb)\.com$/i, Icon: Facebook },
+  { match: /(^|\.)instagram\.com$/i, Icon: Instagram },
+  { match: /(^|\.)(youtube\.com|youtu\.be)$/i, Icon: Youtube },
+  { match: /(^|\.)linkedin\.com$/i, Icon: Linkedin },
+];
+
+function getSocialIcon(link: string): LucideIcon {
+  try {
+    const host = new URL(link).hostname;
+    return socialIcons.find(({ match }) => match.test(host))?.Icon ?? Globe;
+  } catch {
+    return Globe;
+  }
+}
+
+function Logo({ src, compact = false }: { src: string; compact?: boolean }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
+  if (!src) return null;
+
   return (
     <img
-      src={compact ? "/images/adcc-logo.png" : "/images/adcc-logo-header.png"}
+      src={src}
       alt={t("public.nav.logoAlt")}
       onClick={() => navigate("/")}
       className={
@@ -136,15 +110,17 @@ function Logo({ compact = false }: { compact?: boolean }) {
 
 function PublicHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(
-    null,
-  );
   const [headerVisible, setHeaderVisible] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useAuth();
   const { t } = useTranslation();
   const { isRtl } = useLocale();
+  const header = useLayoutSection("header");
+  const navItems = header
+    .list("navItems")
+    .map((item) => ({ label: header.pickItem(item, "label"), link: item.link ?? "" }))
+    .filter((item) => item.label && item.link);
 
   const handleAuthAction = async () => {
     if (isAuthenticated) {
@@ -274,88 +250,26 @@ function PublicHeader() {
             width: 100%;
           }
         }
-        .pub-nav-dropdown {
-          opacity: 0;
-          visibility: hidden;
-          transform: translateY(4px);
-          transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
-        }
-        .pub-nav-dropdown-wrap:hover .pub-nav-dropdown,
-        .pub-nav-dropdown-wrap:focus-within .pub-nav-dropdown {
-          opacity: 1;
-          visibility: visible;
-          transform: translateY(0);
-        }
       `}</style>
       <div className="public-header-bar relative mx-auto flex h-full w-full max-w-[1400px] items-center justify-between bg-black/30 backdrop-blur-[2px] px-5 py-2 md:px-10! lg:px-14! xl:px-22!">
         <div className="public-header-logo-wrap flex items-center gap-3">
-          <Logo />
+          <Logo src={header.value("logoImage")} />
         </div>
 
         <nav className="hidden items-center gap-0 text-[15px] font-medium lg:flex 2xl:gap-6 2xl:text-[17px]">
-          {navItems.filter((item) => !item.hidden).map((item) => {
-            const isActive = isNavItemActive(item, location.pathname);
-
-            if (item.children) {
-              return (
-                <div
-                  key={item.labelKey}
-                  className="pub-nav-dropdown-wrap relative inline-block"
-                >
-                  <button
-                    type="button"
-                    className={`pub-nav-link inline-flex items-center gap-1 px-3 py-1 ${
-                      isActive ? "!text-[#019839]" : "!text-white"
-                    }`}
-                  >
-                    {t(item.labelKey)}
-                    <ChevronDown className="h-3.5 w-3.5" />
-                  </button>
-                  {/* Zero-gap hover bridge: the visual spacing below the button is
-                      padding (part of this box), not margin, so the pointer never
-                      crosses a dead zone that would drop :hover between the
-                      button and the card. */}
-                  <div
-                    className={`pub-nav-dropdown absolute ${
-                      isRtl ? "right-0" : "left-0"
-                    } top-full z-10 pt-2`}
-                  >
-                    <div className="min-w-[180px] rounded-xl bg-white p-2 shadow-lg">
-                      {item.children.map((child) => {
-                        const isChildActive = isNavItemActive(
-                          child,
-                          location.pathname,
-                        );
-                        return (
-                          <NavLink
-                            key={child.labelKey}
-                            to={child.to}
-                            className={`block rounded-lg px-3 py-2 text-[14px] font-medium !text-black hover:bg-black/5 ${
-                              isChildActive ? "!text-[#019839]" : ""
-                            }`}
-                          >
-                            {t(child.labelKey)}
-                          </NavLink>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              );
-            }
-
-            return (
-              <NavLink
-                key={item.labelKey}
-                to={item.to as string}
-                className={`pub-nav-link inline-block px-3 py-1 ${
-                  isActive ? "!text-[#019839]" : "!text-white"
-                }`}
-              >
-                {t(item.labelKey)}
-              </NavLink>
-            );
-          })}
+          {navItems.map((item, index) => (
+            <SiteLink
+              key={`${item.link}-${index}`}
+              link={item.link}
+              className={`pub-nav-link inline-block px-3 py-1 ${
+                isLinkActive(item.link, location.pathname)
+                  ? "!text-[#019839]"
+                  : "!text-white"
+              }`}
+            >
+              {item.label}
+            </SiteLink>
+          ))}
         </nav>
 
         <div className="public-header-actions flex items-center gap-3 sm:gap-4 lg:gap-5 xl:gap-7">
@@ -365,10 +279,7 @@ function PublicHeader() {
             type="button"
             aria-expanded={menuOpen}
             aria-label={t("public.auth.toggleMenu")}
-            onClick={() => {
-              setMenuOpen((value) => !value);
-              setOpenMobileDropdown(null);
-            }}
+            onClick={() => setMenuOpen((value) => !value)}
             className="public-menu-toggle flex h-11 w-11 items-center justify-center rounded-full bg-[#019839] text-white transition-colors hover:bg-black sm:h-11 sm:w-11 lg:hidden"
           >
             <Menu className="h-5 w-5" />
@@ -378,75 +289,20 @@ function PublicHeader() {
         {menuOpen && (
           <div className="public-mobile-menu absolute left-0 right-0 top-full max-h-[calc(100vh-80px)] overflow-y-auto border-t border-black/10 bg-white px-5 py-5 shadow-lg sm:px-6 md:px-10 lg:hidden">
             <nav className="flex flex-col gap-2 text-[16px] font-semibold">
-              {navItems.filter((item) => !item.hidden).map((item) => {
-                const isActive = isNavItemActive(item, location.pathname);
-
-                if (item.children) {
-                  const isOpen = openMobileDropdown === item.labelKey;
-                  return (
-                    <div key={item.labelKey} className="flex flex-col">
-                      <button
-                        type="button"
-                        aria-expanded={isOpen}
-                        onClick={() =>
-                          setOpenMobileDropdown((current) =>
-                            current === item.labelKey ? null : item.labelKey,
-                          )
-                        }
-                        className={`pub-nav-link inline-flex items-center gap-1.5 self-start px-4 py-2.5 ${
-                          isActive ? "!text-[#019839]" : "!text-black"
-                        }`}
-                      >
-                        {t(item.labelKey)}
-                        <ChevronDown
-                          className={`h-4 w-4 transition-transform ${
-                            isOpen ? "rotate-180" : ""
-                          }`}
-                        />
-                      </button>
-                      {isOpen && (
-                        <div
-                          className={`flex flex-col ${isRtl ? "pe-4" : "ps-4"}`}
-                        >
-                          {item.children.map((child) => {
-                            const isChildActive = isNavItemActive(
-                              child,
-                              location.pathname,
-                            );
-                            return (
-                              <NavLink
-                                key={child.labelKey}
-                                to={child.to}
-                                onClick={() => setMenuOpen(false)}
-                                className={`pub-nav-link self-start px-4 py-2 text-[15px] font-medium ${
-                                  isChildActive
-                                    ? "!text-[#019839]"
-                                    : "!text-black/70"
-                                }`}
-                              >
-                                {t(child.labelKey)}
-                              </NavLink>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  );
-                }
-
-                return (
-                  <NavLink
-                    key={item.labelKey}
-                    to={item.to as string}
-                    onClick={() => setMenuOpen(false)}
-                    className={`pub-nav-link self-start px-4 py-2.5 ${
-                      isActive ? "!text-[#019839]" : "!text-black"
-                    }`}
-                  >
-                    {t(item.labelKey)}
-                  </NavLink>
-                );
-              })}
+              {navItems.map((item, index) => (
+                <SiteLink
+                  key={`${item.link}-${index}`}
+                  link={item.link}
+                  onClick={() => setMenuOpen(false)}
+                  className={`pub-nav-link self-start px-4 py-2.5 ${
+                    isLinkActive(item.link, location.pathname)
+                      ? "!text-[#019839]"
+                      : "!text-black"
+                  }`}
+                >
+                  {item.label}
+                </SiteLink>
+              ))}
               {isAuthenticated && (
                 <button
                   type="button"
@@ -480,6 +336,26 @@ function PublicFooter() {
   );
   const [isSubmittingEmail, setIsSubmittingEmail] = useState(false);
   const { t } = useTranslation();
+  const cta = useLayoutSection("cta");
+  const footer = useLayoutSection("footer");
+
+  const toLinks = (name: string) =>
+    footer
+      .list(name)
+      .map((item) => ({ label: footer.pickItem(item, "label"), link: item.link ?? "" }))
+      .filter((item) => item.link);
+  const socialLinks = toLinks("socialLinks");
+  const quickLinks = toLinks("quickLinks").filter((item) => item.label);
+  // Two columns, filled top-down like the original layout.
+  const quickLinkColumns = [
+    quickLinks.slice(0, Math.ceil(quickLinks.length / 2)),
+    quickLinks.slice(Math.ceil(quickLinks.length / 2)),
+  ];
+  const phone = footer.value("phone").trim();
+  const contactEmail = footer.value("email").trim();
+  const address = footer.pick("address");
+  const addressLink = footer.value("addressLink");
+  const ctaBackground = cta.value("backgroundImage");
 
   const handleNewsletterSubmit = async () => {
     const normalizedEmail = email.trim().toLowerCase();
@@ -517,34 +393,39 @@ function PublicFooter() {
 
   return (
     <>
-      <section
-        id="start-your-ride"
-        className="public-footer-cta relative flex min-h-[360px] items-center justify-center overflow-hidden bg-cover bg-center px-4 py-12 text-center text-white sm:min-h-[430px] sm:px-6 sm:py-16 lg:min-h-[502px]"
-        style={{
-          backgroundImage: " url('/images/footer-image.png')",
-        }}
-      >
-        <div className="relative z-10 w-full max-w-[760px]">
-          <h2 className="text-[36px] font-black uppercase leading-none tracking-wide sm:text-[44px] md:text-[56px] lg:text-[64px]">
-            {t("public.footer.ctaTitle")}
-          </h2>
-          <p className="mt-5! text-[16px] leading-6 sm:mt-7! sm:text-[18px] md:text-[22px]">
-            {t("public.footer.ctaSubtitle")}
-          </p>
-          <div className="mt-6! mb-6! flex flex-row flex-wrap items-center justify-center gap-3 sm:mt-7! sm:mb-8! sm:gap-4">
-            <StoreButton type="google" />
-            <StoreButton type="apple" />
+      {cta.visible && (
+        <section
+          id="start-your-ride"
+          className="public-footer-cta relative flex min-h-[360px] items-center justify-center overflow-hidden bg-cover bg-center px-4 py-12 text-center text-white sm:min-h-[430px] sm:px-6 sm:py-16 lg:min-h-[502px]"
+          style={{
+            backgroundColor: "#435974",
+            backgroundImage: ctaBackground
+              ? `url(${JSON.stringify(ctaBackground)})`
+              : undefined,
+          }}
+        >
+          <div className="relative z-10 w-full max-w-[760px]">
+            <h2 className="text-[36px] font-black uppercase leading-none tracking-wide sm:text-[44px] md:text-[56px] lg:text-[64px]">
+              {cta.pick("title")}
+            </h2>
+            <p className="mt-5! text-[16px] leading-6 sm:mt-7! sm:text-[18px] md:text-[22px]">
+              {cta.pick("subtitle")}
+            </p>
+            <div className="mt-6! mb-6! flex flex-row flex-wrap items-center justify-center gap-3 sm:mt-7! sm:mb-8! sm:gap-4">
+              <StoreButton type="google" />
+              <StoreButton type="apple" />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <footer className="public-footer relative bg-[#EAF4FF] px-4! pt-10! pb-10! sm:px-6! sm:pt-8! sm:pb-6.5! md:px-10! lg:px-16! lg:pt-10! xl:px-20! xl:pt-12!">
         <div className="public-footer-inner">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(280px,1fr)_minmax(300px,1.1fr)_minmax(260px,1fr)] lg:gap-12">
           <div className="sm:col-span-2 lg:col-span-1">
-            <Logo compact />
-            <p className="mt-5! max-w-[390px] text-[16px] leading-6 text-black sm:mt-8! sm:text-[18px] lg:mt-9!">
-              {t("public.footer.brandText")}
+            <Logo src={footer.value("logoImage")} compact />
+            <p className="mt-5! max-w-[390px] whitespace-pre-line text-[16px] leading-6 text-black sm:mt-8! sm:text-[18px] lg:mt-9!">
+              {footer.pick("brandText")}
             </p>
             <div className="mt-6! flex h-12 w-full max-w-[360px] overflow-hidden rounded-lg bg-[#8DDF93] p-1 max-[380px]:h-auto max-[380px]:flex-col sm:mt-7!">
               <input
@@ -588,131 +469,100 @@ function PublicFooter() {
               </p>
             )}
 
-            <div className="mt-6! flex gap-3! sm:mt-7!">
-              {socialLinks.map(({ labelKey, href, Icon }) => (
-                <a
-                  key={labelKey}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={t(labelKey)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-[#019839] text-white! transition-colors hover:bg-black"
-                >
-                  <Icon className="h-4.5 w-4.5" strokeWidth={1.75} />
-                </a>
-              ))}
-            </div>
+            {socialLinks.length > 0 && (
+              <div className="mt-6! flex flex-wrap gap-3! sm:mt-7!">
+                {socialLinks.map(({ label, link }, index) => {
+                  const Icon = getSocialIcon(link);
+                  return (
+                    <a
+                      key={`${link}-${index}`}
+                      href={link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={label || link}
+                      className="flex h-10 w-10 items-center justify-center rounded-full bg-[#019839] text-white! transition-colors hover:bg-black"
+                    >
+                      <Icon className="h-4.5 w-4.5" strokeWidth={1.75} />
+                    </a>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
-          <div>
-            <h3 className="text-[22px] uppercase sm:text-[24px]">
-              {t("public.footer.quickLinks")}
-            </h3>
-            <div className="mt-5! grid grid-cols-2 gap-x-6 text-[15px] sm:mt-7! sm:gap-x-10 sm:text-[16px]">
-              <ul className="space-y-1.5! sm:space-y-2!">
-                <li>
-                  <NavLink to="/aboutus" className="pub-footer-link">
-                    {t("public.nav.aboutUs")}
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/communities" className="pub-footer-link">
-                    {t("public.footer.communities")}
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/events" className="pub-footer-link">
-                    {t("public.nav.events")}
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/challenges" className="pub-footer-link">
-                    {t("public.footer.cyclistsCorner")}
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/tracks" className="pub-footer-link">
-                    {t("public.footer.rides")}
-                  </NavLink>
-                </li>
-              </ul>
-              <ul className="space-y-1.5! sm:space-y-2!">
-                <li hidden>
-                  <NavLink to="/user-adcc-store" className="pub-footer-link">
-                    {t("public.nav.clubStore")}
-                  </NavLink>
-                </li>
-                <li hidden>
-                  <NavLink to="/user-marketplace" className="pub-footer-link">
-                    {t("public.nav.marketplace")}
-                  </NavLink>
-                </li>
-                <li>
-                  <a
-                    href="https://erp.adcyclingclub.ae/contracts/venue/public/book/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="pub-footer-link"
-                  >
-                    {t("public.footer.venueBooking")}
-                  </a>
-                </li>
-                <li>
-                  <NavLink to="/contact-us" className="pub-footer-link">
-                    {t("public.footer.contactUs")}
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/privacy-policy" className="pub-footer-link">
-                    {t("public.footer.privacyPolicy")}
-                  </NavLink>
-                </li>
+          {quickLinks.length > 0 && (
+            <div>
+              <h3 className="text-[22px] uppercase sm:text-[24px]">
+                {footer.pick("quickLinksTitle")}
+              </h3>
+              <div className="mt-5! grid grid-cols-2 gap-x-6 text-[15px] sm:mt-7! sm:gap-x-10 sm:text-[16px]">
+                {quickLinkColumns.map((column, columnIndex) => (
+                  <ul key={columnIndex} className="space-y-1.5! sm:space-y-2!">
+                    {column.map((item, index) => (
+                      <li key={`${item.link}-${index}`}>
+                        <SiteLink link={item.link} className="pub-footer-link">
+                          {item.label}
+                        </SiteLink>
+                      </li>
+                    ))}
+                  </ul>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {(phone || contactEmail || address) && (
+            <div>
+              <h3 className="text-[22px] uppercase sm:text-[24px]">
+                {footer.pick("contactTitle")}
+              </h3>
+              <ul className="mt-5! space-y-3! text-[15px] leading-6 sm:mt-7! sm:space-y-4! sm:text-[16px]">
+                {phone && (
+                  <li className="flex gap-3">
+                    <Phone className="mt-0.5 h-5 w-5 shrink-0" />
+                    <a
+                      href={`tel:${phone.replace(/[^\d+]/g, "")}`}
+                      dir="ltr"
+                      className="transition-colors hover:text-[#019839]"
+                    >
+                      {phone}
+                    </a>
+                  </li>
+                )}
+                {address && (
+                  <li className="flex gap-3">
+                    <MapPin className="mt-0.5 h-5 w-5 shrink-0" />
+                    {addressLink ? (
+                      <SiteLink
+                        link={addressLink}
+                        className="whitespace-pre-line transition-colors hover:text-[#019839]"
+                      >
+                        {address}
+                      </SiteLink>
+                    ) : (
+                      <span className="whitespace-pre-line">{address}</span>
+                    )}
+                  </li>
+                )}
+                {contactEmail && (
+                  <li className="flex gap-3">
+                    <Mail className="mt-0.5 h-5 w-5 shrink-0" />
+                    <a
+                      href={`mailto:${contactEmail}`}
+                      className="break-all transition-colors hover:text-[#019839]"
+                    >
+                      {contactEmail}
+                    </a>
+                  </li>
+                )}
               </ul>
             </div>
-          </div>
-
-          <div>
-            <h3 className="text-[22px] uppercase sm:text-[24px]">
-              {t("public.footer.contactUs")}
-            </h3>
-            <ul className="mt-5! space-y-3! text-[15px] leading-6 sm:mt-7! sm:space-y-4! sm:text-[16px]">
-              <li className="flex gap-3">
-                <Phone className="mt-0.5 h-5 w-5 shrink-0" />
-                <a
-                  href="tel:+97126228894"
-                  className="transition-colors hover:text-[#019839]"
-                >
-                  +971 2 622 8894
-                </a>
-              </li>
-              {/* <li className="flex gap-3"><MessageCircle className="mt-0.5 h-5 w-5 shrink-0" /> <span>144226</span></li> */}
-              <li className="flex gap-3">
-                <MapPin className="mt-0.5 h-5 w-5 shrink-0" />
-                <a
-                  href="https://maps.app.goo.gl/5dx641z5VDFrqrhH7"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="whitespace-pre-line transition-colors hover:text-[#019839]"
-                >
-                  {t("public.footer.address")}
-                </a>
-              </li>
-              <li className="flex gap-3">
-                <Mail className="mt-0.5 h-5 w-5 shrink-0" />
-                <a
-                  href="mailto:info@adcyclingclub.ae"
-                  className="break-all transition-colors hover:text-[#019839]"
-                >
-                  info@adcyclingclub.ae
-                </a>
-              </li>
-            </ul>
-          </div>
+          )}
         </div>
 
         <div className="mt-5! border-t border-black/15 pt-[20px]! text-center sm:mt-7! md:mt-10!">
           <span className="home-footer-copyright inline-block h-[23px] w-fit max-w-full whitespace-nowrap text-[clamp(14px,4.6vw,18px)] font-normal leading-none text-black">
-            {t("public.footer.copyright")}
+            {footer.pick("copyright")}
           </span>
         </div>
         </div>
