@@ -217,7 +217,7 @@ export function EventEdit({ role }: EventEditProps) {
     categories: string;
     rewardPoints: number;
     rewardBadge: string;
-    status: 'Draft' | 'Open' | 'Full' | 'Closed' | 'Disabled' | 'Completed' | 'Archived';
+    status: 'Draft' | 'Open' | 'Full' | 'Closed' | 'Disabled' | 'Cancelled' | 'Completed' | 'Archived';
     isFeatured: boolean;
     allowCancellation: boolean;
     isPurposeBased: boolean;
@@ -292,12 +292,13 @@ export function EventEdit({ role }: EventEditProps) {
       };
       const communityId = resolveId(ev.communityId ?? ev.community);
       const trackId = resolveId(ev.trackId ?? ev.track);
-      const statusMap: Record<string, 'Draft' | 'Open' | 'Full' | 'Closed' | 'Disabled' | 'Completed' | 'Archived'> = {
+      const statusMap: Record<string, 'Draft' | 'Open' | 'Full' | 'Closed' | 'Disabled' | 'Cancelled' | 'Completed' | 'Archived'> = {
         'Draft': 'Draft', 'draft': 'Draft',
         'Open': 'Open', 'open': 'Open',
         'Full': 'Full', 'full': 'Full',
         'Closed': 'Closed', 'closed': 'Closed',
         'Disabled': 'Disabled', 'disabled': 'Disabled', 'disable': 'Disabled',
+        'Cancelled': 'Cancelled', 'cancelled': 'Cancelled',
         'Completed': 'Completed', 'completed': 'Completed',
         'Archived': 'Archived', 'archived': 'Archived',
       };
@@ -1715,6 +1716,7 @@ export function EventEdit({ role }: EventEditProps) {
                   <option value="Full">{t('events.create.statusOptions.full')}</option>
                   <option value="Closed">{t('events.create.statusOptions.closed')}</option>
                   <option value="Disabled">{t('events.create.statusOptions.disabled')}</option>
+                  <option value="Cancelled">{t('events.create.statusOptions.cancelled', 'Cancelled')}</option>
                   <option value="Completed">{t('events.create.statusOptions.completed')}</option>
                   <option value="Archived">{t('events.create.statusOptions.archived')}</option>
                 </select>

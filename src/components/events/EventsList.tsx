@@ -2,9 +2,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { UserRole } from '../../App';
-import { Plus, Search, Calendar, Users, MapPin, Star, Edit, Eye, UserCheck, Trophy, Ban, Archive, ChevronLeft, ChevronRight, Trash2, RotateCcw, Inbox } from 'lucide-react';
+import { Plus, Search, Calendar, Users, MapPin, Star, Edit, Eye, UserCheck, Trophy, Ban, Archive, Copy, XCircle, ChevronLeft, ChevronRight, Trash2, RotateCcw, Inbox } from 'lucide-react';
 import { availableCities } from '../../data/eventsData';
-import { getAllEvents, deleteEvent as deleteEventApi, disableEvent as disableEventApi, restoreEvent as restoreEventApi, permanentlyDeleteEvent as permanentlyDeleteEventApi, EventApiResponse } from '../../services/eventsApi';
+import { getAllEvents, deleteEvent as deleteEventApi, disableEvent as disableEventApi, cancelEvent as cancelEventApi, duplicateEvent as duplicateEventApi, restoreEvent as restoreEventApi, permanentlyDeleteEvent as permanentlyDeleteEventApi, EventApiResponse } from '../../services/eventsApi';
 import { useEventCategories, useEventOrganizers } from '../../hooks/useLookups';
 import { toast } from 'sonner';
 import { CardSkeleton } from '../ui/skeleton';
@@ -42,6 +42,9 @@ export function EventsList({ role }: EventsListProps) {
 
   const [showDisableModal, setShowDisableModal] = useState(false);
   const [eventToDisable, setEventToDisable] = useState<string | null>(null);
+
+  const [eventToCancel, setEventToCancel] = useState<string | null>(null);
+  const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const eventsPerPage = 10;
@@ -260,6 +263,38 @@ export function EventsList({ role }: EventsListProps) {
     }
   };
 
+  const confirmCancel = async () => {
+    if (!eventToCancel) return;
+    try {
+      await cancelEventApi(eventToCancel);
+      setEvents(prev => prev.map(e => {
+        const id = (e as any)._id ?? (e as any).id;
+        return id === eventToCancel ? { ...e, status: 'Cancelled' } : e;
+      }));
+      toast.success(t('events.toasts.cancelSuccess', 'Event cancelled. Registered riders have been notified.'));
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || t('events.toasts.cancelError', 'Failed to cancel the event'));
+    } finally {
+      setEventToCancel(null);
+    }
+  };
+
+  const handleDuplicate = async (eventId: string) => {
+    if (duplicatingId) return;
+    setDuplicatingId(eventId);
+    try {
+      const copy: any = await duplicateEventApi(eventId);
+      toast.success(t('events.toasts.duplicateSuccess', 'Event duplicated. The copy is saved as a draft.'));
+      const copyId = copy?._id ?? copy?.id;
+      // Open the copy so the admin can set its date and details
+      if (copyId) navigate(`/events/${copyId}/edit`);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || t('events.toasts.duplicateError', 'Failed to duplicate the event'));
+    } finally {
+      setDuplicatingId(null);
+    }
+  };
+
   // const selectedTrack = tracks.find(t => t.id === formData.trackId);
 
 
@@ -426,6 +461,7 @@ export function EventsList({ role }: EventsListProps) {
               <option value="Full">{t('events.filters.full')}</option>
               <option value="Closed">{t('data.statuses.Closed', 'Closed')}</option>
               <option value="Disabled">{t('data.statuses.Disabled', 'Disabled')}</option>
+              <option value="Cancelled">{t('data.statuses.Cancelled', 'Cancelled')}</option>
               <option value="Completed">{t('events.filters.completed')}</option>
               <option value="Archived">{t('events.filters.archived')}</option>
               <option value="Trash">{t('trash.status', 'Trash')}</option>
@@ -524,7 +560,7 @@ export function EventsList({ role }: EventsListProps) {
                       alt={event.title}
                       className="w-32 h-32 object-cover"
                     />
-                    {isEventClosed(event) && <EventClosedOverlay size="sm" />}
+                    {isEventClosed(event) && <EventClosedOverlay size="sm" status={event.status} />}
                   </div>
 
                   {/* Event Info */}
@@ -597,6 +633,7 @@ export function EventsList({ role }: EventsListProps) {
                             event.status === 'Open' ? '#10B981' :
                               event.status === 'Full' ? '#F59E0B' :
                                 event.status === 'Completed' ? '#3B82F6' :
+                                  event.status === 'Cancelled' ? '#991B1B' :
                                   event.status === 'Draft' ? '#6B7280' : '#EF4444'
                         }}
                       >
@@ -672,6 +709,27 @@ export function EventsList({ role }: EventsListProps) {
                         >
                           <Trophy className="w-4 h-4" />
                           {t('events.card.results')}
+                        </button>
+                      )}
+
+                      <button
+                        onClick={() => handleDuplicate(eventId)}
+                        disabled={duplicatingId === eventId}
+                        className="flex items-center gap-1 px-3 py-2 rounded-lg transition-all hover:shadow-md disabled:opacity-50"
+                        style={{ backgroundColor: '#E5E7EB', color: '#333' }}
+                      >
+                        <Copy className="w-4 h-4" />
+                        {t('events.card.duplicate', 'Duplicate')}
+                      </button>
+
+                      {!['Cancelled', 'Completed', 'Archived'].includes(event.status) && (
+                        <button
+                          onClick={() => setEventToCancel(eventId)}
+                          className="flex items-center gap-1 px-3 py-2 rounded-lg transition-all hover:shadow-md"
+                          style={{ backgroundColor: '#FEE2E2', color: '#C12D32' }}
+                        >
+                          <XCircle className="w-4 h-4" />
+                          {t('events.card.cancel', 'Cancel Event')}
                         </button>
                       )}
 
@@ -775,6 +833,20 @@ export function EventsList({ role }: EventsListProps) {
         confirmLabel={t('events.edit.disableEvent', 'Disable Event')}
         cancelLabel={t('common.cancel', 'Cancel')}
         icon={Ban}
+        iconBgColor="#FEE2E2"
+        iconColor="#EF4444"
+        confirmBgColor="#EF4444"
+      />
+
+      <ConfirmDialog
+        open={eventToCancel !== null}
+        onClose={() => setEventToCancel(null)}
+        onConfirm={confirmCancel}
+        title={t('events.toasts.cancelTitle', 'Cancel this event?')}
+        message={t('events.toasts.cancelMessage', 'The event stays on the website with a "Cancelled" label, but riders can no longer open or join it. Everyone registered gets a notification. You can open it again later by changing its status in Edit.')}
+        confirmLabel={t('events.toasts.cancelConfirm', 'Cancel Event')}
+        cancelLabel={t('events.toasts.keepEvent', 'Keep Event')}
+        icon={XCircle}
         iconBgColor="#FEE2E2"
         iconColor="#EF4444"
         confirmBgColor="#EF4444"

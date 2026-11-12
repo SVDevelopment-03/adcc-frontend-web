@@ -4,15 +4,17 @@ import { useTranslation } from 'react-i18next';
 interface EventClosedOverlayProps {
   /** Smaller stamp for thumbnails (e.g. the 128px dashboard list image). */
   size?: 'sm' | 'md';
-  /** Stamp text; defaults to "Event Closed". */
+  /** Stamp text; defaults to "Event Closed" ("Event Cancelled" for a cancelled event). */
   label?: string;
+  /** The event's status: a cancelled event gets the "Event Cancelled" stamp. */
+  status?: string | null;
 }
 
 /**
  * Watermark for the image of an event that is over. Render it inside a
  * `position: relative; overflow: hidden` wrapper around the image.
  */
-export function EventClosedOverlay({ size = 'md', label }: EventClosedOverlayProps) {
+export function EventClosedOverlay({ size = 'md', label, status }: EventClosedOverlayProps) {
   const { t } = useTranslation();
   const small = size === 'sm';
 
@@ -45,7 +47,10 @@ export function EventClosedOverlay({ size = 'md', label }: EventClosedOverlayPro
           textShadow: '0 1px 4px rgba(0, 0, 0, 0.5)',
         }}
       >
-        {label ?? t('common.eventClosed', 'Event Closed')}
+        {label ??
+          (status === 'Cancelled'
+            ? t('common.eventCancelled', 'Event Cancelled')
+            : t('common.eventClosed', 'Event Closed'))}
       </span>
     </div>
   );

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Users, Calendar, Building2, MapPin, Store, TrendingUp, ShoppingBag, Package } from 'lucide-react';
+import { Users, Calendar, Building2, Route, Store, TrendingUp, ShoppingBag, Package } from 'lucide-react';
 import { StatCard } from './StatCard';
 import { UpcomingEvents } from './UpcomingEvents';
 import { PendingApprovals } from './PendingApprovals';
@@ -81,7 +81,7 @@ export function SuperAdminDashboard() {
         <StatCard
           label={t('dashboard.activeTracks')}
           value={loading ? '—' : formatStat(stats?.activeTracks ?? 0)}
-          icon={<MapPin className="w-6 h-6" />}
+          icon={<Route className="w-6 h-6" />}
           onClick={() => navigate('/tracks')}
         />
         <StatCard

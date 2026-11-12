@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { PublicPageHero, useWordList } from "../public/publicPageHelpers";
+import { useContentSection } from "../../hooks/useContentSection";
+import { ContentPageHero } from "../public/contentHelpers";
 import { normalizePhoneForCountry } from "../../utils/phone";
 import { COUNTRY_CODES, DEFAULT_COUNTRY_CODE } from "../../constants/countryCodes";
 import { NATIONALITY_COUNTRIES } from "../../constants/nationalities";
@@ -12,6 +13,7 @@ import {
   type LaffahRideGender,
   type LaffahRideLocation,
 } from "../../services/laffahRideRegistrationsApi";
+import { AnimatedButton } from "../ui/AnimatedButton";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -78,8 +80,7 @@ const inputClass = (hasError?: string) =>
 
 export default function LaffahRideRegistrationPage() {
   const { t } = useTranslation();
-  const heroTitleWords = useWordList("public.laffahRide.hero.titleWords");
-  const heroBreadcrumb = useWordList("public.laffahRide.hero.breadcrumb");
+  const intro = useContentSection("laffah", "intro");
 
   const [values, setValues] = useState<FormValues>(INITIAL);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -185,20 +186,17 @@ export default function LaffahRideRegistrationPage() {
   return (
     <div className="contact-page laffah-ride-page min-h-screen bg-[#eaf4ff] text-black">
       <HeroStyles />
-      <PublicPageHero
-        titleWords={heroTitleWords}
-        breadcrumb={heroBreadcrumb}
-        backgroundImage="/img/laffah.png"
-        classPrefix="contact-page"
-      />
+      <ContentPageHero page="laffah" classPrefix="contact-page" />
 
       <section className="mx-auto max-w-[900px] px-10 pt-6 pb-14 max-md:px-5 max-md:pt-4 max-md:pb-8 max-sm:px-4 max-sm:pt-3 max-sm:pb-6">
-        <div className="text-center">
-          <h2 className="contact-intro-title text-[60px] leading-none uppercase max-md:text-[44px] max-sm:text-[36px]">
-            {t("public.laffahRide.intro.title")}
-          </h2>
-          <p className="mt-3 text-[24px] max-md:text-[18px]">{t("public.laffahRide.intro.body")}</p>
-        </div>
+        {intro.visible && (
+          <div className="text-center">
+            <h2 className="contact-intro-title text-[60px] leading-none uppercase max-md:text-[44px] max-sm:text-[36px]">
+              {intro.pick("title")}
+            </h2>
+            <p className="mt-3 text-[24px] max-md:text-[18px]">{intro.pick("body")}</p>
+          </div>
+        )}
 
         {submitted ? (
           <div className="mt-10 rounded-[15px] border border-black/20 p-8 text-center max-md:mt-6">
@@ -439,13 +437,13 @@ export default function LaffahRideRegistrationPage() {
               {errors.raceLocations && <p className="mt-2 text-[12px] text-red-500">{errors.raceLocations}</p>}
             </fieldset>
 
-            <button
+            <AnimatedButton
               type="submit"
               disabled={submitting}
-              className="mt-8 inline-flex w-fit cursor-pointer items-center gap-2 rounded-full bg-[#019839] px-6 py-3 text-[16px] font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-8 w-fit"
             >
               {submitting ? tf("submitting") : tf("submit")}
-            </button>
+            </AnimatedButton>
           </form>
         )}
       </section>

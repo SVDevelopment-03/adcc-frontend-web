@@ -30,6 +30,9 @@ import ContactUs from './components/contact-us/contactUs.jsx';
 import PrivacyPolicy from './components/privacy-policy/PrivacyPolicy';
 import LaffahRideRegistration from './components/laffah-ride-registration/LaffahRideRegistration';
 import { Home } from './components/home/Home';
+import CustomPage from './components/public/CustomPage';
+import { SiteRoutingProvider, useSiteRouting } from './contexts/SiteRoutingContext';
+import { isAdminPath, isExternalUrl, publicPathsOf, resolveRedirect } from './services/siteRouting';
 
 
 // Keeps old /user-* links working by swapping the prefix and preserving the rest.
@@ -41,44 +44,44 @@ function LegacyRedirect({ from, to }: { from: string; to: string }) {
 
 export type UserRole = 'Admin' | 'content-manager' | 'community-manager' | 'moderator';
 
-const publicRoutePrefixes = [
+// Fixed public paths; page URLs, custom pages and redirects managed in the
+// dashboard (Pages) are added from the site routing.
+const fixedPublicPrefixes = [
   '/home',
   '/login',
   '/forgot',
   '/register',
-  '/aboutus',
-  '/events',
-  '/tracks',
-  '/challenges',
-  '/communities',
   // Legacy prefixes, kept so their redirects render for visitors.
   '/user-event',
   '/user-events',
   '/user-tracks',
   '/user-challenges',
   '/user-communities',
-  '/user-adcc-store',
   '/user-store-detail',
-  '/user-marketplace',
-  '/user-news',
-  '/contact-us',
-  '/privacy-policy',
-  '/laffah-ride-registration',
 ];
 
 // Public pages that look the same whether or not someone is signed in, so
 // they can render straight away instead of waiting for the sign-in check.
-const authIndependentPrefixes = [
-  '/home',
-  '/aboutus',
-  '/user-adcc-store',
-  '/user-store-detail',
-  '/user-marketplace',
-  '/user-news',
-  '/contact-us',
-  '/privacy-policy',
-  '/laffah-ride-registration',
-];
+const authIndependentPageIds = ['about', 'store', 'marketplace', 'news', 'contact', 'privacy', 'laffah'] as const;
+
+const matchesPrefix = (pathname: string, route: string) =>
+  pathname === route || (route !== '/' && pathname.startsWith(`${route}/`));
+
+function PageLoader() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#C12D32' }}></div>
+    </div>
+  );
+}
+
+/** Sends the visitor to an external redirect target. */
+function ExternalRedirect({ to }: { to: string }) {
+  useEffect(() => {
+    window.location.replace(to);
+  }, [to]);
+  return <PageLoader />;
+}
 
 function normalizePathname(pathname: string) {
   if (pathname.length > 1 && pathname.endsWith('/')) return pathname.slice(0, -1);
@@ -89,23 +92,44 @@ function AppContent() {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, loading } = useAuth();
+  const { routing, ready: routingReady } = useSiteRouting();
+  const paths = routing.pages;
   const pathname = normalizePathname(location.pathname);
-  const isPublicRoute =
-    pathname === '/' ||
-    publicRoutePrefixes.some(
-      (route) => pathname === route || (route !== '/' && pathname.startsWith(`${route}/`)),
-    );
+  const lowerPath = pathname.toLowerCase();
+  const publicRoutePrefixes = [...fixedPublicPrefixes, ...publicPathsOf(routing)];
+  const authIndependentPrefixes = [
+    '/home',
+    '/user-store-detail',
+    ...authIndependentPageIds.map((id) => paths[id]),
+    ...routing.customPages,
+  ];
+  const isPublicRoute = pathname === '/' || publicRoutePrefixes.some((route) => matchesPrefix(lowerPath, route));
 
-  // Redirect to login when user becomes unauthenticated
+  // Dashboard redirects (Pages → Redirects, changed page URLs). Paths the
+  // dashboard also uses wait for the sign-in check: staff get the dashboard.
+  const redirectTarget =
+    routingReady && !(loading && isAdminPath(pathname))
+      ? resolveRedirect(pathname, routing, isAuthenticated)
+      : null;
+
+  // Redirect to login when user becomes unauthenticated. Waits for the site
+  // routing so custom page URLs and redirect sources count as public.
   useEffect(() => {
-    if (!loading && !isAuthenticated && !isPublicRoute) {
+    if (routingReady && !loading && !isAuthenticated && !isPublicRoute && !redirectTarget) {
       navigate('/login', { replace: true });
     }
-  }, [isAuthenticated, isPublicRoute, loading, navigate]);
+  }, [isAuthenticated, isPublicRoute, loading, navigate, routingReady, redirectTarget]);
 
-  const isAuthIndependentRoute = authIndependentPrefixes.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`),
-  );
+  const isAuthIndependentRoute = authIndependentPrefixes.some((route) => matchesPrefix(lowerPath, route));
+
+  if (!routingReady) return <PageLoader />;
+  if (redirectTarget) {
+    return isExternalUrl(redirectTarget) ? (
+      <ExternalRedirect to={redirectTarget} />
+    ) : (
+      <Navigate to={`${redirectTarget}${location.search}${location.hash}`} replace />
+    );
+  }
 
   if (loading && !isAuthIndependentRoute) {
     return (
@@ -164,7 +188,7 @@ function AppContent() {
           )
         } 
       />
-      <Route path="/aboutus/*" element={publicPage(<AboutUs />)} />
+      <Route path={`${paths.about}/*`} element={publicPage(<AboutUs />)} />
       {/* Legacy /user-* URLs redirect to the new public paths. */}
       <Route path="/user-event/*" element={<LegacyRedirect from="/user-event" to="/events" />} />
       <Route path="/user-events/*" element={<LegacyRedirect from="/user-events" to="/events" />} />
@@ -172,47 +196,61 @@ function AppContent() {
       <Route path="/user-challenges/*" element={<LegacyRedirect from="/user-challenges" to="/challenges" />} />
       <Route path="/user-communities/*" element={<LegacyRedirect from="/user-communities" to="/communities" />} />
       {/* Internal event registration form; no admin page uses this path */}
-      <Route path="/events/:eventId/register" element={publicPage(<InternalEventRegisterPage />)} />
+      <Route path={`${paths.events}/:eventId/register`} element={publicPage(<InternalEventRegisterPage />)} />
       {/* These paths are shared with the admin panel: visitors get the public
           pages, signed-in users fall through to the Layout routes below. */}
       {!isAuthenticated && (
         <>
-          <Route path="/events" element={publicPage(<UserEvent />)} />
+          <Route path={paths.events} element={publicPage(<UserEvent />)} />
           <Route
-            path="/events/:eventId"
+            path={`${paths.events}/:eventId`}
             element={publicPage(<CommunitiesAbuDhabiGrandPrixRide />)}
           />
-          <Route path="/tracks" element={publicPage(<UserTracks />)} />
+          <Route path={paths.tracks} element={publicPage(<UserTracks />)} />
           <Route
-            path="/tracks/:trackId"
+            path={`${paths.tracks}/:trackId`}
             element={publicPage(<CommunitiesAlQuadraCyclePath />)}
           />
-          <Route path="/challenges" element={publicPage(<UserChallenges />)} />
+          <Route path={paths.challenges} element={publicPage(<UserChallenges />)} />
           <Route
-            path="/challenges/:challengeId"
+            path={`${paths.challenges}/:challengeId`}
             element={publicPage(<CommunitiesMarchDistanceChallenge />)}
           />
-          <Route path="/communities" element={publicPage(<UserCommunities />)} />
+          <Route path={paths.communities} element={publicPage(<UserCommunities />)} />
           <Route
-            path="/communities/:communityId"
+            path={`${paths.communities}/:communityId`}
             element={publicPage(<CommunitiesAbuDhabiCyclingCommunity />)}
           />
         </>
       )}
       <Route
-        path="/user-adcc-store/product/:id"
-        element={STORE_LAUNCHED ? publicPage(<MerchandiseDetailPage />) : <Navigate to="/user-adcc-store" replace />}
+        path={`${paths.store}/product/:id`}
+        element={STORE_LAUNCHED ? publicPage(<MerchandiseDetailPage />) : <Navigate to={paths.store} replace />}
       />
-      <Route path="/user-adcc-store/*" element={publicPage(<UserAdccStore />)} />
-      <Route path="/user-marketplace" element={publicPage(<UserMarketplace />)} />
-      <Route path="/user-marketplace/:id" element={publicPage(<StoreDetailPage />)} />
-      <Route path="/user-news" element={publicPage(<UserNews />)} />
-      <Route path="/user-news/:id" element={publicPage(<UserNewsDetail />)} />
+      <Route path={`${paths.store}/*`} element={publicPage(<UserAdccStore />)} />
+      {/* Marketplace and News may share their URL with a dashboard section. */}
+      {(!isAuthenticated || !isAdminPath(paths.marketplace)) && (
+        <>
+          <Route path={paths.marketplace} element={publicPage(<UserMarketplace />)} />
+          <Route path={`${paths.marketplace}/:id`} element={publicPage(<StoreDetailPage />)} />
+        </>
+      )}
+      {(!isAuthenticated || !isAdminPath(paths.news)) && (
+        <>
+          <Route path={paths.news} element={publicPage(<UserNews />)} />
+          <Route path={`${paths.news}/:id`} element={publicPage(<UserNewsDetail />)} />
+        </>
+      )}
       <Route path="/user-store-detail/*" element={publicPage(<StoreDetailPage />)} />
 
-      <Route path="/contact-us/*" element={publicPage(<ContactUs />)} />
-      <Route path="/privacy-policy/*" element={publicPage(<PrivacyPolicy />)} />
-      <Route path="/laffah-ride-registration/*" element={publicPage(<LaffahRideRegistration />)} />
+      <Route path={`${paths.contact}/*`} element={publicPage(<ContactUs />)} />
+      <Route path={`${paths.privacy}/*`} element={publicPage(<PrivacyPolicy />)} />
+      <Route path={`${paths.laffah}/*`} element={publicPage(<LaffahRideRegistration />)} />
+
+      {/* Pages built in the dashboard (Pages → New page). */}
+      {routing.customPages.map((slug) => (
+        <Route key={slug} path={slug} element={publicPage(<CustomPage key={slug} slug={slug} />)} />
+      ))}
 
       <Route path="/home/*" element={publicPage(<Home />)} />
       
@@ -240,7 +278,9 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <LocaleProvider>
-          <AppContent />
+          <SiteRoutingProvider>
+            <AppContent />
+          </SiteRoutingProvider>
           <Toaster position="top-right" />
           <ComingSoonPopup />
         </LocaleProvider>

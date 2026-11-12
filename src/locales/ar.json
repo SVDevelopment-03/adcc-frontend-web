@@ -103,6 +103,7 @@
   "common": {
     "challengeClosed": "انتهى التحدي",
     "eventClosed": "انتهت الفعالية",
+    "eventCancelled": "أُلغيت الفعالية",
     "fieldRequired": "هذا الحقل مطلوب",
     "fillRequiredFields": "يرجى ملء جميع الحقول المطلوبة",
     "loading": "جاري التحميل...",
@@ -759,7 +760,9 @@
       "edit": "تعديل",
       "participants": "المشاركون",
       "results": "النتائج",
-      "disable": "تعطيل"
+      "disable": "تعطيل",
+      "cancel": "إلغاء الفعالية",
+      "duplicate": "تكرار"
     },
     "empty": {
       "noResults": "لم يتم العثور على فعاليات",
@@ -768,7 +771,15 @@
     "toasts": {
       "loadError": "فشل في تحميل البيانات",
       "deleteSuccess": "تم حذف الفعالية بنجاح",
-      "deleteError": "فشل الحذف"
+      "deleteError": "فشل الحذف",
+      "cancelSuccess": "تم إلغاء الفعالية وإشعار المسجلين.",
+      "cancelError": "فشل إلغاء الفعالية",
+      "cancelTitle": "إلغاء هذه الفعالية؟",
+      "cancelMessage": "ستبقى الفعالية على الموقع مع علامة \"ملغاة\"، لكن لن يتمكن الدراجون من فتحها أو الانضمام إليها. سيتلقى جميع المسجلين إشعاراً. يمكنك إعادة فتحها لاحقاً بتغيير حالتها من صفحة التعديل.",
+      "cancelConfirm": "إلغاء الفعالية",
+      "keepEvent": "إبقاء الفعالية",
+      "duplicateSuccess": "تم تكرار الفعالية وحفظ النسخة كمسودة.",
+      "duplicateError": "فشل تكرار الفعالية"
     },
     "internal": {
       "heading": "نوع الفعالية",
@@ -900,6 +911,7 @@
         "full": "مكتمل العدد",
         "closed": "مغلق",
         "disabled": "معطّل",
+        "cancelled": "ملغاة",
         "completed": "منتهي",
         "archived": "مؤرشف"
       },
@@ -2192,6 +2204,7 @@
       "Closed": "مغلق",
       "Active": "نشط",
       "Disabled": "معطل",
+      "Cancelled": "ملغاة",
       "upcoming": "قادم",
       "cancelled": "ملغي",
       "ongoing": "جارٍ"

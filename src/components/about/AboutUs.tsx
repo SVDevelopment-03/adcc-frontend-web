@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getPublicStats } from "../../services/publicStatsApi";
 import { motion } from "framer-motion";
 import { AnimatedButton } from "../ui/AnimatedButton";
 import { AnimatedImage } from "../ui/AnimatedImage";
 import { showAppComingSoon } from "../../utils/appStoreLink";
+import { useContentSection } from "../../hooks/useContentSection";
+import { useLayoutSection } from "../public/useLayoutSection";
+import { toWords } from "../../services/contentPages";
 import {
-  AnimatedWords,
-  PublicPageHero,
-  useWordList,
-} from "../public/publicPageHelpers";
+  ContentPageHero,
+  buttonLinkProps,
+  cssUrl,
+} from "../public/contentHelpers";
+import { AnimatedWords } from "../public/publicPageHelpers";
 
 // ─── Page styles ─────────────────────────────────────────────────────────────
 const FontLoader = () => (
@@ -617,9 +620,8 @@ justify-content: center !important;}
 );
 
 function JourneyCard() {
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-  const titleWords = useWordList("public.common.journeyCard.title");
+  const card = useLayoutSection("journey");
+  const buttonLabel = card.pick("buttonLabel");
 
   const avatarBackgrounds = [
     "linear-gradient(135deg, #f7c59f 0%, #7aa7ff 100%)",
@@ -631,8 +633,8 @@ function JourneyCard() {
   return (
     <div className="journey-card">
       <motion.img
-        src="/img/image 2991.png"
-        alt={t("public.common.journeyCard.riderAlt")}
+        src={card.value("riderImage")}
+        alt=""
         className="journey-card__image"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
@@ -644,7 +646,7 @@ function JourneyCard() {
       />
 
       <p className="journey-card__eyebrow font-satoshi">
-        {t("public.common.journeyCard.eyebrow")}
+        {card.pick("eyebrow")}
       </p>
 
       <h3
@@ -655,12 +657,12 @@ function JourneyCard() {
           gap: "10px",
         }}
       >
-        {titleWords.join(" ")}
+        {card.pick("title")}
       </h3>
 
       <div
         className="journey-card__community"
-        aria-label={t("public.common.journeyCard.community")}
+        aria-label={card.pick("communityText")}
       >
         {avatarBackgrounds.map((background, index) => (
           <span
@@ -671,46 +673,33 @@ function JourneyCard() {
         ))}
         <span className="journey-card__avatar" />
         <span className="journey-card__community-text">
-          {t("public.common.journeyCard.community")}
+          {card.pick("communityText")}
         </span>
       </div>
 
-      <AnimatedButton
-        className="journey-card__button"
-        onClick={() => navigate("/contact-us")}
-        fullWidth
-      >
-        {t("public.common.journeyCard.cta")}
-      </AnimatedButton>
+      {buttonLabel && (
+        <AnimatedButton
+          className="journey-card__button"
+          {...buttonLinkProps(card.value("buttonLink"))}
+          fullWidth
+        >
+          {buttonLabel}
+        </AnimatedButton>
+      )}
     </div>
   );
 }
 
 // ─── HERO ─────────────────────────────────────────────────────────────────────
 function Hero() {
-  const { t } = useTranslation();
-  const titleWords = t("public.about.hero.titleWords", {
-    returnObjects: true,
-  }) as string[];
-  const breadcrumb = t("public.about.hero.breadcrumb", {
-    returnObjects: true,
-  }) as string[];
-
-  return (
-    <PublicPageHero
-      titleWords={titleWords}
-      breadcrumb={breadcrumb}
-      backgroundImage="/img/Frame 2147226602.png"
-      classPrefix="about"
-    />
-  );
+  return <ContentPageHero page="about" classPrefix="about" />;
 }
 
 // ─── STATS + INTRO ────────────────────────────────────────────────────────────
 function StatsSection() {
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-  const titleWords = useWordList("public.about.stats.titleWords");
+  const section = useContentSection("about", "intro");
+  const titleWords = toWords(section.pick("title"));
+  const buttonLabel = section.pick("buttonLabel");
   const [activeMembers, setActiveMembers] = useState<number | null>(null);
   const [organizedEvents, setOrganizedEvents] = useState<number | null>(null);
 
@@ -732,18 +721,16 @@ function StatsSection() {
     };
   }, []);
 
-  const stats = [
-    {
-      val: formatPublicStat(activeMembers, "5K+"),
-      label: t("public.about.stats.activeMembers"),
-    },
-    {
-      val: formatPublicStat(organizedEvents, "100+"),
-      label: t("public.about.stats.eventsOrganized"),
-    },
-    { val: "20+", label: t("public.about.stats.communityRides") },
-    { val: "2017", label: t("public.about.stats.established") },
+  // An empty number on the first two stats shows the live counts.
+  const liveValues = [
+    formatPublicStat(activeMembers, "5K+"),
+    formatPublicStat(organizedEvents, "100+"),
   ];
+  const stats = section.list("stats").map((item, index) => ({
+    val: section.pickItem(item, "value") || liveValues[index] || "",
+    label: section.pickItem(item, "label"),
+  }));
+  if (!section.visible) return null;
   return (
     <section
       className="about-section"
@@ -782,7 +769,7 @@ function StatsSection() {
               maxWidth: "100%",
               height: 320,
               background: "#ddd",
-              backgroundImage: "url('/img/DSC04620.jpg 1.png')",
+              backgroundImage: cssUrl(section.value("image")),
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
@@ -840,11 +827,13 @@ function StatsSection() {
               color: "rgba(0,0,0,0.8)",
             }}
           >
-            {t("public.about.stats.body")}
+            {section.pick("body")}
           </p>
-          <AnimatedButton onClick={() => navigate("/contact-us")}>
-            {t("public.common.getInTouch")}
-          </AnimatedButton>
+          {buttonLabel && (
+            <AnimatedButton {...buttonLinkProps(section.value("buttonLink"))}>
+              {buttonLabel}
+            </AnimatedButton>
+          )}
         </div>
       </div>
     </section>
@@ -865,15 +854,15 @@ function formatPublicStat(value: number | null, fallback: string) {
 
 // ─── MISSION / VISION + JOURNEY CARD ─────────────────────────────────────────
 function MissionSection() {
-  const { t } = useTranslation();
-  const titleWords = useWordList("public.about.mission.titleWords");
+  const section = useContentSection("about", "mission");
 
+  if (!section.visible) return null;
   return (
     // <section style={{ background: "#EAF4FF", padding: "0 86px 80px" }}>
     <section
       className="about-section"
       style={{
-        backgroundImage: "url('/img/image 3517.png')",
+        backgroundImage: cssUrl(section.value("backgroundImage")),
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
@@ -900,7 +889,7 @@ function MissionSection() {
               textTransform: "capitalize",
             }}
           >
-            {titleWords.join(" ")}
+            {section.pick("title")}
           </h2>
         </div>
         <p
@@ -914,7 +903,7 @@ function MissionSection() {
             paddingTop: 8,
           }}
         >
-          {t("public.about.mission.intro")}
+          {section.pick("intro")}
         </p>
       </div>
 
@@ -967,7 +956,7 @@ function MissionSection() {
             }}
           >
             <div className="bebas" style={{ fontSize: 20, marginBottom: 10 }}>
-              {t("public.about.mission.heading")}
+              {section.pick("missionHeading")}
             </div>
 
             <p
@@ -977,7 +966,7 @@ function MissionSection() {
                 lineHeight: 1.5,
               }}
             >
-              {t("public.about.mission.body")}
+              {section.pick("missionText")}
             </p>
           </motion.div>
 
@@ -1004,7 +993,7 @@ function MissionSection() {
             }}
           >
             <div className="bebas" style={{ fontSize: 20, marginBottom: 10 }}>
-              {t("public.about.mission.visionHeading")}
+              {section.pick("visionHeading")}
             </div>
 
             <p
@@ -1014,7 +1003,7 @@ function MissionSection() {
                 lineHeight: 1.5,
               }}
             >
-              {t("public.about.mission.visionBody")}
+              {section.pick("visionText")}
             </p>
           </motion.div>
         </motion.div>
@@ -1050,21 +1039,15 @@ function MissionSection() {
 
 // ─── VALUES ───────────────────────────────────────────────────────────────────
 function ValuesSection() {
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-  const titleWords = useWordList("public.about.values.titleWords");
-  const valueKeys = [
-    "community",
-    "excellence",
-    "inclusivity",
-    "achievement",
-  ] as const;
-  const values = valueKeys.map((key, index) => ({
+  const section = useContentSection("about", "values");
+  const titleWords = toWords(section.pick("title"));
+  const buttonLabel = section.pick("buttonLabel");
+  const values = section.list("items").map((item, index) => ({
     num: `//${String(index + 1).padStart(3, "0")}`,
-    title: t(`public.about.values.items.${key}.title`),
-    bg: key === "community" ? "#323232" : "#777777",
-    text: t(`public.about.values.items.${key}.text`),
+    title: section.pickItem(item, "title"),
+    text: section.pickItem(item, "text"),
   }));
+  if (!section.visible) return null;
   return (
     <section
       className="about-section"
@@ -1089,7 +1072,7 @@ function ValuesSection() {
               color: "#000",
             }}
           >
-            {t("public.about.values.eyebrow")}
+            {section.pick("eyebrow")}
           </p>
           <h2
             className="bebas about-values-title overflow-hidden"
@@ -1103,9 +1086,11 @@ function ValuesSection() {
             <AnimatedWords words={titleWords} gap={12} />
           </h2>
         </div>
-        <AnimatedButton onClick={() => navigate("/communities")}>
-          {t("public.about.values.discoverCommunity")}
-        </AnimatedButton>
+        {buttonLabel && (
+          <AnimatedButton {...buttonLinkProps(section.value("buttonLink"))}>
+            {buttonLabel}
+          </AnimatedButton>
+        )}
       </div>
       <motion.div
         className="about-values-grid"
@@ -1190,14 +1175,13 @@ function ValuesSection() {
 
 // ─── COACHES ─────────────────────────────────────────────────────────────────
 function CoachesSection() {
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-  const titleWords = useWordList("public.about.coaches.titleWords");
-  const cards = [
-    { label: t("public.about.coaches.players"), img: "/img/image 2998.png" },
-    { label: t("public.about.coaches.coaches"), img: "/img/image 2999.png" },
-    { label: t("public.about.coaches.mechanics"), img: "/img/image 2997.png" },
-  ];
+  const section = useContentSection("about", "coaches");
+  const titleWords = toWords(section.pick("title"));
+  const cards = section.list("cards").map((item) => ({
+    label: section.pickItem(item, "label"),
+    img: item.image || "",
+  }));
+  if (!section.visible) return null;
   return (
     <section
       className="about-section about-coaches-section"

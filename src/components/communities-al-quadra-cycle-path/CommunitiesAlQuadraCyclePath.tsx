@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { scrollToAppListing } from "../../utils/appStoreLink";
-import { isEventClosed } from "../../utils/eventStatus";
+import { isEventCancelled, isEventClosed, isEventDatePast } from "../../utils/eventStatus";
+import { EventClosedOverlay } from "../ui/EventClosedOverlay";
 import i18n from "../../i18n";
 import { AnimatedButton } from "../ui/AnimatedButton";
 import {
@@ -316,27 +317,12 @@ function AboutSection({ track }: { track: Track }) {
           t("public.tracks.detail.detailsComingSoon")}
       </p>
 
-      <button
-        type="button"
+      <AnimatedButton
         onClick={scrollToAppListing}
-        className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#019839] px-6 py-3 text-[16px] font-bold text-white sm:mt-8 sm:px-8 sm:py-4 sm:text-[18px]"
+        className="mt-6 sm:mt-8"
       >
-        {t("public.tracks.detail.startRide")}{" "}
-        <svg
-          width="22"
-          height="21"
-          viewBox="0 0 22 21"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z"
-            fill="currentColor"
-          />
-        </svg>
-      </button>
+        {t("public.tracks.detail.startRide")}
+      </AnimatedButton>
     </section>
   );
 }
@@ -448,145 +434,55 @@ function FacilitiesSection({ facilities }: { facilities: FacilityCard[] }) {
     drag.current.active = false;
   };
 
-  // Which physical edges still have hidden cards — drives the edge fades and
-  // disables the arrows at the ends. Handles RTL, where scrollLeft is <= 0.
-  const [edges, setEdges] = useState({ left: false, right: false });
-
-  const updateEdges = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const max = el.scrollWidth - el.clientWidth;
-    const rtl = getComputedStyle(el).direction === "rtl";
-    const fromLeft = rtl ? max + el.scrollLeft : el.scrollLeft;
-    setEdges({ left: fromLeft > 1, right: fromLeft < max - 1 });
-  }, []);
-
-  useEffect(() => {
-    updateEdges();
-    window.addEventListener("resize", updateEdges);
-    return () => window.removeEventListener("resize", updateEdges);
-  }, [updateEdges, facilities.length]);
-
-  const scrollByPage = (direction: -1 | 1) => {
-    const el = scrollRef.current;
-    if (!el) return;
-    el.scrollBy({
-      left: direction * Math.max(240, el.clientWidth * 0.6),
-      behavior: "smooth",
-    });
-  };
-
-  const fadeMask = `linear-gradient(to right, ${
-    edges.left ? "transparent 0, black 8%" : "black 0"
-  }, ${edges.right ? "black 92%, transparent 100%" : "black 100%"})`;
-
   if (facilities.length === 0) return null;
 
+  // Same layout and card design as the facilities section on the event
+  // detail page (CommunitiesAbuDhabiGrandPrixRide). Icon and label use
+  // logical `start-*` offsets so the cards mirror on their own in Arabic.
   return (
     <section
-      className="bg-cover bg-center bg-no-repeat py-12 sm:py-16 lg:py-20"
-      style={{
-        backgroundImage: `url('${FACILITIES_BG}')`,
-      }}
+      className="bg-cover bg-center bg-no-repeat py-8 text-white sm:py-16 max-md:mt-16 max-sm:mt-10"
+      style={{ backgroundImage: `url('${FACILITIES_BG}')` }}
     >
-      <div className="mx-auto max-w-300 px-4 sm:px-6 md:px-10 min-[1920px]:px-0">
-        <div className="flex items-start justify-between gap-8 max-lg:flex-col">
-          <h2 className="max-w-[580px] text-[26px] font-normal uppercase leading-tight sm:text-[34px] lg:text-[44px]">
+      <div className="mx-auto w-[min(1200px,calc(100vw-24px))] md:w-[min(1200px,calc(100vw-48px))]">
+        <div className="flex items-start justify-between pt-16 max-lg:flex-col max-lg:gap-8 max-lg:pt-0">
+          <h2 className="grand-prix-bebas max-w-[579px] text-[32px] uppercase leading-tight text-black sm:text-[38px] lg:text-[44px]">
             {t("public.tracks.detail.facilitiesHeading")}
           </h2>
-          <Link
-            to="/contact-us"
-            className="inline-flex h-fit cursor-pointer items-center gap-2 rounded-full bg-[#019839] px-8 py-4 font-bold text-white"
-          >
+          <AnimatedButton to="/contact-us" className="mt-[35px] shrink-0 max-lg:mt-0">
             {t("public.common.getInTouch")}
-            <svg
-              width="22"
-              height="21"
-              viewBox="0 0 22 21"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z"
-                fill="currentColor"
-              />
-            </svg>
-          </Link>
+          </AnimatedButton>
         </div>
-
-        {(edges.left || edges.right) && (
-          <div className="mt-10 flex justify-end gap-3" dir="ltr">
-            {([-1, 1] as const).map((direction) => {
-              const enabled = direction === -1 ? edges.left : edges.right;
-              return (
-                <button
-                  key={direction}
-                  type="button"
-                  onClick={() => scrollByPage(direction)}
-                  disabled={!enabled}
-                  aria-label={t(
-                    direction === -1
-                      ? "public.home.journey.scrollLeft"
-                      : "public.home.journey.scrollRight",
-                  )}
-                  className="group flex h-[42px] w-[42px] cursor-pointer items-center justify-center rounded-full border border-[#333] text-[#333] transition-colors duration-200 hover:border-[#019839] hover:bg-[#019839] hover:text-white disabled:cursor-default disabled:opacity-30 disabled:hover:border-[#333] disabled:hover:bg-transparent disabled:hover:text-[#333]"
-                >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 22 21"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style={direction === -1 ? { transform: "scaleX(-1)" } : undefined}
-                  >
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </button>
-              );
-            })}
-          </div>
-        )}
       </div>
 
       <div
         ref={scrollRef}
-        className={`${
-          edges.left || edges.right ? "mt-6" : "mt-14"
-        } flex gap-5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ps-4 sm:ps-6 md:ps-10 lg:ps-[max(2.5rem,calc((100vw-1268px)/2))] cursor-grab select-none active:cursor-grabbing`}
-        style={{ maskImage: fadeMask, WebkitMaskImage: fadeMask }}
-        onScroll={updateEdges}
+        className="mt-[42px] flex cursor-grab select-none gap-3 overflow-x-auto ps-3 [scrollbar-width:none] active:cursor-grabbing sm:gap-5 md:ps-6 lg:ps-[max(1.5rem,calc((100vw-1268px)/2))] [&::-webkit-scrollbar]:hidden"
+        style={{
+          maskImage: "linear-gradient(to right, black 85%, transparent 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to right, black 85%, transparent 100%)",
+        }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={endDrag}
         onMouseLeave={endDrag}
       >
         {facilities.map(({ title, icon: Icon }) => (
-          <div
+          <article
             key={title}
-            className="group relative shrink-0 min-w-[200px] cursor-pointer rounded-xl bg-white/30 p-5 pb-6 text-white transition-colors duration-200 hover:bg-white hover:text-[#333]"
+            className="group relative h-[70px] w-[170px] shrink-0 cursor-pointer rounded-[10px] bg-[#76767666] text-white transition-colors duration-200 hover:bg-white hover:text-[#333] sm:h-[97px] sm:w-[260px]"
           >
-            <div className="flex items-center gap-4">
-              <span className="flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-[8px] bg-white text-[#333] transition-colors duration-200 group-hover:bg-[#019839] group-hover:text-white sm:h-[50px] sm:w-[50px] sm:rounded-[10px]">
-                <Icon className="h-[18px] w-[18px] sm:h-[26px] sm:w-[26px]" />
-              </span>
-              <b className="text-[13px] leading-[16px] sm:text-[20px] sm:leading-[22px]">{title}</b>
-            </div>
-            <div className="absolute bottom-0 left-0 h-[4px] w-full rounded-b-xl bg-transparent transition-colors duration-200 group-hover:bg-[#019839]" />
-          </div>
+            <span className="absolute start-[14px] top-1/2 flex h-[36px] w-[36px] -translate-y-1/2 items-center justify-center rounded-[8px] bg-white text-[#333] transition-colors duration-200 group-hover:bg-[#019839] group-hover:text-white sm:start-[19px] sm:top-5 sm:h-[50px] sm:w-[50px] sm:translate-y-0 sm:rounded-[10px]">
+              <Icon className="h-[18px] w-[18px] sm:h-[26px] sm:w-[26px]" />
+            </span>
+            <b className="absolute start-[60px] top-1/2 flex h-[36px] max-w-[100px] -translate-y-1/2 items-center text-start text-[13px] font-bold leading-[16px] sm:start-[86px] sm:top-5 sm:h-[50px] sm:max-w-[130px] sm:translate-y-0 sm:text-[20px] sm:leading-[22px]">
+              {title}
+            </b>
+            <span className="absolute bottom-0 left-0 h-[3px] w-full rounded-b-[10px] bg-transparent transition-colors duration-200 group-hover:bg-[#019839] sm:h-[4px]" />
+          </article>
         ))}
-        {/* Trailing gutter mirrors the leading padding so the last card can
-            scroll fully into view instead of stopping flush at the edge. */}
-        <div
-          className="shrink-0 w-4 sm:w-6 md:w-10 lg:w-[max(2.5rem,calc((100vw-1268px)/2))]"
-          aria-hidden
-        />
+        <div className="w-4 shrink-0" aria-hidden />
       </div>
     </section>
   );
@@ -633,6 +529,7 @@ function EventCard({ event }: { event: EventApiResponse }) {
           alt={event.title}
           className="h-full w-full object-cover"
         />
+        {isEventCancelled(event) && <EventClosedOverlay status={event.status} />}
 
         <span
           className="absolute right-4 top-4 rounded-full bg-black/40 px-[18px] py-[9px] text-[15px] font-medium text-white backdrop-blur-[15px]"
@@ -784,9 +681,13 @@ export default function TrackDetailPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // "Upcoming events" must never show an event whose date has passed
+  // "Upcoming events" must never show an event whose date has passed; a
+  // cancelled upcoming event stays, stamped "Cancelled"
   const upcomingOnly = (list?: EventApiResponse[]) =>
-    (list || []).filter((item) => !isEventClosed(item));
+    (list || []).filter(
+      (item) =>
+        !isEventClosed(item) || (isEventCancelled(item) && !isEventDatePast(item)),
+    );
 
   useEffect(() => {
     let cancelled = false;
@@ -893,12 +794,6 @@ export default function TrackDetailPage() {
 
   return (
     <main className="track-detail-page font-satoshi min-h-screen bg-[#eaf4ff] text-black">
-      <style>{`
-        .track-detail-page .adcc-btn--arrow:hover .adcc-btn__arrow--enter,
-        .track-detail-page .adcc-btn--arrow:focus-visible .adcc-btn__arrow--enter {
-          inset-inline-start: calc(var(--adcc-btn-arrow-inset) - var(--adcc-btn-arrow-shift) + 15px);
-        }
-      `}</style>
       <HeroSection track={track} />
       <AboutSection track={track} />
       <StatsSection track={track} />

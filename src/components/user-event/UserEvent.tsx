@@ -1,4 +1,11 @@
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import {
   EventApiResponse,
@@ -10,10 +17,11 @@ import { Route } from "lucide-react";
 import i18n from "../../i18n";
 import {
   AnimatedWords,
-  PublicPageHero,
-  useWordList,
 } from "../public/publicPageHelpers";
 import { useNavigate } from "react-router-dom";
+import { useContentSection } from "../../hooks/useContentSection";
+import { toWords } from "../../services/contentPages";
+import { ContentPageHero } from "../public/contentHelpers";
 import { showAppComingSoon } from "../../utils/appStoreLink";
 import { AnimatedButton } from "../ui/AnimatedButton";
 import { useEventCategories } from "../../hooks/useLookups";
@@ -241,29 +249,15 @@ margin-bottom:40px !important;}
 
 // ── Hero ──────────────────────────────────────────────────────────────────────
 function Hero() {
-  const { t } = useTranslation();
-  const titleWords = t("public.events.hero.titleWords", {
-    returnObjects: true,
-  }) as string[];
-  const breadcrumb = t("public.events.hero.breadcrumb", {
-    returnObjects: true,
-  }) as string[];
-
-  return (
-    <PublicPageHero
-      titleWords={titleWords}
-      breadcrumb={breadcrumb}
-      backgroundImage="/img/pexels-jonathanborba-19431221 1.png"
-      classPrefix="event"
-    />
-  );
+  return <ContentPageHero page="events" classPrefix="event" />;
 }
 
 // ── Section header ────────────────────────────────────────────────────────────
 function SectionHeader() {
-  const { t } = useTranslation();
-  const titleWords = useWordList("public.events.intro.titleWords");
+  const section = useContentSection("events", "intro");
+  const titleWords = toWords(section.pick("title"));
 
+  if (!section.visible) return null;
   return (
     <section
       className="event-section-header"
@@ -300,7 +294,7 @@ function SectionHeader() {
           lineHeight: 1.6,
         }}
       >
-        {t("public.events.intro.body")}
+        {section.pick("body")}
       </motion.p>
     </section>
   );
@@ -632,47 +626,9 @@ function FilterBar({
 }
 
 // ── Event card ────────────────────────────────────────────────────────────────
-function EventCard({
-  event,
-  index,
-}: {
-  event: EventApiResponse;
-  index: number;
-}) {
+function EventCard({ event }: { event: EventApiResponse }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [columns, setColumns] = useState(3);
-
-  useEffect(() => {
-    const updateColumns = () => {
-      if (window.innerWidth < 768) setColumns(1);
-      else if (window.innerWidth < 1200) setColumns(2);
-      else setColumns(3);
-    };
-
-    updateColumns();
-    window.addEventListener("resize", updateColumns);
-    return () => window.removeEventListener("resize", updateColumns);
-  }, []);
-
-  const getInitialAnimation = () => {
-    const width = window.innerWidth;
-    const cols = width < 768 ? 1 : width < 1200 ? 2 : 3;
-    const position = index % cols;
-
-    if (cols === 3) {
-      if (position === 0) return { opacity: 0, x: -180 };
-      if (position === 1) return { opacity: 0, y: 140 };
-      return { opacity: 0, x: 180 };
-    }
-
-    if (cols === 2) {
-      return position === 0 ? { opacity: 0, x: -180 } : { opacity: 0, x: 180 };
-    }
-
-    return index % 2 === 0 ? { opacity: 0, x: -180 } : { opacity: 0, x: 180 };
-  };
-
   const tag = event.category || t("public.common.eventFallback");
   // `mainImage` is the field Event Edit actually keeps current; `eventImage` can go
   // stale (only set at creation), so prefer mainImage first.
@@ -696,16 +652,8 @@ function EventCard({
       : "";
 
   return (
-    <motion.div
+    <div
       className="event-card"
-      initial={getInitialAnimation()}
-      whileInView={{ opacity: 1, x: 0, y: 0 }}
-      transition={{
-        duration: 0.7,
-        delay: (index % 3) * 0.12,
-        ease: "easeOut",
-      }}
-      viewport={{ once: true }}
       style={{
         width: "100%",
         display: "flex",
@@ -724,25 +672,13 @@ function EventCard({
           background: "#ddd",
         }}
       >
-        <motion.div
-          initial={{ opacity: 0, y: 64 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 0.7,
-            delay: 0.15 + (index % 3) * 0.12,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          viewport={{ once: true }}
-          style={{ width: "100%", height: "100%", transformOrigin: "center" }}
-        >
-          <img
-            className="adcc-image__img"
-            src={image}
-            alt={event.title}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          />
-        </motion.div>
-        {isEventClosed(event) && <EventClosedOverlay />}
+        <img
+          className="adcc-image__img"
+          src={image}
+          alt={event.title}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+        {isEventClosed(event) && <EventClosedOverlay status={event.status} />}
         <span
           style={{
             position: "absolute",
@@ -867,7 +803,7 @@ function EventCard({
           </AnimatedButton>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -918,6 +854,15 @@ function EventsGrid() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  // Pagination sits under the grid, so after a page change the reader was
+  // left at the bottom of the new results. Bring them back to the top of
+  // the list instead (scroll-margin-top clears the fixed navbar).
+  const changePage: Dispatch<SetStateAction<number>> = (value) => {
+    setPage(value);
+    resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const queryParams = useMemo<GetEventsParams>(() => {
     const params: GetEventsParams = { page, limit: PAGE_SIZE };
@@ -973,7 +918,15 @@ function EventsGrid() {
         onFilterChange={handleFilterChange}
         loading={loading}
       />
-      <div className="event-grid-wrap" style={{ padding: "0 82px 80px" }}>
+      <div
+        ref={resultsRef}
+        className="event-grid-wrap"
+        style={{
+          padding: "0 82px 80px",
+          scrollMarginTop: 140,
+          overflowAnchor: "none",
+        }}
+      >
         <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 20 }}>
           {loading
             ? t("public.common.loadingEvents")
@@ -996,15 +949,11 @@ function EventsGrid() {
             gap: "48px 28px",
           }}
         >
-          {events.map((e, index) => (
-            <EventCard
-              key={e._id || e.id || e.slug || e.title}
-              event={e}
-              index={index}
-            />
+          {events.map((e) => (
+            <EventCard key={e._id || e.id || e.slug || e.title} event={e} />
           ))}
         </div>
-        <Pagination page={page} total={totalPages} setPage={setPage} />
+        <Pagination page={page} total={totalPages} setPage={changePage} />
       </div>
     </>
   );

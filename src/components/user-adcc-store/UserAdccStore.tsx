@@ -20,6 +20,9 @@ import type { Category, Product } from "../merchandise/merchandiseData";
 import { AnimatedWords } from "../public/publicPageHelpers";
 
 import { STORE_LAUNCHED } from "./storeConfig";
+import { AnimatedButton } from "../ui/AnimatedButton";
+import { useContentSection } from "../../hooks/useContentSection";
+import { toWords } from "../../services/contentPages";
 
 const PRODUCTS_PAGE_SIZE = 6;
 
@@ -67,6 +70,7 @@ function MerchandiseCard({ product }: { product: Product }) {
 
 export default function AdccStorePage() {
   const { t, i18n } = useTranslation();
+  const launching = useContentSection("store", "launching");
   const [merchandiseProducts, setMerchandiseProducts] = useState<Product[]>([]);
   const [merchandiseLoading, setMerchandiseLoading] = useState(true);
   const [merchandisePage, setMerchandisePage] = useState(1);
@@ -165,7 +169,7 @@ export default function AdccStorePage() {
           <div className="flex items-center justify-center rounded-md border border-black/5 px-4 py-10 text-center shadow-inner sm:py-16">
             <h2 className="flex justify-center overflow-hidden text-[28px] font-normal uppercase leading-tight sm:text-[38px] sm:leading-[46px] lg:text-[50px] lg:leading-[60px]">
               <AnimatedWords
-                words={t("public.store.listing.launchingSoon").split(" ")}
+                words={toWords(launching.pick("title"))}
                 gap={16}
                 className="justify-center"
               />
@@ -236,13 +240,13 @@ export default function AdccStorePage() {
             )}
           </div>
 
-          <button
-            type="button"
+          <AnimatedButton
             onClick={runSearch}
-            className="h-[52px] rounded-full bg-[#019839] text-[16px] font-bold text-white sm:h-[66px] sm:text-[20px]"
+            fullWidth
+            className="h-[52px] sm:h-[66px]"
           >
             {t("public.common.search")}
-          </button>
+          </AnimatedButton>
         </div>
 
         {/* Club Merchandise */}

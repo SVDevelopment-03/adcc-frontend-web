@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useContentSection } from "../../hooks/useContentSection";
+import { toWords } from "../../services/contentPages";
+import { ContentPageHero } from "../public/contentHelpers";
 import { useTranslation } from "react-i18next";
 import {
   Search,
@@ -18,8 +21,6 @@ import { useLookupList, useCommunityCategories } from "../../hooks/useLookups";
 import { motion } from "framer-motion";
 import {
   AnimatedWords,
-  PublicPageHero,
-  useWordList,
 } from "../public/publicPageHelpers";
 
 const FontLoader = () => (
@@ -105,12 +106,10 @@ function buildPageNumbers(currentPage: number, totalPages: number) {
 
 export default function CommunitiesPage() {
   const { t, i18n } = useTranslation();
-  const heroTitleWords = useWordList("public.communities.hero.titleWords");
-  const heroBreadcrumb = useWordList("public.communities.hero.breadcrumb");
-  const introTitleWords = useWordList("public.communities.intro.titleWords");
-  const exploreTitleWords = useWordList(
-    "public.communities.explore.titleWords",
-  );
+  const intro = useContentSection("communities", "intro");
+  const listSection = useContentSection("communities", "list");
+  const introTitleWords = toWords(intro.pick("title"));
+  const exploreTitleWords = toWords(listSection.pick("title"));
   const faqs = t("public.tracks.faq.items", {
     returnObjects: true,
   }) as FaqItem[];
@@ -308,13 +307,9 @@ export default function CommunitiesPage() {
     <div className="communities-page min-h-screen overflow-x-clip overflow-y-visible bg-[#eaf4ff] text-black">
       <FontLoader />
 
-      <PublicPageHero
-        titleWords={heroTitleWords}
-        breadcrumb={heroBreadcrumb}
-        backgroundImage="/img/pexels-jonathanborba-19431223 1.png"
-        classPrefix="communities-page"
-      />
+      <ContentPageHero page="communities" classPrefix="communities-page" />
 
+      {intro.visible && (
       <section className="grid w-full grid-cols-1 items-center gap-8 px-4 py-12 sm:px-6 sm:py-16 md:px-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,592px)] lg:gap-[42px] lg:px-12 lg:py-20 xl:px-20 2xl:px-24">
         <div className="max-w-[634px]">
           <AnimatedWords
@@ -324,18 +319,21 @@ export default function CommunitiesPage() {
           />
 
           <p className="mt-5 max-w-[610px] text-[16px] leading-[23px] sm:text-[18px] sm:leading-[24px] md:text-[22px] md:leading-[28px] lg:mt-[44px] lg:text-[24px] lg:leading-[30px]">
-            {t("public.communities.intro.body")}
+            {intro.pick("body")}
           </p>
         </div>
 
-        <div className="h-[240px] w-full overflow-hidden rounded-[10px] sm:h-[320px] lg:h-[440px]">
-          <img
-            src="/img/Frame 2147226625.png"
-            alt={t("public.communities.imageAlt")}
-            className="h-full w-full object-cover"
-          />
-        </div>
+        {intro.value("image") && (
+          <div className="h-[240px] w-full overflow-hidden rounded-[10px] sm:h-[320px] lg:h-[440px]">
+            <img
+              src={intro.value("image")}
+              alt={t("public.communities.imageAlt")}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        )}
       </section>
+      )}
 
       <section className="w-full px-4 pb-16 sm:px-6 md:px-10 lg:px-12 lg:pb-28 xl:px-20 2xl:px-24">
         <AnimatedWords

@@ -23,6 +23,7 @@ import {
   getStoreItemsPage,
   type StoreItem,
 } from "../../services/storeApi";
+import { AnimatedButton } from "../ui/AnimatedButton";
 
 function formatRelativeTime(input: string | undefined, locale: string): string {
   if (!input) return "";
@@ -331,21 +332,12 @@ export default function StoreDetailPage() {
             </div>
 
             <div className="mt-6 flex flex-wrap gap-3 sm:mt-8 sm:gap-4">
-              <button
-                type="button"
-                onClick={handleContactSeller}
-                className="cursor-pointer flex h-11 items-center gap-2 rounded-full bg-[#019839] px-6 text-[14px] font-medium text-white sm:h-12 sm:px-8 sm:text-[16px] lg:h-[52px] lg:text-[18px]"
-              >
-                <Phone size={18} />{" "}
-                {t("public.marketplace.detail.contactSeller")}
-              </button>
-              <button
-                type="button"
-                onClick={handleShare}
-                className="flex h-11 items-center gap-2 rounded-full border border-[#019839] px-6 text-[14px] font-medium text-[#019839] sm:h-12 sm:px-8 sm:text-[16px] lg:h-[52px] lg:text-[18px]"
-              >
+              <AnimatedButton onClick={handleContactSeller}>
+                <Phone size={18} /> {t("public.marketplace.detail.contactSeller")}
+              </AnimatedButton>
+              <AnimatedButton variant="outline" onClick={handleShare}>
                 <Share2 size={18} /> {t("public.marketplace.detail.share")}
-              </button>
+              </AnimatedButton>
             </div>
           </div>
         </section>

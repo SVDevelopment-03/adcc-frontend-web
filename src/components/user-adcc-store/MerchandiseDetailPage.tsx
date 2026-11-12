@@ -15,6 +15,7 @@ import {
   getMerchandiseCategories,
 } from "../../services/merchandiseApi";
 import type { Category, Product } from "../merchandise/merchandiseData";
+import { AnimatedButton } from "../ui/AnimatedButton";
 
 const ADCC_CONTACT_NUMBER = "+971 2 654 5645";
 
@@ -247,20 +248,12 @@ export default function MerchandiseDetailPage() {
             </div>
 
             <div className="mt-6 flex flex-wrap gap-3 sm:mt-8 sm:gap-4">
-              <button
-                type="button"
-                onClick={handleContactAdccTeam}
-                className="cursor-pointer flex h-11 items-center gap-2 rounded-full bg-[#019839] px-6 text-[14px] font-medium text-white sm:h-12 sm:px-8 sm:text-[16px] lg:h-[52px] lg:text-[18px]"
-              >
+              <AnimatedButton onClick={handleContactAdccTeam}>
                 <Phone size={18} /> {t("public.store.detail.contactAdccTeam")}
-              </button>
-              <button
-                type="button"
-                onClick={handleShare}
-                className="flex h-11 items-center gap-2 rounded-full border border-[#019839] px-6 text-[14px] font-medium text-[#019839] sm:h-12 sm:px-8 sm:text-[16px] lg:h-[52px] lg:text-[18px]"
-              >
+              </AnimatedButton>
+              <AnimatedButton variant="outline" onClick={handleShare}>
                 <Share2 size={18} /> {t("public.store.detail.share")}
-              </button>
+              </AnimatedButton>
             </div>
 
             {product.tags && product.tags.length > 0 && (

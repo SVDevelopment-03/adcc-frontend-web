@@ -51,7 +51,7 @@ interface ScalarFieldsProps {
   onFile: (path: string, file: File | null) => void;
 }
 
-function ScalarFields({ fields, values, pathPrefix, files, onChange, onFile }: ScalarFieldsProps) {
+export function ScalarFields({ fields, values, pathPrefix, files, onChange, onFile }: ScalarFieldsProps) {
   const { t } = useTranslation();
   const str = (key: string) => (typeof values[key] === 'string' ? (values[key] as string) : '');
 
@@ -133,7 +133,7 @@ function ScalarFields({ fields, values, pathPrefix, files, onChange, onFile }: S
   );
 }
 
-function ListEditor({
+export function ListEditor({
   field,
   items,
   files,

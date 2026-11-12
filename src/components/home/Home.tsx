@@ -976,23 +976,6 @@ section.home-hero{
   }
   .home-venue-book-btn {
     align-self: flex-start;
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    background: #019839;
-    color: #ffffff;
-    font-family: 'Satoshi', sans-serif;
-    font-weight: 700;
-    font-size: 18px;
-    line-height: 1;
-    padding: 14px 26px;
-    border-radius: 30px;
-    text-decoration: none;
-    transition: background 0.2s ease, transform 0.2s ease;
-  }
-  .home-venue-book-btn:hover {
-    background: #017a2e;
-    transform: translateY(-2px);
   }
   @media (max-width: 1024px) {
     .home-venue-section {
@@ -3270,20 +3253,6 @@ function CyclingIcon() {
   );
 }
 
-function ArrowRight({ color = "#019839", size = 16 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <path
-        d="M3 8h10M9 4l4 4-4 4"
-        stroke={color}
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 /* ─── QR Code placeholder ───────────────────────────────────────────────────*/
 function QRCodePlaceholder() {
   return <img src="/images/barcode.png" className="" />;
@@ -4174,16 +4143,15 @@ function BookVenueSection() {
           <p className="home-venue-text">{pick("text")}</p>
 
           {buttonLabel && buttonLink && (
-            <a
+            <AnimatedButton
               className="home-venue-book-btn"
               href={buttonLink}
               {...(/^https?:\/\//i.test(buttonLink)
                 ? { target: "_blank", rel: "noopener noreferrer" }
                 : {})}
             >
-              <span>{buttonLabel}</span>
-              <ArrowRight color="#ffffff" size={16} />
-            </a>
+              {buttonLabel}
+            </AnimatedButton>
           )}
         </div>
       </div>

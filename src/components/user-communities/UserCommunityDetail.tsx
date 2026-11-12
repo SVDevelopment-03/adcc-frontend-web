@@ -625,7 +625,7 @@ function EventCard({ event }: { event: EventApiResponse }) {
     <article>
       <div className="relative h-[220px] overflow-hidden rounded-[14px] bg-white sm:h-[280px] lg:h-[360px]">
         <img src={image} alt={event.title} className="h-full w-full object-cover" />
-        {isEventClosed(event) && <EventClosedOverlay />}
+        {isEventClosed(event) && <EventClosedOverlay status={event.status} />}
         <span className="absolute right-4 top-4 z-[2] rounded-full bg-black/40 px-4 py-2 text-[13px] text-white sm:right-6 sm:top-6 sm:px-6 sm:text-[16px]">
           {event.category || t("public.common.eventFallback")}
         </span>

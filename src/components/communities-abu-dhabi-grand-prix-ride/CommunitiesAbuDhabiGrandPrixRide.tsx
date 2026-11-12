@@ -27,6 +27,7 @@ import {
   getEventsPage,
 } from "../../services/eventsApi";
 import InternalEventRegistration from "./InternalEventRegistration";
+import { AnimatedButton } from "../ui/AnimatedButton";
 
 type TFunction = (key: string, options?: Record<string, unknown>) => string;
 
@@ -476,25 +477,7 @@ function HeroSection({ event }: { event: GrandPrixEvent }) {
   );
 }
 
-const JoinEventArrowIcon = (
-  <svg
-    width="22"
-    height="21"
-    viewBox="0 0 22 21"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      fillRule="evenodd"
-      clipRule="evenodd"
-      d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z"
-      fill="currentColor"
-    />
-  </svg>
-);
-
-const JOIN_EVENT_BUTTON_CLASS =
-  "mt-5 inline-flex h-[44px] items-center justify-center gap-3 rounded-full bg-[#019839] px-6 text-[16px] font-bold leading-none text-white transition hover:bg-[#017a2e] sm:h-[49px] sm:px-[28px] sm:text-[18px]";
+const JOIN_EVENT_BUTTON_CLASS = "mt-5";
 
 function AboutSection({ event }: { event: GrandPrixEvent }) {
   const { t } = useTranslation();
@@ -511,32 +494,28 @@ function AboutSection({ event }: { event: GrandPrixEvent }) {
       {/* No joining once the event is over. Internal events register on the
           website form; external ones on their own link or in the app. */}
       {isEventClosed(event) ? null : event.isInternal ? (
-        <Link
+        <AnimatedButton
           to={`/events/${encodeURIComponent(event.slug || event._id || event.id || "")}/register`}
           className={JOIN_EVENT_BUTTON_CLASS}
         >
           {t("public.events.detail.joinEvent")}
-          {JoinEventArrowIcon}
-        </Link>
+        </AnimatedButton>
       ) : registrationLink ? (
-        <a
+        <AnimatedButton
           href={registrationLink}
           target="_blank"
           rel="noopener noreferrer"
           className={JOIN_EVENT_BUTTON_CLASS}
         >
           {t("public.events.detail.joinEvent")}
-          {JoinEventArrowIcon}
-        </a>
+        </AnimatedButton>
       ) : (
-        <button
-          type="button"
+        <AnimatedButton
           onClick={scrollToAppListing}
           className={JOIN_EVENT_BUTTON_CLASS}
         >
           {t("public.events.detail.joinEvent")}
-          {JoinEventArrowIcon}
-        </button>
+        </AnimatedButton>
       )}
     </section>
   );
@@ -739,26 +718,9 @@ function FacilitiesSection({ facilities }: { facilities: Facility[] }) {
           <h2 className="grand-prix-bebas max-w-[579px] text-[32px] uppercase leading-tight text-[#000000] sm:text-[38px] lg:text-[44px]">
             {t("public.tracks.detail.facilitiesHeading")}
           </h2>
-          <Link
-            to="/contact-us"
-            className="mt-[35px] inline-flex h-[50px] items-center justify-center gap-[14px] rounded-full bg-[#019839] px-[27px] text-[18px] font-bold leading-none text-white transition hover:bg-[#017a2e] max-lg:mt-0"
-          >
+          <AnimatedButton to="/contact-us" className="mt-[35px] shrink-0 max-lg:mt-0">
             {t("public.common.getInTouch")}
-            <svg
-              width="22"
-              height="21"
-              viewBox="0 0 22 21"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z"
-                fill="currentColor"
-              />
-            </svg>
-          </Link>
+          </AnimatedButton>
         </div>
       </div>
 

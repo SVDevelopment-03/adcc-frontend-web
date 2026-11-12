@@ -8,10 +8,11 @@ import {
 import { motion } from "framer-motion";
 import {
   AnimatedWords,
-  PublicPageHero,
-  useWordList,
 } from "../public/publicPageHelpers";
 import { Link } from "react-router-dom";
+import { useContentSection } from "../../hooks/useContentSection";
+import { toWords } from "../../services/contentPages";
+import { ContentPageHero } from "../public/contentHelpers";
 import { EventClosedOverlay } from "../ui/EventClosedOverlay";
 import { isChallengeClosed } from "../../utils/eventStatus";
 
@@ -39,10 +40,11 @@ const formatNumber = (value: number, locale: string) =>
 
 export default function ChallengesPage() {
   const { t, i18n } = useTranslation();
-  const heroTitleWords = useWordList("public.challenges.hero.titleWords");
-  const heroBreadcrumb = useWordList("public.challenges.hero.breadcrumb");
-  const introTitleWords = useWordList("public.challenges.intro.titleWords");
-  const listTitleWords = useWordList("public.challenges.listTitleWords");
+  const intro = useContentSection("challenges", "intro");
+  const video = useContentSection("challenges", "video");
+  const listSection = useContentSection("challenges", "list");
+  const introTitleWords = toWords(intro.pick("title"));
+  const listTitleWords = toWords(listSection.pick("title"));
   const faqs = t("public.tracks.faq.items", {
     returnObjects: true,
   }) as FaqItem[];
@@ -253,23 +255,22 @@ justify-content: center !important;}
         }
       `}</style>
 
-      <PublicPageHero
-        titleWords={heroTitleWords}
-        breadcrumb={heroBreadcrumb}
-        backgroundImage="/img/paolo-candelo-8tXukRrs7yk-unsplash 1.png"
-        classPrefix="challenges-page"
-      />
+      <ContentPageHero page="challenges" classPrefix="challenges-page" />
 
       <section className="grid w-full grid-cols-1 gap-8 px-4 py-12 sm:px-6 sm:py-16 md:px-10 lg:grid-cols-2 lg:gap-12 lg:px-12 lg:py-28 xl:px-20 2xl:px-24">
         <div>
-          <AnimatedWords
-            words={introTitleWords}
-            gap={12}
-            className="font-bebas max-w-[500px] text-[32px] font-black uppercase leading-tight sm:text-[38px] lg:text-[52px]"
-          />
-          <p className="mt-5 max-w-[560px] text-[15px] leading-relaxed sm:mt-8 sm:text-[17px]">
-            {t("public.challenges.intro.body")}
-          </p>
+          {intro.visible && (
+            <>
+              <AnimatedWords
+                words={introTitleWords}
+                gap={12}
+                className="font-bebas max-w-[500px] text-[32px] font-black uppercase leading-tight sm:text-[38px] lg:text-[52px]"
+              />
+              <p className="mt-5 max-w-[560px] text-[15px] leading-relaxed sm:mt-8 sm:text-[17px]">
+                {intro.pick("body")}
+              </p>
+            </>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-3 sm:gap-4">
@@ -312,8 +313,10 @@ justify-content: center !important;}
         </div>
       </section>
 
+      {video.visible && video.value("videoUrl") && (
       <section className="w-full px-4 pb-16 sm:px-6 md:px-10 lg:px-12 lg:pb-28 xl:px-20 2xl:px-24">
         <motion.video
+          key={video.value("videoUrl")}
           initial={{ opacity: 0, y: 120 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{
@@ -326,12 +329,13 @@ justify-content: center !important;}
           muted
           loop
           playsInline
-          poster="/img/paolo-candelo-8tXukRrs7yk-unsplash 1.png"
+          poster={video.value("posterImage") || undefined}
         >
-          <source src="/img/videos/video.mp4" type="video/mp4" />
+          <source src={video.value("videoUrl")} type="video/mp4" />
           {t("public.challenges.listing.videoFallback")}
         </motion.video>
       </section>
+      )}
 
       <section className="w-full px-4 pb-16 sm:px-6 md:px-10 lg:px-12 lg:pb-28 xl:px-20 2xl:px-24">
         <div className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-center lg:mb-14">

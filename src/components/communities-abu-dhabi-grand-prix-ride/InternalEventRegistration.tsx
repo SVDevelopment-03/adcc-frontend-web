@@ -13,6 +13,7 @@ import {
   type EventLeadCity,
   type EventLeadGender,
 } from "../../services/eventsApi";
+import { AnimatedButton } from "../ui/AnimatedButton";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -410,13 +411,13 @@ export default function InternalEventRegistration({
             </div>
 
 
-            <button
+            <AnimatedButton
               type="submit"
               disabled={submitting}
-              className="mt-8 inline-flex w-fit cursor-pointer items-center gap-2 rounded-full bg-[#019839] px-6 py-3 text-[16px] font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-8 w-fit"
             >
               {submitting ? tf("submitting") : tf("submit")}
-            </button>
+            </AnimatedButton>
           </form>
         )}
       </section>

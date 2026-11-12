@@ -1,5 +1,9 @@
-/** Statuses that mean an event is over regardless of its date. */
-const CLOSED_STATUSES = ['Completed', 'Closed', 'Archived'];
+/**
+ * Statuses that mean an event is over regardless of its date. A cancelled event
+ * counts as closed: it stays listed (with a "Cancelled" stamp) but has no
+ * "View details" button, no detail page and takes no registrations.
+ */
+const CLOSED_STATUSES = ['Completed', 'Closed', 'Cancelled', 'Archived'];
 
 type EventLike = { eventDate?: string | Date | null; status?: string | null };
 
@@ -8,12 +12,11 @@ const eventTime = (event: EventLike): number => {
   return new Date(event.eventDate).getTime();
 };
 
-/**
- * An event is closed once its date has passed (it stays open through the whole
- * event day) or its status says it is over.
- */
-export const isEventClosed = (event: EventLike): boolean => {
-  if (event.status && CLOSED_STATUSES.includes(event.status)) return true;
+/** The admin cancelled the event (Events → Cancel Event). */
+export const isEventCancelled = (event: EventLike): boolean => event.status === 'Cancelled';
+
+/** The event's day is over (it stays current through the whole event day). */
+export const isEventDatePast = (event: EventLike): boolean => {
   const time = eventTime(event);
   if (Number.isNaN(time)) return false;
   const startOfToday = new Date();
@@ -22,13 +25,25 @@ export const isEventClosed = (event: EventLike): boolean => {
 };
 
 /**
+ * An event is closed once its date has passed (it stays open through the whole
+ * event day) or its status says it is over.
+ */
+export const isEventClosed = (event: EventLike): boolean => {
+  if (event.status && CLOSED_STATUSES.includes(event.status)) return true;
+  return isEventDatePast(event);
+};
+
+/**
  * Open events first (soonest first), closed events last (most recently ended
- * first). Mirrors the ordering of GET /v1/events.
+ * first); a cancelled event is ordered by its date only. Mirrors the ordering of GET /v1/events.
  */
 export const sortClosedEventsLast = <T extends EventLike>(events: T[]): T[] => {
+  // A cancelled event keeps its place by date; it only moves down once its day has passed.
+  const closedForOrder = (event: EventLike) =>
+    isEventCancelled(event) ? isEventDatePast(event) : isEventClosed(event);
   return [...events].sort((a, b) => {
-    const aClosed = isEventClosed(a);
-    const bClosed = isEventClosed(b);
+    const aClosed = closedForOrder(a);
+    const bClosed = closedForOrder(b);
     if (aClosed !== bClosed) return aClosed ? 1 : -1;
     const aTime = eventTime(a);
     const bTime = eventTime(b);

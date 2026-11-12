@@ -6,7 +6,6 @@ import {
   Search,
   ChevronDown,
   ChevronRight,
-  ArrowRight,
   Phone,
   Mail,
   MapPin,
@@ -18,9 +17,11 @@ import {
 } from "../../services/storeApi";
 import {
   AnimatedWords,
-  PublicPageHero,
-  useWordList,
 } from "../public/publicPageHelpers";
+import { AnimatedButton } from "../ui/AnimatedButton";
+import { useContentSection } from "../../hooks/useContentSection";
+import { toWords } from "../../services/contentPages";
+import { ContentPageHero, buttonLinkProps } from "../public/contentHelpers";
 
 const ITEMS_PAGE_SIZE = 6;
 
@@ -85,18 +86,11 @@ function MarketplaceCard({ item }: { item: StoreItem }) {
 
 export default function UserMarketplace() {
   const { t, i18n } = useTranslation();
-  const heroTitleWords = useWordList(
-    "public.marketplace.listing.hero.titleWords",
-  );
-  const heroBreadcrumb = useWordList(
-    "public.marketplace.listing.hero.breadcrumb",
-  );
-  const browseTitleWords = useWordList(
-    "public.marketplace.listing.browseTitleWords",
-  );
-  const gearUpTitleWords = useWordList(
-    "public.marketplace.listing.gearUp.titleWords",
-  );
+  const listSection = useContentSection("marketplace", "list");
+  const promo = useContentSection("marketplace", "promo");
+  const browseTitleWords = toWords(listSection.pick("title"));
+  const gearUpTitleWords = toWords(promo.pick("title"));
+  const promoButtonLabel = promo.pick("buttonLabel");
 
   const [items, setItems] = useState<StoreItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -183,10 +177,8 @@ export default function UserMarketplace() {
         </div>
       </header>
 
-      <PublicPageHero
-        titleWords={heroTitleWords}
-        breadcrumb={heroBreadcrumb}
-        backgroundImage="/img/pexels-zakhar-36955801 1.png"
+      <ContentPageHero
+        page="marketplace"
         classPrefix="store-page"
         breadcrumbFontSize={17}
       />
@@ -259,19 +251,19 @@ export default function UserMarketplace() {
             )}
           </div>
 
-          <button
-            type="button"
+          <AnimatedButton
             onClick={runSearch}
-            className="h-[52px] rounded-full bg-[#019839] text-[16px] font-bold text-white sm:h-[66px] sm:text-[20px]"
+            fullWidth
+            className="h-[52px] sm:h-[66px]"
           >
             {t("public.common.search")}
-          </button>
+          </AnimatedButton>
         </div>
 
         {/* Community Listings */}
         <div className="mt-10 flex items-center gap-4 sm:mt-20 sm:gap-6">
           <h3 className="text-[20px] font-normal uppercase sm:text-[28px] lg:text-[32px]">
-            {t("public.marketplace.listing.listingsHeading")}
+            {listSection.pick("listingsTitle")}
           </h3>
           {!loading && (
             <span className="rounded-full bg-[#435974]/10 px-3 py-1 text-[12px] font-bold text-[#435974] sm:px-4 sm:text-[14px]">
@@ -353,6 +345,7 @@ export default function UserMarketplace() {
         )}
       </section>
 
+      {promo.visible && (
       <section className="pt-8 relative grid w-full grid-cols-1 items-end gap-8 overflow-hidden px-4 pb-12 sm:gap-16 sm:px-6 sm:pb-28 md:px-10 lg:grid-cols-2 lg:px-12 xl:px-20 bg-b-0 min-[1920px]:max-w-300 min-[1920px]:mx-auto">
         <div>
           <h2 className="max-w-[516px] overflow-hidden text-[28px] font-normal uppercase leading-tight sm:text-[38px] sm:leading-[46px] lg:text-[50px] lg:leading-[60px]">
@@ -360,23 +353,28 @@ export default function UserMarketplace() {
           </h2>
 
           <p className="mt-6 max-w-[615px] text-[15px] font-normal leading-6 sm:mt-12 sm:text-[24px] sm:leading-[30px]">
-            {t("public.marketplace.listing.gearUp.body")}
+            {promo.pick("body")}
           </p>
 
-          <Link
-            to="/contact-us"
-            className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#019839] px-6 py-3 text-[16px] font-bold text-white sm:mt-10 sm:px-8 sm:py-4 sm:text-[18px]"
-          >
-            {t("public.common.getInTouch")} <ArrowRight size={20} />
-          </Link>
+          {promoButtonLabel && (
+            <AnimatedButton
+              {...buttonLinkProps(promo.value("buttonLink"))}
+              className="mt-6 sm:mt-10"
+            >
+              {promoButtonLabel}
+            </AnimatedButton>
+          )}
         </div>
 
-        <img
-          src="/img/image 30691.png"
-          alt={t("public.marketplace.listing.gearUp.imageAlt")}
-          className="h-[300px] mb--0 w-full max-w-[500px] object-contain sm:h-[500px] lg:absolute lg:bottom-[-25px] lg:end-0"
-        />
+        {promo.value("image") && (
+          <img
+            src={promo.value("image")}
+            alt={t("public.marketplace.listing.gearUp.imageAlt")}
+            className="h-[300px] mb--0 w-full max-w-[500px] object-contain sm:h-[500px] lg:absolute lg:bottom-[-25px] lg:end-0"
+          />
+        )}
       </section>
+      )}
 
       <footer className="w-full px-4 py-24 sm:px-6 md:px-10 lg:px-12 xl:px-20">
         <div className="grid grid-cols-1 gap-16 md:grid-cols-3">

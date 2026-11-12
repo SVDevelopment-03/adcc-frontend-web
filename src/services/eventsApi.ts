@@ -40,7 +40,7 @@ export interface EventApiResponse {
   organizedBy?: string;
   /** Organiser name in the requested language (resolved by the API). */
   organizedByName?: string;
-  status: 'Draft' | 'Open' | 'Full' | 'Completed' | 'Archived' | 'draft' | 'open' | 'full' | 'completed' | 'archived' | 'cancelled' | 'reoprn' | 'disable';
+  status: 'Draft' | 'Open' | 'Full' | 'Closed' | 'Disabled' | 'Cancelled' | 'Completed' | 'Archived' | 'draft' | 'open' | 'full' | 'completed' | 'archived' | 'cancelled' | 'reoprn' | 'disable';
   createdAt?: string;
   updatedAt?: string;
   views?: number;
@@ -463,6 +463,20 @@ export const disableEvent = async (id: string): Promise<EventApiResponse> => {
     console.error('Error disabling event:', error);
     throw error;
   }
+};
+
+// Cancel event — stays listed on the website with a "Cancelled" stamp; registered riders are notified
+export const cancelEvent = async (id: string): Promise<EventApiResponse> => {
+  invalidateCache('events');
+  const response = await api.patch<any>(`/v1/events/${id}/cancel-event`);
+  return (response.data as any)?.data ?? response.data;
+};
+
+// Duplicate event — creates a Draft copy (no participants, results or gallery)
+export const duplicateEvent = async (id: string): Promise<EventApiResponse> => {
+  invalidateCache('events');
+  const response = await api.post<any>(`/v1/events/${id}/duplicate`);
+  return (response.data as any)?.data ?? response.data;
 };
 
 // Delete event — moves it to the Trash (see restoreEvent / permanentlyDeleteEvent)

@@ -780,7 +780,7 @@ export function CommunityDetail() {
                       alt={event.title}
                       className="w-full h-40 object-cover"
                     />
-                    {isEventClosed(event) && <EventClosedOverlay />}
+                    {isEventClosed(event) && <EventClosedOverlay status={event.status} />}
                   </div>
 
                   <div className="p-6">

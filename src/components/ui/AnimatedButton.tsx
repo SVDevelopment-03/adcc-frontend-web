@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { cn } from "./utils";
 
 type AnimatedButtonVariant = "green" | "outline";
@@ -12,6 +12,12 @@ export interface AnimatedButtonProps extends React.ButtonHTMLAttributes<HTMLButt
   hoverDark?: boolean;
   squareEnd?: boolean;
   fullWidth?: boolean;
+  /** Render as a react-router <Link> to this route instead of a <button>. */
+  to?: string;
+  /** Render as an <a> with this href instead of a <button>. */
+  href?: string;
+  target?: string;
+  rel?: string;
 }
 
 const sizeVars: Record<
@@ -52,25 +58,25 @@ export function AnimatedButton({
   fullWidth = false,
   children,
   type = "button",
+  to,
+  href,
   ...props
 }: any) {
-  return (
-    <button
-      type={type}
-      className={cn(
-        "adcc-btn",
-        variant === "outline" && "adcc-btn--outline",
-        size === "sm" && "adcc-btn--sm",
-        size === "lg" && "adcc-btn--lg",
-        showArrow && "adcc-btn--arrow",
-        hoverDark && "adcc-btn--hover-dark",
-        squareEnd && "adcc-btn--square-end",
-        fullWidth && "adcc-btn--full-width",
-        className,
-      )}
-      style={{ ...sizeVars[size], ...style }}
-      {...props}
-    >
+  const classes = cn(
+    "adcc-btn",
+    variant === "outline" && "adcc-btn--outline",
+    size === "sm" && "adcc-btn--sm",
+    size === "lg" && "adcc-btn--lg",
+    showArrow && "adcc-btn--arrow",
+    hoverDark && "adcc-btn--hover-dark",
+    squareEnd && "adcc-btn--square-end",
+    fullWidth && "adcc-btn--full-width",
+    className,
+  );
+  const mergedStyle = { ...sizeVars[size], ...style };
+
+  const content = (
+    <>
       <span className="adcc-btn__inner">
         <span className="adcc-btn__label">{children}</span>
       </span>
@@ -110,6 +116,28 @@ export function AnimatedButton({
           </span>
         </>
       )}
+    </>
+  );
+
+  if (to) {
+    return (
+      <Link to={to} className={classes} style={mergedStyle} {...props}>
+        {content}
+      </Link>
+    );
+  }
+
+  if (href) {
+    return (
+      <a href={href} className={classes} style={mergedStyle} {...props}>
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <button type={type} className={classes} style={mergedStyle} {...props}>
+      {content}
     </button>
   );
 }

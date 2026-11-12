@@ -2,14 +2,11 @@ import { useState } from "react";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { PublicPageHero, useWordList } from "../public/publicPageHelpers";
+import { useContentSection } from "../../hooks/useContentSection";
+import { ContentPageHero } from "../public/contentHelpers";
 import api from "../../services/api";
 import { COUNTRY_CODES, DEFAULT_COUNTRY_CODE } from "../../constants/countryCodes";
-
-const CONTACT_DETAILS = {
-  email: "info@adcyclingclub.ae",
-  phone: "+971 2 622 8894",
-};
+import { AnimatedButton } from "../ui/AnimatedButton";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^[0-9\s\-+()]{6,20}$/;
@@ -38,34 +35,36 @@ const FontLoader = () => (
 
 export default function ContactUsPage() {
   const { t } = useTranslation();
-  const heroTitleWords = useWordList("public.contact.hero.titleWords");
-  const heroBreadcrumb = useWordList("public.contact.hero.breadcrumb");
+  const intro = useContentSection("contact", "intro");
+  const details = useContentSection("contact", "details");
 
   const [values, setValues] = useState(INITIAL);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
-  const address = t("public.footer.address");
+  const email = details.value("email");
+  const phone = details.value("phone");
+  const address = details.pick("address");
   const contactItems = [
-    {
+    email && {
       Icon: Mail,
       labelKey: "email",
-      value: CONTACT_DETAILS.email,
-      href: `mailto:${CONTACT_DETAILS.email}`,
+      value: email,
+      href: `mailto:${email}`,
     },
-    {
+    phone && {
       Icon: Phone,
       labelKey: "telephone",
-      value: CONTACT_DETAILS.phone,
-      href: `tel:${CONTACT_DETAILS.phone.replace(/[\s()-]/g, "")}`,
+      value: phone,
+      href: `tel:${phone.replace(/[\s()-]/g, "")}`,
     },
-    {
+    address && {
       Icon: MapPin,
       labelKey: "location",
       value: address,
-      href: "https://maps.app.goo.gl/5dx641z5VDFrqrhH7",
+      href: details.value("addressLink") || undefined,
     },
-  ];
+  ].filter(Boolean);
 
   function validate(vals) {
     const e = {};
@@ -123,28 +122,27 @@ export default function ContactUsPage() {
       <FontLoader />
 
       <div className="contact-page min-h-screen bg-[#eaf4ff] text-black">
-        <PublicPageHero
-          titleWords={heroTitleWords}
-          breadcrumb={heroBreadcrumb}
-          backgroundImage="/img/paolo-candelo-8tXukRrs7yk-unsplash 1.png"
-          classPrefix="contact-page"
-        />
+        <ContentPageHero page="contact" classPrefix="contact-page" />
 
         <section className="mx-auto max-w-[1200px] px-10 pt-6 pb-14 max-md:px-5 max-md:pt-4 max-md:pb-8 max-sm:px-4 max-sm:pt-3 max-sm:pb-6">
-          <div className="text-center">
-            <h2 className="contact-intro-title text-[60px] uppercase max-md:text-[44px] max-sm:text-[36px]">
-              {t("public.contact.intro.title")}
-            </h2>
-            <p className="mt-4 text-[24px] max-md:text-[18px]">{t("public.contact.intro.body")}</p>
-          </div>
+          {intro.visible && (
+            <div className="text-center">
+              <h2 className="contact-intro-title text-[60px] uppercase max-md:text-[44px] max-sm:text-[36px]">
+                {intro.pick("title")}
+              </h2>
+              <p className="mt-4 text-[24px] max-md:text-[18px]">{intro.pick("body")}</p>
+            </div>
+          )}
 
           <div className="mt-10 grid grid-cols-1 items-stretch gap-8 lg:grid-cols-2 max-md:mt-6 max-sm:mt-4">
             <div className="flex h-full flex-col">
-              <img
-                src="/img/490796704_1417267435941639_5633845168834004037_n. 1 (1).png"
-                alt={t("public.contact.imageAlt")}
-                className="h-100 w-full rounded-[15px] object-cover max-md:h-80 max-sm:h-55"
-              />
+              {intro.visible && intro.value("image") && (
+                <img
+                  src={intro.value("image")}
+                  alt={t("public.contact.imageAlt")}
+                  className="h-100 w-full rounded-[15px] object-cover max-md:h-80 max-sm:h-55"
+                />
+              )}
 
               <div className="mt-8 flex flex-1 flex-col justify-center rounded-[15px] border border-black/20 p-5">
                 <div className="space-y-4">
@@ -152,8 +150,8 @@ export default function ContactUsPage() {
                     <a
                       key={labelKey}
                       href={href}
-                      target={labelKey === "location" ? "_blank" : undefined}
-                      rel={labelKey === "location" ? "noopener noreferrer" : undefined}
+                      target={labelKey === "location" && href ? "_blank" : undefined}
+                      rel={labelKey === "location" && href ? "noopener noreferrer" : undefined}
                       className="flex items-center gap-4 transition-opacity hover:opacity-80"
                     >
                       <span className="flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-full bg-[#019839] text-white">
@@ -255,14 +253,13 @@ export default function ContactUsPage() {
                   {errors.message && <p className="mt-1 text-[12px] text-red-500">{errors.message}</p>}
                 </label>
 
-                <button
+                <AnimatedButton
                   type="submit"
                   disabled={submitting}
-                  className="inline-flex w-fit cursor-pointer items-center gap-2 self-start rounded-full bg-[#019839] px-6 py-3 text-[16px] font-bold text-white disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="w-fit self-start"
                 >
                   {submitting ? t("public.contact.form.submitting") : t("public.contact.form.submit")}
-                  <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M0.0706041 0.991062C-0.0968 0.65028 0.0437048 0.2383 0.384531 0.0708523C0.57024 -0.0203685 0.7871 -0.0231189 0.975044 0.0633755L21.5999 9.5587C21.9448 9.71751 22.0956 10.1258 21.9368 10.4707C21.8683 10.6196 21.7487 10.7391 21.5999 10.8077L0.975042 20.303C0.630135 20.4618 0.221851 20.311 0.0630398 19.9661C-0.0235404 19.778 -0.0207919 19.561 0.0705148 19.3753L4.58959 10.1832L0.0706041 0.991062Z" fill="currentColor"/></svg>
-                </button>
+                </AnimatedButton>
               </div>
             </form>
           </div>

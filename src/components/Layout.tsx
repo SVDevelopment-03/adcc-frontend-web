@@ -35,6 +35,9 @@ import { PartnersManager } from './partners/PartnersManager';
 import { PagesList } from './pages/PagesList';
 import { HomePageEditor } from './pages/HomePageEditor';
 import { LayoutPageEditor } from './pages/LayoutPageEditor';
+import { ContentPageEditor } from './pages/ContentPageEditor';
+import { CustomPageEditor } from './pages/CustomPageEditor';
+import { RedirectsManager } from './pages/RedirectsManager';
 import { MediaLibrary } from './media/MediaLibrary';
 import { MediaLibraryUploadBridge } from './media/MediaLibraryUploadBridge';
 import { PushNotifications } from './push/PushNotifications';
@@ -343,6 +346,9 @@ export function Layout() {
             <Route path="/pages" element={withRoleSidebarAccess('pages', <PagesList />)} />
             <Route path="/pages/home" element={withRoleSidebarAccess('pages', <HomePageEditor />)} />
             <Route path="/pages/layout" element={withRoleSidebarAccess('pages', <LayoutPageEditor />)} />
+            <Route path="/pages/redirects" element={withRoleSidebarAccess('pages', <RedirectsManager />)} />
+            <Route path="/pages/custom/:id" element={withRoleSidebarAccess('pages', <CustomPageEditor />)} />
+            <Route path="/pages/:pageId" element={withRoleSidebarAccess('pages', <ContentPageEditor />)} />
             <Route path="/partners" element={withRoleSidebarAccess('partners', <PartnersManager />)} />
             <Route path="/media" element={withRoleSidebarAccess('media', <MediaLibrary />)} />
             <Route path="/push" element={withRoleSidebarAccess('push', <PushNotifications />)} />

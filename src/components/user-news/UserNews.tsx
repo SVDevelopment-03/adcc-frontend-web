@@ -7,7 +7,8 @@ import {
   type NewsItem,
   type NewsPagination,
 } from "../../services/newsApi";
-import { PublicPageHero, useWordList } from "../public/publicPageHelpers";
+import { useContentSection } from "../../hooks/useContentSection";
+import { ContentPageHero } from "../public/contentHelpers";
 
 const NEWS_PAGE_SIZE = 6;
 const FALLBACK_IMAGE = "/img/image 306912.png";
@@ -90,8 +91,7 @@ function NewsCard({ item }: { item: NewsItem }) {
 
 export default function UserNews() {
   const { t, i18n } = useTranslation();
-  const heroTitleWords = useWordList("public.news.listing.hero.titleWords");
-  const heroBreadcrumb = useWordList("public.news.listing.hero.breadcrumb");
+  const intro = useContentSection("news", "intro");
 
   const [items, setItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -145,21 +145,19 @@ export default function UserNews() {
         </div>
       </header>
 
-      <PublicPageHero
-        titleWords={heroTitleWords}
-        breadcrumb={heroBreadcrumb}
-        backgroundImage="/img/pexels-zakhar-36955801 1.png"
-        classPrefix="store-page"
-        breadcrumbFontSize={17}
-      />
+      <ContentPageHero page="news" classPrefix="store-page" breadcrumbFontSize={17} />
 
       <section className="w-full px-4 py-10 sm:px-6 sm:py-20 md:px-10 lg:px-12 lg:py-24 xl:px-20 min-[1920px]:max-w-300 min-[1920px]:mx-auto">
-        <h2 className="text-center text-[26px] uppercase leading-tight sm:text-[36px] lg:text-[44px]">
-          {t("public.news.listing.heading")}
-        </h2>
-        <p className="mx-auto mt-4 max-w-[720px] text-center text-[14px] leading-6 text-black/60 sm:mt-6 sm:text-[17px]">
-          {t("public.news.listing.subheading")}
-        </p>
+        {intro.visible && (
+          <>
+            <h2 className="text-center text-[26px] uppercase leading-tight sm:text-[36px] lg:text-[44px]">
+              {intro.pick("title")}
+            </h2>
+            <p className="mx-auto mt-4 max-w-[720px] text-center text-[14px] leading-6 text-black/60 sm:mt-6 sm:text-[17px]">
+              {intro.pick("body")}
+            </p>
+          </>
+        )}
 
         {loading ? (
           <div className="mt-10 grid grid-cols-1 gap-5 sm:mt-14 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">

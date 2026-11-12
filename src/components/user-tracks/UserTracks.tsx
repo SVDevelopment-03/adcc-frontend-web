@@ -8,10 +8,12 @@ import { useNavigate } from "react-router-dom";
 import { showAppComingSoon } from "../../utils/appStoreLink";
 import {
   AnimatedWords,
-  PublicPageHero,
-  useWordList,
 } from "../public/publicPageHelpers";
 import { AnimatedButton } from "../ui/AnimatedButton";
+import { useContentSection } from "../../hooks/useContentSection";
+import { toWords } from "../../services/contentPages";
+import { ContentPageHero, cssUrl } from "../public/contentHelpers";
+import { useLayoutSection } from "../public/useLayoutSection";
 
 type PublicTrackCard = {
   id: string;
@@ -624,8 +626,8 @@ html[dir='rtl'] .tracks-journey-card__title, html[dir='rtl'] .tracks-journey-car
 );
 
 function TracksJourneyCard() {
-  const { t } = useTranslation();
-  const titleWords = useWordList("public.common.journeyCard.title");
+  const card = useLayoutSection("journey");
+  const titleWords = toWords(card.pick("title"));
   const avatarBackgrounds = [
     "linear-gradient(135deg, #f7c59f 0%, #7aa7ff 100%)",
     "linear-gradient(135deg, #f58b8b 0%, #ffe08a 100%)",
@@ -636,12 +638,12 @@ function TracksJourneyCard() {
   return (
     <div className="tracks-journey-card v1">
       <img
-        src="/img/image 2991.png"
-        alt={t("public.common.journeyCard.riderAlt")}
+        src={card.value("riderImage")}
+        alt=""
         className="tracks-journey-card__image"
       />
       <p className="tracks-journey-card__eyebrow">
-        {t("public.common.journeyCard.eyebrow")}
+        {card.pick("eyebrow")}
       </p>
       <h3
         className="bebas tracks-journey-card__title"
@@ -662,7 +664,7 @@ function TracksJourneyCard() {
       </h3>
       <div
         className="tracks-journey-card__community"
-        aria-label={t("public.common.journeyCard.community")}
+        aria-label={card.pick("communityText")}
       >
         {avatarBackgrounds.map((background, index) => (
           <span
@@ -673,7 +675,7 @@ function TracksJourneyCard() {
         ))}
         <span className="tracks-journey-card__avatar" />
         <span className="tracks-journey-card__community-text">
-          {t("public.common.journeyCard.community")}
+          {card.pick("communityText")}
         </span>
       </div>
     </div>
@@ -682,29 +684,15 @@ function TracksJourneyCard() {
 
 // ── Hero ──────────────────────────────────────────────────────────────────────
 function Hero() {
-  const { t } = useTranslation();
-  const titleWords = t("public.tracks.hero.titleWords", {
-    returnObjects: true,
-  }) as string[];
-  const breadcrumb = t("public.tracks.hero.breadcrumb", {
-    returnObjects: true,
-  }) as string[];
-
-  return (
-    <PublicPageHero
-      titleWords={titleWords}
-      breadcrumb={breadcrumb}
-      backgroundImage="/img/pexels-krizz59-12838 1.png"
-      classPrefix="track"
-    />
-  );
+  return <ContentPageHero page="tracks" classPrefix="track" />;
 }
 
 // ── Explore Intro ─────────────────────────────────────────────────────────────
 function ExploreIntro() {
-  const { t } = useTranslation();
-  const titleWords = useWordList("public.tracks.intro.titleWords");
+  const section = useContentSection("tracks", "intro");
+  const titleWords = toWords(section.pick("title"));
 
+  if (!section.visible) return null;
   return (
     <section
       className="track-section"
@@ -762,7 +750,7 @@ function ExploreIntro() {
               overflow: "hidden",
               height: 340,
               marginBottom: 28,
-              backgroundImage: "url('/img/SSYouTube.online_Falcon_daman.png')",
+              backgroundImage: cssUrl(section.value("image")),
               backgroundSize: "cover",
               backgroundPosition: "center",
               position: "relative",
@@ -788,7 +776,7 @@ function ExploreIntro() {
             className="track-intro-text"
             style={{ fontSize: 22, lineHeight: 1.55, color: "#000" }}
           >
-            {t("public.tracks.intro.body")}
+            {section.pick("body")}
           </p>
         </div>
       </div>
@@ -798,25 +786,20 @@ function ExploreIntro() {
 
 // ── Why ADCC Tracks ───────────────────────────────────────────────────────────
 function WhySection() {
-  const { t } = useTranslation();
-  const titleWords = useWordList("public.tracks.why.title");
-  const featureKeys = [
-    "infrastructure",
-    "routes",
-    "community",
-    "performance",
-  ] as const;
-  const features = featureKeys.map((key, index) => ({
+  const section = useContentSection("tracks", "why");
+  const buttonLabel = section.pick("buttonLabel");
+  const features = section.list("features").map((item, index) => ({
     num: `//00${index + 1}`,
-    title: t(`public.tracks.why.features.${key}.title`),
-    desc: t(`public.tracks.why.features.${key}.desc`),
+    title: section.pickItem(item, "title"),
+    desc: section.pickItem(item, "text"),
   }));
 
+  if (!section.visible) return null;
   return (
     <section
       className="track-section"
       style={{
-        backgroundImage: "url('/img/image 3517.png')",
+        backgroundImage: cssUrl(section.value("backgroundImage")),
         // backgroundSize: "cover",
         backgroundSize: "100% 100%",
         backgroundPosition: "center",
@@ -852,17 +835,19 @@ function WhySection() {
               maxWidth: 600,
             }}
           >
-            {titleWords.join(" ")}
+            {section.pick("title")}
           </h2>
-          <AnimatedButton
-            onClick={() =>
-              document
-                .getElementById("track-listing")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
-          >
-            {t("public.common.exploreTracks")}
-          </AnimatedButton>
+          {buttonLabel && (
+            <AnimatedButton
+              onClick={() =>
+                document
+                  .getElementById("track-listing")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
+            >
+              {buttonLabel}
+            </AnimatedButton>
+          )}
         </div>
 
         <div
@@ -883,8 +868,7 @@ function WhySection() {
               flex: "0 0 550px",
               borderRadius: 12,
               overflow: "hidden",
-              backgroundImage:
-                "url('/img/paolo-candelo-8tXukRrs7yk-unsplash 1.png')",
+              backgroundImage: cssUrl(section.value("image")),
               backgroundSize: "cover",
               backgroundPosition: "center",
               minHeight: 420,
@@ -1142,7 +1126,8 @@ function TrackCard({
 // ── Tracks grid ───────────────────────────────────────────────────────────────
 function TracksGrid() {
   const { t, i18n } = useTranslation();
-  const gridTitleWords = useWordList("public.tracks.grid.titleWords");
+  const listSection = useContentSection("tracks", "list");
+  const gridTitleWords = toWords(listSection.pick("title"));
   const [filters, setFilters] = useState<TrackFilters>({
     city: ALL_FILTER_VALUE,
     level: ALL_FILTER_VALUE,

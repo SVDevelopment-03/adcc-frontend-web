@@ -173,7 +173,10 @@
 
     .adcc-btn--arrow:hover .adcc-btn__arrow--enter,
     .adcc-btn--arrow:focus-visible .adcc-btn__arrow--enter {
-      inset-inline-start: calc(var(--adcc-btn-arrow-inset) - var(--adcc-btn-arrow-shift));
+      /* Mirror the resting arrow's inset on the opposite side. Subtracting
+         the label shift here parked the arrow at a negative offset, half
+         outside the rounded clip. */
+      inset-inline-start: var(--adcc-btn-arrow-inset);
       opacity: 1;
     }
 

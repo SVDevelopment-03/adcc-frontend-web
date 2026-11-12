@@ -10,7 +10,7 @@ import { normalizeSection, type ScalarField, type SectionDef, type SectionValues
  * backend's page-section.validator.ts.
  */
 
-export type LayoutSectionKey = 'header' | 'cta' | 'footer';
+export type LayoutSectionKey = 'header' | 'cta' | 'footer' | 'journey';
 
 const en = (key: string) => i18n.getFixedT('en')(key);
 const ar = (key: string) => i18n.getFixedT('ar')(key);
@@ -137,6 +137,36 @@ export const LAYOUT_SECTIONS: SectionDef<LayoutSectionKey>[] = [
       addressLink: 'https://maps.app.goo.gl/5dx641z5VDFrqrhH7',
       ...both('copyright', 'public.footer.copyright'),
     }),
+  },
+  {
+    key: 'journey',
+    title: 'pages.sections.journeyCard.title',
+    description: 'pages.sections.journeyCard.description',
+    fields: [
+      { kind: 'image', key: 'riderImage', label: L + 'riderImage', size: '300 × 380 px' },
+      { kind: 'text', key: 'eyebrow', label: L + 'eyebrow', localized: true },
+      { kind: 'text', key: 'title', label: L + 'title', localized: true },
+      { kind: 'text', key: 'communityText', label: L + 'communityText', localized: true },
+      { kind: 'text', key: 'buttonLabel', label: L + 'buttonLabel', localized: true },
+      { kind: 'link', key: 'buttonLink', label: L + 'buttonLink' },
+    ],
+    defaults: () => {
+      const words = (lng: 'en' | 'ar') => {
+        const value = i18n.getFixedT(lng)('public.common.journeyCard.title', { returnObjects: true });
+        if (Array.isArray(value)) return value.join(' ');
+        return typeof value === 'string' ? value : '';
+      };
+      return {
+        visible: true,
+        riderImage: '/img/image 2991.png',
+        ...both('eyebrow', 'public.common.journeyCard.eyebrow'),
+        titleEn: words('en'),
+        titleAr: words('ar'),
+        ...both('communityText', 'public.common.journeyCard.community'),
+        ...both('buttonLabel', 'public.common.journeyCard.cta'),
+        buttonLink: '/contact-us',
+      };
+    },
   },
 ];
 

@@ -48,6 +48,129 @@
   "pages": {
     "subtitle": "Manage the content of the public website pages",
     "backToPages": "Back to pages",
+    "sitePagesTitle": "Site pages",
+    "sitePagesSubtitle": "The website's own pages: edit their text and images, or change their URL",
+    "custom": {
+      "listTitle": "Your pages",
+      "listSubtitle": "Pages built here from content blocks, each with its own URL",
+      "newPage": "New page",
+      "noPages": "No pages yet. Click \"New page\" to build one.",
+      "newTitle": "New page",
+      "untitled": "Untitled page",
+      "subtitle": "Build the page from blocks, in English and Arabic. Nothing is public until the status is \"Published\" and you save.",
+      "settings": "Page settings",
+      "pageTitle": "Page title",
+      "url": "Page URL",
+      "urlHint": "The page will be at {{url}}. Lowercase letters, numbers and dashes; use \"/\" for sub-pages (e.g. /about/history).",
+      "status": "Status",
+      "statusHint": "Drafts are only visible here in the dashboard.",
+      "draft": "Draft",
+      "published": "Published",
+      "seo": "Search engines & browser tab",
+      "seoHint": "Optional. Title and description shown in Google results and the browser tab.",
+      "seoTitle": "SEO title",
+      "seoDescription": "SEO description",
+      "blocksTitle": "Content blocks",
+      "blocksHint": "The page shows these blocks from top to bottom. Start with a Hero banner for a full-width title image.",
+      "noBlocks": "This page has no content yet. Add a block below.",
+      "addBlock": "Add a block",
+      "hideBlock": "Hide this block",
+      "showBlock": "Show this block",
+      "removeBlock": "Remove block",
+      "confirmRemoveBlock": "Remove this block and its content?",
+      "imagePosition": "Image position",
+      "imageRight": "Image on the right",
+      "imageLeft": "Image on the left",
+      "richTextHint": "In the text box, leave an empty line between paragraphs. Start a line with \"- \" for a bullet point and with \"## \" for a small sub-heading.",
+      "titleRequired": "Enter the English page title.",
+      "create": "Create page",
+      "created": "Page created",
+      "saved": "Page saved",
+      "savedWithRedirect": "Page saved. The old URL {{from}} now redirects to {{to}}.",
+      "saveError": "Could not save the page",
+      "loadError": "Could not load the page",
+      "delete": "Delete page",
+      "confirmDelete": "Delete the page \"{{title}}\"? Visitors will no longer be able to open it.",
+      "deleted": "Page deleted",
+      "deleteError": "Could not delete the page",
+      "blocks": {
+        "hero": {
+          "label": "Hero banner",
+          "description": "Full-width image with a big title"
+        },
+        "text": {
+          "label": "Text",
+          "description": "Heading and paragraphs, bullets and sub-headings"
+        },
+        "imageText": {
+          "label": "Image & text",
+          "description": "Text next to an image, with an optional button"
+        },
+        "image": {
+          "label": "Image",
+          "description": "One large image with a caption"
+        },
+        "cards": {
+          "label": "Cards",
+          "description": "A grid of cards with image, title, text and link"
+        },
+        "faq": {
+          "label": "Questions & answers",
+          "description": "Expandable questions (FAQ)"
+        },
+        "cta": {
+          "label": "Call to action",
+          "description": "Highlighted banner with a button"
+        },
+        "gallery": {
+          "label": "Gallery",
+          "description": "A grid of images"
+        }
+      }
+    },
+    "redirects": {
+      "title": "Redirects",
+      "subtitle": "Send visitors from one URL to another, for example after renaming or removing a page.",
+      "cardDescription": "Send visitors from old URLs to new ones",
+      "activeCount_one": "{{count}} active redirect",
+      "activeCount_other": "{{count}} active redirects",
+      "addTitle": "Add a redirect",
+      "editTitle": "Edit redirect",
+      "from": "From",
+      "fromHint": "A URL of this site, like /old-page. End it with /* to redirect everything below it, like /old-blog/*.",
+      "to": "To",
+      "toHint": "A URL of this site, like /events, or a full link like https://example.com. With /* in \"From\", end this with /* to keep the rest of the URL.",
+      "note": "Note",
+      "enabled": "Active",
+      "status": "Status",
+      "active": "Active",
+      "off": "Off",
+      "toggleHint": "Click to switch on or off",
+      "add": "Add redirect",
+      "cancelEdit": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete",
+      "confirmDelete": "Delete the redirect from {{from}}?",
+      "deleted": "Redirect deleted",
+      "saved": "Redirect saved",
+      "saveError": "Could not save the redirect",
+      "loadError": "Could not load redirects",
+      "required": "Fill in both \"From\" and \"To\".",
+      "empty": "No redirects yet.",
+      "note2": "Redirects apply on the website straight away. Dashboard addresses can't be redirected, and a live page can't be redirected away from; change that page's URL instead. When a page's URL changes, a redirect from the old URL is added automatically."
+    },
+    "url": {
+      "title": "Page URL",
+      "description": "Change the address of this page. Links to the old address, including its sub-pages, keep working through a redirect.",
+      "label": "URL",
+      "hintOriginal": "This is the page's original URL.",
+      "hintChanged": "Original URL: {{original}} (it redirects here).",
+      "reset": "Back to original",
+      "save": "Save URL",
+      "saved": "URL changed from {{from}} to {{to}}. The old URL now redirects here.",
+      "unchanged": "URL saved",
+      "saveError": "Could not change the URL"
+    },
     "home": {
       "title": "Home Page",
       "description": "Banner and every homepage section",
@@ -57,6 +180,142 @@
       "title": "Header & Footer",
       "description": "Menu, logos, footer links and contact details shown on every page",
       "editorSubtitle": "Edit the header, the \"Start your ride\" banner and the footer shown on every public page. Each section saves on its own."
+    },
+    "content": {
+      "editorSubtitle": "Edit the text and images of this page in English and Arabic. Each section saves on its own; until a section is saved the page shows its original content.",
+      "viewPage": "View page",
+      "pages": {
+        "about": {
+          "title": "About Us",
+          "description": "Hero, introduction and stats, mission & vision, values and team cards"
+        },
+        "events": {
+          "title": "Events",
+          "description": "Hero and introduction above the events list"
+        },
+        "tracks": {
+          "title": "Tracks",
+          "description": "Hero, introduction, \"Why ADCC Tracks\" and the list heading"
+        },
+        "challenges": {
+          "title": "Challenges",
+          "description": "Hero, introduction, video and the list heading"
+        },
+        "communities": {
+          "title": "Communities",
+          "description": "Hero, introduction and the list heading"
+        },
+        "contact": {
+          "title": "Contact Us",
+          "description": "Hero, introduction, image and contact details"
+        },
+        "store": {
+          "title": "Club Store",
+          "description": "Message shown while the store is not launched"
+        },
+        "marketplace": {
+          "title": "Marketplace",
+          "description": "Hero, list heading and the \"Buy and sell\" block"
+        },
+        "news": {
+          "title": "News",
+          "description": "Hero and introduction above the news list"
+        },
+        "laffah": {
+          "title": "Laffah Ride",
+          "description": "Hero and introduction above the registration form"
+        },
+        "privacy": {
+          "title": "Privacy Policy",
+          "description": "Title and the full policy text"
+        }
+      },
+      "sections": {
+      "journeyCard": {
+        "title": "Start Your Journey card",
+        "description": "Card with the rider photo shown on the About Us and Tracks pages"
+      },
+        "hero": {
+          "title": "Hero banner",
+          "description": "Big title, breadcrumb and background image at the top of the page"
+        },
+        "intro": {
+          "title": "Introduction",
+          "description": "Heading and text below the hero"
+        },
+        "tracksIntro": {
+          "description": "Heading, text and image below the hero. The \"Start Your Journey\" card is edited under Header & Footer."
+        },
+        "challengesIntro": {
+          "description": "Heading and text below the hero. The challenge counts next to it are live."
+        },
+        "newsIntro": {
+          "description": "Heading and text above the news list"
+        },
+        "laffahIntro": {
+          "description": "Heading and text above the registration form. Ride locations stay as they are because registrations are stored by location."
+        },
+        "aboutIntro": {
+          "title": "Introduction & stats",
+          "description": "Heading, photo, the four stats, text and button",
+          "note": "Leave the number of the first two stats empty to show the live member and completed-event counts."
+        },
+        "mission": {
+          "title": "Mission & vision",
+          "description": "Heading, intro text, background and the mission and vision cards",
+          "note": "The \"Start Your Journey\" card next to the cards is edited under Header & Footer."
+        },
+        "values": {
+          "title": "Our values",
+          "description": "Small heading, title, button and value cards"
+        },
+        "coaches": {
+          "title": "Team cards",
+          "description": "Title and the photo cards (players, coaches, mechanics)"
+        },
+        "why": {
+          "title": "Why ADCC Tracks",
+          "description": "Title, button text, photo, background and feature cards"
+        },
+        "tracksList": {
+          "title": "Tracks list heading",
+          "description": "Heading above the filters and track cards (the tracks come from Tracks)"
+        },
+        "video": {
+          "title": "Video",
+          "description": "Video shown under the introduction",
+          "note": ""
+        },
+        "challengesList": {
+          "title": "Challenges list heading",
+          "description": "Heading above the Active / Upcoming / Completed tabs (the challenges come from Challenges)"
+        },
+        "communitiesList": {
+          "title": "Communities list heading",
+          "description": "Heading above the search and community cards (the communities come from Communities)"
+        },
+        "contactDetails": {
+          "title": "Contact details",
+          "description": "Email, phone and address shown next to the contact form"
+        },
+        "launching": {
+          "title": "Coming soon message",
+          "description": "Shown on the store page until the store launches"
+        },
+        "marketplaceList": {
+          "title": "Listings headings",
+          "description": "Big heading above the search and the smaller heading above the listings"
+        },
+        "gearUp": {
+          "title": "Buy & sell block",
+          "description": "Title, text, button and image below the listings"
+        },
+        "policy": {
+          "title": "Privacy policy",
+          "description": "Page title, breadcrumb, introduction and policy sections",
+          "note": "In the text boxes, leave an empty line between paragraphs. Start a line with \"- \" for a bullet point and with \"## \" for a small sub-heading. Web links (https://...) become clickable automatically."
+        }
+      }
     },
     "banner": {
       "title": "Banner Section",
@@ -218,7 +477,30 @@
         "cards": "Cards",
         "card": "Card",
         "stats": "Stats",
-        "stat": "Stat"
+        "stat": "Stat",
+        "breadcrumb": "Breadcrumb",
+        "body": "Text",
+        "heading": "Heading",
+        "intro": "Introduction text",
+        "missionHeading": "Mission heading",
+        "missionText": "Mission text",
+        "visionHeading": "Vision heading",
+        "visionText": "Vision text",
+        "values": "Values",
+        "valueItem": "Value",
+        "communityText": "Community text",
+        "videoUrl": "Video link (a .mp4 file: site path or full https:// URL)",
+        "posterImage": "Image shown before the video plays",
+        "message": "Message",
+        "policySections": "Policy sections",
+        "policySection": "Section",
+        "listingsTitle": "Listings heading",
+        "richBody": "Text",
+        "caption": "Caption",
+        "questions": "Questions",
+        "question": "Question",
+        "answer": "Answer",
+        "images": "Images"
       }
     }
   },
@@ -280,6 +562,7 @@
   "common": {
     "challengeClosed": "Challenge Closed",
     "eventClosed": "Event Closed",
+    "eventCancelled": "Event Cancelled",
     "fieldRequired": "This field is required",
     "fillRequiredFields": "Please fill all required fields",
     "loading": "Loading...",
@@ -974,7 +1257,9 @@
       "edit": "Edit",
       "participants": "Participants",
       "results": "Results",
-      "disable": "Disable"
+      "disable": "Disable",
+      "cancel": "Cancel Event",
+      "duplicate": "Duplicate"
     },
     "empty": {
       "noResults": "No events found",
@@ -983,7 +1268,15 @@
     "toasts": {
       "loadError": "Failed to load data",
       "deleteSuccess": "Event deleted successfully",
-      "deleteError": "Delete failed"
+      "deleteError": "Delete failed",
+      "cancelSuccess": "Event cancelled. Registered riders have been notified.",
+      "cancelError": "Failed to cancel the event",
+      "cancelTitle": "Cancel this event?",
+      "cancelMessage": "The event stays on the website with a \"Cancelled\" label, but riders can no longer open or join it. Everyone registered gets a notification. You can open it again later by changing its status in Edit.",
+      "cancelConfirm": "Cancel Event",
+      "keepEvent": "Keep Event",
+      "duplicateSuccess": "Event duplicated. The copy is saved as a draft.",
+      "duplicateError": "Failed to duplicate the event"
     },
     "internal": {
       "heading": "Event Type",
@@ -1115,6 +1408,7 @@
         "full": "Full",
         "closed": "Closed",
         "disabled": "Disabled",
+        "cancelled": "Cancelled",
         "completed": "Completed",
         "archived": "Archived"
       },
@@ -2396,6 +2690,7 @@
       "Closed": "Closed",
       "Active": "Active",
       "Disabled": "Disabled",
+      "Cancelled": "Cancelled",
       "upcoming": "Upcoming",
       "cancelled": "Cancelled",
       "ongoing": "Ongoing"
