@@ -22,6 +22,8 @@ import { LanguageSwitcher } from "./LanguageSwitcher";
 import { AppStoreButton } from "./AppStoreButton";
 import { useLayoutSection } from "./useLayoutSection";
 import { subscribeToNewsletter } from "../../services/newsletterApi";
+import { useSiteRouting } from "../../contexts/SiteRoutingContext";
+import { resolveRedirect } from "../../services/siteRouting";
 
 interface PublicLayoutProps {
   children: React.ReactNode;
@@ -33,6 +35,24 @@ function isLinkActive(link: string, pathname: string): boolean {
   if (!link || isExternalLink(link)) return false;
   if (link === "/") return pathname === "/" || pathname === "/home";
   return pathname === link || pathname.startsWith(`${link}/`);
+}
+
+/**
+ * Menu links are typed in the dashboard, so they keep a page's old URL after
+ * it is changed (Pages → page URL / redirects). Point them straight at where
+ * that URL now leads, so a menu click never takes an extra redirect hop.
+ */
+function useCurrentLink() {
+  const { routing } = useSiteRouting();
+  const { isAuthenticated } = useAuth();
+  return (link: string) => {
+    if (!link || isExternalLink(link) || !link.startsWith("/")) return link;
+    const cut = link.search(/[?#]/);
+    const path = cut === -1 ? link : link.slice(0, cut);
+    const rest = cut === -1 ? "" : link.slice(cut);
+    const target = resolveRedirect(path, routing, isAuthenticated);
+    return target ? `${target}${isExternalLink(target) ? "" : rest}` : link;
+  };
 }
 
 /** Router link for site paths, new-tab anchor for absolute URLs (both set in the dashboard). */
@@ -117,9 +137,10 @@ function PublicHeader() {
   const { t } = useTranslation();
   const { isRtl } = useLocale();
   const header = useLayoutSection("header");
+  const currentLink = useCurrentLink();
   const navItems = header
     .list("navItems")
-    .map((item) => ({ label: header.pickItem(item, "label"), link: item.link ?? "" }))
+    .map((item) => ({ label: header.pickItem(item, "label"), link: currentLink(item.link ?? "") }))
     .filter((item) => item.label && item.link);
 
   const handleAuthAction = async () => {
@@ -338,11 +359,12 @@ function PublicFooter() {
   const { t } = useTranslation();
   const cta = useLayoutSection("cta");
   const footer = useLayoutSection("footer");
+  const currentLink = useCurrentLink();
 
   const toLinks = (name: string) =>
     footer
       .list(name)
-      .map((item) => ({ label: footer.pickItem(item, "label"), link: item.link ?? "" }))
+      .map((item) => ({ label: footer.pickItem(item, "label"), link: currentLink(item.link ?? "") }))
       .filter((item) => item.link);
   const socialLinks = toLinks("socialLinks");
   const quickLinks = toLinks("quickLinks").filter((item) => item.label);

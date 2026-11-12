@@ -46,6 +46,16 @@
   }
 }
 
+/* Pages built in the dashboard (Pages → New page) have no hero rules of their
+   own, so the shared rule's `left: auto` pinned their title to the screen
+   edge on desktop. Line it up with About Us / Events (86px); above 1920px the
+   shared centring rule applies and below 1025px the responsive rules do. */
+@media (min-width: 1025px) and (max-width: 1919px) {
+  .custom-page-hero-content.public-hero-content-pos {
+    inset-inline-start: 86px !important;
+  }
+}
+
 [class*='-hero-breadcrumb'] {
   margin: 0 !important;
   padding: 0 !important;

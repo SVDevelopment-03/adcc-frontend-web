@@ -636,7 +636,7 @@ function EventCard({ event }: { event: EventApiResponse }) {
     event.mainImage ||
     event.eventImage ||
     event.galleryImages?.[0] ||
-    "https://images.unsplash.com/photo-1471897488648-5eae4ac6d485?w=600&q=80";
+    "/img/Frame 2147226042.png";
 
   const participants = event.currentParticipants ?? event.registrations ?? 0;
 
@@ -740,7 +740,7 @@ function EventCard({ event }: { event: EventApiResponse }) {
               typeof event.distance === "number"
                 ? event.distance > 0
                   ? `${event.distance} ${t("public.common.km")}`
-                  : t("public.common.km")
+                  : t("public.common.distanceTBA")
                 : t("public.common.distanceTBA")
             }
           />

@@ -5,13 +5,16 @@ import {
   CalendarDays,
   ChevronLeft,
   ChevronRight,
+  Clock,
   Cross,
   Droplets,
+  Flag,
   Lightbulb,
   MapPin,
   ParkingCircle,
   Plus,
   Route,
+  Tag,
   Trophy,
   Users,
   Wrench,
@@ -198,38 +201,84 @@ const titleCase = (value: string) =>
     .trim()
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
+// Event times are stored as 24-hour "HH:mm"; show them in the page language
+// ("5:00 PM" / "5:00 م"). Anything else (old free-text values) is shown as is.
+const formatTime = (value?: string) => {
+  const raw = value?.trim();
+  if (!raw) return "";
+  const match = /^(\d{1,2}):(\d{2})$/.exec(raw);
+  if (!match) return raw;
+  const date = new Date(2000, 0, 1, Number(match[1]), Number(match[2]));
+  return new Intl.DateTimeFormat(i18n.language, {
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(date);
+};
+
+const getTimeRange = (event: GrandPrixEvent | null | undefined) => {
+  const start = formatTime(event?.eventTime);
+  const end = formatTime(event?.endTime);
+  return start && end ? `${start} – ${end}` : start;
+};
+
+/**
+ * The event facts strip. Date, time, track, category and level are filled in
+ * on every event, so they always show; distance, riders and the map link only
+ * show once they have a real value (no "Distance TBA" / bare "Riders" cards).
+ */
 const getStats = (
   event: GrandPrixEvent | null | undefined,
   t: TFunction,
 ): StatCard[] => {
   const level = getLevel(event);
   const locationLink = event?.locationLink?.trim();
+  const time = getTimeRange(event);
+  const track = getTrackName(event);
+  const category = event?.category?.trim();
+  const distance =
+    typeof event?.distance === "number" && event.distance > 0
+      ? event.distance
+      : 0;
+  const riders = getParticipants(event);
   return [
   {
     icon: CalendarDays,
     title: formatDate(event?.eventDate, t),
     label: t("public.events.detail.stats.date"),
   },
-  {
-    icon: Route,
-    title:
-      typeof event?.distance === "number"
-        ? event.distance > 0
-          ? `${event.distance} ${t("public.common.km")}`
-          : t("public.common.km")
-        : t("public.common.distanceTBA"),
-    label: t("public.tracks.detail.distance"),
-  },
-  {
-    icon: Users,
-    title:
-      getParticipants(event) > 0
-        ? t("public.events.detail.stats.ridersCount", {
-            count: getParticipants(event),
-          })
-        : t("public.events.detail.stats.ridersLabel"),
-    label: t("public.events.detail.stats.participantsLabel"),
-  },
+  ...(time
+    ? [{ icon: Clock, title: time, label: t("public.events.detail.stats.time") }]
+    : []),
+  ...(track
+    ? [{ icon: Flag, title: track, label: t("public.events.detail.stats.track") }]
+    : []),
+  ...(category
+    ? [
+        {
+          icon: Tag,
+          title: titleCase(category),
+          label: t("public.events.detail.stats.category"),
+        },
+      ]
+    : []),
+  ...(distance
+    ? [
+        {
+          icon: Route,
+          title: `${distance} ${t("public.common.km")}`,
+          label: t("public.tracks.detail.distance"),
+        },
+      ]
+    : []),
+  ...(riders > 0
+    ? [
+        {
+          icon: Users,
+          title: t("public.events.detail.stats.ridersCount", { count: riders }),
+          label: t("public.events.detail.stats.participantsLabel"),
+        },
+      ]
+    : []),
   // Shown only when the admin added a map link for the event.
   ...(locationLink
     ? [
@@ -619,20 +668,26 @@ function StatsStrip({
   event: GrandPrixEvent;
   stats: StatCard[];
 }) {
-  // Five stat cards (location link added) need narrower cards to fit the strip.
-  const compact = stats.length > 4;
+  // Price, places and organiser only apply to events registered through ADCC
+  // (internal). External events register with their own organiser, so the
+  // register card is left out and only the event facts are shown.
+  const showRegister = !!event.isInternal;
+  // Five stat cards (location link added) need narrower cards to fit next to
+  // the register card.
+  const compact = showRegister && stats.length > 4;
   return (
     <section className="grand-prix-section mt-10 mb-20 px-4 lg:mt-[60px] lg:px-0">
       {/* Mobile (< lg): register card stacked on top of a 2x2 stats grid */}
       <div className="mx-auto w-full max-w-[600px] rounded-2xl bg-[#A2BFDB] p-3 lg:hidden">
         <div className="flex flex-col gap-3">
-          <RegisterCard event={event} />
-          <div className="grid grid-cols-2 gap-3">
+          {showRegister && <RegisterCard event={event} />}
+          {/* An odd last card spans both columns so the grid has no hole. */}
+          <div className="grid grid-cols-2 gap-3 [&>*:last-child:nth-child(odd)]:col-span-2">
             {stats.map(({ icon: Icon, title, label, href }) => (
               <StatCardShell
                 key={title}
                 href={href}
-                className="relative overflow-hidden rounded-[14px] bg-[#435974] p-4 text-white sm:p-5"
+                className="relative overflow-hidden break-words rounded-[14px] bg-[#435974] p-4 text-white sm:p-5"
               >
                 <span className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-white text-[#019839] sm:h-[50px] sm:w-[50px]">
                   <Icon className="h-[20px] w-[20px] sm:h-[25px] sm:w-[25px]" />
@@ -649,25 +704,33 @@ function StatsStrip({
         </div>
       </div>
 
-      {/* Desktop (lg+): original horizontal strip (unchanged) */}
-      <div className="mx-auto hidden max-w-[1192px] overflow-x-auto rounded-2xl bg-[#A2BFDB] p-3 lg:block lg:overflow-visible">
-        <div className="flex w-max gap-2 lg:gap-3">
-          <RegisterCard event={event} compact={compact} />
+      {/* Desktop (lg+): one row of cards, wrapping to a second centred row
+          when an event has more facts than fit in 1192px. */}
+      <div className="mx-auto hidden w-fit max-w-[1192px] rounded-2xl bg-[#A2BFDB] p-3 lg:block">
+        <div className="flex flex-wrap justify-center gap-3">
+          {showRegister && <RegisterCard event={event} compact={compact} />}
           {stats.map(({ icon: Icon, title, label, href }) => (
             <StatCardShell
               key={title}
               href={href}
-              className={`relative h-[200px] w-[140px] shrink-0 overflow-hidden rounded-[10px] bg-[#435974] text-white lg:h-[236px] ${
-                compact ? "lg:w-[143px]" : "lg:w-[171px]"
+              className={`flex h-[236px] shrink-0 flex-col overflow-hidden rounded-[10px] bg-[#435974] p-5 text-white ${
+                compact ? "w-[143px]" : "w-[171px]"
               }`}
             >
-              <span className="absolute left-4 top-4 flex h-[38px] w-[38px] items-center justify-center rounded-full bg-white text-[#019839] lg:h-[50px] lg:w-[50px] lg:left-5 lg:top-5">
-                <Icon className="h-[18px] w-[18px] lg:h-[25px] lg:w-[25px]" />
+              <span className="flex h-[50px] w-[50px] items-center justify-center rounded-full bg-white text-[#019839]">
+                <Icon className="h-[25px] w-[25px]" />
               </span>
-              <h3 className="grand-prix-bebas absolute left-4 top-[125px] whitespace-nowrap text-[20px] uppercase leading-tight lg:left-5 lg:top-[158px] lg:text-[26px]">
+              {/* Track names and time ranges can be long: wrap to two lines
+                  at a smaller size instead of running off the card. */}
+              <h3
+                title={title}
+                className={`grand-prix-bebas mt-auto line-clamp-2 break-words uppercase leading-tight ${
+                  title.length > 14 ? "text-[20px]" : "text-[26px]"
+                }`}
+              >
                 {title}
               </h3>
-              <p className="absolute left-4 top-[152px] text-[14px] leading-5 text-white/60 lg:left-5 lg:top-[191px] lg:text-[18px]">
+              <p className="mt-1 text-[18px] leading-5 text-white/60">
                 {label}
               </p>
             </StatCardShell>

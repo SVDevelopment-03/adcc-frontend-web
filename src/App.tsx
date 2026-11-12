@@ -33,6 +33,7 @@ import { Home } from './components/home/Home';
 import CustomPage from './components/public/CustomPage';
 import { SiteRoutingProvider, useSiteRouting } from './contexts/SiteRoutingContext';
 import { isAdminPath, isExternalUrl, publicPathsOf, resolveRedirect } from './services/siteRouting';
+import { PublicNotFound } from './components/public/PublicNotFound';
 
 
 // Keeps old /user-* links working by swapping the prefix and preserving the rest.
@@ -112,13 +113,17 @@ function AppContent() {
       ? resolveRedirect(pathname, routing, isAuthenticated)
       : null;
 
+  // A visitor on a URL that is neither a site page nor a dashboard address
+  // (an old or mistyped link) gets the public 404 page, not the staff login.
+  const isUnknownPublicPath = !isAuthenticated && !isPublicRoute && !isAdminPath(pathname);
+
   // Redirect to login when user becomes unauthenticated. Waits for the site
   // routing so custom page URLs and redirect sources count as public.
   useEffect(() => {
-    if (routingReady && !loading && !isAuthenticated && !isPublicRoute && !redirectTarget) {
+    if (routingReady && !loading && !isAuthenticated && !isPublicRoute && !isUnknownPublicPath && !redirectTarget) {
       navigate('/login', { replace: true });
     }
-  }, [isAuthenticated, isPublicRoute, loading, navigate, routingReady, redirectTarget]);
+  }, [isAuthenticated, isPublicRoute, isUnknownPublicPath, loading, navigate, routingReady, redirectTarget]);
 
   const isAuthIndependentRoute = authIndependentPrefixes.some((route) => matchesPrefix(lowerPath, route));
 
@@ -258,10 +263,14 @@ function AppContent() {
       <Route 
         path="/*" 
         element={
-          <ProtectedRoute>
-            <Layout />
-          </ProtectedRoute>
-        } 
+          isUnknownPublicPath && !loading ? (
+            publicPage(<PublicNotFound />)
+          ) : (
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          )
+        }
       />
       
       {/* Root - show Home page by default (no redirect) */}

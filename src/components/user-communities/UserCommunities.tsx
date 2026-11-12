@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useContentSection } from "../../hooks/useContentSection";
 import { toWords } from "../../services/contentPages";
@@ -170,7 +170,14 @@ export default function CommunitiesPage() {
     [formatCount, t],
   );
 
+  // Changing filters quickly fires several requests; only the newest may
+  // update the list, so a slow earlier response can't overwrite it.
+  const requestIdRef = useRef(0);
+  const filterBarRef = useRef<HTMLDivElement>(null);
+
   const fetchCommunities = useCallback(async () => {
+    const requestId = ++requestIdRef.current;
+    const isStale = () => requestId !== requestIdRef.current;
     try {
       setLoading(true);
       setLoadError(false);
@@ -184,15 +191,17 @@ export default function CommunitiesPage() {
         isActive: true,
       });
 
+      if (isStale()) return;
       setCommunities(response.communities.map(mapCommunityCard));
       setTotalPages(Math.max(1, response.pagination.pages || 1));
     } catch (err) {
+      if (isStale()) return;
       console.error("Failed to load communities:", err);
       setCommunities([]);
       setTotalPages(1);
       setLoadError(true);
     } finally {
-      setLoading(false);
+      if (!isStale()) setLoading(false);
     }
     // Re-fetch on language switch too — the API returns already-localized
     // text, so without this the titles stay in the old language until a
@@ -224,17 +233,40 @@ export default function CommunitiesPage() {
     setSearchQuery(searchInput.trim());
   };
 
+  // Picking a city or type also applies whatever is typed in the search box,
+  // so the results always match everything shown in the filter bar.
   const handleCityChange = (value: string) => {
     setCurrentPage(1);
     setCityFilter(value);
+    setSearchQuery(searchInput.trim());
     setOpenDropdown(null);
   };
 
   const handleTypeChange = (value: string) => {
     setCurrentPage(1);
     setTypeFilter(value);
+    setSearchQuery(searchInput.trim());
     setOpenDropdown(null);
   };
+
+  // Close an open dropdown on a click outside the filter bar or on Escape.
+  useEffect(() => {
+    if (!openDropdown) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (!filterBarRef.current?.contains(event.target as Node)) {
+        setOpenDropdown(null);
+      }
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpenDropdown(null);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [openDropdown]);
 
   const cityOptions = useMemo(
     () => [
@@ -343,6 +375,7 @@ export default function CommunitiesPage() {
         />
 
         <motion.div
+          ref={filterBarRef}
           className="mt-8 grid grid-cols-1 gap-4 lg:mt-10 lg:grid-cols-[1fr_260px_260px_156px] lg:gap-5"
           initial="hidden"
           whileInView="visible"

@@ -363,7 +363,11 @@ const normalizeScalars = (
   const out: Record<string, string> = {};
   for (const field of fields) {
     for (const key of fieldKeys(field)) {
-      out[key] = str(raw?.[key], str(defaults[key], ''));
+      const fallback = str(defaults[key], '');
+      const value = str(raw?.[key], fallback);
+      // A cleared image falls back to the default one: an image slot is never
+      // meant to be blank (text, on the other hand, may be emptied on purpose).
+      out[key] = field.kind === 'image' && !value.trim() ? fallback : value;
     }
   }
   return out;

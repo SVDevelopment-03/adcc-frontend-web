@@ -62,7 +62,7 @@ export function ChallengeCreate() {
   const fetchExisting = useCallback(async () => {
     if (!challengeId) return;
     try {
-      const existing = await getChallengeById(challengeId);
+      const existing = await getChallengeById(challengeId, { admin: true });
       setFormData({
         title: existing.title,
         titleAr: existing.titleAr ?? '',

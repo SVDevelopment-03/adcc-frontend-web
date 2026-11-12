@@ -119,7 +119,7 @@ export function ChallengeDetail({ role }: ChallengeDetailProps) {
     }
     try {
       setError(null);
-      const data = await getChallengeById(challengeId);
+      const data = await getChallengeById(challengeId, { admin: true });
       setChallenge(data);
     } catch {
       setError(t('challenges.challengeNotFound'));

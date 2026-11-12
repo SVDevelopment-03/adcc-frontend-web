@@ -558,7 +558,7 @@ function EventCard({ event }: { event: EventApiResponse }) {
               typeof event.distance === "number"
                 ? event.distance > 0
                   ? `${event.distance} ${t("public.common.km")}`
-                  : t("public.common.km")
+                  : t("public.common.distanceTBA")
                 : t("public.common.distanceTBA")
             }
           />

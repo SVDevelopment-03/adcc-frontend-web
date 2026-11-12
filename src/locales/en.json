@@ -397,6 +397,10 @@
         "description": "App headline, phone image and feature list.",
         "note": "The Google Play / App Store buttons are not edited here."
       },
+      "journeyCard": {
+        "title": "\"Start Your Journey\" card",
+        "description": "The green card above the footer on the inner pages: title, text and button."
+      },
       "journey": {
         "title": "Cycling Journey Section",
         "description": "\"Begin your cycling journey\" title, rider image, cards and button."
@@ -563,6 +567,9 @@
     "challengeClosed": "Challenge Closed",
     "eventClosed": "Event Closed",
     "eventCancelled": "Event Cancelled",
+    "pageNotFound": "Page not found",
+    "pageNotFoundText": "The page you are looking for has moved or no longer exists.",
+    "backHome": "Back to home",
     "fieldRequired": "This field is required",
     "fillRequiredFields": "Please fill all required fields",
     "loading": "Loading...",
@@ -1710,6 +1717,9 @@
     }
   },
   "tracks": {
+    "pagination": {
+      "showing": "Showing {{from}}-{{to}} of {{total}}"
+    },
     "title": "Tracks",
     "subtitle": "Manage cycling routes and tracks across the GCC",
     "createButton": "Create Track",

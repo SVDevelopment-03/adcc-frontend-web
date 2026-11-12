@@ -231,7 +231,10 @@
         "ridersLabel": "دراجون",
         "participantsLabel": "المشاركون",
         "location": "الموقع",
-        "clickToView": "انقر للعرض"
+        "clickToView": "انقر للعرض",
+        "time": "الوقت",
+        "track": "المسار",
+        "category": "الفئة"
       },
       "schedule": {
         "titleSuffix": "جدول {{title}}",

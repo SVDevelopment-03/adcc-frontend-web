@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from '../../contexts/LocaleContext';
-import { Plus, Search, MapPin, Calendar, Users, Edit, Eye, Archive, Trash2, RotateCcw } from 'lucide-react';
+import { Plus, Search, MapPin, Calendar, Users, Edit, Eye, Archive, Trash2, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { UserRole } from '../../App';
 import { toast } from 'sonner';
 import { CardSkeleton } from '../ui/skeleton';
@@ -160,6 +160,26 @@ export function TracksList({ role }: TracksListProps) {
     });
   }, [tracks, searchTerm, cityFilter, difficultyFilter, statusFilter, isTrashView, hasEventsFilter, hasCommunitiesFilter, trackStats]);
 
+  // Same paging as the Events list: 10 per page, back to page 1 whenever the
+  // search or a filter changes, and clamped if a delete empties the last page.
+  const tracksPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, cityFilter, difficultyFilter, statusFilter, hasEventsFilter, hasCommunitiesFilter]);
+  const totalPages = Math.max(1, Math.ceil(filteredTracks.length / tracksPerPage));
+  useEffect(() => {
+    if (currentPage > totalPages) setCurrentPage(totalPages);
+  }, [currentPage, totalPages]);
+  const paginatedTracks = useMemo(() => {
+    const start = (currentPage - 1) * tracksPerPage;
+    return filteredTracks.slice(start, start + tracksPerPage);
+  }, [filteredTracks, currentPage]);
+  const goToPage = (page: number) => {
+    setCurrentPage(Math.min(Math.max(page, 1), totalPages));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
 
   const canEdit = true;
   const canCreate = true;
@@ -238,7 +258,7 @@ export function TracksList({ role }: TracksListProps) {
   };
 
 
-  const cities = Array.from(new Set(tracks.map(t => t.city))).sort();
+  const cities = Array.from(new Set(tracks.map(t => t.city).filter(Boolean))).sort();
 
   return (
     <div className="space-y-6">
@@ -383,7 +403,7 @@ export function TracksList({ role }: TracksListProps) {
       ) : (
         <div className="space-y-4">
           {filteredTracks.length > 0 ? (
-            filteredTracks.map((track, index) => {
+            paginatedTracks.map((track, index) => {
               const trackId = getTrackId(track);
               const stats = trackId ? trackStats[trackId] : null;
               const eventsCount = stats?.eventsCount || 0;
@@ -439,7 +459,7 @@ export function TracksList({ role }: TracksListProps) {
                         </div>
                         <div>
                           <div className="text-xs mb-1" style={{ color: '#999' }}>{t('tracks.card.surface')}</div>
-                          <div className="text-sm" style={{ color: '#333' }}>{t(`data.surfaceTypes.${track.surfaceType}`, track.surfaceType)}</div>
+                          <div className="text-sm" style={{ color: '#333' }}>{track.surfaceType ? t(`data.surfaceTypes.${track.surfaceType}`, track.surfaceType) : t('tracks.card.na')}</div>
                         </div>
                         <div>
                           <div className="text-xs mb-1" style={{ color: '#999' }}>{t('tracks.card.events')}</div>
@@ -536,6 +556,62 @@ export function TracksList({ role }: TracksListProps) {
               {!isTrashView && <p className="text-sm" style={{ color: '#999' }}>{t('tracks.empty.tryFilters')}</p>}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {!loading && totalPages > 1 && (
+        <div className="flex items-center justify-between p-4 rounded-2xl shadow-sm bg-white">
+          <span className="text-sm" style={{ color: '#666' }}>
+            {t('tracks.pagination.showing', {
+              from: (currentPage - 1) * tracksPerPage + 1,
+              to: Math.min(currentPage * tracksPerPage, filteredTracks.length),
+              total: filteredTracks.length,
+            })}
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => goToPage(currentPage - 1)}
+              disabled={currentPage === 1}
+              aria-label={t('common.previous', 'Previous')}
+              className="p-2 rounded-lg border border-gray-200 transition-colors disabled:opacity-40 hover:bg-gray-50"
+            >
+              <ChevronLeft className="w-4 h-4 rtl:rotate-180" style={{ color: '#666' }} />
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(page => page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1)
+              .reduce<(number | string)[]>((acc, page, idx, arr) => {
+                if (idx > 0 && page - (arr[idx - 1] as number) > 1) acc.push('...');
+                acc.push(page);
+                return acc;
+              }, [])
+              .map((page, idx) =>
+                typeof page === 'string' ? (
+                  <span key={`ellipsis-${idx}`} className="px-2 text-sm" style={{ color: '#999' }}>...</span>
+                ) : (
+                  <button
+                    key={page}
+                    onClick={() => goToPage(page)}
+                    aria-current={currentPage === page ? 'page' : undefined}
+                    className="w-9 h-9 rounded-lg text-sm transition-colors"
+                    style={{
+                      backgroundColor: currentPage === page ? '#C12D32' : 'transparent',
+                      color: currentPage === page ? '#fff' : '#666',
+                    }}
+                  >
+                    {page}
+                  </button>
+                )
+              )}
+            <button
+              onClick={() => goToPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              aria-label={t('common.next', 'Next')}
+              className="p-2 rounded-lg border border-gray-200 transition-colors disabled:opacity-40 hover:bg-gray-50"
+            >
+              <ChevronRight className="w-4 h-4 rtl:rotate-180" style={{ color: '#666' }} />
+            </button>
+          </div>
         </div>
       )}
 

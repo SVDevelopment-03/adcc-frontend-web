@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
 import { getTracksPage, type Track } from "../../services/trackService";
@@ -1141,6 +1141,17 @@ function TracksGrid() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const resultsRef = useRef<HTMLParagraphElement>(null);
+
+  // Pagination sits under the grid, so after a page change the reader was
+  // left at the bottom of the new results. Bring them back to the top of the
+  // list instead (scroll-margin-top clears the fixed navbar), as on Events.
+  const changePage = (next: number) => {
+    const target = Math.min(Math.max(next, 1), totalPages);
+    if (target === page) return;
+    setPage(target);
+    resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const { options: cityLookupOptions } = useLookupList("city");
   const cityFilterOptions = useMemo<FilterOption[]>(
@@ -1470,10 +1481,22 @@ function TracksGrid() {
         </div>
       </div>
 
-      <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 24 }}>
+      <p
+        ref={resultsRef}
+        style={{
+          fontSize: 15,
+          fontWeight: 500,
+          marginBottom: 24,
+          scrollMarginTop: 140,
+          overflowAnchor: "none",
+        }}
+      >
         {loading
           ? t("public.common.loadingTracks")
-          : t("public.common.showingCount", { count: totalResults })}
+          : t("public.common.showingResults", {
+              shown: tracks.length,
+              total: totalResults,
+            })}
       </p>
 
       <div
@@ -1521,7 +1544,9 @@ function TracksGrid() {
             return (
               <button
                 key={i}
-                onClick={() => !isDots && setPage(p)}
+                onClick={() => !isDots && changePage(p)}
+                disabled={isDots}
+                aria-current={isActive ? "page" : undefined}
                 style={{
                   width: isDots ? "auto" : 47,
                   height: isDots ? "auto" : 47,
@@ -1544,8 +1569,12 @@ function TracksGrid() {
               </button>
             );
           })}
+          {/* Next arrow: dimmed on the last page; points left in Arabic,
+              where the page numbers run right to left. */}
           <button
-            onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+            onClick={() => changePage(page + 1)}
+            disabled={page >= totalPages}
+            aria-label={t("public.common.next")}
             style={{
               width: 47,
               height: 47,
@@ -1553,11 +1582,13 @@ function TracksGrid() {
               border: "none",
               background: "#019839",
               color: "#fff",
-              cursor: "pointer",
+              cursor: page >= totalPages ? "default" : "pointer",
+              opacity: page >= totalPages ? 0.4 : 1,
               fontSize: 20,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              transform: i18n.language?.startsWith("ar") ? "scaleX(-1)" : undefined,
             }}
           >
             ›

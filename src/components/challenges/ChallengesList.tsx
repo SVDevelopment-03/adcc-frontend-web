@@ -40,7 +40,7 @@ export function ChallengesList({ role }: ChallengesListProps) {
   const fetchChallenges = useCallback(async () => {
     try {
       setError(null);
-      const list = await getAllChallenges({ limit: 500 });
+      const list = await getAllChallenges({ limit: 500, includeUnpublished: true });
       setChallenges(list);
     } catch (err) {
       setError(err instanceof Error ? err.message : t('challenges.failedToLoad'));
@@ -81,7 +81,7 @@ export function ChallengesList({ role }: ChallengesListProps) {
   const handleDuplicate = async (id: string) => {
     setActionLoading(id);
     try {
-      const existing = await getChallengeById(id);
+      const existing = await getChallengeById(id, { admin: true });
       const created = await createChallenge({
         ...existing,
         title: `${existing.title} (Copy)`,

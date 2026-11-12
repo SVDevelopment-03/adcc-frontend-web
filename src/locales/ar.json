@@ -104,6 +104,9 @@
     "challengeClosed": "انتهى التحدي",
     "eventClosed": "انتهت الفعالية",
     "eventCancelled": "أُلغيت الفعالية",
+    "pageNotFound": "الصفحة غير موجودة",
+    "pageNotFoundText": "الصفحة التي تبحث عنها نُقلت أو لم تعد موجودة.",
+    "backHome": "العودة إلى الرئيسية",
     "fieldRequired": "هذا الحقل مطلوب",
     "fillRequiredFields": "يرجى ملء جميع الحقول المطلوبة",
     "loading": "جاري التحميل...",
@@ -1213,6 +1216,9 @@
     }
   },
   "tracks": {
+    "pagination": {
+      "showing": "عرض {{from}}-{{to}} من {{total}}"
+    },
     "title": "المسارات",
     "subtitle": "إدارة طرق ومسارات الدراجات في دول الخليج",
     "createButton": "إنشاء مسار",

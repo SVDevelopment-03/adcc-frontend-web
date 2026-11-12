@@ -234,7 +234,10 @@
         "ridersLabel": "riders",
         "participantsLabel": "Participants",
         "location": "Location",
-        "clickToView": "Click to View"
+        "clickToView": "Click to View",
+        "time": "Time",
+        "track": "Track",
+        "category": "Category"
       },
       "schedule": {
         "titleSuffix": "{{title}} Schedule",

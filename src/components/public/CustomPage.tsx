@@ -9,6 +9,7 @@ import { getCached, setCache } from "../../utils/apiCache";
 import { AnimatedButton } from "../ui/AnimatedButton";
 import { AnimatedWords, PublicPageHero } from "./publicPageHelpers";
 import { RichText } from "./RichText";
+import { PublicNotFound } from "./PublicNotFound";
 import { buttonLinkProps, cssUrl } from "./contentHelpers";
 
 /** A page built in the dashboard (Pages → New page), served at its own URL. */
@@ -65,19 +66,7 @@ export default function CustomPage({ slug }: { slug: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, isAr]);
 
-  if (notFound && !page) {
-    return (
-      <div className="flex min-h-[70vh] items-center justify-center bg-[#eaf4ff] px-4 pt-32 text-center">
-        <div>
-          <h1 className="bebas text-[48px] uppercase">404</h1>
-          <p className="mt-2 text-[18px] text-black/60">This page could not be found.</p>
-          <AnimatedButton to="/" className="mt-6">
-            Home
-          </AnimatedButton>
-        </div>
-      </div>
-    );
-  }
+  if (notFound && !page) return <PublicNotFound />;
 
   if (!page) {
     return (
@@ -87,7 +76,9 @@ export default function CustomPage({ slug }: { slug: string }) {
     );
   }
 
-  const blocks = (page.blocks ?? []).filter((b) => b.visible !== false);
+  // Hidden blocks, and blocks an admin added but never filled in, are skipped
+  // so the live page never shows an empty banner, box or question.
+  const blocks = (page.blocks ?? []).filter((b) => b.visible !== false && hasContent(b, pick));
   const startsWithHero = blocks[0]?.type === "hero";
 
   return (
@@ -107,6 +98,36 @@ const shell = "mx-auto w-full max-w-[1200px] px-4 sm:px-6 md:px-10 min-[1300px]:
 const headingClass = "bebas text-[30px] uppercase leading-tight sm:text-[40px] lg:text-[50px]";
 const str = (value: unknown) => (typeof value === "string" ? value : "");
 const listOf = (value: unknown) => (Array.isArray(value) ? (value as Record<string, unknown>[]) : []);
+
+/** Card / question / image entries that have something to show. */
+const cardItems = (block: CustomPageBlock, pick: Pick) =>
+  listOf(block.items).filter((item) => pick(item, "title") || pick(item, "text") || str(item.image));
+const faqItems = (block: CustomPageBlock, pick: Pick) => listOf(block.items).filter((item) => pick(item, "question"));
+const galleryImages = (block: CustomPageBlock) => listOf(block.items).map((item) => str(item.image)).filter(Boolean);
+
+/** False for a block that has nothing to show (added in the editor but left empty). */
+function hasContent(block: CustomPageBlock, pick: Pick): boolean {
+  switch (block.type) {
+    case "hero":
+      return Boolean(pick(block, "title") || pick(block, "subtitle") || str(block.backgroundImage));
+    case "text":
+      return Boolean(pick(block, "heading") || pick(block, "body"));
+    case "imageText":
+      return Boolean(pick(block, "heading") || pick(block, "body") || str(block.image) || pick(block, "buttonLabel"));
+    case "image":
+      return Boolean(str(block.image));
+    case "cards":
+      return cardItems(block, pick).length > 0;
+    case "faq":
+      return faqItems(block, pick).length > 0;
+    case "cta":
+      return Boolean(pick(block, "title") || pick(block, "text") || pick(block, "buttonLabel"));
+    case "gallery":
+      return galleryImages(block).length > 0;
+    default:
+      return false;
+  }
+}
 
 function Heading({ text, center = false }: { text: string; center?: boolean }) {
   if (!text) return null;
@@ -188,7 +209,7 @@ function Block({ block, pick }: { block: CustomPageBlock; pick: Pick }) {
         <section className={`${shell} py-10 sm:py-14`}>
           <Heading text={pick(block, "heading")} />
           <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {listOf(block.items).map((item, i) => {
+            {cardItems(block, pick).map((item, i) => {
               const image = str(item.image);
               const link = str(item.link);
               const body = (
@@ -248,10 +269,7 @@ function Block({ block, pick }: { block: CustomPageBlock; pick: Pick }) {
         <section className={`${shell} py-10 sm:py-14`}>
           <Heading text={pick(block, "heading")} />
           <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
-            {listOf(block.items)
-              .map((item) => str(item.image))
-              .filter(Boolean)
-              .map((src, i) => (
+            {galleryImages(block).map((src, i) => (
                 <img key={i} src={src} alt="" className="aspect-[4/3] w-full rounded-xl object-cover" />
               ))}
           </div>
@@ -269,7 +287,7 @@ function FaqBlock({ block, pick }: { block: CustomPageBlock; pick: Pick }) {
     <section className={`${shell} py-10 sm:py-14`}>
       <Heading text={pick(block, "heading")} center />
       <div className="mx-auto mt-8 max-w-[900px] space-y-3">
-        {listOf(block.items).map((item, i) => {
+        {faqItems(block, pick).map((item, i) => {
           const isOpen = open === i;
           return (
             <div key={i} className="rounded-xl border border-black/15 bg-white/40">

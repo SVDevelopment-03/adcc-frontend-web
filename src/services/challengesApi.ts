@@ -123,6 +123,8 @@ export interface GetChallengesParams {
   search?: string;
   page?: number;
   limit?: number;
+  /** Dashboard only: also list Draft/Disabled/Archived challenges (staff). */
+  includeUnpublished?: boolean;
 }
 
 export interface ChallengesPage {
@@ -162,7 +164,7 @@ function normalizeChallengesPage(
 export const getChallengesPage = async (params?: GetChallengesParams): Promise<ChallengesPage> => {
   const page = params?.page ?? 1;
   const limit = params?.limit ?? 10;
-  const cacheKey = `challenges-page:${params?.status ?? 'all'}:${params?.type ?? 'all'}:${params?.search ?? ''}:${page}:${limit}`;
+  const cacheKey = `challenges-page:${params?.includeUnpublished ? 'admin:' : ''}${params?.status ?? 'all'}:${params?.type ?? 'all'}:${params?.search ?? ''}:${page}:${limit}`;
   const cached = getCached<ChallengesPage>(cacheKey);
   if (cached) return cached;
 
@@ -173,6 +175,7 @@ export const getChallengesPage = async (params?: GetChallengesParams): Promise<C
       search: params?.search,
       page,
       limit,
+      includeUnpublished: params?.includeUnpublished ? 'true' : undefined,
     },
   });
 
@@ -187,13 +190,17 @@ export const getAllChallenges = async (params?: GetChallengesParams): Promise<Ch
   return response.challenges;
 };
 
-/** Get a single challenge by ID */
-export const getChallengeById = async (id: string): Promise<Challenge> => {
-  const cacheKey = `challenge:${id}`;
+/**
+ * Get a single challenge by ID. The public site gets published challenges only;
+ * the dashboard passes `{ admin: true }` (signed in) so drafts can be opened too.
+ */
+export const getChallengeById = async (id: string, options?: { admin?: boolean }): Promise<Challenge> => {
+  const cacheKey = `challenge:${options?.admin ? 'admin:' : ''}${id}`;
   const cached = getCached<Challenge>(cacheKey);
   if (cached) return cached;
 
-  const response = await publicApi.get<GetChallengeResponse>(`/v1/challenges/${id}`);
+  const client = options?.admin ? api : publicApi;
+  const response = await client.get<GetChallengeResponse>(`/v1/challenges/${id}`);
   const body = response.data as GetChallengeResponse & ChallengeApiRaw;
   const raw = body.data ?? (body.id || body._id ? body : null);
   if (!raw) throw new Error('Challenge not found');
