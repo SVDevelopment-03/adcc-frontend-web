@@ -380,12 +380,17 @@ export function EventEdit({ role }: EventEditProps) {
     );
   }, [tracks, formData.country, formData.city]);
 
+  // An existing event keeps its slug when the title changes, so shared links
+  // stay valid; the slug only changes when edited directly.
   const handleNameChange = (name: string) => {
-    setFormData(prev => ({
-      ...prev,
-      title: name,
-      slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
-    }));
+    setFormData(prev => ({ ...prev, title: name }));
+  };
+
+  // Keep the slug URL-safe while typing (same rules as the backend's slugify);
+  // leading/trailing hyphens are trimmed on blur so "a-" can become "a-b".
+  const handleSlugChange = (value: string) => {
+    const slug = value.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/-{2,}/g, '-');
+    setFormData(prev => ({ ...prev, slug }));
   };
 
   const addEligibilityItem = () => {
@@ -760,9 +765,9 @@ export function EventEdit({ role }: EventEditProps) {
                 <input
                   type="text"
                   value={formData.slug}
-                  readOnly
-                  className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50"
-                  style={{ color: '#999' }}
+                  onChange={(e) => handleSlugChange(e.target.value)}
+                  onBlur={() => setFormData(prev => ({ ...prev, slug: prev.slug.replace(/^-+|-+$/g, '') }))}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
               </div>
 

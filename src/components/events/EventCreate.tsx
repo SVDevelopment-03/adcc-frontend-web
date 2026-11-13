@@ -265,12 +265,24 @@ const removeBadgeImage = () => {
   const predefinedAmenityValues = amenityOptions.map(a => a.value);
   const customAmenities = formData.amenities.filter(a => !predefinedAmenityValues.includes(a));
 
+  // The slug follows the title until the user types their own; clearing the
+  // slug field hands it back to the title.
+  const [slugEdited, setSlugEdited] = useState(false);
+
   const handleNameChange = (title: string) => {
     setFormData(prev => ({
       ...prev,
       title,
-      slug: title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+      ...(slugEdited ? {} : { slug: title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') }),
     }));
+  };
+
+  // Keep the slug URL-safe while typing (same rules as the backend's slugify);
+  // leading/trailing hyphens are trimmed on blur so "a-" can become "a-b".
+  const handleSlugChange = (value: string) => {
+    const slug = value.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/-{2,}/g, '-');
+    setSlugEdited(slug !== '');
+    setFormData(prev => ({ ...prev, slug }));
   };
 
   const toggleAmenity = (amenity: string) => {
@@ -638,9 +650,9 @@ const removeBadgeImage = () => {
                 <input
                   type="text"
                   value={formData.slug}
-                  readOnly
-                  className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-50"
-                  style={{ color: '#999' }}
+                  onChange={(e) => handleSlugChange(e.target.value)}
+                  onBlur={() => setFormData(prev => ({ ...prev, slug: prev.slug.replace(/^-+|-+$/g, '') }))}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
               </div>
 
