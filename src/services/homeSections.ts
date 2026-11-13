@@ -317,6 +317,8 @@ export const HOME_SECTIONS: HomeSectionDef[] = [
         min: 2,
         max: 2,
         fields: [
+          // Optional: the site falls back to its built-in icon when empty
+          { kind: 'image', key: 'icon', label: L + 'icon', size: '34 × 34 px' },
           { kind: 'text', key: 'title', label: L + 'title', localized: true },
           { kind: 'textarea', key: 'text', label: L + 'text', localized: true, max: 500 },
         ],

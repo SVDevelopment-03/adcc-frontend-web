@@ -939,6 +939,8 @@
       "maxImagesAlert": "الحد الأقصى 10 صور",
       "addScheduleRow": "إضافة صف للجدول",
       "addCustomAmenity": "إضافة",
+      "amenitiesManageHint": "هل تحتاج إلى مرفق آخر؟ أضفه إلى القائمة وسيظهر هنا كخانة اختيار.",
+      "manageAmenities": "إدارة المرافق",
       "publish": "نشر الفعالية",
       "saveAsDraft": "حفظ كمسودة",
       "toasts": {
@@ -1270,6 +1272,8 @@
       "basicInfo": "1. المعلومات الأساسية",
       "routeDetails": "2. تفاصيل الطريق",
       "facilities": "3. المرافق",
+      "facilitiesManageHint": "هل تحتاج إلى مرفق آخر؟ أضفه إلى القائمة وسيظهر هنا كخانة اختيار.",
+      "manageFacilities": "إدارة المرافق",
       "facilityOptions": {
         "lights": "الإضاءة",
         "water": "محطات المياه",

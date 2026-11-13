@@ -1440,6 +1440,8 @@
       "maxImagesAlert": "Maximum 10 images allowed",
       "addScheduleRow": "Add schedule row",
       "addCustomAmenity": "Add",
+      "amenitiesManageHint": "Need another amenity? Add it to the list and it will appear here as a checkbox.",
+      "manageAmenities": "Manage amenities",
       "publish": "Publish Event",
       "saveAsDraft": "Save as Draft",
       "toasts": {
@@ -1771,6 +1773,8 @@
       "basicInfo": "1. Basic Information",
       "routeDetails": "2. Route Details",
       "facilities": "3. Facilities",
+      "facilitiesManageHint": "Need another facility? Add it to the list and it will appear here as a checkbox.",
+      "manageFacilities": "Manage facilities",
       "facilityOptions": {
         "lights": "Lighting",
         "water": "Water Stations",

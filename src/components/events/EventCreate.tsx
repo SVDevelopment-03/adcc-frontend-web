@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Calendar, MapPin, Users, Settings, Award, Image as ImageIcon, Save, Plus, X, Globe, Send } from 'lucide-react';
 import { useEventCategories, useEventAmenities, useEventOrganizers } from '../../hooks/useLookups';
+import { ManageLookupLink } from '../lookups/ManageLookupLink';
 import { toast } from 'sonner';
 import { getAllTracksEn } from '../../services/trackService';
 import { gccCountries, getCitiesByCountry, normalizeCountryValue, type GCCCountry } from '../../data/gccLocations';
@@ -211,7 +212,6 @@ const removeBadgeImage = () => {
     isPurposeBased: false,
   });
 
-  const [customAmenityInput, setCustomAmenityInput] = useState('');
   const [eligibilityCustom, setEligibilityCustom] = useState<{ id: string; value: string }[]>([
     { id: 'eligibility-0', value: '' },
   ]);
@@ -260,10 +260,6 @@ const removeBadgeImage = () => {
       return { ...prev, city: '', trackId: '' };
     });
   }, [formData.country]);
-
-  // Custom amenities (those not in the dashboard-managed list)
-  const predefinedAmenityValues = amenityOptions.map(a => a.value);
-  const customAmenities = formData.amenities.filter(a => !predefinedAmenityValues.includes(a));
 
   // The slug follows the title until the user types their own; clearing the
   // slug field hands it back to the title.
@@ -1154,46 +1150,10 @@ const removeBadgeImage = () => {
               ))}
             </div>
 
-            <div className="mt-4">
-              <input
-                type="text"
-                value={customAmenityInput}
-                onChange={(e) => setCustomAmenityInput(e.target.value)}
-                placeholder={t('events.create.placeholders.customAmenity')}
-                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
-              />
-              <button
-                onClick={() => {
-                  if (customAmenityInput.trim()) {
-                    toggleAmenity(customAmenityInput.trim());
-                    setCustomAmenityInput('');
-                  }
-                }}
-                className="mt-2 px-4 py-2 rounded-lg transition-all hover:shadow-md"
-                style={{ backgroundColor: '#ECC180', color: '#333' }}
-              >
-                {t('events.create.addCustomAmenity')}
-              </button>
-            </div>
-
-            {customAmenities.length > 0 && (
-              <div className="mt-4">
-                <h3 className="text-sm font-bold" style={{ color: '#333' }}>{t('events.create.customAmenities')}</h3>
-                <div className="space-y-2">
-                  {customAmenities.map((amenity, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <span className="text-sm" style={{ color: '#666' }}>{amenity}</span>
-                      <button
-                        onClick={() => toggleAmenity(amenity)}
-                        className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
-                      >
-                        <X className="w-4 h-4" style={{ color: '#999' }} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            <p className="mt-4 text-sm" style={{ color: '#999' }}>
+              {t('events.create.amenitiesManageHint', 'Need another amenity? Add it to the list and it will appear here as a checkbox.')}{' '}
+              <ManageLookupLink type="event_amenity" label={t('events.create.manageAmenities', 'Manage amenities')} />
+            </p>
           </div>
 
           {/* SECTION G - Eligibility */}

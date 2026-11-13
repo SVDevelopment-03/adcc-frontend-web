@@ -4126,15 +4126,34 @@ function BookVenueSection() {
         <div className="home-venue-content">
           <div className="home-venue-cards">
             <div className="home-venue-card">
-              <CalendarDays
-                className="home-venue-card-icon"
-                strokeWidth={1.75}
-              />
+              {/* An icon uploaded in Pages replaces the built-in one */}
+              {eventsCard?.icon ? (
+                <img
+                  src={eventsCard.icon}
+                  alt=""
+                  className="home-venue-card-icon"
+                  style={{ objectFit: "contain" }}
+                />
+              ) : (
+                <CalendarDays
+                  className="home-venue-card-icon"
+                  strokeWidth={1.75}
+                />
+              )}
               <h4>{eventsCard ? pickItem(eventsCard, "title") : ""}</h4>
               <p>{eventsCard ? pickItem(eventsCard, "text") : ""}</p>
             </div>
             <div className="home-venue-card">
-              <Users className="home-venue-card-icon" strokeWidth={1.75} />
+              {spacesCard?.icon ? (
+                <img
+                  src={spacesCard.icon}
+                  alt=""
+                  className="home-venue-card-icon"
+                  style={{ objectFit: "contain" }}
+                />
+              ) : (
+                <Users className="home-venue-card-icon" strokeWidth={1.75} />
+              )}
               <h4>{spacesCard ? pickItem(spacesCard, "title") : ""}</h4>
               <p>{spacesCard ? pickItem(spacesCard, "text") : ""}</p>
             </div>

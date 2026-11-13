@@ -6,6 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getEventByIdEn, updateEvent as updateEventApi, deleteEvent as deleteEventApi, disableEvent as disableEventApi, closeEventRegistration, reopenEventRegistration, completeEvent as completeEventApi, deleteEventGalleryImage, EventApiResponse } from '../../services/eventsApi';
 import { EventTypeSelector } from './EventTypeSelector';
 import { useEventCategories, useEventAmenities, useEventOrganizers } from '../../hooks/useLookups';
+import { ManageLookupLink } from '../lookups/ManageLookupLink';
 import { getAllTracksEn, deleteTrack } from '../../services/trackService';
 import { gccCountries, getCitiesByCountry, normalizeCountryValue, type GCCCountry } from '../../data/gccLocations';
 import { getAllCommunities, deleteCommunity as deleteCommunityApi, CommunityApiResponse } from '../../services/communitiesApi';
@@ -29,9 +30,8 @@ export function EventEdit({ role }: EventEditProps) {
   // const navigate = useNavigate();
   // const eventId = id || '';
   const { options: categoryOptions } = useEventCategories();
-  const { options: amenityOptions } = useEventAmenities();
+  const { options: amenityOptions, items: amenityItems } = useEventAmenities();
   const { options: organizerOptions } = useEventOrganizers();
-  const [customAmenityInput, setCustomAmenityInput] = useState('');
   const [eligibilityCustom, setEligibilityCustom] = useState<{ id: string; value: string }[]>([
     { id: 'eligibility-0', value: '' },
   ]);
@@ -358,12 +358,33 @@ export function EventEdit({ role }: EventEditProps) {
     }
   }, [existingEvent]);
 
+  // The API returns amenities as display labels ("Toilets"), while the
+  // checkboxes use lookup values ("toilets"). Map them back to values so the
+  // saved amenities show as checked; entries no longer in the list are dropped.
+  useEffect(() => {
+    if (!amenityItems.length) return;
+    const byKey = new Map<string, string>();
+    amenityItems.forEach((item) => {
+      [item.value, item.label, item.labelAr].forEach((key) => {
+        if (key) byKey.set(key.trim().toLowerCase(), item.value);
+      });
+    });
+    setFormData((prev) => {
+      const next = Array.from(
+        new Set(
+          prev.amenities
+            .map((a) => byKey.get(String(a).trim().toLowerCase()))
+            .filter((v): v is string => Boolean(v)),
+        ),
+      );
+      const unchanged =
+        next.length === prev.amenities.length && next.every((v, i) => v === prev.amenities[i]);
+      return unchanged ? prev : { ...prev, amenities: next };
+    });
+  }, [amenityItems, existingEvent]);
+
 
   // const tracks = allTracks.filter(track => track.city === formData.city);
-
-  // Custom amenities (those not in the dashboard-managed list)
-  const predefinedAmenityValues = amenityOptions.map(a => a.value);
-  const customAmenities = formData.amenities.filter(a => !predefinedAmenityValues.includes(a));
 
   // Country → City → Track cascade (same as tracks module, using gccLocations)
   const availableCountries = gccCountries as unknown as string[];
@@ -1247,46 +1268,10 @@ export function EventEdit({ role }: EventEditProps) {
               ))}
             </div>
 
-            <div className="mt-4">
-              <input
-                type="text"
-                value={customAmenityInput}
-                onChange={(e) => setCustomAmenityInput(e.target.value)}
-                placeholder={t('events.create.placeholders.customAmenity', 'Add custom amenity...')}
-                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
-              />
-              <button
-                onClick={() => {
-                  if (customAmenityInput.trim()) {
-                    toggleAmenity(customAmenityInput.trim());
-                    setCustomAmenityInput('');
-                  }
-                }}
-                className="mt-2 px-4 py-2 rounded-lg transition-all hover:shadow-md"
-                style={{ backgroundColor: '#ECC180', color: '#333' }}
-              >
-                {t('events.create.addCustomAmenity', 'Add Amenity')}
-              </button>
-            </div>
-
-            {customAmenities.length > 0 && (
-              <div className="mt-4">
-                <h3 className="text-sm font-bold" style={{ color: '#333' }}>{t('events.create.customAmenities', 'Custom Amenities')}</h3>
-                <div className="space-y-2 mt-2">
-                  {customAmenities.map((amenity, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <span className="text-sm" style={{ color: '#666' }}>{amenity}</span>
-                      <button
-                        onClick={() => toggleAmenity(amenity)}
-                        className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
-                      >
-                        <X className="w-4 h-4" style={{ color: '#999' }} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            <p className="mt-4 text-sm" style={{ color: '#999' }}>
+              {t('events.create.amenitiesManageHint', 'Need another amenity? Add it to the list and it will appear here as a checkbox.')}{' '}
+              <ManageLookupLink type="event_amenity" label={t('events.create.manageAmenities', 'Manage amenities')} />
+            </p>
           </div>
 
           {/* SECTION G - Eligibility */}

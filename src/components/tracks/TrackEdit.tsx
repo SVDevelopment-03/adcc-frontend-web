@@ -9,6 +9,7 @@ import { useLocale } from '../../contexts/LocaleContext';
 import { useTranslation } from 'react-i18next';
 import { DetailPageSkeleton } from '../ui/skeleton';
 import { useCountries, useCities, useTrackFacilities } from '../../hooks/useLookups';
+import { ManageLookupLink } from '../lookups/ManageLookupLink';
 import { ImagePickerModal } from '../media/ImagePickerModal';
 import { FieldError } from '../ui/FieldError';
 import { ALLOWED_IMAGE_ACCEPT, filterValidImageFiles, validateImageFile } from '../../utils/imageValidation';
@@ -843,6 +844,10 @@ const handleDisable = async (id: string, name: string) => {
                 );
               })}
             </div>
+            <p className="mt-4 text-sm" style={{ color: '#999' }}>
+              {t('tracks.create.facilitiesManageHint', 'Need another facility? Add it to the list and it will appear here as a checkbox.')}{' '}
+              <ManageLookupLink type="track_facility" label={t('tracks.create.manageFacilities', 'Manage facilities')} />
+            </p>
 
           </div>
 

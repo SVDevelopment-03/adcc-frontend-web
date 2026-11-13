@@ -16,16 +16,29 @@ export function useLookupList(type: string, parentValue?: string) {
   const { locale } = useLocale();
   const [items, setItems] = useState<LookupItem[]>([]);
   const [loading, setLoading] = useState(true);
+  // Bumped when the tab regains focus, so entries added on the Data &
+  // Categories page (opened in another tab) appear without a reload.
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') setRefreshKey((k) => k + 1);
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
+    const isRefresh = refreshKey > 0;
+    if (!isRefresh) setLoading(true);
     getLookups(type, parentValue)
       .then((data) => {
         if (!cancelled) setItems(data);
       })
       .catch(() => {
-        if (!cancelled) setItems([]);
+        // A failed background refresh keeps the list already on screen
+        if (!cancelled && !isRefresh) setItems([]);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -33,7 +46,7 @@ export function useLookupList(type: string, parentValue?: string) {
     return () => {
       cancelled = true;
     };
-  }, [type, parentValue]);
+  }, [type, parentValue, refreshKey]);
 
   const options = useMemo<LookupOption[]>(
     () =>
