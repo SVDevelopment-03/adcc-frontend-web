@@ -7,7 +7,9 @@
  * never execute, so <script> nodes are recreated explicitly here.
  */
 
-export type GtmCode = { headCode?: string; bodyCode?: string } | null | undefined;
+import { useEffect } from 'react';
+
+export type GtmCode ={ headCode?: string; bodyCode?: string } | null | undefined;
 
 const HEAD_FLAG = 'data-gtm-head-injected';
 const BODY_FLAG = 'data-gtm-body-injected';
@@ -29,6 +31,47 @@ function materialize(html: string): Node[] {
     }
   });
   return out;
+}
+
+const CACHE_KEY = 'adcc.appConfig.v1';
+let siteTrackingRequested = false;
+
+/** True once the dashboard's tracking / chat code has been added to this tab. */
+export function hasSiteTracking(): boolean {
+  return typeof document !== 'undefined' &&
+    (document.head.hasAttribute(HEAD_FLAG) || !!document.body?.hasAttribute(BODY_FLAG));
+}
+
+/**
+ * Loads the tracking and chat code for the public website only.
+ * Called from PublicLayout, so admin dashboard pages never load it.
+ */
+export function loadSiteTracking(): void {
+  if (siteTrackingRequested || typeof window === 'undefined') return;
+  siteTrackingRequested = true;
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) injectGtm(JSON.parse(cached)?.gtm);
+  } catch {
+    // ignore cache/parse errors
+  }
+  import('../services/appConfigApi')
+    .then(({ getAppConfig }) => getAppConfig())
+    .then((config) => injectGtm(config.gtm))
+    .catch(() => {
+      // analytics is non-critical — ignore load failures
+    });
+}
+
+/**
+ * For staff pages (sign-in and dashboard): if the visitor came from the public
+ * site in this tab, the tracking / chat scripts are already running and can't
+ * be unloaded, so reload once to open the page without them.
+ */
+export function useNoSiteTracking(): void {
+  useEffect(() => {
+    if (hasSiteTracking()) window.location.reload();
+  }, []);
 }
 
 export function injectGtm(gtm: GtmCode): void {

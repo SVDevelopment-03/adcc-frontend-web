@@ -145,9 +145,9 @@ export const PRIVACY_POLICY_EN: PrivacyPolicyContent = {
       ],
     },
     {
-      heading: "8. ADCC Mobile Application",
+      heading: "8. Darraja Mobile Application",
       blocks: [
-        "The website may provide links allowing visitors to download or access an ADCC mobile application.",
+        "The website may provide links allowing visitors to download or access the Darraja mobile application.",
         "This Privacy Policy governs information collected through this website and ADCC-operated web forms. Data processed within a mobile application is subject to the privacy information made available for that application, unless the application expressly states that this Policy also governs its processing activities.",
         "The Apple App Store, Google Play and other distribution platforms may independently collect information when you visit or use their services. Their handling of that information is governed by their respective privacy policies.",
       ],
@@ -241,9 +241,9 @@ export const PRIVACY_POLICY_EN: PrivacyPolicyContent = {
     {
       heading: "18. Google Play Policy Information – Addendum",
       blocks: [
-        "This addendum reproduces Google Play policy information supplied separately by Google regarding the ADCC mobile application. It is appended for reference and does not modify the Privacy Policy set out above.",
+        "This addendum reproduces Google Play policy information supplied separately by Google regarding the Darraja mobile application. It is appended for reference and does not modify the Privacy Policy set out above.",
         { sub: "Policy Deadlines" },
-        "Google regularly updates its Developer Program Policies to help ensure a safe and trusted experience for users on Google Play. Set out below are the latest changes to those policies that are relevant to the ADCC app, including when each change takes effect and resources to help prepare for it. All dates are shown in year-month-day (YYYY-MM-DD) format. For policy deadlines older than three months, see Google's Policy Archive (support.google.com/googleplay/android-developer/answer/13386702).",
+        "Google regularly updates its Developer Program Policies to help ensure a safe and trusted experience for users on Google Play. Set out below are the latest changes to those policies that are relevant to the Darraja app, including when each change takes effect and resources to help prepare for it. All dates are shown in year-month-day (YYYY-MM-DD) format. For policy deadlines older than three months, see Google's Policy Archive (support.google.com/googleplay/android-developer/answer/13386702).",
         { sub: "2026-08-26 — Google Play Families Policies" },
         "Google is expanding its Families Policy Requirements policy to prohibit developers of anonymous chat apps from targeting children. Announced 2026-07-15. Reference: support.google.com/googleplay/android-developer/answer/9893335.",
         { sub: "2026-08-26 — Child Endangerment" },
@@ -388,9 +388,9 @@ export const PRIVACY_POLICY_AR: PrivacyPolicyContent = {
       ],
     },
     {
-      heading: "8. تطبيق نادي أبوظبي للدراجات",
+      heading: "8. تطبيق دراجة",
       blocks: [
-        "قد يتيح الموقع روابط لتنزيل تطبيق نادي أبوظبي للدراجات أو الانتقال إليه.",
+        "قد يتيح الموقع روابط لتنزيل تطبيق دراجة أو الانتقال إليه.",
         "تسري هذه السياسة على البيانات التي تُجمع من خلال الموقع الإلكتروني والنماذج الإلكترونية التي يديرها النادي مباشرةً. أما البيانات التي تتم معالجتها داخل التطبيق، فتخضع لإشعار أو سياسة الخصوصية المنشورة لذلك التطبيق، ما لم ينص التطبيق صراحةً على سريان هذه السياسة عليه أيضاً.",
         "كما قد تجمع متاجر التطبيقات، ومنها متجر تطبيقات \"آبل\" ومتجر \"جوجل بلاي\"، بيانات بصورة مستقلة عند استخدام منصاتها، وتخضع تلك البيانات لسياسات الخصوصية الخاصة بها.",
       ],
@@ -484,7 +484,7 @@ export const PRIVACY_POLICY_AR: PrivacyPolicyContent = {
     {
       heading: "18. معلومات سياسة جوجل بلاي – ملحق",
       blocks: [
-        "يتضمن هذا الملحق معلومات سياسة \"جوجل بلاي\" (Google Play) المتعلقة بتطبيق النادي للهاتف المحمول، كما وردت من جوجل. وقد أُدرج هذا الملحق للاطلاع فقط، ولا يُعدّل سياسة الخصوصية المذكورة أعلاه.",
+        "يتضمن هذا الملحق معلومات سياسة \"جوجل بلاي\" (Google Play) المتعلقة بتطبيق دراجة للهاتف المحمول، كما وردت من جوجل. وقد أُدرج هذا الملحق للاطلاع فقط، ولا يُعدّل سياسة الخصوصية المذكورة أعلاه.",
         "يُعرض هذا الملحق باللغة الإنجليزية فقط في نسخته الكاملة، نظراً لأنه ينقل حرفياً معلومات سياسة صادرة عن جوجل. للاطلاع على التفاصيل الكاملة، يُرجى مراجعة البند 18 في النسخة الإنجليزية من هذه السياسة. ولا يؤثر ذلك في اعتماد النسخة العربية عند وجود أي تعارض في التفسير أو التطبيق، وفق ما هو موضح في البند 17 أعلاه.",
       ],
     },

@@ -231,6 +231,8 @@
       "stats": {
         "date": "Date",
         "ridersCount": "{{count}} riders",
+        "ridersCount_one": "{{count}} rider",
+        "ridersCount_other": "{{count}} riders",
         "ridersLabel": "riders",
         "participantsLabel": "Participants",
         "location": "Location",
@@ -305,7 +307,7 @@
         },
         "performance": {
           "title": "Performance Tracking",
-          "desc": "Log rides and monitor your progress with the ADCC app."
+          "desc": "Log rides and monitor your progress with the Darraja app."
         }
       }
     }
@@ -370,7 +372,7 @@
       "guideHeading": "Your Guide to Completing the Challenge",
       "steps": {
         "register": "Register before {{date}}",
-        "trackRides": "Track all rides using the ADCC mobile app",
+        "trackRides": "Track all rides using the Darraja mobile app",
         "complete": "Complete {{target}} {{unit}} within the challenge period",
         "eligibleActivities": "Only eligible {{type}} activities count towards your progress"
       },
@@ -381,7 +383,7 @@
           "target": "What is the {{target}} {{unit}} target?",
           "end": "When does {{title}} end?",
           "activities": "Which activities count for this {{type}} challenge?",
-          "trackProgress": "How do I track my progress in the ADCC app?",
+          "trackProgress": "How do I track my progress in the Darraja app?",
           "reward": "What reward will I receive after completing {{title}}?"
         }
       }

@@ -3,6 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { Mail, Lock, ArrowRight, Calendar, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { useNoSiteTracking } from '../../utils/injectGtm';
 
 /** Google "G" logo SVG for Sign in with Google button */
 function GoogleIcon({ className }: { className?: string }) {
@@ -35,6 +36,8 @@ interface LoginProps {
 }
 
 export function Login({ onSwitchToRegister, onLoginSuccess, onSwitchToForgot }: LoginProps) {
+  // Staff sign-in page: no website tracking or chat widget.
+  useNoSiteTracking();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);

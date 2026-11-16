@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { scrollToAppListing } from "../../utils/appStoreLink";
@@ -22,10 +22,11 @@ import {
   Shield,
   Shirt,
   TrendingUp,
-  Users,
+  Toilet,
   Wrench,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { FacilitiesStrip } from "../public/FacilitiesStrip";
 import type { EventApiResponse } from "../../services/eventsApi";
 import {
   getTrackById,
@@ -227,7 +228,7 @@ const getFacilityIcon = (name: string): LucideIcon => {
   // Toilets is checked before water: its Arabic label ("دورات المياه")
   // contains the word for "water", so it must win first or every restroom
   // would render the water-drop icon instead.
-  if (/toilet|restroom|washroom|دورات/i.test(name)) return Users;
+  if (/toilet|restroom|washroom|bathroom|دورات|حمام/i.test(name)) return Toilet;
   if (/water|drink|hydration|محطات|مياه/i.test(name)) return Droplets;
   if (/first|aid|medical|health|إسعاف/i.test(name)) return Cross;
   if (/repair|bike|rental|mechanic|تأجير|دراجات/i.test(name)) return Wrench;
@@ -410,30 +411,6 @@ function StatsSection({ track }: { track: Track }) {
 
 function FacilitiesSection({ facilities }: { facilities: FacilityCard[] }) {
   const { t } = useTranslation();
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-  const drag = useRef({ active: false, startX: 0, startScrollLeft: 0 });
-
-  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
-    const el = scrollRef.current;
-    if (!el) return;
-    drag.current = {
-      active: true,
-      startX: event.pageX,
-      startScrollLeft: el.scrollLeft,
-    };
-  };
-
-  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    const el = scrollRef.current;
-    if (!el || !drag.current.active) return;
-    const delta = event.pageX - drag.current.startX;
-    el.scrollLeft = drag.current.startScrollLeft - delta;
-  };
-
-  const endDrag = () => {
-    drag.current.active = false;
-  };
-
   if (facilities.length === 0) return null;
 
   // Same layout and card design as the facilities section on the event
@@ -455,35 +432,7 @@ function FacilitiesSection({ facilities }: { facilities: FacilityCard[] }) {
         </div>
       </div>
 
-      <div
-        ref={scrollRef}
-        className="mt-[42px] flex cursor-grab select-none gap-3 overflow-x-auto ps-3 [scrollbar-width:none] active:cursor-grabbing sm:gap-5 md:ps-6 lg:ps-[max(1.5rem,calc((100vw-1268px)/2))] [&::-webkit-scrollbar]:hidden"
-        style={{
-          maskImage: "linear-gradient(to right, black 85%, transparent 100%)",
-          WebkitMaskImage:
-            "linear-gradient(to right, black 85%, transparent 100%)",
-        }}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={endDrag}
-        onMouseLeave={endDrag}
-      >
-        {facilities.map(({ title, icon: Icon }) => (
-          <article
-            key={title}
-            className="group relative h-[70px] w-[170px] shrink-0 cursor-pointer rounded-[10px] bg-[#76767666] text-white transition-colors duration-200 hover:bg-white hover:text-[#333] sm:h-[97px] sm:w-[260px]"
-          >
-            <span className="absolute start-[14px] top-1/2 flex h-[36px] w-[36px] -translate-y-1/2 items-center justify-center rounded-[8px] bg-white text-[#333] transition-colors duration-200 group-hover:bg-[#019839] group-hover:text-white sm:start-[19px] sm:top-5 sm:h-[50px] sm:w-[50px] sm:translate-y-0 sm:rounded-[10px]">
-              <Icon className="h-[18px] w-[18px] sm:h-[26px] sm:w-[26px]" />
-            </span>
-            <b className="absolute start-[60px] top-1/2 flex h-[36px] max-w-[100px] -translate-y-1/2 items-center text-start text-[13px] font-bold leading-[16px] sm:start-[86px] sm:top-5 sm:h-[50px] sm:max-w-[130px] sm:translate-y-0 sm:text-[20px] sm:leading-[22px]">
-              {title}
-            </b>
-            <span className="absolute bottom-0 left-0 h-[3px] w-full rounded-b-[10px] bg-transparent transition-colors duration-200 group-hover:bg-[#019839] sm:h-[4px]" />
-          </article>
-        ))}
-        <div className="w-4 shrink-0" aria-hidden />
-      </div>
+      <FacilitiesStrip facilities={facilities} />
     </section>
   );
 }

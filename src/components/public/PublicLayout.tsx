@@ -24,6 +24,7 @@ import { useLayoutSection } from "./useLayoutSection";
 import { subscribeToNewsletter } from "../../services/newsletterApi";
 import { useSiteRouting } from "../../contexts/SiteRoutingContext";
 import { resolveRedirect } from "../../services/siteRouting";
+import { loadSiteTracking } from "../../utils/injectGtm";
 
 interface PublicLayoutProps {
   children: React.ReactNode;
@@ -623,6 +624,11 @@ function PublicFooter() {
 
 export function PublicLayout({ children }: PublicLayoutProps) {
   const location = useLocation();
+
+  // Google Analytics / Tag Manager and the chat widget: public website only.
+  useEffect(() => {
+    loadSiteTracking();
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);

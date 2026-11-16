@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback, useRef } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   Bike,
@@ -10,11 +10,10 @@ import {
   Droplets,
   Flag,
   Lightbulb,
-  MapPin,
   ParkingCircle,
   Plus,
-  Route,
   Tag,
+  Toilet,
   Trophy,
   Users,
   Wrench,
@@ -22,6 +21,7 @@ import {
 import { Link, Navigate, useParams } from "react-router-dom";
 import { scrollToAppListing } from "../../utils/appStoreLink";
 import { isEventClosed } from "../../utils/eventStatus";
+import { FacilitiesStrip } from "../public/FacilitiesStrip";
 import { useTranslation } from "react-i18next";
 import i18n from "../../i18n";
 import {
@@ -222,83 +222,49 @@ const getTimeRange = (event: GrandPrixEvent | null | undefined) => {
 };
 
 /**
- * The event facts strip. Date, time, track, category and level are filled in
- * on every event, so they always show; distance, riders and the map link only
- * show once they have a real value (no "Distance TBA" / bare "Riders" cards).
+ * The event facts strip: the same six cards on every event, in the same order
+ * (date, time, track, category, participants, level). A value that is not
+ * filled in shows a dash so every event page has the same layout.
  */
+const EMPTY_STAT = "—";
 const getStats = (
   event: GrandPrixEvent | null | undefined,
   t: TFunction,
 ): StatCard[] => {
   const level = getLevel(event);
-  const locationLink = event?.locationLink?.trim();
-  const time = getTimeRange(event);
-  const track = getTrackName(event);
   const category = event?.category?.trim();
-  const distance =
-    typeof event?.distance === "number" && event.distance > 0
-      ? event.distance
-      : 0;
   const riders = getParticipants(event);
   return [
-  {
-    icon: CalendarDays,
-    title: formatDate(event?.eventDate, t),
-    label: t("public.events.detail.stats.date"),
-  },
-  ...(time
-    ? [{ icon: Clock, title: time, label: t("public.events.detail.stats.time") }]
-    : []),
-  ...(track
-    ? [{ icon: Flag, title: track, label: t("public.events.detail.stats.track") }]
-    : []),
-  ...(category
-    ? [
-        {
-          icon: Tag,
-          title: titleCase(category),
-          label: t("public.events.detail.stats.category"),
-        },
-      ]
-    : []),
-  ...(distance
-    ? [
-        {
-          icon: Route,
-          title: `${distance} ${t("public.common.km")}`,
-          label: t("public.tracks.detail.distance"),
-        },
-      ]
-    : []),
-  ...(riders > 0
-    ? [
-        {
-          icon: Users,
-          title: t("public.events.detail.stats.ridersCount", { count: riders }),
-          label: t("public.events.detail.stats.participantsLabel"),
-        },
-      ]
-    : []),
-  // Shown only when the admin added a map link for the event.
-  ...(locationLink
-    ? [
-        {
-          icon: MapPin,
-          title: t("public.events.detail.stats.location"),
-          label: t("public.events.detail.stats.clickToView"),
-          href: locationLink,
-        },
-      ]
-    : []),
-  ...(level
-    ? [
-        {
-          icon: Trophy,
-          title: titleCase(level),
-          label: t("public.tracks.detail.level"),
-        },
-      ]
-    : []),
+    {
+      icon: CalendarDays,
+      title: formatDate(event?.eventDate, t) || EMPTY_STAT,
+      label: t("public.events.detail.stats.date"),
+    },
+    {
+      icon: Clock,
+      title: getTimeRange(event) || EMPTY_STAT,
+      label: t("public.events.detail.stats.time"),
+    },
+    {
+      icon: Flag,
+      title: getTrackName(event) || EMPTY_STAT,
+      label: t("public.events.detail.stats.track"),
+    },
+    {
+      icon: Tag,
+      title: category ? titleCase(category) : EMPTY_STAT,
+      label: t("public.events.detail.stats.category"),
+    },
+    {
+      icon: Users,
+      title: t("public.events.detail.stats.ridersCount", { count: riders }),
+      label: t("public.events.detail.stats.participantsLabel"),
+    },
+    {
+      icon: Trophy,
+      title: level ? titleCase(level) : EMPTY_STAT,
+      label: t("public.tracks.detail.level"),
+    },
   ];
 };
 
@@ -310,7 +276,7 @@ const facilityIconMap: Array<{ match: RegExp; icon: LucideIcon }> = [
   //
   // Toilets is checked before water: its Arabic label ("دورات المياه")
   // contains the word for "water", so it must win first.
-  { match: /restroom|toilet|washroom|دورات/i, icon: Users },
+  { match: /restroom|toilet|washroom|bathroom|دورات|حمام/i, icon: Toilet },
   { match: /water|drink|hydration|ماء|مياه/i, icon: Droplets },
   { match: /medical|aid|health|ambulance|طبي|صحي|إسعاف/i, icon: Cross },
   {
@@ -594,10 +560,11 @@ function StatCardShell({
 
 function RegisterCard({
   event,
-  compact = false,
+  inRow = false,
 }: {
   event: GrandPrixEvent;
-  compact?: boolean;
+  /** Desktop: full width on its own row, 330px next to the facts from xl up. */
+  inRow?: boolean;
 }) {
   const { t } = useTranslation();
   const total = event.maxParticipants ?? 0;
@@ -619,7 +586,7 @@ function RegisterCard({
   return (
     <article
       className={`relative h-[200px] w-full shrink-0 rounded-2xl bg-[#435974] text-white lg:h-[236px] ${
-        compact ? "lg:w-[380px]" : "lg:w-[426px]"
+        inRow ? "xl:w-[330px]" : ""
       }`}
     >
       <p className="absolute left-4 top-[14px] flex items-center gap-[6px] text-[12px] font-medium leading-[18px] lg:left-6 lg:top-[19px] lg:text-[14px]">
@@ -672,9 +639,6 @@ function StatsStrip({
   // (internal). External events register with their own organiser, so the
   // register card is left out and only the event facts are shown.
   const showRegister = !!event.isInternal;
-  // Five stat cards (location link added) need narrower cards to fit next to
-  // the register card.
-  const compact = showRegister && stats.length > 4;
   return (
     <section className="grand-prix-section mt-10 mb-20 px-4 lg:mt-[60px] lg:px-0">
       {/* Mobile (< lg): register card stacked on top of a 2x2 stats grid */}
@@ -685,7 +649,7 @@ function StatsStrip({
           <div className="grid grid-cols-2 gap-3 [&>*:last-child:nth-child(odd)]:col-span-2">
             {stats.map(({ icon: Icon, title, label, href }) => (
               <StatCardShell
-                key={title}
+                key={label}
                 href={href}
                 className="relative overflow-hidden break-words rounded-[14px] bg-[#435974] p-4 text-white sm:p-5"
               >
@@ -704,37 +668,41 @@ function StatsStrip({
         </div>
       </div>
 
-      {/* Desktop (lg+): one row of cards, wrapping to a second centred row
-          when an event has more facts than fit in 1192px. */}
-      <div className="mx-auto hidden w-fit max-w-[1192px] rounded-2xl bg-[#A2BFDB] p-3 lg:block">
-        <div className="flex flex-wrap justify-center gap-3">
-          {showRegister && <RegisterCard event={event} compact={compact} />}
-          {stats.map(({ icon: Icon, title, label, href }) => (
-            <StatCardShell
-              key={title}
-              href={href}
-              className={`flex h-[236px] shrink-0 flex-col overflow-hidden rounded-[10px] bg-[#435974] p-5 text-white ${
-                compact ? "w-[143px]" : "w-[171px]"
-              }`}
-            >
-              <span className="flex h-[50px] w-[50px] items-center justify-center rounded-full bg-white text-[#019839]">
-                <Icon className="h-[25px] w-[25px]" />
-              </span>
-              {/* Track names and time ranges can be long: wrap to two lines
-                  at a smaller size instead of running off the card. */}
-              <h3
-                title={title}
-                className={`grand-prix-bebas mt-auto line-clamp-2 break-words uppercase leading-tight ${
-                  title.length > 14 ? "text-[20px]" : "text-[26px]"
-                }`}
+      {/* Desktop (lg+): the six fact cards always sit in one even row. The
+          register card (internal events) sits beside them on wide screens
+          (xl+) and on its own row above them on smaller laptops. */}
+      <div className="mx-auto hidden w-full max-w-[1192px] rounded-2xl bg-[#A2BFDB] p-3 lg:block">
+        <div className="flex flex-col gap-3 xl:flex-row">
+          {showRegister && <RegisterCard event={event} inRow />}
+          <div
+            className="grid min-w-0 flex-1 gap-3"
+            style={{ gridTemplateColumns: `repeat(${stats.length}, minmax(0, 1fr))` }}
+          >
+            {stats.map(({ icon: Icon, title, label, href }) => (
+              <StatCardShell
+                key={label}
+                href={href}
+                className="flex h-[236px] min-w-0 flex-col overflow-hidden rounded-[10px] bg-[#435974] p-4 text-white xl:p-5"
               >
-                {title}
-              </h3>
-              <p className="mt-1 text-[18px] leading-5 text-white/60">
-                {label}
-              </p>
-            </StatCardShell>
-          ))}
+                <span className="flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-white text-[#019839]">
+                  <Icon className="h-[25px] w-[25px]" />
+                </span>
+                {/* Track names and time ranges can be long: wrap up to three
+                    lines at a smaller size instead of running off the card. */}
+                <h3
+                  title={title}
+                  className={`grand-prix-bebas mt-auto line-clamp-3 break-words uppercase leading-tight ${
+                    title.length > 12 ? "text-[19px]" : "text-[24px]"
+                  }`}
+                >
+                  {title}
+                </h3>
+                <p className="mt-1 text-[16px] leading-5 text-white/60">
+                  {label}
+                </p>
+              </StatCardShell>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -743,30 +711,6 @@ function StatsStrip({
 
 function FacilitiesSection({ facilities }: { facilities: Facility[] }) {
   const { t } = useTranslation();
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-  const drag = useRef({ active: false, startX: 0, startScrollLeft: 0 });
-
-  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
-    const el = scrollRef.current;
-    if (!el) return;
-    drag.current = {
-      active: true,
-      startX: event.pageX,
-      startScrollLeft: el.scrollLeft,
-    };
-  };
-
-  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    const el = scrollRef.current;
-    if (!el || !drag.current.active) return;
-    const delta = event.pageX - drag.current.startX;
-    el.scrollLeft = drag.current.startScrollLeft - delta;
-  };
-
-  const endDrag = () => {
-    drag.current.active = false;
-  };
-
   if (facilities.length === 0) return null;
 
   return (
@@ -787,35 +731,7 @@ function FacilitiesSection({ facilities }: { facilities: Facility[] }) {
         </div>
       </div>
 
-      <div
-        ref={scrollRef}
-        className="facility-scroll mt-[42px] flex gap-3 overflow-x-auto pl-3 sm:gap-5 md:pl-6 lg:pl-[max(1.5rem,calc((100vw-1268px)/2))] cursor-grab select-none active:cursor-grabbing"
-        style={{
-          maskImage: "linear-gradient(to right, black 85%, transparent 100%)",
-          WebkitMaskImage:
-            "linear-gradient(to right, black 85%, transparent 100%)",
-        }}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={endDrag}
-        onMouseLeave={endDrag}
-      >
-        {facilities.map(({ title, icon: Icon }) => (
-          <article
-            key={title}
-            className="group relative h-[70px] w-[170px] shrink-0 cursor-pointer rounded-[10px] bg-[#76767666] text-white transition-colors duration-200 hover:bg-white hover:text-[#333] sm:h-[97px] sm:w-[260px]"
-          >
-            <span className="facility-card-icon absolute left-[14px] top-1/2 flex h-[36px] w-[36px] -translate-y-1/2 items-center justify-center rounded-[8px] bg-white text-[#333] transition-colors duration-200 group-hover:bg-[#019839] group-hover:text-white sm:left-[19px] sm:top-5 sm:h-[50px] sm:w-[50px] sm:translate-y-0 sm:rounded-[10px]">
-              <Icon className="h-[18px] w-[18px] sm:h-[26px] sm:w-[26px]" />
-            </span>
-            <b className="facility-card-title absolute left-[60px] top-1/2 flex h-[36px] max-w-[100px] -translate-y-1/2 items-center text-[13px] font-bold leading-[16px] sm:left-[86px] sm:top-5 sm:h-[50px] sm:max-w-[130px] sm:translate-y-0 sm:text-[20px] sm:leading-[22px]">
-              {title}
-            </b>
-            <span className="absolute bottom-0 left-0 h-[3px] w-full rounded-b-[10px] bg-transparent transition-colors duration-200 group-hover:bg-[#019839] sm:h-[4px]" />
-          </article>
-        ))}
-        <div className="shrink-0 w-4" aria-hidden />
-      </div>
+      <FacilitiesStrip facilities={facilities} />
     </section>
   );
 }

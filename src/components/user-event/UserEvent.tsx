@@ -1113,7 +1113,7 @@ function CTABanner() {
             marginBottom: 36,
           }}
         >
-          Download the ADCC app and join the cycling community.
+          Download the Darraja app and join the cycling community.
         </p>
         <div className="event-cta-buttons" style={{ display: "flex", gap: 20 }}>
           {["Google Play", "App Store"].map((label) => (

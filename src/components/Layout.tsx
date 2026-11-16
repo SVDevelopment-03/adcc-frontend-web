@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useNoSiteTracking } from '../utils/injectGtm';
 import { Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { UserRole } from '../App';
 import { Sidebar } from './Sidebar';
@@ -104,6 +105,8 @@ function slugToUserRole(slug: string | undefined): UserRole | null {
 }
 
 export function Layout() {
+  // No website tracking or chat widget inside the admin dashboard.
+  useNoSiteTracking();
   const { userProfile } = useAuth();
   const [currentRole, setCurrentRole] = useState<UserRole>('moderator');
   const [myRole, setMyRole] = useState<Partial<RbacRole> | undefined>(undefined);

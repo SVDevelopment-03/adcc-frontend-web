@@ -1700,6 +1700,12 @@ font-size: 14px;
         justify-content: flex-end;
     padding-inline-end: 16px;
   }
+  /* The controls are dir="ltr" (fixed arrow order); in Arabic keep them on the left. */
+  html[dir='rtl'] .journey-scroll-controls {
+    justify-content: flex-start;
+    padding-inline-end: 0;
+    padding-inline-start: 16px;
+  }
   .journey-scroll-btn {
     width: 38px;
     height: 38px;
@@ -3887,7 +3893,9 @@ function CyclingJourneySection() {
             </div>
           ))}
         </div>
-        <div className="journey-scroll-controls">
+        {/* Physical left / right buttons: kept in left-to-right order in Arabic too,
+            so each arrow points the way it scrolls. */}
+        <div className="journey-scroll-controls" dir="ltr">
           <button
             className="journey-scroll-btn"
             onClick={() => scrollCards("left")}
