@@ -64,7 +64,10 @@ export const SIDEBAR_ITEM_PERMISSION: Record<SidebarItemId, string | null> = {
   push: 'app_configuration',
   news: 'manage_cms',
   users: 'manage_users',
-  admins: 'manage_users',
+  // Creating staff accounts and assigning their roles needs admin.manage_roles
+  // on the backend (user.controller.ts / rbac.route.ts), so a role with only
+  // manage_users (e.g. Moderator) must not see Admin Users.
+  admins: 'admin.manage_roles',
   reports: null,
   contactMessages: 'manage_cms',
   newsletter: 'manage_cms',
