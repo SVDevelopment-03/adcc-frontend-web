@@ -376,6 +376,24 @@ function StoreButton({ type }: { type: "google" | "apple" }) {
   return <AppStoreButton type={type} />;
 }
 
+/**
+ * The footer always links to the Club Store. Footer links are edited in the
+ * dashboard; if the store link isn't there, it is added after Tracks
+ * (or at the end), so it never shows twice.
+ */
+function withStoreLink(
+  links: Array<{ label: string; link: string }>,
+  storeLink: string,
+  label: string,
+  afterLink: string,
+) {
+  const norm = (l: string) => l.replace(/\/+$/, "").toLowerCase();
+  if (!storeLink || links.some((item) => norm(item.link) === norm(storeLink))) return links;
+  const store = { label, link: storeLink };
+  const at = links.findIndex((item) => norm(item.link) === norm(afterLink));
+  return at === -1 ? [...links, store] : [...links.slice(0, at + 1), store, ...links.slice(at + 1)];
+}
+
 function PublicFooter() {
   const [email, setEmail] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
@@ -394,7 +412,13 @@ function PublicFooter() {
       .map((item) => ({ label: footer.pickItem(item, "label"), link: currentLink(item.link ?? "") }))
       .filter((item) => item.link);
   const socialLinks = toLinks("socialLinks");
-  const quickLinks = toLinks("quickLinks").filter((item) => item.label);
+  const { routing } = useSiteRouting();
+  const quickLinks = withStoreLink(
+    toLinks("quickLinks").filter((item) => item.label),
+    currentLink(routing.pages.store),
+    t("public.footer.store"),
+    currentLink(routing.pages.tracks),
+  );
   // Two columns, filled top-down like the original layout.
   const quickLinkColumns = [
     quickLinks.slice(0, Math.ceil(quickLinks.length / 2)),

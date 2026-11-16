@@ -145,9 +145,9 @@ export const PRIVACY_POLICY_EN: PrivacyPolicyContent = {
       ],
     },
     {
-      heading: "8. Darraja Mobile Application",
+      heading: "8. DARRAJA Mobile Application",
       blocks: [
-        "The website may provide links allowing visitors to download or access the Darraja mobile application.",
+        "The website may provide links allowing visitors to download or access the DARRAJA mobile application.",
         "This Privacy Policy governs information collected through this website and ADCC-operated web forms. Data processed within a mobile application is subject to the privacy information made available for that application, unless the application expressly states that this Policy also governs its processing activities.",
         "The Apple App Store, Google Play and other distribution platforms may independently collect information when you visit or use their services. Their handling of that information is governed by their respective privacy policies.",
       ],
@@ -241,9 +241,9 @@ export const PRIVACY_POLICY_EN: PrivacyPolicyContent = {
     {
       heading: "18. Google Play Policy Information – Addendum",
       blocks: [
-        "This addendum reproduces Google Play policy information supplied separately by Google regarding the Darraja mobile application. It is appended for reference and does not modify the Privacy Policy set out above.",
+        "This addendum reproduces Google Play policy information supplied separately by Google regarding the DARRAJA mobile application. It is appended for reference and does not modify the Privacy Policy set out above.",
         { sub: "Policy Deadlines" },
-        "Google regularly updates its Developer Program Policies to help ensure a safe and trusted experience for users on Google Play. Set out below are the latest changes to those policies that are relevant to the Darraja app, including when each change takes effect and resources to help prepare for it. All dates are shown in year-month-day (YYYY-MM-DD) format. For policy deadlines older than three months, see Google's Policy Archive (support.google.com/googleplay/android-developer/answer/13386702).",
+        "Google regularly updates its Developer Program Policies to help ensure a safe and trusted experience for users on Google Play. Set out below are the latest changes to those policies that are relevant to the DARRAJA app, including when each change takes effect and resources to help prepare for it. All dates are shown in year-month-day (YYYY-MM-DD) format. For policy deadlines older than three months, see Google's Policy Archive (support.google.com/googleplay/android-developer/answer/13386702).",
         { sub: "2026-08-26 — Google Play Families Policies" },
         "Google is expanding its Families Policy Requirements policy to prohibit developers of anonymous chat apps from targeting children. Announced 2026-07-15. Reference: support.google.com/googleplay/android-developer/answer/9893335.",
         { sub: "2026-08-26 — Child Endangerment" },

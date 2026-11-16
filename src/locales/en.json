@@ -429,7 +429,7 @@
         "description": "The scrolling strip of numbers below the banner."
       },
       "app": {
-        "title": "Darraja App Section",
+        "title": "DARRAJA App Section",
         "description": "App headline, phone image and feature list.",
         "note": "The Google Play / App Store buttons are not edited here."
       },
@@ -2932,7 +2932,7 @@
     },
     "footer": {
       "ctaTitle": "Start Your Ride Today",
-      "ctaSubtitle": "Download the Darraja app and join the cycling community.",
+      "ctaSubtitle": "Download the DARRAJA app and join the cycling community.",
       "getItOn": "Get it on",
       "downloadOn": "Download on the",
       "googlePlay": "Google Play",
@@ -2955,6 +2955,7 @@
       "communities": "Community",
       "venueBooking": "Venue Booking",
       "privacyPolicy": "Privacy Policy",
+      "store": "Store",
       "copyright": "Copyright 2026. Abu Dhabi Cycling Club",
       "cyclingShortcut": "Cycling shortcut",
       "address": "Abu Dhabi Cycling Club HQ, Hudayriyat Island, Abu Dhabi, UAE.",
@@ -2998,7 +2999,7 @@
       "app": {
         "titleWords": ["Everything", "You", "Need.", "In", "One", "App."],
         "downloadLabelWords": ["Download", "the", "App"],
-        "phoneAlt": "Darraja mobile app",
+        "phoneAlt": "DARRAJA mobile app",
         "features": {
           "track": "Track Performance\nand Rides",
           "challenges": "Join Official\nChallenges",
@@ -3007,10 +3008,10 @@
         }
       },
       "darrajaApp": {
-        "welcome": "Welcome to Darraja.",
+        "welcome": "Welcome to DARRAJA.",
         "headline": "One Community.\nEndless Rides.",
         "tagline": "Discover it all, right at your fingertips",
-        "downloadLabel": "Download the Darraja App"
+        "downloadLabel": "Download the DARRAJA App"
       },
       "partners": {
         "title": "Partners",
@@ -3035,7 +3036,7 @@
         "avatarAlt": "Community member",
         "samples": [
           {
-            "quote": "Darraja makes it so much easier to stay connected with cycling in Abu Dhabi. I can discover rides, events & routes all in one place.",
+            "quote": "DARRAJA makes it so much easier to stay connected with cycling in Abu Dhabi. I can discover rides, events & routes all in one place.",
             "name": "Aisha Al Marzouqi"
           },
           {
@@ -3118,7 +3119,7 @@
       },
       "cta": {
         "title": "Start Your Ride Today",
-        "subtitle": "Download the Darraja app and join the cycling community."
+        "subtitle": "Download the DARRAJA app and join the cycling community."
       },
       "footer": {
         "quickLinks": "Quick Links",
@@ -3137,6 +3138,22 @@
       }
     },
     "store": {
+      "comingSoon": {
+        "badge": "Coming Soon",
+        "title": "Club Store",
+        "subtitle": "Official Abu Dhabi Cycling Club kit, jerseys and accessories are on their way.",
+        "jerseys": "Jerseys & Kit",
+        "jerseysText": "Official ADCC jerseys, bib shorts and team kit.",
+        "accessories": "Accessories",
+        "accessoriesText": "Caps, bottles, socks and everyday club gear.",
+        "gear": "Gear & Equipment",
+        "gearText": "Selected cycling equipment for every rider.",
+        "notifyTitle": "Be the first to know",
+        "notifyText": "Leave your email and we will tell you when the store opens.",
+        "notifyButton": "Notify Me",
+        "notifyThanks": "Thank you! We will let you know when the store opens.",
+        "exploreEvents": "Explore Events"
+      },
       "listing": {
         "hero": {
           "titleWords": ["Club", "Store"],
@@ -3285,7 +3302,7 @@
         "aboutHeading": "About This Track",
         "startRide": "Start Ride",
         "startYourRide": "Start Your Ride",
-        "trackProgress": "Track your progress with the Darraja app",
+        "trackProgress": "Track your progress with the DARRAJA app",
         "distance": "Distance",
         "level": "Level",
         "type": "Type",
@@ -3318,7 +3335,7 @@
         "locationIconAlt": "Location",
         "cta": {
           "title": "Start Your Ride Today",
-          "subtitle": "Download the Darraja app and join the cycling community."
+          "subtitle": "Download the DARRAJA app and join the cycling community."
         },
         "footer": {
           "about": "From weekend warriors to elite athletes, we unite cyclists who share a passion for riding. ADCC is where your cycling journey thrives…",
@@ -3353,7 +3370,7 @@
           },
           {
             "q": "05. How do I track my performance or join challenges?",
-            "a": "Download the Darraja app to log your rides, join challenges, and track your progress alongside thousands of community members."
+            "a": "Download the DARRAJA app to log your rides, join challenges, and track your progress alongside thousands of community members."
           },
           {
             "q": "06. Are there any women-only rides or training sessions?",

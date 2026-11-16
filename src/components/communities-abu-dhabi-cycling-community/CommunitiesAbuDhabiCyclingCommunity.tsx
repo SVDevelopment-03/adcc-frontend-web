@@ -217,7 +217,7 @@ function HeroSection({ community }: { community: CommunityApiResponse }) {
 function AboutSection({ community }: { community: CommunityApiResponse }) {
   const { t } = useTranslation();
   return (
-    <section className="px-10 py-24 text-center max-md:px-5 max-md:py-14 max-sm:px-4 max-sm:py-10">
+    <section className="px-10 pb-16 pt-24 text-center max-md:px-5 max-md:pb-12 max-md:pt-14 max-sm:px-4 max-sm:pb-10 max-sm:pt-10">
       <h2 className="text-[28px] font-normal uppercase sm:text-[38px] md:text-[48px] lg:text-[60px]">
         {t("public.communities.detail.about.heading")}
       </h2>
@@ -264,22 +264,24 @@ function StatsSection({ community }: { community: CommunityApiResponse }) {
     : community.terrain || tba;
 
   return (
-    <section className="mx-auto mb-0 max-w-[min(1192px,calc(100vw-2rem))] rounded-2xl bg-[#A2BFDB] p-4 lg:mb-0">
-      <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1fr)_210px_210px]">
-        <div className="rounded-2xl bg-[#435974] p-5 text-white sm:p-8">
-          <p className="text-[13px] text-white/70 sm:text-[14px]">
-            • {t("public.communities.detail.stats.joinCommunityEyebrow")}
+    <section className="mx-auto mb-12 max-w-[min(1192px,calc(100vw-2rem))] rounded-2xl bg-[#A2BFDB] p-3 sm:mb-16 lg:mb-20">
+      {/* Same rhythm as the event facts strip: equal-height cards, 12px gaps. */}
+      <div className="flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_210px_210px]">
+        <div className="flex flex-col rounded-[14px] bg-[#435974] p-5 text-white sm:p-7 lg:h-[236px]">
+          <p className="flex items-center gap-2 text-[14px] font-medium">
+            <span className="h-[7px] w-[7px] rounded-full bg-white" />
+            {t("public.communities.detail.stats.joinCommunityEyebrow")}
           </p>
-          <div className="mt-4 sm:mt-8 sm:flex sm:gap-8">
-            <h3 className="flex-1 text-[22px] uppercase leading-tight sm:text-[26px] lg:text-[32px]">
+          <div className="mt-5 flex-1 sm:flex sm:items-center sm:gap-8 lg:mt-0">
+            <h3 className="flex-1 text-[24px] uppercase leading-tight sm:text-[28px] lg:text-[32px]">
               {t("public.communities.detail.stats.growingFamily")}
             </h3>
-            <div className="my-5 h-px bg-white/20 sm:my-0 sm:h-auto sm:w-px sm:self-stretch" />
+            <div className="my-5 h-px bg-white/20 sm:my-0 sm:h-[110px] sm:w-px" />
             <div className="min-w-0 flex-1">
-              <h4 className="text-[11px] font-bold uppercase tracking-widest text-white/60 sm:text-[12px]">
+              <h4 className="text-[12px] font-bold uppercase tracking-widest text-white/60">
                 {t("public.communities.detail.stats.communityStatsLabel")}
               </h4>
-              <div className="mt-3 space-y-3 sm:mt-4">
+              <div className="mt-3 space-y-2.5">
                 {[
                   [
                     t("public.communities.detail.stats.weeklyRides"),
@@ -300,7 +302,7 @@ function StatsSection({ community }: { community: CommunityApiResponse }) {
                 ].map(([label, value]) => (
                   <div
                     key={label}
-                    className="flex items-center justify-between gap-2 text-[13px] sm:text-[14px]"
+                    className="flex items-center justify-between gap-3 text-[15px]"
                   >
                     <span className="text-white/70">{label}</span>
                     <span className="font-bold">{value}</span>
@@ -329,16 +331,16 @@ function StatsSection({ community }: { community: CommunityApiResponse }) {
           ).map(([value, label, Icon]) => (
             <div
               key={label}
-              className="rounded-xl bg-[#435974] p-5 text-white sm:p-8"
+              className="flex flex-col rounded-[14px] bg-[#435974] p-5 text-white sm:p-6 lg:h-[236px]"
             >
-              <span className="inline-flex rounded-full bg-white p-3 text-[#019839] sm:p-4">
-                <Icon size={20} className="sm:hidden" />
-                <Icon size={25} className="hidden sm:block" />
+              <span className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-white text-[#019839] sm:h-[50px] sm:w-[50px]">
+                <Icon className="h-[20px] w-[20px] sm:h-[25px] sm:w-[25px]" />
               </span>
-              <h3 className="mt-4 text-[28px] font-normal uppercase sm:mt-20 sm:text-[34px] lg:text-[40px]">
+              {/* Number and label sit at the bottom of the card, like the event facts. */}
+              <h3 className="mt-6 text-[30px] font-normal uppercase leading-none sm:text-[36px] lg:mt-auto lg:text-[40px]">
                 {value}
               </h3>
-              <p className="text-[14px] text-white/60 sm:text-[18px] lg:text-[20px]">
+              <p className="mt-1.5 text-[14px] leading-snug text-white/60 sm:text-[17px] lg:text-[18px]">
                 {label}
               </p>
             </div>

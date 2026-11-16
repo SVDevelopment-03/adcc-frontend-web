@@ -18,7 +18,7 @@ const FALLBACK_CHALLENGE: Challenge = {
   id: "march-distance-challenge",
   title: "March Distance Challenge",
   description:
-    "Build consistency throughout March, track every outdoor ride with the Darraja app and complete the distance goal before the challenge ends.",
+    "Build consistency throughout March, track every outdoor ride with the DARRAJA app and complete the distance goal before the challenge ends.",
   type: "Distance",
   target: 200,
   unit: "km",
