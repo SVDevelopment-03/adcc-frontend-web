@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react';
-import { DEFAULT_HOME_BANNER, getHomeBanner, type HomeBannerContent } from '../../services/pagesApi';
+import {
+  DEFAULT_HOME_BANNER,
+  getHomeBanner,
+  normalizeHomeBanner,
+  type HomeBannerContent,
+} from '../../services/pagesApi';
 import { getCached, setCache } from '../../utils/apiCache';
 
 export const HOME_BANNER_CACHE_KEY = 'pages:home:banner';
@@ -8,7 +13,8 @@ const STORAGE_KEY = 'adcc.homeBanner';
 const readStored = (): HomeBannerContent | null => {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as HomeBannerContent) : null;
+    // Normalized because copies saved by older builds lack newer fields (mode, slides…).
+    return raw ? normalizeHomeBanner(JSON.parse(raw)) : null;
   } catch {
     return null;
   }

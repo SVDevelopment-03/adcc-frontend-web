@@ -153,35 +153,61 @@ function PublicHeader() {
     navigate("/login");
   };
 
+  // Hide on scroll down, show on scroll up. The previous version hid the
+  // header on *every* scroll event and re-showed it 200ms after scrolling
+  // paused, shorter than the 300ms slide, so trackpad/wheel/touch scrolling
+  // (which fires in bursts) made it flicker in and out, and it also vanished
+  // while scrolling up.
   useEffect(() => {
-    let hideTimer: ReturnType<typeof setTimeout>;
+    // Always shown within this distance of the top of the page.
+    const TOP_ZONE = 80;
+    // Ignore direction changes smaller than this so tiny jitters (trackpad
+    // inertia, iOS bounce) don't toggle the header.
+    const DELTA = 8;
+    let lastY = Math.max(0, window.scrollY);
+    let frame = 0;
 
-    const handleScroll = () => {
-      if (window.scrollY <= 10) {
+    const update = () => {
+      frame = 0;
+      const y = Math.max(0, window.scrollY);
+      if (y <= TOP_ZONE) {
         setHeaderVisible(true);
+        lastY = y;
         return;
       }
+      const diff = y - lastY;
+      if (Math.abs(diff) < DELTA) return;
+      // React skips the re-render when the value is unchanged.
+      setHeaderVisible(diff < 0);
+      lastY = y;
+    };
 
-      setHeaderVisible(false);
-      clearTimeout(hideTimer);
-      hideTimer = setTimeout(() => setHeaderVisible(true), 200);
+    const handleScroll = () => {
+      // At most one update per frame.
+      if (!frame) frame = window.requestAnimationFrame(update);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      clearTimeout(hideTimer);
+      if (frame) window.cancelAnimationFrame(frame);
     };
   }, []);
 
+  // Close the mobile menu on navigation.
   useEffect(() => {
-    if (menuOpen) setHeaderVisible(true);
-  }, [menuOpen]);
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  // The header never hides while the mobile menu is open (the menu hangs off it).
+  const isHeaderShown = headerVisible || menuOpen;
 
   return (
     <header
-      className={`public-header fixed top-0 inset-x-0 z-[100] flex h-16 w-full items-center justify-center transition-transform duration-300 ease-in-out sm:h-18 lg:h-20 xl:h-22 ${
-        headerVisible ? "translate-y-0" : "-translate-y-full"
+      // Keyboard users tabbing into a hidden header bring it back.
+      onFocusCapture={() => setHeaderVisible(true)}
+      className={`public-header fixed top-0 inset-x-0 z-[100] flex h-16 w-full items-center justify-center transition-transform duration-300 ease-in-out motion-reduce:transition-none sm:h-18 lg:h-20 xl:h-22 ${
+        isHeaderShown ? "translate-y-0" : "-translate-y-[calc(100%+30px)]"
       }`}
     >
       <style>{`
@@ -427,7 +453,9 @@ function PublicFooter() {
           }}
         >
           <div className="relative z-10 w-full max-w-[760px]">
-            <h2 className="text-[36px] font-black uppercase leading-none tracking-wide sm:text-[44px] md:text-[56px] lg:text-[64px]">
+            {/* font-normal: the heading renders in Bebas Kai, which only ships
+                a 400 weight, so font-black made the browser fake a heavy bold. */}
+            <h2 className="text-[36px] font-normal uppercase leading-none tracking-wide sm:text-[44px] md:text-[56px] lg:text-[64px]">
               {cta.pick("title")}
             </h2>
             <p className="mt-5! text-[16px] leading-6 sm:mt-7! sm:text-[18px] md:text-[22px]">

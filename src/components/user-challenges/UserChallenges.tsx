@@ -355,7 +355,7 @@ justify-content: center !important;}
                 },
               },
             }}
-            className="flex gap-2 sm:gap-3 md:gap-5 grid-new"
+            className="flex flex-wrap gap-2 sm:gap-2.5 grid-new"
           >
             {statusTabs.map((tab) => {
               const selected = status === tab;
@@ -384,7 +384,7 @@ justify-content: center !important;}
                       setStatus(tab);
                       setPage(1);
                     }}
-                    className={`rounded-full px-5 py-3 text-[15px] sm:px-6 md:px-8 lg:px-14 lg:py-4 lg:text-[16px] ${
+                    className={`h-11 w-full rounded-full px-4 text-[14px] sm:px-5 lg:px-7 lg:text-[15px] ${
                       selected
                         ? "bg-[#00a84f] font-bold text-white"
                         : "border border-[#cad8e6] text-[#6f7f8f]"

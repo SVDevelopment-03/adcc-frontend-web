@@ -460,20 +460,25 @@ text-transform: Capitalize !important;}
       }
       .track-filter-bar {
         display: grid !important;
-        grid-template-columns: 1fr !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
         width: 100% !important;
+      }
+      .track-filter-bar > * {
+        min-width: 0 !important;
       }
       .track-filter-field {
         width: 100% !important;
-        height: 54px !important;
       }
-      .track-filter-field select {
-        font-size: 16px !important;
+      .track-filter-field button {
+        height: 44px !important;
+        font-size: 14px !important;
       }
       .track-filter-search {
-        height: 54px !important;
+        grid-column: 1 / -1 !important;
+        height: 44px !important;
         width: 100% !important;
-        font-size: 17px !important;
+        font-size: 15px !important;
       }
       .track-cards-grid {
         display: grid !important;
@@ -1264,7 +1269,7 @@ function TracksGrid() {
     return (
       <div
         className="track-filter-field"
-        style={{ position: "relative", width: 220 }}
+        style={{ position: "relative", width: 180 }}
       >
         <button
           type="button"
@@ -1273,18 +1278,18 @@ function TracksGrid() {
           }
           style={{
             width: "100%",
-            height: 60,
+            height: 44,
             background: "#fff",
-            border: "1px solid rgba(0,0,0,0.06)",
+            border: "1px solid rgba(0,0,0,0.08)",
             borderRadius: 40,
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            padding: "0 16px 0 22px",
+            padding: "0 14px 0 18px",
             gap: 8,
             cursor: "pointer",
             fontFamily: "'Satoshi',sans-serif",
-            fontSize: 20,
+            fontSize: 15,
             color: "#000",
             textAlign: "left",
           }}
@@ -1340,10 +1345,10 @@ function TracksGrid() {
                   background:
                     option.value === filters[key] ? "#EAF4FF" : "#fff",
                   color: option.value === filters[key] ? "#019839" : "#000",
-                  padding: "12px 18px",
-                  textAlign: "left",
+                  padding: "9px 16px",
+                  textAlign: "start",
                   fontFamily: "'Satoshi',sans-serif",
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: option.value === filters[key] ? 700 : 400,
                   cursor: "pointer",
                 }}
@@ -1433,7 +1438,7 @@ function TracksGrid() {
         </motion.h2>
         <div
           className="track-filter-bar"
-          style={{ display: "flex", gap: 16, alignItems: "center" }}
+          style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}
         >
           {filterControls.map((f, index) => (
             <motion.div
@@ -1464,13 +1469,14 @@ function TracksGrid() {
               setPage(1);
             }}
             style={{
-              height: 60,
-              padding: "0 32px",
+              height: 44,
+              minWidth: 110,
+              padding: "0 22px",
               background: "#019839",
               color: "#fff",
               border: "none",
               borderRadius: 40,
-              fontSize: 20,
+              fontSize: 16,
               fontWeight: 700,
               cursor: "pointer",
               fontFamily: "'Satoshi',sans-serif",

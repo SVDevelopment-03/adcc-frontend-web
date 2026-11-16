@@ -177,8 +177,8 @@ export default function AdccStorePage() {
           </div>
         ) : (
         <>
-        <div className="mt-6 grid grid-cols-1 gap-4 sm:mt-10 sm:gap-5 lg:grid-cols-[1fr_292px_156px]">
-          <div className="flex h-[52px] items-center rounded-full border border-[#CBCBCB] bg-white px-6 sm:h-[66px] sm:px-8">
+        <div className="mt-6 grid grid-cols-2 gap-2.5 sm:mt-8 lg:grid-cols-[1fr_220px_120px]">
+          <div className="col-span-2 flex h-11 items-center gap-2 rounded-full border border-[#CBCBCB] bg-white px-4.5 lg:col-span-1">
             <input
               value={searchInput}
               onChange={(event) => setSearchInput(event.target.value)}
@@ -189,9 +189,9 @@ export default function AdccStorePage() {
                 }
               }}
               placeholder={t("public.store.listing.searchPlaceholder")}
-              className="flex-1 bg-transparent text-[15px] outline-none sm:text-[18px]"
+              className="min-w-0 flex-1 bg-transparent text-[14px] outline-none sm:text-[15px]"
             />
-            <Search size={20} />
+            <Search size={18} className="shrink-0" />
           </div>
 
           <div className="relative">
@@ -199,14 +199,14 @@ export default function AdccStorePage() {
               type="button"
               onClick={() => setCategoryMenuOpen((open) => !open)}
               aria-expanded={categoryMenuOpen}
-              className="flex h-[52px] w-full items-center justify-between rounded-full border border-[#CBCBCB] bg-white px-6 text-[15px] sm:h-[66px] sm:px-8 sm:text-[18px]"
+              className="flex h-11 w-full items-center justify-between gap-2 rounded-full border border-[#CBCBCB] bg-white ps-4.5 pe-3.5 text-[14px] sm:text-[15px]"
             >
               <span className="truncate">
                 {selectedCategoryName ??
                   t("public.store.listing.allCategories")}
               </span>
               <ChevronDown
-                size={20}
+                size={16}
                 className={`shrink-0 transition-transform ${categoryMenuOpen ? "rotate-180" : ""}`}
               />
             </button>
@@ -216,7 +216,7 @@ export default function AdccStorePage() {
                 <button
                   type="button"
                   onClick={() => applyCategory("")}
-                  className={`block w-full rounded-xl px-4 py-2.5 text-start text-[15px] hover:bg-[#eaf4ff] ${
+                  className={`block w-full rounded-xl px-3.5 py-2 text-start text-[14px] hover:bg-[#eaf4ff] ${
                     !selectedCategoryId ? "font-bold text-[#019839]" : ""
                   }`}
                 >
@@ -227,7 +227,7 @@ export default function AdccStorePage() {
                     key={category.id}
                     type="button"
                     onClick={() => applyCategory(category.id)}
-                    className={`block w-full rounded-xl px-4 py-2.5 text-start text-[15px] hover:bg-[#eaf4ff] ${
+                    className={`block w-full rounded-xl px-3.5 py-2 text-start text-[14px] hover:bg-[#eaf4ff] ${
                       selectedCategoryId === category.id
                         ? "font-bold text-[#019839]"
                         : ""
@@ -243,7 +243,8 @@ export default function AdccStorePage() {
           <AnimatedButton
             onClick={runSearch}
             fullWidth
-            className="h-[52px] sm:h-[66px]"
+            size="sm"
+            className="h-11"
           >
             {t("public.common.search")}
           </AnimatedButton>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { AnimatedButton } from "../ui/AnimatedButton";
@@ -150,6 +150,62 @@ const CSS = `
     background-size: cover;
     background-position: center 28%;
     background-repeat: no-repeat;
+  }
+  /* Carousel / video banner. Separate from .home-hero-bg on purpose: the
+     mobile breakpoints force .home-hero-bg to a fixed mobile image. */
+  .home-hero-media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .home-hero-slide {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center 28%;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+  }
+  .home-hero-slide.is-active {
+    opacity: 1;
+  }
+  .home-hero-video {
+    object-fit: cover;
+    object-position: center 28%;
+    display: block;
+  }
+  .home-hero-dots {
+    position: absolute;
+    left: 50%;
+    bottom: 28px;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 3;
+  }
+  .home-hero-dot {
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border-radius: 999px;
+    border: 1.5px solid #fff;
+    background: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    cursor: pointer;
+    transition: width 0.3s ease, background-color 0.3s ease;
+  }
+  .home-hero-dot.is-active {
+    width: 28px;
+    background: #fff;
+  }
+  .home-hero-dot:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .home-hero-slide { transition: none; }
   }
   .home-hero-content {
     position: absolute;
@@ -3359,6 +3415,110 @@ function Header() {
 }
 
 /* ─── HERO ───────────────────────────────────────────────────────────────────*/
+function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    if (!mq) return;
+    const onChange = () => setReduced(mq.matches);
+    mq.addEventListener?.("change", onChange);
+    return () => mq.removeEventListener?.("change", onChange);
+  }, []);
+  return reduced;
+}
+
+/** Cross-fading banner images. Pauses while the tab is hidden and for reduced-motion users. */
+function HeroCarousel({
+  images,
+  intervalSeconds,
+}: {
+  images: string[];
+  intervalSeconds: number;
+}) {
+  const { t } = useTranslation();
+  const reducedMotion = usePrefersReducedMotion();
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  // Keep the index valid if the slide list changes (e.g. locale switch).
+  useEffect(() => {
+    setActive((i) => (i < images.length ? i : 0));
+  }, [images.length]);
+
+  useEffect(() => {
+    if (reducedMotion || paused || images.length < 2) return;
+    const id = window.setInterval(() => {
+      if (document.visibilityState === "visible") {
+        setActive((i) => (i + 1) % images.length);
+      }
+    }, Math.max(3, intervalSeconds) * 1000);
+    return () => window.clearInterval(id);
+  }, [reducedMotion, paused, images.length, intervalSeconds, active]);
+
+  return (
+    <div
+      className="home-hero-media"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
+    >
+      {images.map((src, i) => (
+        <div
+          key={`${i}-${src}`}
+          className={`home-hero-slide${i === active ? " is-active" : ""}`}
+          style={{ backgroundImage: `url('${src}')` }}
+          aria-hidden
+        />
+      ))}
+      <div className="home-hero-dots" role="group" aria-label={t("public.home.hero.slidesLabel")}>
+        {images.map((_, i) => (
+          <button
+            key={i}
+            type="button"
+            className={`home-hero-dot${i === active ? " is-active" : ""}`}
+            aria-label={t("public.home.hero.goToSlide", { n: i + 1 })}
+            aria-current={i === active ? "true" : undefined}
+            onClick={() => setActive(i)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** Muted looping banner video; reduced-motion users get the poster image only. */
+function HeroVideo({ src, poster }: { src: string; poster: string }) {
+  const reducedMotion = usePrefersReducedMotion();
+  if (reducedMotion) {
+    return poster ? (
+      <div
+        className="home-hero-media home-hero-slide is-active"
+        style={{ backgroundImage: `url('${poster}')` }}
+        aria-hidden
+      />
+    ) : null;
+  }
+  return (
+    <video
+      key={src}
+      className="home-hero-media home-hero-video"
+      src={src}
+      poster={poster || undefined}
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="auto"
+      aria-hidden
+    />
+  );
+}
+
 function HeroSection() {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -3369,6 +3529,22 @@ function HeroSection() {
   const heroImage = banner
     ? (isAr && banner.imageAr) || banner.imageEn
     : "";
+
+  // Selected banner type; falls back to the static image when the chosen
+  // type has no usable media (e.g. a carousel with fewer than 2 images).
+  const carouselImages = useMemo(
+    () =>
+      (banner?.slides ?? [])
+        .map((s) => (isAr && s.imageAr) || s.imageEn)
+        .filter(Boolean),
+    [banner, isAr],
+  );
+  const mode =
+    banner?.mode === "carousel" && carouselImages.length >= 2
+      ? "carousel"
+      : banner?.mode === "video" && banner.videoUrl
+        ? "video"
+        : "static";
   const lines = banner && !banner.hideText
     ? (isAr
         ? [banner.titleLine1Ar, banner.titleLine2Ar]
@@ -3383,12 +3559,24 @@ function HeroSection() {
   };
 
   return (
-    <section className="home-hero public-hero-bleed">
-      <div
-        className="home-hero-bg"
-        style={heroImage ? { backgroundImage: `url('${heroImage}')` } : undefined}
-        aria-hidden
-      />
+    <section className={`home-hero public-hero-bleed home-hero--${mode}`}>
+      {mode === "carousel" ? (
+        <HeroCarousel
+          images={carouselImages}
+          intervalSeconds={banner?.intervalSeconds ?? 5}
+        />
+      ) : mode === "video" && banner ? (
+        <HeroVideo
+          src={banner.videoUrl}
+          poster={banner.videoPoster || heroImage}
+        />
+      ) : (
+        <div
+          className="home-hero-bg"
+          style={heroImage ? { backgroundImage: `url('${heroImage}')` } : undefined}
+          aria-hidden
+        />
+      )}
       <div className="home-hero-content">
         {lines.length > 0 && (
           <motion.h1
@@ -4202,6 +4390,7 @@ interface FeedCardData {
   name: string;
   avatar: string | null;
   bg: string | null;
+  video: string | null;
 }
 
 function FeedSection() {
@@ -4241,6 +4430,7 @@ function FeedSection() {
     name: feedAuthorName(post),
     avatar: feedAuthorAvatar(post),
     bg: post.image ?? FEED_SAMPLE_IMAGES[i % FEED_SAMPLE_IMAGES.length],
+    video: post.video ?? null,
   }));
 
   const showSkeleton = !loaded && cards.length === 0;
@@ -4255,7 +4445,19 @@ function FeedSection() {
       }`}
       aria-hidden={card && !dup ? undefined : true}
     >
-      {card?.bg ? (
+      {card?.video ? (
+        <video
+          className="home-feed-card-bg"
+          src={card.video}
+          poster={card.bg ?? undefined}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          aria-hidden
+        />
+      ) : card?.bg ? (
         <img
           className="home-feed-card-bg"
           src={card.bg}

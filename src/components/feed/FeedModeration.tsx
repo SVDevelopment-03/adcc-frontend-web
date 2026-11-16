@@ -11,8 +11,10 @@ import {
   Users,
   MapPin,
   Trash2,
+  Plus,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { CreateFeedPostModal } from './CreateFeedPostModal';
 import {
   FeedPost,
   getFeedPosts,
@@ -69,6 +71,7 @@ export function FeedModeration() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
   const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const refreshCounts = async () => {
     setIsCountsLoading(true);
@@ -267,9 +270,20 @@ export function FeedModeration() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl mb-2" style={{ color: '#333' }}>Feed Moderation</h1>
-        <p style={{ color: '#666' }}>Review and moderate community posts and content</p>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-3xl mb-2" style={{ color: '#333' }}>Feed Moderation</h1>
+          <p style={{ color: '#666' }}>Review and moderate community posts and content</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowCreateModal(true)}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-white text-sm"
+          style={{ backgroundColor: '#C12D32' }}
+        >
+          <Plus className="w-4 h-4" />
+          <span>Create Post</span>
+        </button>
       </div>
 
       {/* Tiles */}
@@ -477,7 +491,17 @@ export function FeedModeration() {
                     <p className="text-sm mb-3" style={{ color: '#666' }}>{content}</p>
                   ) : null}
 
-                  {imageUrl ? (
+                  {post.video ? (
+                    <div className="mb-3">
+                      <video
+                        src={post.video}
+                        poster={imageUrl ?? undefined}
+                        controls
+                        preload="metadata"
+                        className="w-full max-w-md h-48 rounded-lg object-cover bg-black"
+                      />
+                    </div>
+                  ) : imageUrl ? (
                     <div className="mb-3">
                       <img
                         src={imageUrl}
@@ -650,6 +674,19 @@ export function FeedModeration() {
                 <p style={{ color: '#333' }}>{selectedPost.description || selectedPost.title || '—'}</p>
               </div>
 
+              {selectedPost.video ? (
+                <div>
+                  <p className="text-sm mb-2" style={{ color: '#666' }}>Video</p>
+                  <video
+                    src={selectedPost.video}
+                    poster={(selectedPost.image ?? (selectedPost as any).imageUrl) || undefined}
+                    controls
+                    preload="metadata"
+                    className="w-full rounded-lg bg-black"
+                  />
+                </div>
+              ) : null}
+
               {(selectedPost.image ?? (selectedPost as any).imageUrl) ? (
                 <div>
                   <p className="text-sm mb-2" style={{ color: '#666' }}>Image</p>
@@ -726,6 +763,18 @@ export function FeedModeration() {
             </div>
           </div>
         </div>
+      ) : null}
+
+      {showCreateModal ? (
+        <CreateFeedPostModal
+          onClose={() => setShowCreateModal(false)}
+          onCreated={(status) => {
+            void refreshCounts();
+            // Jump to the tab the new post lives in (this also reloads it).
+            if (activeTab === status) void fetchPostsForTab(status);
+            else setActiveTab(status);
+          }}
+        />
       ) : null}
 
       {showDeleteModal ? (

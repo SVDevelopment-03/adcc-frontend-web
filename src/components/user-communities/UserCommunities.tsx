@@ -303,12 +303,12 @@ export default function CommunitiesPage() {
           onClick={() =>
             setOpenDropdown((current) => (current === id ? null : id))
           }
-          className="flex h-[54px] w-full min-w-0 items-center justify-between gap-3 overflow-hidden rounded-full bg-white px-5 text-left text-[16px] sm:text-[18px] lg:h-[66px] lg:px-8 lg:text-[22px]"
+          className="flex h-11 w-full min-w-0 items-center justify-between gap-2 overflow-hidden rounded-full border border-black/8 bg-white ps-4.5 pe-3.5 text-start text-[14px] sm:text-[15px]"
           aria-expanded={isOpen}
         >
           <span className="min-w-0 flex-1 truncate">{selectedLabel}</span>
           <ChevronDown
-            size={22}
+            size={16}
             className={`shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`}
           />
         </button>
@@ -320,7 +320,7 @@ export default function CommunitiesPage() {
                 key={option.value}
                 type="button"
                 onClick={() => onChange(option.value)}
-                className={`block w-full px-5 py-3 text-left text-[15px] transition-colors hover:bg-[#EAF4FF] sm:text-[16px] ${
+                className={`block w-full px-4 py-2.25 text-start text-[14px] transition-colors hover:bg-[#EAF4FF] ${
                   option.value === value
                     ? "bg-[#EAF4FF] font-semibold text-[#019839]"
                     : "text-black"
@@ -376,7 +376,7 @@ export default function CommunitiesPage() {
 
         <motion.div
           ref={filterBarRef}
-          className="mt-8 grid grid-cols-1 gap-4 lg:mt-10 lg:grid-cols-[1fr_260px_260px_156px] lg:gap-5"
+          className="mt-6 grid grid-cols-2 gap-2.5 lg:mt-8 lg:grid-cols-[1fr_200px_200px_120px]"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
@@ -395,7 +395,7 @@ export default function CommunitiesPage() {
               visible: { opacity: 1, x: 0 },
             }}
             transition={{ duration: 0.5 }}
-            className="flex h-[54px] min-w-0 items-center rounded-full bg-white px-5 lg:h-[66px] lg:px-8"
+            className="col-span-2 flex h-11 min-w-0 items-center gap-2 rounded-full border border-black/8 bg-white px-4.5 lg:col-span-1"
           >
             <input
               value={searchInput}
@@ -404,9 +404,9 @@ export default function CommunitiesPage() {
                 if (event.key === "Enter") handleSearch();
               }}
               placeholder={t("public.common.searchCommunities")}
-              className="min-w-0 flex-1 bg-transparent text-[16px] outline-none sm:text-[18px] lg:text-[22px]"
+              className="min-w-0 flex-1 bg-transparent text-[14px] outline-none sm:text-[15px]"
             />
-            <Search size={22} />
+            <Search size={18} className="shrink-0" />
           </motion.div>
 
           <motion.div
@@ -437,7 +437,7 @@ export default function CommunitiesPage() {
             transition={{ duration: 0.5 }}
             type="button"
             onClick={handleSearch}
-            className="h-[54px] rounded-full bg-[#019839] text-[17px] font-bold text-white lg:h-[66px] lg:text-[22px]"
+            className="col-span-2 h-11 rounded-full bg-[#019839] text-[15px] font-bold text-white lg:col-span-1 lg:text-[16px]"
           >
             {t("public.common.search")}
           </motion.button>

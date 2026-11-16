@@ -123,24 +123,27 @@ margin-bottom:40px !important;}
         font-size: 15px !important;
       }
       .event-filter-bar {
-        padding: 0 18px 24px !important;
+        padding: 0 18px 20px !important;
         display: grid !important;
         grid-template-columns: 1fr 1fr !important;
-        gap: 18px !important;
+        gap: 10px !important;
       }
       .event-filter-field {
         width: 100% !important;
-        height: 54px !important;
-        padding: 0 0px 0 0px !important;
+        padding: 0 !important;
       }
-      .event-filter-field select {
-        font-size: 15px !important;
-        padding-right: 18px !important;
+      .event-filter-field button {
+        height: 44px !important;
+        font-size: 14px !important;
+      }
+      .event-filter-bar > * {
+        min-width: 0 !important;
       }
       .event-filter-search {
+        grid-column: 1 / -1 !important;
         width: 100% !important;
-        height: 54px !important;
-        font-size: 17px !important;
+        height: 44px !important;
+        font-size: 15px !important;
       }
       .event-grid-wrap {
         padding: 0 18px !important;
@@ -227,8 +230,7 @@ margin-bottom:40px !important;}
         font-size: 36px !important;
       }
       .event-filter-bar {
-        grid-template-columns: 1fr !important;
-        gap: 14px !important;
+        gap: 8px !important;
       }
       .event-card-image {
         height: 200px !important;
@@ -418,8 +420,8 @@ function FilterBar({
 
   const ChevronDown = ({ open = false }: { open?: boolean }) => (
     <svg
-      width="18"
-      height="18"
+      width="16"
+      height="16"
       viewBox="0 0 24 24"
       fill="none"
       style={{
@@ -472,7 +474,7 @@ function FilterBar({
           delay: dropdowns.findIndex((d) => d.key === filter.key) * 0.08,
           ease: [0.22, 1, 0.36, 1],
         }}
-        style={{ position: "relative", width: 260 }}
+        style={{ position: "relative", width: 200 }}
       >
         <button
           type="button"
@@ -483,18 +485,18 @@ function FilterBar({
           }
           style={{
             width: "100%",
-            height: 66,
+            height: 44,
             background: "#fff",
-            border: "1px solid rgba(0,0,0,0.05)",
+            border: "1px solid rgba(0,0,0,0.08)",
             borderRadius: 40,
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            padding: "0 20px 0 28px",
-            gap: 10,
+            padding: "0 14px 0 18px",
+            gap: 8,
             cursor: "pointer",
             fontFamily: "'Bebas Kai', sans-serif",
-            fontSize: 18,
+            fontSize: 15,
             color: "#000",
             textAlign: "left",
           }}
@@ -554,10 +556,10 @@ function FilterBar({
                     option.value === filters[filter.key] ? "#EAF4FF" : "#fff",
                   color:
                     option.value === filters[filter.key] ? "#019839" : "#000",
-                  padding: "12px 18px",
-                  textAlign: "left",
+                  padding: "9px 16px",
+                  textAlign: "start",
                   fontFamily: "'Bebas Kai', sans-serif",
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: option.value === filters[filter.key] ? 700 : 400,
                   cursor: "pointer",
                 }}
@@ -585,11 +587,11 @@ function FilterBar({
     <div
       className="event-filter-bar"
       style={{
-        padding: "40px 82px 32px",
+        padding: "32px 82px 24px",
         display: "flex",
-        gap: 18,
+        flexWrap: "wrap",
+        gap: 10,
         alignItems: "center",
-        gridTemplateColumns: "repeat(3, 403px)",
       }}
     >
       {dropdowns.map(renderDropdown)}
@@ -605,13 +607,13 @@ function FilterBar({
         viewport={{ once: true }}
         disabled={loading}
         style={{
-          width: 156,
-          height: 66,
+          width: 120,
+          height: 44,
           background: "#019839",
           color: "#fff",
           border: "none",
           borderRadius: 40,
-          fontSize: 20,
+          fontSize: 16,
           fontWeight: 700,
           cursor: loading ? "not-allowed" : "pointer",
           fontFamily: "'Bebas Kai',sans-serif",

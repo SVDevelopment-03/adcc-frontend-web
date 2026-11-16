@@ -14,6 +14,7 @@ export interface FeedPost {
   banFeedPost?: boolean;
   rejectedReason?: string;
   image?: string;
+  video?: string;
   createdBy?: string | { _id?: string; fullName?: string; profileImage?: string; banFeedPost?: boolean };
   comments?: FeedPostComment[];
   createdAt?: string;
@@ -127,6 +128,7 @@ const mapFeedPostsPayload = (data: any): FeedPost[] => {
         (typeof p?.createdBy === 'string' ? undefined : p?.createdBy?._id),
       
       image: p?.image ?? p?.imageUrl ?? p?.coverImage,
+      video: p?.video ?? p?.videoUrl,
       banFeedPost: normalizeBoolean(
         p?.banFeedPost ??
         p?.user?.banFeedPost ??
@@ -227,6 +229,49 @@ export const createFeedPost = async (data: CreateFeedPostData): Promise<FeedPost
     return (payload?.post ?? payload) as FeedPost;
   } catch (error) {
     throw new Error(getApiErrorMessage(error, 'Failed to create feed post'));
+  }
+};
+
+export interface CreateAdminFeedPostData {
+  title: string;
+  description: string;
+  imageFile?: File | null;
+  videoFile?: File | null;
+  /** `approved` publishes immediately; `pending` saves it to the review queue. */
+  status?: 'approved' | 'pending';
+}
+
+/** The validate middleware sends Zod issues as a JSON array in `message`. */
+function readableValidationMessage(message: string): string {
+  try {
+    const issues = JSON.parse(message);
+    if (Array.isArray(issues)) {
+      return issues.map((i: any) => i?.message).filter(Boolean).join(' ') || message;
+    }
+  } catch {
+    /* not JSON — use as-is */
+  }
+  return message;
+}
+
+/** Admin creates a feed post with an optional image and/or video (POST /v1/feed-posts/admin). */
+export const createAdminFeedPost = async (data: CreateAdminFeedPostData): Promise<FeedPost> => {
+  const formData = new FormData();
+  formData.append('title', data.title);
+  formData.append('description', data.description);
+  formData.append('status', data.status ?? 'approved');
+  if (data.imageFile) formData.append('image', data.imageFile);
+  if (data.videoFile) formData.append('video', data.videoFile);
+
+  try {
+    const response = await api.post<any>('/v1/feed-posts/admin', formData, {
+      // Video uploads can be large; don't let a default request timeout cut them off.
+      timeout: 0,
+    });
+    const payload = response.data?.data ?? response.data;
+    return (payload?.post ?? payload) as FeedPost;
+  } catch (error) {
+    throw new Error(readableValidationMessage(getApiErrorMessage(error, 'Failed to create feed post')));
   }
 };
 

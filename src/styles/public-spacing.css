@@ -128,7 +128,7 @@
 .event-page .event-filter-bar {
   padding-block: 0 24px !important;
   padding-inline: 82px !important;
-  gap: 18px !important;
+  gap: 10px !important;
 }
 
 .event-page .event-grid-wrap {
@@ -210,9 +210,11 @@
   padding-inline: 16px !important;
 }
 
-.contact-page > section {
+/* Same space above (below the hero) and below (above the footer CTA). Scoped
+   to the content section so the hero <section> isn't padded too. */
+.contact-page > section.contact-content {
   padding-inline: 40px !important;
-  padding-block: 112px !important;
+  padding-block: 64px !important;
 }
 
 /* ─── Home page ─── */
@@ -460,9 +462,9 @@ html[dir='rtl'] .communities-page .text-left {
     gap: 20px !important;
   }
 
-  .contact-page > section {
+  .contact-page > section.contact-content {
     padding-inline: 18px !important;
-    padding-block: 64px !important;
+    padding-block: 40px !important;
   }
 
   .challenges-page > section,
