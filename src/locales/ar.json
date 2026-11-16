@@ -2842,6 +2842,7 @@
     },
     "common": {
       "participants": "{{count}} مشارك",
+      "participantsLabel": "0 مشارك",
       "getInTouch": "تواصل معنا",
       "joinChallenge": "انضم للتحدي",
       "viewDetails": "عرض التفاصيل",

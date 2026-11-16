@@ -3368,6 +3368,9 @@
     },
     "common": {
       "participants": "{{count}} participants",
+      "participants_one": "{{count}} participant",
+      "participants_other": "{{count}} participants",
+      "participantsLabel": "0 participants",
       "getInTouch": "Get In Touch",
       "joinChallenge": "Join Challenge",
       "viewDetails": "View Details",
