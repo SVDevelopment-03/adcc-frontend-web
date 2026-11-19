@@ -679,26 +679,35 @@ font-family: var(--font-satoshi) !important;}
     display: block;
     overflow: hidden;
   }
+  /* Rider sits in normal flow under the title, pinned to the bottom of the
+     column, so it is never clipped and never overlaps the title. It still
+     bleeds off the left edge via the -86px offset (section padding). */
   .journey-rider {
+    --journey-rider-width: clamp(320px, 30vw, 450px);
     overflow: hidden;
-    position: absolute;
-    bottom: -116px;
+    position: relative;
+    margin-top: auto;
+    padding-top: 24px;
     inset-inline-start: -86px;
-}
-
-  // .journey-rider img {
-  //   width: 430px;
-  //   height: 100%;
-  //   object-fit: cover;
-  //   object-position: left bottom;
-  //   display: block;
-  // }
+    width: var(--journey-rider-width);
+    /* The -86px bleed is visual only; give that width back so a larger rider
+       doesn't widen the column and push the cards right. */
+    margin-inline-end: -86px;
+    /* The rider sits flush on the section's bottom edge. This assumes the
+       uploaded (CMS) rider PNG is cropped tight to the tyres; an image with
+       empty space under the wheels will float by that amount. */
+  }
+  .journey-rider img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
   .journey-content {
     min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 0px;
-    margin-bottom:128px;
+    margin-bottom: 48px;
   }
   .journey-text {
     font-family: 'Outfit', sans-serif !important;
@@ -713,7 +722,8 @@ font-family: var(--font-satoshi) !important;}
     text-transform: none;
   }
   .journey-button {
-    min-width: 247px;
+    min-width: 0;
+    width: auto;
     justify-content: center;
     --adcc-btn-color: #FFF9EF;
     font-family: 'Satoshi', sans-serif !important;
