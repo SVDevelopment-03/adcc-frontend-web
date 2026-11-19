@@ -684,7 +684,8 @@ const formatTimeInput = (raw: string): string => {
                         weekday: 'long',
                         year: 'numeric',
                         month: 'long',
-                        day: 'numeric'
+                        day: 'numeric',
+                        timeZone: 'UTC'
                       })}
                     </p>
                   </div>

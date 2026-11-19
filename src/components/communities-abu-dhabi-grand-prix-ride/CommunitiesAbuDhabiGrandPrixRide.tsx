@@ -140,6 +140,7 @@ const formatDate = (date: string | undefined, t: TFunction) => {
     month: "short",
     day: "numeric",
     year: "numeric",
+    timeZone: "UTC", // eventDate is a calendar date stored as UTC midnight
   }).format(parsed);
 };
 

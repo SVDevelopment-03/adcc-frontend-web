@@ -1060,6 +1060,7 @@ function formatEventDate(value: string | undefined, fallback: string) {
     month: "long",
     day: "numeric",
     year: "numeric",
+    timeZone: "UTC", // eventDate is a calendar date stored as UTC midnight
   });
 }
 

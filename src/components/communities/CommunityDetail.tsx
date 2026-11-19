@@ -793,7 +793,7 @@ export function CommunityDetail() {
                     <div className="flex items-center gap-2 mb-3 text-sm" style={{ color: '#666' }}>
                       <Calendar className="w-4 h-4" />
                       <span>
-                        {event.eventDate ? new Date(event.eventDate).toLocaleDateString(i18n.language) : '—'} •{' '}
+                        {event.eventDate ? new Date(event.eventDate).toLocaleDateString(i18n.language, { timeZone: 'UTC' }) : '—'} •{' '}
                         {event.eventTime || (event.eventDate ? new Date(event.eventDate).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }) : '—')}
                       </span>
                     </div>

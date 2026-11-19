@@ -18,6 +18,7 @@ function formatEventDate(eventDate?: string, eventTime?: string, locale?: string
       month: 'short',
       day: 'numeric',
       year: 'numeric',
+      timeZone: 'UTC',
     });
     return eventTime ? `${datePart} ${eventTime}` : datePart;
   } catch {

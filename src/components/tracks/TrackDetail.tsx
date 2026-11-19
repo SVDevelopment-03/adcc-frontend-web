@@ -459,7 +459,7 @@ console.log('upcoming track',upcomingEvents);
                           <div className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" style={{ color: '#999' }} />
                             <span className="text-sm" style={{ color: '#666' }}>
-                              {eventDate ? new Date(eventDate).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                              {eventDate ? new Date(eventDate).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }) : '—'}
                             </span>
                           </div>
                           {event.status && (
