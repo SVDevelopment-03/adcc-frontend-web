@@ -158,8 +158,9 @@ const getImage = (event?: GrandPrixEvent | null) =>
   event?.galleryImages?.[0] ||
   FALLBACK_HERO_IMAGE;
 
+// Website registration-form sign-ups (app registrations are not shown on the website)
 const getParticipants = (event?: GrandPrixEvent | null) =>
-  event?.currentParticipants ?? event?.registrations ?? 0;
+  event?.formParticipants ?? 0;
 
 // The API populates trackId as { _id, title, titleAr }
 const getTrackName = (event?: GrandPrixEvent | null) => {
@@ -256,11 +257,16 @@ const getStats = (
       title: category ? titleCase(category) : EMPTY_STAT,
       label: t("public.events.detail.stats.category"),
     },
-    {
-      icon: Users,
-      title: t("public.events.detail.stats.ridersCount", { count: riders }),
-      label: t("public.events.detail.stats.participantsLabel"),
-    },
+    // Only registration-form sign-ups are shown; none: no participants card
+    ...(event?.showParticipants !== true
+      ? []
+      : [
+          {
+            icon: Users,
+            title: t("public.events.detail.stats.ridersCount", { count: riders }),
+            label: t("public.events.detail.stats.participantsLabel"),
+          },
+        ]),
     {
       icon: Trophy,
       title: level ? titleCase(level) : EMPTY_STAT,

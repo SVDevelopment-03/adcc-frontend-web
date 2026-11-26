@@ -57,6 +57,7 @@ export function EventsList({ role }: EventsListProps) {
   const [trackFilter, setTrackFilter] = useState('');
   const [featuredFilter, setFeaturedFilter] = useState('');
   const [organizerFilter, setOrganizerFilter] = useState('');
+  const [eventTypeFilter, setEventTypeFilter] = useState('');
 
   // DEMO ONLY: temporary state for rating display - remove when real rating from API is available
   // DEMO ONLY: temporary state for track - remove when event.track or API is available
@@ -133,7 +134,7 @@ export function EventsList({ role }: EventsListProps) {
   // Reset to page 1 when any filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, cityFilter, communityFilter, trackFilter, categoryFilter, featuredFilter, organizerFilter]);
+  }, [searchTerm, cityFilter, communityFilter, trackFilter, categoryFilter, featuredFilter, organizerFilter, eventTypeFilter]);
 
   const filteredEvents = useMemo(() => {
     // Events whose date has passed (or that are completed) go to the end
@@ -165,9 +166,14 @@ export function EventsList({ role }: EventsListProps) {
       const matchesOrganizer =
         !organizerFilter || (event.organizedBy || '') === organizerFilter;
 
-      return matchesSearch && matchesCity && matchesCommunity && matchesTrack && matchesCategory && matchesFeatured && matchesOrganizer;
+      const matchesEventType =
+        !eventTypeFilter ||
+        (eventTypeFilter === 'internal' && event.isInternal) ||
+        (eventTypeFilter === 'external' && !event.isInternal);
+
+      return matchesSearch && matchesCity && matchesCommunity && matchesTrack && matchesCategory && matchesFeatured && matchesOrganizer && matchesEventType;
     });
-  }, [events, searchTerm, cityFilter, communityFilter, trackFilter, categoryFilter, featuredFilter, organizerFilter]);
+  }, [events, searchTerm, cityFilter, communityFilter, trackFilter, categoryFilter, featuredFilter, organizerFilter, eventTypeFilter]);
 
   const trackStats = useMemo(() => {
     const stats: Record<string, { eventsCount: number; communitiesCount: number }> = {};
@@ -482,6 +488,19 @@ export function EventsList({ role }: EventsListProps) {
           </div>
 
           <div>
+            <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.internal.heading', 'Event Type')}</label>
+            <select
+              value={eventTypeFilter}
+              onChange={(e) => setEventTypeFilter(e.target.value)}
+              className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-600"
+            >
+              <option value="">{t('events.filters.allEventTypes', 'All Types')}</option>
+              <option value="internal">{t('events.internal.internal', 'Internal Event')}</option>
+              <option value="external">{t('events.internal.external', 'External Event')}</option>
+            </select>
+          </div>
+
+          <div>
             <label className="block text-sm mb-2" style={{ color: '#666' }}>{t('events.filters.organizedBy', 'Organised by')}</label>
             <select
               value={organizerFilter}
@@ -506,6 +525,7 @@ export function EventsList({ role }: EventsListProps) {
                 setStatusFilter('');
                 setFeaturedFilter('');
                 setOrganizerFilter('');
+                setEventTypeFilter('');
               }}
               className="w-full px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
               style={{ color: '#666' }}
@@ -612,12 +632,14 @@ export function EventsList({ role }: EventsListProps) {
                               {new Date(event.eventDate).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })}
                             </span>
                           </div>
-                          <div className="flex items-center gap-1">
-                            <Users className="w-4 h-4" style={{ color: '#999' }} />
-                            <span className="text-sm" style={{ color: '#666' }}>
-                              {event.currentParticipants}{event.maxParticipants > 0 ? ` / ${event.maxParticipants}` : ''}
-                            </span>
-                          </div>
+                          {event.isInternal && (
+                            <div className="flex items-center gap-1">
+                              <Users className="w-4 h-4" style={{ color: '#999' }} />
+                              <span className="text-sm" style={{ color: '#666' }}>
+                                {t('events.card.registeredUsers', { count: event.formParticipants ?? 0 })}
+                              </span>
+                            </div>
+                          )}
                           <div className="flex items-center gap-1">
                             <MapPin className="w-4 h-4" style={{ color: '#999' }} />
                             <span className="text-sm" style={{ color: '#666' }}>{event.city ? t(`data.locations.${event.city}`, event.city) : t('events.card.noLocation', 'No Location')}</span>

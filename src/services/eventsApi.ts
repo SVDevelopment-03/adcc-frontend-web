@@ -66,7 +66,12 @@ export interface EventApiResponse {
   isFeatured?: boolean;
   allowCancellation?: boolean;
   galleryImages: string[];
+  /** App registrations (mobile app). */
   currentParticipants?: number;
+  /** Website registration-form sign-ups: the participant count shown on the website. */
+  formParticipants?: number;
+  /** True only when the registration form has sign-ups; otherwise hide the count and list. */
+  showParticipants?: boolean;
   /** Internal events collect leads through the public registration form. */
   isInternal?: boolean;
   raceTracks?: EventRaceTrack[];

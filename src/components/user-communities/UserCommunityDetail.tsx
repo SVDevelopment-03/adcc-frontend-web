@@ -618,7 +618,7 @@ function EventCard({ event }: { event: EventApiResponse }) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const image = event.mainImage || event.eventImage || event.galleryImages?.[0] || FALLBACK_EVENT_IMAGE;
-  const participants = event.currentParticipants ?? event.registrations ?? 0;
+  const participants = event.formParticipants ?? 0;
   const formattedParticipants = Number(participants).toLocaleString(i18n.language);
 
   return (
@@ -638,9 +638,12 @@ function EventCard({ event }: { event: EventApiResponse }) {
         <p className="flex gap-2">
           <Gauge size={20} /> {typeof event.distance === "number" ? `${event.distance} km` : t("public.common.distanceTBA")}
         </p>
-        <p className="flex gap-2">
-          <Users size={20} /> {t("public.common.participants", { count: participants, formattedCount: formattedParticipants })}
-        </p>
+        {/* Only registration-form sign-ups are shown; none: hidden */}
+        {event.showParticipants === true && (
+          <p className="flex gap-2">
+            <Users size={20} /> {t("public.common.participants", { count: participants, formattedCount: formattedParticipants })}
+          </p>
+        )}
         <p className="flex gap-2">
           <MapPin size={20} /> {event.city || event.address || t("public.communities.detail.locationTBA")}
         </p>

@@ -640,7 +640,7 @@ function EventCard({ event }: { event: EventApiResponse }) {
     event.galleryImages?.[0] ||
     "/img/Frame 2147226042.png";
 
-  const participants = event.currentParticipants ?? event.registrations ?? 0;
+  const participants = event.formParticipants ?? 0;
 
   // The list API populates trackId as { _id, title, titleAr }
   const track = event.trackId as
@@ -746,24 +746,27 @@ function EventCard({ event }: { event: EventApiResponse }) {
                 : t("public.common.distanceTBA")
             }
           />
-          <Meta
-            icon={
-              <img
-                src="/img/icons/people.svg"
-                alt={t("public.events.listing.card.participantsAlt")}
-                width={14}
-                height={14}
-              />
-            }
-            text={
-              participants > 0
-                ? t("public.common.participants", {
-                    count: participants,
-                    formattedCount: participants,
-                  })
-                : t("public.common.participantsLabel")
-            }
-          />
+          {/* Only registration-form sign-ups are shown; none: hidden */}
+          {event.showParticipants === true && (
+            <Meta
+              icon={
+                <img
+                  src="/img/icons/people.svg"
+                  alt={t("public.events.listing.card.participantsAlt")}
+                  width={14}
+                  height={14}
+                />
+              }
+              text={
+                participants > 0
+                  ? t("public.common.participants", {
+                      count: participants,
+                      formattedCount: participants,
+                    })
+                  : t("public.common.participantsLabel")
+              }
+            />
+          )}
           <Meta
             icon={
               <img

@@ -272,7 +272,7 @@ export function FeedModeration() {
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-3xl mb-2" style={{ color: '#333' }}>Feed Moderation</h1>
+          <h1 className="text-3xl mb-2" style={{ color: '#333' }}>Community Feeds</h1>
           <p style={{ color: '#666' }}>Review and moderate community posts and content</p>
         </div>
         <button

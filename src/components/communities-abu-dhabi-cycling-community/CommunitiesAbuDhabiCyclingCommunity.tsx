@@ -378,7 +378,7 @@ function EventCard({ event }: { event: EventApiResponse }) {
     event.eventImage ||
     event.galleryImages?.[0] ||
     "/img/Frame 2147226042.png";
-  const participants = event.currentParticipants ?? event.registrations ?? 0;
+  const participants = event.formParticipants ?? 0;
   const formattedParticipants = Number(participants).toLocaleString(
     i18n.language,
   );
@@ -439,17 +439,20 @@ function EventCard({ event }: { event: EventApiResponse }) {
                 : t("public.common.distanceTBA")
             }
           />
-          <EventMeta
-            icon="/img/icons/people.svg"
-            text={
-              participants > 0
-                ? t("public.common.participants", {
-                    count: participants,
-                    formattedCount: formattedParticipants,
-                  })
-                : t("public.common.participantsLabel")
-            }
-          />
+          {/* Only registration-form sign-ups are shown; none: hidden */}
+          {event.showParticipants === true && (
+            <EventMeta
+              icon="/img/icons/people.svg"
+              text={
+                participants > 0
+                  ? t("public.common.participants", {
+                      count: participants,
+                      formattedCount: formattedParticipants,
+                    })
+                  : t("public.common.participantsLabel")
+              }
+            />
+          )}
           <EventMeta
             icon="/img/icons/map.svg"
             text={

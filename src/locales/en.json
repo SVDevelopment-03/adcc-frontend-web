@@ -24,7 +24,7 @@
     "tracks": "Tracks",
     "challenges": "Challenges",
     "badges": "Badges & Rewards",
-    "feed": "Feed Moderation",
+    "feed": "Community Feeds",
     "marketplace": "Marketplace",
     "merchandise": "Club Merchandise",
     "cms": "Content Manager",
@@ -1288,6 +1288,7 @@
       "featuredAll": "All",
       "featuredOnly": "Featured Only",
       "notFeatured": "Not Featured",
+      "allEventTypes": "All Types",
       "selectCityFirst": "Select a city first",
       "clearFilters": "Clear Filters"
     },
@@ -1296,6 +1297,7 @@
       "noCommunity": "No community",
       "noTrack": "No Track",
       "trackStats": "{{events}} events, {{communities}} communities",
+      "registeredUsers": "{{count}} registered",
       "view": "View",
       "edit": "Edit",
       "participants": "Participants",
@@ -2296,7 +2298,7 @@
     "page": "Page {{current}} of {{total}}"
   },
   "feed": {
-    "title": "Feed Moderation",
+    "title": "Community Feeds",
     "subtitle": "Review and moderate community posts",
     "tabs": {
       "pending": "Pending",
@@ -3384,10 +3386,10 @@
       }
     },
     "common": {
-      "participants": "{{count}} participants",
-      "participants_one": "{{count}} participant",
-      "participants_other": "{{count}} participants",
-      "participantsLabel": "0 participants",
+      "participants": "{{count}} Participants",
+      "participants_one": "{{count}} Participant",
+      "participants_other": "{{count}} Participants",
+      "participantsLabel": "0 Participants",
       "getInTouch": "Get In Touch",
       "joinChallenge": "Join Challenge",
       "viewDetails": "View Details",

@@ -24,7 +24,7 @@
     "tracks": "المسارات",
     "challenges": "التحديات",
     "badges": "الشارات والمكافآت",
-    "feed": "إدارة المنشورات",
+    "feed": "منشورات المجتمع",
     "marketplace": "السوق",
     "merchandise": "بضائع النادي",
     "cms": "إدارة المحتوى",
@@ -751,6 +751,7 @@
       "featuredAll": "الكل",
       "featuredOnly": "المميز فقط",
       "notFeatured": "غير مميز",
+      "allEventTypes": "جميع الأنواع",
       "selectCityFirst": "اختر مدينة أولاً",
       "clearFilters": "مسح التصفية"
     },
@@ -759,6 +760,7 @@
       "noCommunity": "بدون مجتمع",
       "noTrack": "بدون مسار",
       "trackStats": "{{events}} فعاليات، {{communities}} مجتمعات",
+      "registeredUsers": "{{count}} مسجل",
       "view": "عرض",
       "edit": "تعديل",
       "participants": "المشاركون",
@@ -1770,7 +1772,7 @@
     "page": "صفحة {{current}} من {{total}}"
   },
   "feed": {
-    "title": "إدارة المنشورات",
+    "title": "منشورات المجتمع",
     "subtitle": "مراجعة وإشراف منشورات المجتمع",
     "tabs": {
       "pending": "قيد الانتظار",

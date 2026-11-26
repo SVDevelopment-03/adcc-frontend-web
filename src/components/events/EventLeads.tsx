@@ -73,16 +73,19 @@ export function EventLeads({ eventId, eventSlug, raceTracks }: Props) {
     }
   };
 
-  const filterTabs = [
-    { id: '', label: t('events.leads.allTracks', 'All Tracks') },
-    ...raceTracks.filter((track) => track._id).map((track) => ({ id: track._id as string, label: track.name })),
-  ];
+  const trackTabs = raceTracks
+    .filter((track) => track._id)
+    .map((track) => ({ id: track._id as string, label: track.name }));
+  // A single track needs no "All Tracks" split: show just its name (all leads already belong to it).
+  const filterTabs =
+    trackTabs.length === 1
+      ? [{ id: '', label: trackTabs[0].label }]
+      : [{ id: '', label: t('events.leads.allTracks', 'All Tracks') }, ...trackTabs];
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h3 className="text-lg" style={{ color: '#333' }}>{t('events.leads.heading', 'Leads')}</h3>
           <p className="text-sm" style={{ color: '#666' }}>
             {t('events.leads.subtitle', 'Registrations submitted through the public event page')}
           </p>
@@ -106,7 +109,7 @@ export function EventLeads({ eventId, eventSlug, raceTracks }: Props) {
       </div>
 
       {/* Track tabs */}
-      {filterTabs.length > 1 && (
+      {trackTabs.length > 0 && (
         <div className="flex flex-wrap gap-2 p-1.5 rounded-2xl bg-white shadow-sm w-fit">
           {filterTabs.map((tab) => (
             <button
